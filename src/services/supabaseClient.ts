@@ -1,16 +1,16 @@
 /**
  * Supabase Client & Operations Service for ABANGCOLEK-OS
- * Project ID: bktksvhcgszaoqkdyhil
- * Host: db.bktksvhcgszaoqkdyhil.supabase.co
+ * Project ID: yeszjvcnjxumujxinahz
+ * Host: db.yeszjvcnjxumujxinahz.supabase.co
  */
 
 import { createClient } from '@supabase/supabase-js';
 
 export const SUPABASE_CONFIG = {
-  url: import.meta.env.VITE_SUPABASE_URL || 'https://bktksvhcgszaoqkdyhil.supabase.co',
+  url: import.meta.env.VITE_SUPABASE_URL || 'https://yeszjvcnjxumujxinahz.supabase.co',
   publishableKey: import.meta.env.VITE_SUPABASE_ANON_KEY || '',
-  projectRef: 'bktksvhcgszaoqkdyhil',
-  dbHost: 'db.bktksvhcgszaoqkdyhil.supabase.co:5432',
+  projectRef: 'yeszjvcnjxumujxinahz',
+  dbHost: 'db.yeszjvcnjxumujxinahz.supabase.co:5432',
 };
 
 // Initialize Supabase Client

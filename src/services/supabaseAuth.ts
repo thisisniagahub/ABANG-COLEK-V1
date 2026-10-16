@@ -13,6 +13,7 @@ export interface SupabaseAuthState {
   loading: boolean;
   error: string | null;
   signInWithEmail: (email: string, password: string) => Promise<{ user: User | null; error: AuthError | null }>;
+  signInWithGoogle: () => Promise<{ error: AuthError | null }>;
   signUpWithEmail: (email: string, password: string) => Promise<{ user: User | null; error: AuthError | null }>;
   signInWithOtp: (email: string) => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<{ error: AuthError | null }>;
@@ -117,12 +118,25 @@ export function useSupabaseAuth(): SupabaseAuthState {
     setLoading(false);
   }, []);
 
+  const signInWithGoogle = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}/login` },
+    });
+    if (error) setError(error.message);
+    setLoading(false);
+    return { error };
+  }, []);
+
   return {
     user,
     session,
     loading,
     error,
     signInWithEmail,
+    signInWithGoogle,
     signUpWithEmail,
     signInWithOtp,
     signOut,
