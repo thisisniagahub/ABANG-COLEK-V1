@@ -23,4 +23,4 @@ jobs:
       - name: Deploy to Vercel Production
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: npx vercel@latest deploy --prod --yes --project abangcolek-platform --token "$VERCEL_TOKEN"
+        run: npx vercel@latest deploy --prod --yes --project niaga-hub-pro --token "$VERCEL_TOKEN"

@@ -1,96 +1,188 @@
-# ABANGCOLEK PLATFORM
+<p align="center">
+  <img src="public/assets/brand/ABANG-COLEX-LOGO-2.png" alt="ABANGCOLEK logo" width="180" />
+</p>
 
-Ruang kerja operasi ABANGCOLEK untuk customer, staff, founder dan developer, termasuk landing page, ejen/stokis, commerce, quality, marketing, evidence dan automation lokal.
+<h1 align="center">ABANGCOLEK Platform</h1>
 
-**Mula di [handover A–Z](docs/handover/AGENT-HANDOVER-A-Z.md)** → [Source of Truth](docs/ABANGCOLEK-SOURCE-OF-TRUTH.md) → [status 16 Oktober](docs/ABANGCOLEK-PLATFORM-STATUS-2026-10-16.md) → [AI Agent architecture](docs/AI-AGENT-ARCHITECTURE.md) → [indeks dokumentasi](docs/README.md).
+<p align="center">
+  <strong>Operating system untuk operasi makanan, stokis, commerce, quality, marketing dan automation ABANGCOLEK.</strong>
+</p>
 
-> **Current update — 16 Oktober 2026:** Social/Plugins/Automation sudah mempunyai local implementation dan mock Threads + YouTube state. AI Agent multi-role, provider adapters dan free-model catalog masih pada design/research track; jangan baca roadmap sebagai production receipt.
+<p align="center">
+  <a href="https://vercel.com/niaga-hub-pro"><img src="https://img.shields.io/badge/Production-Vercel-black?logo=vercel" alt="Production on Vercel" /></a>
+  <a href="https://github.com/thisisniagahub/ABANG-COLEK-V1/actions"><img src="https://img.shields.io/github/actions/workflow/status/thisisniagahub/ABANG-COLEK-V1/vercel-production.yml?branch=main&label=CI%20%2B%20deploy" alt="CI and deploy status" /></a>
+  <img src="https://img.shields.io/badge/runtime-Bun%201.4.2-f9f1e1?logo=bun&logoColor=black" alt="Bun 1.4.2" />
+  <img src="https://img.shields.io/badge/frontend-React%20%2B%20Vite-61dafb?logo=react&logoColor=black" alt="React and Vite" />
+</p>
 
-## Keadaan semasa — baseline 4 Oktober 2026
+<p align="center">
+  <a href="https://vercel.com/niaga-hub-pro">Live deployment</a> ·
+  <a href="https://github.com/thisisniagahub/ABANG-COLEK-V1/actions">Actions</a> ·
+  <a href="docs/README.md">Documentation index</a> ·
+  <a href="docs/runbooks/platform-recovery.md">Recovery runbook</a>
+</p>
 
-| Area | Status |
-|---|---|
-| Source/repo untuk kerja seterusnya | D:\ABANGCOLEK-PLATFORM; thisidowgnut-source/ABANGCOLEK-PLATFORM |
-| Preview/API | RUNNING_LOCAL: UI3000/API3010 daripada PLATFORM; identity direct/proxy dan served main.tsx verified4Oktober |
-| Data lokal sedia ada | D:\ABANGCOLEK-OS\var\lib\platform\platform.sqlite; retained, fresh recovery dan pre/post business-row hashes sepadan |
-| Engineering core | React/Vite + AppRouter + Bun API + SQLite; authority backend |
-| Onboarding snapshot | Founder belum provisioned; 0 published products |
-| JEV | LOCAL_RULES/evidence/policy; native TypeSafe belum connected |
-| Hermes / Agent-Reach | Adapter contracts; tiada runtime transport |
-| Marketing | Draft/rights/approval/manual export; Postiz remote publish blocked |
-| WhatsApp | Guided web flows; native integration disabled |
-| Google/Supabase | Legacy source; tidak automatik synced/migrated |
-| Production | Local encoding fix belum dipush; API/data/worker gates terbuka |
-| Hero Emons | DONE_LOCAL4Oktober2026:14core E2E+4layout cases,25scene unit; [swarm receipt](docs/handover/CAPABILITY-MATRIX.md) §10 |
+![ABANGCOLEK Platform visual](public/assets/brand/abangcolek-world-v2.webp)
 
-Tiada claim native latency/calibrated confidence/universal SLA atau semua vendor aktif. [13 laporan research](reports/research/2026-10-02/README.md) merangkumi Grok, Muse, dots, DeepSeek, Hermes dan domain bisnes.
+> **Status:** active development. UI, typed platform contracts, local API/domain modules, role workspaces, evidence flows and CI checks are implemented. External provider integrations, production persistence and real credentials remain deployment-specific and must be verified separately.
 
-## Pengalaman pengguna
+## Apa yang dibina
 
-- Public: landing, catalogue, lokasi, permohonan dealer dan bantuan.
-- Customer: purchases/status/private receipts/complaints, dealer business scope jika diluluskan.
-- Staff: assigned orders/tasks/cases, QC, shift, dokumen dan SOP.
-- Founder: overview, approvals, stock/batch, dealers, marketing, finance, people dan settings.
-- Developer: readiness/jobs/runtime/evaluation; tiada financial authority secara automatik.
+ABANGCOLEK Platform menyatukan operasi harian dalam satu workspace yang boleh diaudit:
 
-Dealer/stokis ialah approved organization linked kepada customer membership, bukan role auth kelima. Commands melalui session/membership, scoped access, revision/evidence dan receipt.
+- **Public experience** — landing page, product catalogue, lokasi, bantuan dan dealer application.
+- **Customer** — purchases, status, private receipts, complaints dan membership scope.
+- **Staff** — assigned orders, tasks, QC, shifts, documents dan SOP.
+- **Founder** — overview, approvals, stock/batch, dealers, marketing, finance, people dan settings.
+- **Developer** — readiness, jobs, runtime identity, evaluations, reports dan platform settings.
+- **Dealer/stokis** — approved organisation scope yang terikat kepada customer membership, bukan auth role bebas.
+- **JEV/evidence** — local rules, policy, evidence, revision, receipt dan evaluation boundaries.
+- **Automation** — typed contracts, adapters, local job state dan mock provider state tanpa mendakwa provider luar sudah aktif.
 
-## Architecture
+## Visual overview
 
-```text
-+-------------------------------------------+
-| Landing + AppRouter + role workspaces     |
-+---------------------+---------------------+
-                      |
-                      v
-+-------------------------------------------+
-| /api/platform + shared typed contracts    |
-| Auth / CSRF / revision / idempotency       |
-+---------------------+---------------------+
-                      |
-                      v
-+-------------------------------------------+
-| Bun domain modules + SQLite + files       |
-| Evidence / JEV review / local job worker   |
-+-------------------------------------------+
+<p align="center">
+  <img src="public/assets/brand/platform-icon-192.png" alt="ABANGCOLEK platform icon" width="96" />
+</p>
+
+### Architecture
+
+```mermaid
+flowchart TD
+    A[Landing + AppRouter + role workspaces] --> B[/api/platform + typed contracts/]
+    B --> C[Auth · CSRF · revision · idempotency]
+    C --> D[Bun domain modules]
+    D --> E[(SQLite + files)]
+    D --> F[Evidence + JEV review]
+    D --> G[Local job worker + automation]
+    H[GitHub Actions] --> I[lint + platform tests + build]
+    I --> J[Vercel Production: niaga-hub-pro]
 ```
 
-src/main.tsx mounts AppRouter. Legacy src/App.tsx retained; founder integration page tidak memount seluruh legacy shell. First-party documents/tasks/calendar bukan Google records automatik.
+### Repository map
 
-## Development dan verifikasi
+| Folder | Tanggungjawab |
+| --- | --- |
+| `src/` | React UI, AppRouter, landing, platform shell dan workspaces |
+| `server/` | Bun API, domain modules, runtime identity, JEV dan automation |
+| `shared/` | Typed contracts dan status schemas yang dikongsi frontend/backend |
+| `public/` | Logo, brand assets, manifest dan public-only assets |
+| `tests/` | Platform, JEV, integration dan browser journey tests |
+| `scripts/` | Development, prerender, QA, backup dan build helpers |
+| `docs/` | Source of truth, runbooks, plans dan documentation index |
+| `reports/` | Research, audit, design QA dan implementation evidence |
+| `var/` | Runtime database/log/files; jangan commit data operasi sebenar |
 
-Pilih runtime/persistence root dengan sengaja. **Jangan menjalankan launcher kedua pada port sedia ada atau memulakan PLATFORM dengan DB kosong lalu menganggap data OS hilang.** Source kini PLATFORM dengan runtimeRoot OS var; refresh listener sebelum startup. B04 launcher menyemak identity checkout/runtime/database dan menolak listener yang tidak boleh disahkan. Startup/recovery menggunakan [runbook](docs/runbooks/platform-recovery.md).
+## Quick start
 
-Toolchain Bun **1.4.2**, sepadan packageManager. Dependencies tersedia pada mesin ini; installation diperlukan hanya bagi environment baharu.
+### Prerequisites
 
-```powershell
-Set-Location -LiteralPath 'D:\ABANGCOLEK-PLATFORM'
+- Windows, macOS atau Linux
+- [Bun 1.4.2](https://bun.sh/)
+- Git
+- SQLite runtime melalui setup projek
+
+### Install dan run
+
+```bash
+git clone https://github.com/thisisniagahub/ABANG-COLEK-V1.git
+cd ABANG-COLEK-V1
+bun install --frozen-lockfile
+bun run dev
+```
+
+Untuk UI sahaja:
+
+```bash
+bun run dev:ui
+```
+
+Default development surface menggunakan UI pada port `3000` dan API pada port `3010` melalui launcher projek. Jangan jalankan launcher kedua pada port yang sama atau memulakan platform dengan database kosong lalu menganggap data operasi hilang.
+
+## Verification gates
+
+Jalankan gates ini sebelum merge atau deploy:
+
+```bash
 bun run lint
 bun run test:platform
 bun run build
 ```
 
-Build membaca PLATFORM_DATABASE atau default DB checkout; jika DB tiada, public catalogue kosong. Jangan ship snapshot kosong sebagai bukti catalogue bisnes sudah onboarded.
+Untuk browser journeys dan QA server:
 
-Swarm4Oktober: lint PASS; **210 tests PASS,0 fail,1199 assertions/47 files**; final build PASS8.27s. Emons14core+4layout, navigation5 dan dealer1 browser cases lulus merentas scoped QA runs; real-runtime6smoke PASS. Build menggunakan verified isolated restore bagi mengelakkan membuka DB asal; published catalogue0 ialah keadaan sebenar. Logs `var/log/implementation-final`; tiada remote CI/production acceptance baharu.
-
-## Struktur
-
-```text
-src/features/   platform, landing, workspaces, flows, brand
-server/         API, domain modules, JEV, automation, runtime
-shared/         typed contracts/status schemas
-public/         verified assets, manifest/public-only worker
-tests/          JEV/platform/integration/browser journeys
-scripts/        dev/prerender/QA/backup/build helpers
-docs/           current registry/backlog/runbooks/plans
-reports/        dated research/audit/implementation evidence
-skills/         engineering workflow guidance
-var/            ignored logs/runtime/database/files
+```bash
+bun run test:e2e
+bun run qa:server
 ```
 
-## Deployment
+Build membaca `PLATFORM_DATABASE` atau default database checkout. Jika database tiada, catalogue public boleh kosong; itu bukan bukti bahawa business catalogue production telah onboarded.
 
-GitHub workflow menjalankan install/lint/platform tests/build sebelum Vercel deploy. Config semasa menerbitkan Vite frontend; API/persistence/worker perlu topology dan proof sendiri.
+## Environment configuration
 
-Credentials tidak diletakkan dalam chat/Git/docs. Known usage, rights, approval dan zero-new-spend perlu disahkan sebelum external execution. [Backlog B/C](docs/PROJECT-ALIGNMENT-BACKLOG.md) memetakan cutover, credential handling dan release gates.
+Gunakan `.env.example` sebagai rujukan. Simpan nilai sebenar hanya dalam local secret store atau Vercel Project Settings — **jangan letakkan token, password, private key atau cookie dalam README, commit, issue atau chat**.
+
+Contoh local setup:
+
+```powershell
+Copy-Item .env.example .env.local
+# Isi nilai local yang diperlukan; jangan commit .env.local
+```
+
+Credential/provider readiness mesti dibuktikan secara berasingan. Mock state, adapter contract atau local implementation tidak sama dengan integration production.
+
+## Continuous delivery ke Vercel
+
+Setiap push ke `main` menjalankan workflow [`.github/workflows/vercel-production.yml`](.github/workflows/vercel-production.yml):
+
+1. checkout repository;
+2. install Bun `1.4.2` dengan frozen lockfile;
+3. jalankan `lint`;
+4. jalankan `test:platform`;
+5. jalankan production build;
+6. deploy ke project Vercel **[niaga-hub-pro](https://vercel.com/niaga-hub-pro)**.
+
+### Required GitHub secret
+
+Tambahkan secret repository berikut di **GitHub → Settings → Secrets and variables → Actions**:
+
+| Secret | Kegunaan |
+| --- | --- |
+| `VERCEL_TOKEN` | Token Vercel milik account/team yang mempunyai akses ke project `niaga-hub-pro` |
+
+Workflow tidak menyimpan token dalam source code. Jika token pernah terdedah, revoke token lama dahulu dan cipta token baharu sebelum menambahnya ke GitHub Actions.
+
+> **Important:** Vercel email yang memiliki `VERCEL_TOKEN` tidak perlu sama dengan email GitHub, tetapi token tersebut mesti mempunyai akses kepada project/team yang betul.
+
+## Security dan data boundaries
+
+- Jangan commit `.env`, token, cookies, database production, browser profile, cache atau generated runtime artifacts.
+- Semak perubahan dengan `git diff --check` dan `git status` sebelum commit.
+- Role, organisation membership, revision, idempotency dan evidence boundary hendaklah disahkan di backend.
+- First-party documents/tasks/calendar bukan Google records automatik.
+- Google, Supabase, WhatsApp, Postiz dan provider AI legacy tidak dianggap synced atau aktif tanpa proof khusus.
+- Sebelum external execution, sahkan rights, approval, credentials dan zero-new-spend.
+
+## Documentation starting points
+
+- [Documentation index](docs/README.md)
+- [Source of truth](docs/ABANGCOLEK-SOURCE-OF-TRUTH.md)
+- [Platform status](docs/ABANGCOLEK-PLATFORM-STATUS-2026-10-16.md)
+- [AI agent architecture](docs/AI-AGENT-ARCHITECTURE.md)
+- [Capability matrix](docs/handover/CAPABILITY-MATRIX.md)
+- [Platform recovery runbook](docs/runbooks/platform-recovery.md)
+- [JEV architecture and rules](JEV.md)
+- [Research index](reports/research/2026-10-02/README.md)
+
+## Contributing
+
+1. Cipta branch kerja daripada `main`.
+2. Kekalkan perubahan kecil dan boleh diaudit.
+3. Tambah atau kemas kini tests untuk behaviour baharu.
+4. Jalankan lint, platform tests dan build.
+5. Semak secrets, generated files dan database sebelum commit.
+6. Buka pull request dengan ringkasan, evidence dan risiko deployment.
+
+## License
+
+Status license dan hak penggunaan assets perlu disahkan oleh pemilik projek sebelum public redistribution. Brand assets dalam repository adalah untuk penggunaan ABANGCOLEK Platform sehingga dinyatakan sebaliknya.
