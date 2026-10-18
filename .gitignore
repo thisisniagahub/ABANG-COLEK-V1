@@ -29,3 +29,6 @@ firebase-applet-config.json
 
 # Local agent worktrees
 .kilo/
+
+# Generated browser profiles may contain private session material.
+.work/chrome-*-profile/
