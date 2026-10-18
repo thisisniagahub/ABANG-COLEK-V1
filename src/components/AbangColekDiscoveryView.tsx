@@ -78,7 +78,7 @@ import {
   WocsParsedCommand,
   WocsExecutionResult,
   PitchDeckSlide
-} from '@/services/abangcolekRepoData';
+} from '@/services/abangColekRepoData';
 import { SOCIAL_ACCOUNTS, OBSERVED_PRODUCT_SIGNALS, OBSERVED_CONTENT_PILLARS } from '@/data/abangcolekSocialSourceOfTruth';
 
 interface AbangColekDiscoveryViewProps {

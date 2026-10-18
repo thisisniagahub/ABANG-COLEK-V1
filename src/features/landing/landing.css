@@ -1,9 +1,14 @@
 .ac-landing{
-  --ac-bg:#f7f7f1;
-  --ac-card:#fff;
-  --ac-text:#202020;
-  --ac-muted:#66665e;
-  --ac-border:#dfdfd6;
+  --ac-brand-gold: #f2ae12;
+  --ac-brand-red: #dc1d3f;
+  --ac-brand-ink: #000000;
+  --ac-brand-white: #fffffd;
+  --ac-brand-leaf: #488420;
+  --ac-bg:var(--ac-brand-white);
+  --ac-card:var(--ac-brand-white);
+  --ac-text:var(--ac-brand-ink);
+  --ac-muted:#57534e;
+  --ac-border:#ded7c8;
   background:var(--ac-bg);
   color:var(--ac-text);
   font-family:'DM Sans',sans-serif;
@@ -11,17 +16,17 @@
   overflow:clip
 }
 .app-shell[data-theme=dark] .ac-landing{
-  --ac-bg:#171719;
-  --ac-card:#222225;
-  --ac-text:#f5f4f8;
-  --ac-muted:#b5b2c1;
-  --ac-border:#37363e
+  --ac-bg:#171614;
+  --ac-card:#24211b;
+  --ac-text:var(--ac-brand-white);
+  --ac-muted:#d1cabc;
+  --ac-border:#4a4438
 }
 .ac-landing *{
   box-sizing:border-box
 }
-.platform-app .ac-landing .ac-button { background:#cfff5e; color:#171c0b; border:1px solid transparent; border-radius:10px; }
-.platform-app .ac-landing .ac-button-dark { background:#222225; color:#fff; }
+.platform-app .ac-landing .ac-button { background:var(--ac-brand-gold); color:var(--ac-brand-ink); border:1px solid transparent; border-radius:10px; }
+.platform-app .ac-landing .ac-button-dark { background:var(--ac-brand-red); color:var(--ac-brand-white); }
 .platform-app .ac-landing .ac-button-outline { background:transparent; color:var(--ac-text); border-color:var(--ac-border); }
 .platform-app .ac-landing .ac-wordmark { background:transparent; border:0; padding:0; }
 .ac-wordmark > img { display:block; width:82px; height:58px; object-fit:contain; }
@@ -53,7 +58,7 @@
   font-weight:450
 }
 .ac-wordmark b{
-  color:#8c7dff;
+  color:var(--ac-brand-red);
   font-size:28px;
   margin-left:8px;
   line-height:1
@@ -78,8 +83,8 @@
   align-items:center;
   justify-content:center;
   gap:12px;
-  background:#cfff5e;
-  color:#171c0b;
+  background:var(--ac-brand-gold);
+  color:var(--ac-brand-ink);
   padding:13px 21px;
   border:1px solid transparent;
   border-radius:10px;
@@ -91,8 +96,8 @@
   max-width:100%
 }
 .ac-button-dark{
-  background:#222225;
-  color:#fff
+  background:var(--ac-brand-red);
+  color:var(--ac-brand-white)
 }
 .ac-button-outline{
   background:transparent;
@@ -131,7 +136,7 @@
   height:7px;
   width:7px;
   border-radius:50%;
-  background:#8c7dff;
+  background:var(--ac-brand-gold);
   flex-shrink:0
 }
 .ac-hero-copy{
@@ -149,7 +154,7 @@
   margin:0 0 28px
 }
 .ac-hero h1>span{
-  color:#7361df
+  color:var(--ac-brand-red)
 }
 .ac-hero-copy>p:not(.ac-eyebrow){
   font-size:15px;
@@ -175,7 +180,7 @@
 }
 .ac-hero-art{
   position:relative;
-  background:#8c7dff;
+  background:var(--ac-brand-gold);
   border-radius:28px;
   display:flex;
   align-items:center;
@@ -214,8 +219,8 @@
   display:flex;
   align-items:center;
   gap:24px;
-  background:#cfff5e;
-  color:#181d0e;
+  background:var(--ac-brand-gold);
+  color:var(--ac-brand-ink);
   border-radius:14px;
   padding:20px;
   z-index:2;
@@ -232,7 +237,7 @@
 .ac-art-caption{
   position:absolute;
   bottom:24px;
-  color:#171422;
+  color:var(--ac-brand-ink);
   font-size:9px;
   font-weight:700;
   text-transform:uppercase;
@@ -244,8 +249,8 @@
   align-items:center;
   justify-content:space-between;
   gap:30px;
-  background:#cfff5e;
-  color:#171c0b;
+  background:var(--ac-brand-gold);
+  color:var(--ac-brand-ink);
   padding:25px 52px;
   overflow:hidden;
   font-family:Outfit,sans-serif;
@@ -257,7 +262,7 @@
 .ac-marquee b{
   font-size:29px;
   line-height:1;
-  color:#6c58ca
+  color:var(--ac-brand-ink)
 }
 .ac-catalogue,.ac-how,.ac-faq,.ac-public-section{
   padding:90px 52px
@@ -302,8 +307,8 @@
 .ac-product-visual{
   position:relative;
   height:280px;
-  background:#e9ecd9;
-  color:#292e1e;
+  background:#fff4d6;
+  color:#29231a;
   display:flex;
   flex-direction:column;
   justify-content:center;
@@ -311,12 +316,12 @@
   gap:22px
 }
 .ac-product-color-1{
-  background:#ded9f5;
-  color:#30214c
+  background:#fce4e8;
+  color:#4b1c27
 }
 .ac-product-color-2{
-  background:#efddeb;
-  color:#452539
+  background:#fce4e8;
+  color:#4b1c27
 }
 .ac-product-visual>span{
   font-family:Outfit,sans-serif;
@@ -392,7 +397,7 @@
   text-align:center
 }
 .ac-catalogue-empty>svg{
-  color:#8c7dff;
+  color:var(--ac-brand-red);
   margin-bottom:20px
 }
 .ac-catalogue-empty h3{
@@ -410,19 +415,19 @@
   margin:0 0 25px
 }
 .ac-how{
-  background:#222225;
-  color:#f5f4f8;
+  background:var(--ac-brand-ink);
+  color:var(--ac-brand-white);
   border-radius:24px;
   margin:0 52px;
   padding:48px
 }
 .ac-how .ac-eyebrow,.ac-how .ac-section-heading>p{
-  color:#b5b2c1
+  color:#d7cfbf
 }
 .ac-how-symbol{
   font-size:90px;
   line-height:1;
-  color:#cfff5e;
+  color:var(--ac-brand-gold);
   font-family:Outfit,sans-serif
 }
 .ac-step-grid{
@@ -436,7 +441,7 @@
   padding-top:24px
 }
 .ac-step-grid svg{
-  color:#b6a8ff;
+  color:var(--ac-brand-gold);
   margin-bottom:25px
 }
 .ac-step-grid h3{
@@ -447,7 +452,7 @@
 .ac-step-grid p{
   font-size:12px;
   line-height:1.8;
-  color:#b5b2c1;
+  color:#d7cfbf;
   margin:0
 }
 .ac-dealer{
@@ -457,11 +462,11 @@
   padding:65px 52px;
   margin:80px 52px 0;
   border-radius:24px;
-  background:#d7c9ef;
-  color:#2b213d
+  background:#fff4d6;
+  color:#1c1811
 }
 .ac-dealer .ac-eyebrow{
-  color:#625371;
+  color:#53483b;
   margin-bottom:16px
 }
 .ac-dealer h2{
@@ -473,7 +478,7 @@
   margin:0 0 22px
 }
 .ac-dealer h2>span{
-  color:#6552ac
+  color:var(--ac-brand-red)
 }
 .ac-dealer>div>p:not(.ac-eyebrow){
   font-size:13px;
@@ -506,7 +511,7 @@
   font-size:10px!important;
   line-height:1.7!important;
   margin:0!important;
-  color:#625371
+  color:#53483b
 }
 .ac-faq{
   display:grid;
@@ -537,7 +542,7 @@
 }
 .ac-faq summary>span{
   font-size:22px;
-  color:#8c7dff
+  color:var(--ac-brand-red)
 }
 .ac-faq details[open] summary>span{
   transform:rotate(45deg)
@@ -568,7 +573,7 @@
   margin:0 0 40px
 }
 .ac-public-section h1 span{
-  color:#8c7dff
+  color:var(--ac-brand-red)
 }
 .ac-location-grid{
   display:grid;
@@ -583,7 +588,7 @@
   min-width:0
 }
 .ac-location-grid svg{
-  color:#8c7dff;
+  color:var(--ac-brand-red);
   margin-bottom:20px
 }
 .ac-location-grid h2{
@@ -627,7 +632,7 @@
   letter-spacing:-.7px
 }
 .ac-footer>div:first-child>strong>span{
-  color:#8c7dff;
+  color:var(--ac-brand-red);
   margin-left:8px
 }
 .ac-footer p,.ac-footer small{
@@ -669,13 +674,13 @@
 
 @media(hover:hover) and (pointer:fine){
   .ac-button:not(:disabled):hover{
-  box-shadow:0 6px 22px #22222516
+  box-shadow:0 6px 22px rgba(0,0,0,.08)
 }
 .ac-nav-links a:hover,.ac-footer button:hover{
-  color:#8c7dff
+  color:var(--ac-brand-red)
 }
 .ac-scroll-link:hover{
-  color:#8c7dff
+  color:var(--ac-brand-red)
 }
 
 }
