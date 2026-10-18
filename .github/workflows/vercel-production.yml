@@ -11,6 +11,9 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
@@ -20,7 +23,9 @@ jobs:
       - run: bun run lint
       - run: bun run test:platform
       - run: bun run build
+      - name: Report native Git deployment path
+        if: env.VERCEL_TOKEN == ''
+        run: echo "::notice::No optional VERCEL_TOKEN is configured. Validation ran above; production deployment is handled separately by the Vercel Git integration. Verify the deployment for this exact commit in Vercel."
       - name: Deploy to Vercel Production
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: npx vercel@latest deploy --prod --yes --project niaga-hub-pro --token "$VERCEL_TOKEN"
+        if: env.VERCEL_TOKEN != ''
+        run: npx vercel@59.1.3 deploy --prod --yes --scope niaga-hub-pro --project abang-colek-v1 --token "$VERCEL_TOKEN"

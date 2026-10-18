@@ -8,6 +8,7 @@ import { Empty, Panel, Refresh, ResourceState, Status } from './ui';
 
 export function DeveloperSettings({ onChanged }: { onChanged?: () => void }) {
   const health = useResource<RedactedHealth[]>('/health');
+  const database = !health.loading && !health.error ? health.data?.find(item => item.component === 'platform_database') : undefined;
 
   return (
     <div className="xp-developer-settings">
@@ -16,7 +17,7 @@ export function DeveloperSettings({ onChanged }: { onChanged?: () => void }) {
         <div>
           <p className="xp-eyebrow">Runtime Controls & Safe Diagnostics</p>
           <h2>Developer Configuration & Settings</h2>
-          <p>Kawalan runtime tempatan, mod pelepasan sistem (release mode), dan status integrasi penyedia tanpa pendedahan rahsia.</p>
+          <p>Kawalan runtime, mod pelepasan sistem (release mode), dan status integrasi penyedia tanpa pendedahan rahsia.</p>
         </div>
       </section>
 
@@ -30,11 +31,11 @@ export function DeveloperSettings({ onChanged }: { onChanged?: () => void }) {
           <div className="xp-setting-card">
             <div className="xp-setting-card-header">
               <Database size={20} />
-              <Status value="ready" />
+              <Status value={database?.status ?? 'unavailable'} />
             </div>
             <h3>Pangkalan Data Utama</h3>
-            <p>SQLite tempatan berautoriti di laluan runtime. Mod WAL aktif dengan transaksi atomik.</p>
-            <small>Laluan terlindung: <code>var/lib/platform/platform.sqlite</code></small>
+            <p>{!database ? 'Status pangkalan data belum dapat disahkan. Muat semula diagnostik.' : database.reasonCode === 'SUPABASE_SNAPSHOT' ? 'Snapshot Supabase berautoriti dengan commit revision atomik. SQLite sementara digunakan untuk setiap permintaan.' : 'SQLite tempatan berautoriti dengan transaksi atomik.'}</p>
+            <small>{database ? `Pemerhatian server: ${database.observedAt}` : 'Tiada pemerhatian server yang tersedia.'}</small>
           </div>
 
           <div className="xp-setting-card">

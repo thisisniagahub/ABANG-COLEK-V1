@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { supabase } from './supabaseClient';
+import { requireSupabaseClient, supabaseStatus } from './supabaseClient';
 
 export interface AgentTaskLog {
   id: string;
@@ -444,7 +444,8 @@ class SupabaseAgentPerformanceService {
     onInsert: (newLog: AgentTaskLog) => void,
     onStatusChange?: (status: string) => void
   ): () => void {
-    const channel = supabase
+    if (!supabaseStatus.available) { onStatusChange?.('UNAVAILABLE'); console.warn(supabaseStatus.message); return () => {}; }
+    const channel = requireSupabaseClient()
       .channel('tasks-realtime-channel')
       .on(
         'postgres_changes',
@@ -480,7 +481,7 @@ class SupabaseAgentPerformanceService {
       });
 
     return () => {
-      supabase.removeChannel(channel);
+      requireSupabaseClient().removeChannel(channel);
     };
   }
 
@@ -496,7 +497,7 @@ class SupabaseAgentPerformanceService {
     const startTime = Date.now();
     try {
       // First attempt querying `tasks` table
-      const { data: tasksData, error: tasksError } = await supabase
+      const { data: tasksData, error: tasksError } = await requireSupabaseClient()
         .from('tasks')
         .select('*')
         .order('created_at', { ascending: false });
@@ -514,7 +515,7 @@ class SupabaseAgentPerformanceService {
       }
 
       // Fallback query `agent_task_logs` table
-      const { data, error } = await supabase
+      const { data, error } = await requireSupabaseClient()
         .from('agent_task_logs')
         .select('*')
         .order('timestamp', { ascending: false });
@@ -580,12 +581,13 @@ class SupabaseAgentPerformanceService {
         created_at: timestamp
       };
 
-      await Promise.allSettled([
-        supabase.from('tasks').insert([taskRecord]),
-        supabase.from('agent_task_logs').upsert([newRecord])
+      const writes = await Promise.all([
+        requireSupabaseClient().from('tasks').insert([taskRecord]),
+        requireSupabaseClient().from('agent_task_logs').upsert([newRecord])
       ]);
+      if (writes.some(result => result.error)) throw new Error('Cloud telemetry write failed');
     } catch {
-      // Local fallback handled smoothly
+      console.warn('Cloud write tidak dapat disahkan; rekod setempat sahaja.');
     }
 
     this.logs.unshift(newRecord);

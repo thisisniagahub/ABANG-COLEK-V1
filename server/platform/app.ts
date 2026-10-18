@@ -10,7 +10,7 @@ import { Operations } from './operations';
 import { Flows } from './flows';
 import { Jobs } from '../automation/jobs';
 import { AutomationDefinitions } from '../automation/definitions';
-import { boundedBody, EvidenceFiles } from './evidenceFiles';
+import { boundedBody, EvidenceFiles, type EvidenceStorage } from './evidenceFiles';
 import { assessState } from './jev/assessment';
 import type { JevAssessment, JevPackId, JevState } from '../../shared/jev-contracts';
 import { generateLegacyContent } from './legacyAi';
@@ -28,13 +28,13 @@ import { SocialConnections } from './social';
 
 import { HermesAdapter, type AutomationOptions } from '../automation/adapters';
 
-export interface PlatformAppOptions { databasePath?:string; bootstrapToken?:string; origin?:string; allowedOrigins?:string[]; rateLimits?:{identityGlobal:number;identityAccount:number;actor:number}; automationOptions?:AutomationOptions; whatsappTransport?:WhatsAppTransport; log?:(entry:{requestId:string;code:string;status:number})=>void }
+export interface PlatformAppOptions { persistenceMode?:'local'|'supabase'; evidenceStorage?:EvidenceStorage; databasePath?:string; bootstrapToken?:string; origin?:string; allowedOrigins?:string[]; rateLimits?:{identityGlobal:number;identityAccount:number;actor:number}; automationOptions?:AutomationOptions; whatsappTransport?:WhatsAppTransport; log?:(entry:{requestId:string;code:string;status:number})=>void }
 const cookieClear='platform_session=; HttpOnly; SameSite=Strict; Path=/api/platform; Max-Age=0';
 export function createPlatformApp(options:PlatformAppOptions={}) {
   const store=new PlatformStore(options.databasePath??'var/lib/platform/platform.sqlite');
   const auth=new Auth(store,options.bootstrapToken),commerce=new Commerce(store,auth),work=new Work(store,auth,commerce);
   const dealers=new Dealers(store,auth,commerce),marketing=new Marketing(store,auth,commerce,work),operations=new Operations(store,auth,commerce,work);
-  const flows=new Flows(store,auth,commerce,work,dealers),jobs=new Jobs(store,auth,commerce,work),automationDefinitions=new AutomationDefinitions(store,auth),evidenceFiles=new EvidenceFiles(store,work,options.databasePath??'var/lib/platform/platform.sqlite');
+  const flows=new Flows(store,auth,commerce,work,dealers),jobs=new Jobs(store,auth,commerce,work),automationDefinitions=new AutomationDefinitions(store,auth),evidenceFiles=new EvidenceFiles(store,work,options.databasePath??'var/lib/platform/platform.sqlite',options.evidenceStorage);
   const runtimeControls=new RuntimeControlCommands(store,auth);
   const automation=new Automation(store,auth,commerce,work,marketing,options.automationOptions),jevEvaluations=new JevEvaluations(store,auth,commerce,work);
   const reports=new Reports(store,auth,commerce,work);
@@ -149,12 +149,12 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
       if(path==='/overview')return overview(actor);
       if(path==='/people'){auth.founder(actor);return store.db.query<{id:string;email:string;name:string},[]>('SELECT id,email,name FROM users ORDER BY created_at').all().map(u=>({...u,memberships:auth.memberships(u.id)}));}
       if(path==='/settings'){if(auth.has(actor,'founder'))return operations.settings();const s=operations.settings();return {...s,approvedPolicies:{paymentInstructions:s.approvedPolicies.paymentInstructions,contact:s.approvedPolicies.contact,locations:s.approvedPolicies.locations,...(actor.memberships.some(m=>m.dealerOrgId)?{dealer:s.approvedPolicies.dealer}:{})}};}
-      if(path==='/health'){if(!auth.has(actor,'founder')&&!auth.has(actor,'developer'))fail('FORBIDDEN',403);return [{component:'platform_database',status:'ready',observedAt:now(),reasonCode:'LOCAL_SQLITE'},{component:'hermes',status:options.automationOptions?.hermes?'ready':'unavailable',observedAt:now(),reasonCode:options.automationOptions?.hermes?'LOCAL_HERMES_TRANSPORT_ACTIVE':'ADAPTER_NOT_VERIFIED'},{component:'native_whatsapp',status:options.whatsappTransport?'ready':'unavailable',observedAt:now(),reasonCode:options.whatsappTransport?'WHATSAPP_TRANSPORT_ACTIVE':'FEATURE_DISABLED'},{component:'postiz',status:options.automationOptions?.postiz?'ready':'unavailable',observedAt:now(),reasonCode:options.automationOptions?.postiz?'LOCAL_POSTIZ_TRANSPORT_ACTIVE':'ADAPTER_NOT_VERIFIED'},{component:'agent_reach',status:options.automationOptions?.agentReach?'ready':'unavailable',observedAt:now(),reasonCode:options.automationOptions?.agentReach?'LOCAL_AGENT_REACH_TRANSPORT_ACTIVE':'ADAPTER_NOT_VERIFIED'}];}
+      if(path==='/health'){if(!auth.has(actor,'founder')&&!auth.has(actor,'developer'))fail('FORBIDDEN',403);return [{component:'platform_database',status:'ready',observedAt:now(),reasonCode:options.persistenceMode==='supabase'?'SUPABASE_SNAPSHOT':'LOCAL_SQLITE'},{component:'hermes',status:options.automationOptions?.hermes?'ready':'unavailable',observedAt:now(),reasonCode:options.automationOptions?.hermes?'LOCAL_HERMES_TRANSPORT_ACTIVE':'ADAPTER_NOT_VERIFIED'},{component:'native_whatsapp',status:options.whatsappTransport?'ready':'unavailable',observedAt:now(),reasonCode:options.whatsappTransport?'WHATSAPP_TRANSPORT_ACTIVE':'FEATURE_DISABLED'},{component:'postiz',status:options.automationOptions?.postiz?'ready':'unavailable',observedAt:now(),reasonCode:options.automationOptions?.postiz?'LOCAL_POSTIZ_TRANSPORT_ACTIVE':'ADAPTER_NOT_VERIFIED'},{component:'agent_reach',status:options.automationOptions?.agentReach?'ready':'unavailable',observedAt:now(),reasonCode:options.automationOptions?.agentReach?'LOCAL_AGENT_REACH_TRANSPORT_ACTIVE':'ADAPTER_NOT_VERIFIED'}];}
       if(path==='/onboarding/template'){auth.founder(actor);return {products:[],locations:[{id:'hq',name:'HQ / Pusat Operasi',address:''}],dealerTerms:{minimumQuantity:50,packMultiple:10,priceBasisPoints:7000,ownership:'owned',returnRules:'Tiada return bagi balang dibuka.',approved:false}};}
       if(path==='/migration/receipts'){auth.founder(actor);return store.all('migration_receipts');}
       if(path==='/pilots/workspace/grants')return store.all('workspace_grants').filter((g:any)=>g.userId===actor.user.id);
       if(path==='/pilots/bus-freight/routes')return VERIFIED_BUS_ROUTES;
-      if(path==='/pilots/bus-freight/shipments')return store.all('bus_shipments');
+      if(path==='/pilots/bus-freight/shipments'){auth.founder(actor);return store.all('bus_shipments');}
       if(path==='/pilots/founder-assistant/proposals'){auth.founder(actor);return store.all('founder_proposals');}
     }
     if(method==='POST') {
@@ -241,9 +241,9 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
       if(path==='/pilots/workspace/consent')return legacyPilots.grantWorkspaceConsent(actor.user.id,list(object(input).scopes) as any);
       if(path==='/pilots/workspace/revoke')return legacyPilots.revokeWorkspaceConsent(actor.user.id,text(object(input).grantId));
       if(path==='/pilots/workspace/execute'){const b=object(input);return legacyPilots.executeWorkspaceOperation(actor.user.id,oneOf(b.operation,['draft_doc','sync_calendar','export_sheet'] as const),text(b.entityId),b.payload as any);}
-      if(path==='/pilots/bus-freight/shipments')return legacyPilots.createBusFreightShipment(actor.user.id,object(input) as any);
-      if(segments[0]==='pilots'&&segments[1]==='bus-freight'&&segments[2]==='shipments'&&segments[3]&&command==='status')return legacyPilots.updateBusFreightStatus(actor.user.id,segments[3],oneOf(object(input).status,['booked','departed','received'] as const));
-      if(path==='/pilots/founder-assistant/propose')return legacyPilots.proposeFounderAction(actor.user.id,text(object(input).query));
+      if(path==='/pilots/bus-freight/shipments'){auth.founder(actor);return legacyPilots.createBusFreightShipment(actor.user.id,object(input) as any);}
+      if(segments[0]==='pilots'&&segments[1]==='bus-freight'&&segments[2]==='shipments'&&segments[3]&&segments[4]==='status'){auth.founder(actor);return legacyPilots.updateBusFreightStatus(actor.user.id,segments[3],oneOf(object(input).status,['booked','departed','received'] as const));}
+      if(path==='/pilots/founder-assistant/propose'){auth.founder(actor);return legacyPilots.proposeFounderAction(actor.user.id,text(object(input).query));}
       if(path==='/pilots/founder-assistant/review'){auth.founder(actor);const b=object(input);return legacyPilots.reviewFounderProposal(actor.user.id,text(b.proposalId),oneOf(b.decision,['approved','rejected'] as const));}
       if(path==='/pilots/founder-assistant/execute'){auth.founder(actor);return legacyPilots.executeFounderProposal(actor.user.id,text(object(input).proposalId));}
     }
@@ -257,6 +257,14 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
         const url=new URL(request.url),path=url.pathname.replace(/^\/api\/platform/,'');
         if(!url.pathname.startsWith('/api/platform/'))fail('NOT_FOUND',404);
         if(!['GET','POST'].includes(request.method))fail('METHOD_NOT_ALLOWED',405);
+        // Provider callbacks use their signature as authority, never browser cookies or CSRF.
+        if(request.method==='POST'&&path==='/whatsapp/webhook'){
+          store.rate('whatsapp-webhook',120);
+          if(!request.headers.get('content-type')?.includes('application/json'))fail('CONTENT_TYPE',415);
+          const bytes=await boundedBody(request,256*1024);
+          let rawBody:string;try{rawBody=new TextDecoder('utf-8',{fatal:true}).decode(bytes);}catch{fail('INVALID_JSON',400);}
+          return json({ok:true,data:store.atomic(()=>whatsapp.processWebhook(request.headers.get('x-hub-signature-256'),rawBody))});
+        }
         if(request.method==='POST'&&!allowedOrigins.includes(request.headers.get('origin')??''))fail('ORIGIN_DENIED',403,'Asal permintaan tidak dibenarkan.');
         if(request.method==='POST'&&path==='/evidence/upload'){const actor=auth.resolve(request);store.rate(`upload:${actor.user.id}`,12);auth.csrf(actor,request.headers.get('x-csrf-token'));if(runtimeControls.current().activeRelease==='platform-local-readonly-v1')fail('RELEASE_READ_ONLY',409);if(!request.headers.get('content-type')?.startsWith('multipart/form-data;'))fail('CONTENT_TYPE',415);return json({ok:true,data:await evidenceFiles.upload(actor,request)});}
         let input:unknown=undefined;
@@ -272,15 +280,10 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
           const mode = url.searchParams.get('hub.mode');
           const token = url.searchParams.get('hub.verify_token');
           const challenge = url.searchParams.get('hub.challenge');
-          const expectedToken = options.whatsappTransport?.webhookSecret ?? 'whatsapp-verify-token';
+          if(!options.whatsappTransport)fail('WHATSAPP_UNAVAILABLE',409);
+          const expectedToken = options.whatsappTransport.webhookSecret;
           const verified = whatsapp.verifyWebhook(mode, token, challenge, expectedToken);
           return new Response(verified, { status: 200, headers: { 'Content-Type': 'text/plain' } });
-        }
-        if(request.method==='POST'&&path==='/whatsapp/webhook'){
-          const signature = request.headers.get('x-hub-signature-256');
-          const rawBody = JSON.stringify(input);
-          const result = whatsapp.processWebhook(signature, rawBody);
-          return json({ ok: true, data: result });
         }
         if(request.method==='POST'&&['/auth/signup','/auth/login','/auth/bootstrap'].includes(path)) {
           store.rate('identity-global',options.rateLimits?.identityGlobal??30);const authInput=object(input);if(typeof authInput.email==='string')store.rate(`identity:${authInput.email.toLowerCase()}`,options.rateLimits?.identityAccount??6);
@@ -288,7 +291,7 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
           return json({ok:true,data:result.data},200,{'Set-Cookie':result.cookie+(url.protocol==='https:'?'; Secure':'')});
         }
         const actor=auth.resolve(request);store.rate(`actor:${actor.user.id}`,options.rateLimits?.actor??180);
-        if(request.method==='GET'&&/^\/evidence\/[^/]+\/file$/.test(path))return evidenceFiles.download(actor,path.split('/')[2],url);
+        if(request.method==='GET'&&/^\/evidence\/[^/]+\/file$/.test(path))return await evidenceFiles.download(actor,path.split('/')[2],url);
         if(request.method==='GET'&&/^\/exports\/[^/]+\/file$/.test(path))return await evidenceFiles.downloadExport(actor,path.split('/')[2],url);
         if(request.method==='POST')auth.csrf(actor,request.headers.get('x-csrf-token'));
         if(request.method==='POST'&&runtimeControls.current().activeRelease==='platform-local-readonly-v1'&&!['/runtime-controls','/auth/logout'].includes(path))fail('RELEASE_READ_ONLY',409,'Release semasa hanya membenarkan bacaan. Data kekal tersimpan.');

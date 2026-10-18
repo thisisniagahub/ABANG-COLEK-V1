@@ -1,6 +1,24 @@
 {
   "extends": "./tsconfig.json",
-  "compilerOptions": { "strict": true, "types": ["bun", "node"], "allowJs": false },
-  "include": ["server/**/*.ts", "shared/**/*.ts", "scripts/**/*.ts", "tests/platform/**/*.ts", "tests/jev/**/*.ts"],
-  "exclude": ["node_modules", "dist", "skills"]
+  "compilerOptions": {
+    "strict": true,
+    "types": [
+      "bun",
+      "node"
+    ],
+    "allowJs": false
+  },
+  "include": [
+    "server/**/*.ts",
+    "shared/**/*.ts",
+    "scripts/**/*.ts",
+    "tests/platform/**/*.ts",
+    "tests/jev/**/*.ts",
+    "api/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "skills"
+  ]
 }

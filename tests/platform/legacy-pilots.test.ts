@@ -19,16 +19,13 @@ describe('D05: Legacy Pilots Service (Google Workspace, Bus Freight, Founder Ass
       }).toThrow();
     });
 
-    it('grants consent and executes scoped operations with audit receipt', () => {
+    it('records consent but refuses completion without a real provider', () => {
       const grant = pilots.grantWorkspaceConsent(actorId, ['docs.draft', 'calendar.sync']);
       expect(grant.status).toBe('active');
       expect(grant.scopes).toContain('docs.draft');
 
-      const receipt = pilots.executeWorkspaceOperation(actorId, 'draft_doc', 'doc-101');
-      expect(receipt.status).toBe('completed');
-      expect(receipt.operation).toBe('draft_doc');
-      expect(receipt.grantId).toBe(grant.id);
-      expect(receipt.actionUrl).toContain('https://workspace.google.com/preview/');
+      expect(() => pilots.executeWorkspaceOperation(actorId, 'draft_doc', 'doc-101')).toThrow('Integrasi Google Workspace belum tersedia.');
+      expect(store.all('workspace_receipts')).toEqual([]);
 
       // Attempting an unscoped operation throws CONSENT_REQUIRED
       expect(() => {

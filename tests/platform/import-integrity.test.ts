@@ -1,0 +1,14 @@
+import { describe, test, expect } from 'bun:test';
+import { PlatformStore } from '../../server/platform/store';
+import { Auth, type Principal } from '../../server/platform/auth';
+import { Commerce } from '../../server/platform/commerce';
+import { BusinessOnboarding } from '../../server/platform/onboarding';
+import { LegacyMigrationReconciler } from '../../server/platform/migration/migrationReconciler';
+const owner: Principal = { user: { id: 'owner', email: 'owner@example.test', name: 'Owner' }, memberships: [{ id: 'm', userId: 'owner', workspaceId: 'business', role: 'founder', outletIds: ['hq'], status: 'active', version: 1 }], sessionHash: '', csrfHash: '' };
+const product = { sku: 'COLEK', name: 'Colek', packSize: 1, unitName: 'jar', priceSen: 1000, description: 'Colek original', lifecycle: 'published' as const, ownerApproved: true, unverifiedFields: [] };
+function setup(){const store=new PlatformStore(':memory:');const auth=new Auth(store);return {store,onboarding:new BusinessOnboarding(store,auth,new Commerce(store,auth)),migration:new LegacyMigrationReconciler(store,auth)};}
+describe('business import integrity',()=>{
+ test('onboarding rejects fractions and strings without mutating inventory',()=>{const {store,onboarding}=setup();try{expect(()=>onboarding.commit(owner,{} as never)).toThrow();for(const value of [1.5,'1200',NaN,Infinity])expect(()=>onboarding.commit(owner,{products:[{...product,priceSen:value as number}]})).toThrow();expect(store.all('catalogue')).toEqual([]);}finally{store.close();}});
+ test('packet retry cannot inflate opening stock or overwrite an existing SKU',()=>{const {store,onboarding}=setup();try{const packet={products:[product],locations:[{id:'hq',name:'HQ',address:'HQ address',openingStockQuantity:10}]};const first=onboarding.commit(owner,packet);expect(onboarding.commit(owner,packet)).toEqual(first);expect(onboarding.commit(owner,{locations:packet.locations,products:packet.products})).toEqual(first);expect(store.all<{quantity:number}>('lots').reduce((sum,lot)=>sum+lot.quantity,0)).toBe(10);expect(()=>onboarding.commit(owner,{products:[{...product,priceSen:2000}]})).toThrow();expect(store.all<{priceSen:number}>('catalogue')[0].priceSen).toBe(1000);}finally{store.close();}});
+ test('migration rollback preserves changed and linked business records',()=>{const {store,migration}=setup();try{const receipt=migration.executeImport(owner,[{id:'source',order_id:'order',customer_name:'Customer',city:'HQ',items:'Colek (1)',amount:10,status:'Processing',created_at:'2026-10-01T00:00:00Z'}]);const order=store.require<{id:string;revision:number}>('orders',receipt.importedOrderIds[0]);store.save('orders',{...order,revision:2});expect(()=>migration.rollback(owner,receipt.id)).toThrow();store.save('orders',order);store.save('cases',{id:'case',orderId:order.id});expect(()=>migration.rollback(owner,receipt.id)).toThrow();expect(store.get('orders',order.id)).not.toBeNull();}finally{store.close();}});
+});

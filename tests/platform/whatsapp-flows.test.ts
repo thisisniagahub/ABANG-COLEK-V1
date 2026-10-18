@@ -278,3 +278,15 @@ describe('E04: Native WhatsApp & Web-Guided Flows Parity', () => {
     cleanup(testDb);
   });
 });
+
+ test('webhook verifies the original signed bytes without browser Origin', async () => {
+   const { app, testDb, transport } = await createTestContext('raw-webhook');
+   try {
+     const raw = '{ "entry": [] }\n';
+     const signature = 'sha256=' + createHmac('sha256', transport!.webhookSecret).update(raw).digest('hex');
+     const response = await app.fetch(new Request('http://localhost:3010/api/platform/whatsapp/webhook', { method: 'POST', headers: { 'content-type': 'application/json', 'x-hub-signature-256': signature }, body: raw }));
+     expect(response.status).toBe(200);
+     const invalid = await app.fetch(new Request('http://localhost:3010/api/platform/whatsapp/webhook', { method: 'POST', headers: { 'content-type': 'application/json', 'x-hub-signature-256': 'wrong' }, body: raw }));
+     expect(invalid.status).toBe(403);
+   } finally { app.close(); cleanup(testDb); }
+ });

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { supabase, SUPABASE_CONFIG } from './supabaseClient';
+import { requireSupabaseClient, supabaseStatus, SUPABASE_CONFIG } from './supabaseClient';
 import { BusConsignment } from './busFreightService';
 
 export interface LatLng {
@@ -485,7 +485,7 @@ class SupabaseShipmentsService {
   }> {
     const startTime = Date.now();
     try {
-      const { data, error } = await supabase
+      const { data, error } = await requireSupabaseClient()
         .from('shipments')
         .select('*')
         .order('progress_pct', { ascending: false });
@@ -563,7 +563,8 @@ class SupabaseShipmentsService {
    * Subscribe to real-time updates on `shipments` table via Supabase Channels
    */
   public subscribeToRealtimeShipments(onUpdate: (shipments: ShipmentRecord[]) => void): () => void {
-    const channel = supabase
+    if (!supabaseStatus.available) { console.warn(supabaseStatus.message); return () => {}; }
+    const channel = requireSupabaseClient()
       .channel('public:shipments-live-gps')
       .on(
         'postgres_changes',
@@ -576,7 +577,7 @@ class SupabaseShipmentsService {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      requireSupabaseClient().removeChannel(channel);
     };
   }
 
@@ -712,7 +713,7 @@ class SupabaseShipmentsService {
 
     // Upsert into Supabase `shipments` table
     try {
-      await supabase.from('shipments').upsert({
+      const result = await requireSupabaseClient().from('shipments').upsert({
         id: newRecord.id,
         consignment_id: newRecord.consignment_id,
         company_name: newRecord.company_name,
@@ -741,8 +742,9 @@ class SupabaseShipmentsService {
         eta_minutes: newRecord.eta_minutes,
         updated_at: newRecord.updated_at
       });
+      if (result.error) throw result.error;
     } catch {
-      // Local fallback handled smoothly
+      console.warn('Cloud write tidak dapat disahkan; rekod setempat sahaja.');
     }
 
     this.localShipments.unshift(newRecord);

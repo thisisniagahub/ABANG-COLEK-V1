@@ -4,7 +4,7 @@
  */
 
 import { pluginManager } from './pluginService';
-import { supabase, SUPABASE_CONFIG, checkSupabaseConnection } from './supabaseClient';
+import { requireSupabaseClient } from './supabaseClient';
 import { triggerVercelProductionDeploy, VERCEL_CONFIG } from './vercelDeploy';
 import { 
   busFreightManager, 
@@ -582,54 +582,18 @@ export async function executeSupabaseQuery(args: {
   const startTime = Date.now();
 
   try {
-    const health = await checkSupabaseConnection();
-    const { data, error, count } = await supabase.from(table).select('*', { count: 'exact' }).limit(10);
-    const executionTimeMs = Date.now() - startTime;
-
-    if (!error && data && data.length > 0) {
-      return {
-        success: true,
-        data: {
-          table,
-          query,
-          rowCount: count ?? data.length,
-          executionTimeMs,
-          rlsEnforced: true,
-          rows: data
-        },
-        message: `Query live ke pangkalan data Supabase Cloud (${SUPABASE_CONFIG.projectRef}) berjaya dalam ${executionTimeMs}ms.`
-      };
-    }
-
+    const { data, error, count } = await requireSupabaseClient().from(table).select('*', { count: 'exact' }).limit(10);
+    if (error || !Array.isArray(data)) throw new Error('Cloud query failed');
     return {
       success: true,
-      data: {
-        table,
-        query,
-        rowCount: 12,
-        executionTimeMs: Math.max(executionTimeMs, 19),
-        rlsEnforced: true,
-        rows: [
-          { project: SUPABASE_CONFIG.projectRef, host: SUPABASE_CONFIG.dbHost, status: 'CONNECTED', cloud_response: health.message },
-          { table: 'orders', total_synced: 12, total_sales_myr: 4953.00, rls: 'ACTIVE' },
-          { table: 'jev_audit_logs', status: 'INVARIANT_PROTECTED', mode: 'UNDETERMINED_ON_LEAKAGE' }
-        ]
-      },
-      message: `Pangkalan data Supabase (${SUPABASE_CONFIG.projectRef}) bersambung lancar (${Math.max(executionTimeMs, 19)}ms). Status: LIVE.`
+      data: { table, query, rowCount: count ?? data.length, executionTimeMs: Date.now() - startTime, rlsEnforced: true, rows: data },
+      message: 'Query Supabase berjaya disahkan.'
     };
-  } catch (err: any) {
-    const executionTimeMs = Date.now() - startTime;
+  } catch {
     return {
-      success: true,
-      data: {
-        table,
-        query,
-        rowCount: 1,
-        executionTimeMs,
-        rlsEnforced: true,
-        rows: [{ project: SUPABASE_CONFIG.projectRef, host: SUPABASE_CONFIG.dbHost, status: 'ONLINE' }]
-      },
-      message: `Supabase Cloud (${SUPABASE_CONFIG.projectRef}) responsif.`
+      success: false,
+      data: { table, query, rowCount: 0, executionTimeMs: Date.now() - startTime, rlsEnforced: true, rows: [] },
+      message: 'Query cloud tidak dapat disahkan. Semak konfigurasi, akses dan sambungan Supabase.'
     };
   }
 }

@@ -10,11 +10,13 @@ async function openMobileNavigation(page: Page) {
   return drawer;
 }
 
-test('Founder navigation groups eighteen destinations and marks the current parent on deep URLs', async ({ page }) => {
+test('Founder navigation groups twenty destinations and marks the current parent on deep URLs', async ({ page }) => {
   await login(page, 'founder');
   const navigation = page.getByRole('navigation', { name: 'Menu Founder workspace', exact: true });
   for (const name of founderGroups) await expect(navigation.getByRole('heading', { name, exact: true })).toBeVisible();
-  await expect(navigation.getByRole('link')).toHaveCount(18);
+  await expect(navigation.getByRole('link')).toHaveCount(20);
+  await expect(navigation.getByRole('link', { name: 'Tetapan', exact: true })).toBeVisible();
+  await expect(navigation.getByRole('link', { name: 'Workspace integrasi', exact: true })).toBeVisible();
   await expect(navigation.locator('[aria-current="page"]')).toHaveAttribute('href', '/founder/overview');
   await page.goto('/founder/orders/QA-navigation-missing');
   await expect(navigation.locator('[aria-current="page"]')).toHaveCount(1);
@@ -82,7 +84,8 @@ for (const theme of ['dark', 'light'] as const) {
     const drawer = await openMobileNavigation(page);
     const sizes = await drawer.locator('a[href],button').evaluateAll(elements => elements.map(element => {
       const rect = element.getBoundingClientRect();
-      return { width: rect.width, height: rect.height };
+      // Translated drawer coordinates can differ by a few floating-point ulps.
+      return { width: Math.round(rect.width * 100) / 100, height: Math.round(rect.height * 100) / 100 };
     }));
     expect(sizes.every(size => size.width >= 44 && size.height >= 44)).toBe(true);
     for (const name of founderGroups) await expect(drawer.getByRole('heading', { name, exact: true })).toBeAttached();

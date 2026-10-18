@@ -23,6 +23,7 @@ export interface MigrationReceipt {
   rejectedCount: number;
   totalValueSen: number;
   importedOrderIds: string[];
+  importedOrderHashes?: Record<string,string>;
   sourceChecksum: string;
   status: 'committed' | 'rolled_back';
   createdAt: string;
@@ -120,7 +121,7 @@ export class LegacyMigrationReconciler {
         }
       }
 
-      const receiptId = `MIG-REC-${Date.now()}`;
+      const receiptId = `MIG-REC-${crypto.randomUUID()}`;
       createdReceipt = {
         id: receiptId,
         actorId: actor.user.id,
@@ -129,6 +130,7 @@ export class LegacyMigrationReconciler {
         rejectedCount: report.rejectedCount,
         totalValueSen,
         importedOrderIds,
+        importedOrderHashes:Object.fromEntries(importedOrderIds.map(orderId=>[orderId,createHash('sha256').update(JSON.stringify(this.store.require('orders',orderId))).digest('hex')])),
         sourceChecksum: report.sourceChecksum,
         status: 'committed',
         createdAt: now(),
@@ -151,7 +153,17 @@ export class LegacyMigrationReconciler {
 
     this.store.atomic(() => {
       for (const orderId of receipt.importedOrderIds) {
-        // Delete only orders that belong to this migration receipt
+        const order=this.store.get<OrderRecord>('orders',orderId);
+        const expected=receipt.importedOrderHashes?.[orderId];
+        // Old receipts lack provenance hashes and cannot prove deletion is safe.
+        if(!order||!expected||createHash('sha256').update(JSON.stringify(order)).digest('hex')!==expected)fail('MIGRATION_ROLLBACK_SOURCE_CHANGED',409,'Rekod migrasi telah berubah. Rollback automatik tidak selamat.');
+        const linked=this.store.db.query<{data:string},[]>('SELECT data FROM records').all().some(row=>{
+          const record=JSON.parse(row.data) as Record<string,unknown>;
+          if(record.id===receipt.id||record.id===orderId)return false;
+          const contains=(value:unknown):boolean=>value===orderId||Array.isArray(value)&&value.some(contains)||!!value&&typeof value==='object'&&Object.values(value).some(contains);
+          return contains(record);
+        });
+        if(linked)fail('MIGRATION_ROLLBACK_HAS_DEPENDENCIES',409,'Rekod mempunyai rujukan operasi. Selesaikan penyesuaian secara manual.');
         this.store.delete('orders', orderId);
       }
 

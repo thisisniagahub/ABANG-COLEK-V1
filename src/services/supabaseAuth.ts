@@ -4,8 +4,8 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { User, Session, AuthError } from '@supabase/supabase-js';
-import { supabase } from './supabaseClient';
+import { User, Session, AuthError, AuthUnknownError } from '@supabase/supabase-js';
+import { requireSupabaseClient, supabaseStatus } from './supabaseClient';
 
 export interface SupabaseAuthState {
   user: User | null;
@@ -20,6 +20,11 @@ export interface SupabaseAuthState {
   quickStaffSignIn: (role?: 'hq_admin' | 'stockist_kt' | 'crew_toppen') => Promise<void>;
 }
 
+async function safeAuth<T extends { error: AuthError | null }>(operation: () => Promise<T>): Promise<T | { data: { user: null; session: null }; error: AuthError }> {
+  try { return await operation(); }
+  catch (reason) { return { data: { user: null, session: null }, error: new AuthUnknownError('Sambungan cloud tidak tersedia. Cuba semula atau hubungi pentadbir.', reason) }; }
+}
+
 export function useSupabaseAuth(): SupabaseAuthState {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -29,8 +34,11 @@ export function useSupabaseAuth(): SupabaseAuthState {
   useEffect(() => {
     let mounted = true;
 
+    if (!supabaseStatus.available) {
+      setError(supabaseStatus.message); setLoading(false); return;
+    }
     // 1. Get initial session
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
+    requireSupabaseClient().auth.getSession().then(({ data: { session }, error }) => {
       if (!mounted) return;
       if (error) {
         setError(error.message);
@@ -46,7 +54,7 @@ export function useSupabaseAuth(): SupabaseAuthState {
     });
 
     // 2. Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    const { data: { subscription } } = requireSupabaseClient().auth.onAuthStateChange(
       (_event, currentSession) => {
         if (!mounted) return;
         setSession(currentSession);
@@ -65,7 +73,7 @@ export function useSupabaseAuth(): SupabaseAuthState {
   const signInWithEmail = useCallback(async (email: string, password: string) => {
     setLoading(true);
     setError(null);
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await safeAuth(() => requireSupabaseClient().auth.signInWithPassword({ email, password }));
     if (error) {
       setError(error.message);
     } else {
@@ -79,7 +87,7 @@ export function useSupabaseAuth(): SupabaseAuthState {
   const signUpWithEmail = useCallback(async (email: string, password: string) => {
     setLoading(true);
     setError(null);
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await safeAuth(() => requireSupabaseClient().auth.signUp({ email, password }));
     if (error) {
       setError(error.message);
     } else {
@@ -93,7 +101,7 @@ export function useSupabaseAuth(): SupabaseAuthState {
   const signInWithOtp = useCallback(async (email: string) => {
     setLoading(true);
     setError(null);
-    const { error } = await supabase.auth.signInWithOtp({ email });
+    const { error } = await safeAuth(() => requireSupabaseClient().auth.signInWithOtp({ email }));
     if (error) setError(error.message);
     setLoading(false);
     return { error };
@@ -101,7 +109,7 @@ export function useSupabaseAuth(): SupabaseAuthState {
 
   const signOut = useCallback(async () => {
     setLoading(true);
-    const { error } = await supabase.auth.signOut();
+    const { error } = await safeAuth(() => requireSupabaseClient().auth.signOut());
     if (error) {
       setError(error.message);
     } else {
@@ -121,10 +129,10 @@ export function useSupabaseAuth(): SupabaseAuthState {
   const signInWithGoogle = useCallback(async () => {
     setLoading(true);
     setError(null);
-    const { error } = await supabase.auth.signInWithOAuth({
+    const { error } = await safeAuth(() => requireSupabaseClient().auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: `${window.location.origin}/login` },
-    });
+    }));
     if (error) setError(error.message);
     setLoading(false);
     return { error };

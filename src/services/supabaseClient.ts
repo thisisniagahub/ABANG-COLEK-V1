@@ -4,7 +4,7 @@
  * Host: db.yeszjvcnjxumujxinahz.supabase.co
  */
 
-import { createClient } from '@supabase/supabase-js';
+import { initializeSupabase, CLOUD_UNAVAILABLE_MESSAGE } from './supabaseConfiguration';
 
 export const SUPABASE_CONFIG = {
   url: import.meta.env.VITE_SUPABASE_URL || 'https://yeszjvcnjxumujxinahz.supabase.co',
@@ -13,13 +13,13 @@ export const SUPABASE_CONFIG = {
   dbHost: 'db.yeszjvcnjxumujxinahz.supabase.co:5432',
 };
 
-// Initialize Supabase Client
-export const supabase = createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.publishableKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-  },
-});
+const initialized = initializeSupabase(SUPABASE_CONFIG.url, SUPABASE_CONFIG.publishableKey);
+export const supabase = initialized.client;
+export const supabaseStatus = initialized.status;
+export function requireSupabaseClient(): NonNullable<typeof supabase> {
+  if (!supabase) throw new Error(CLOUD_UNAVAILABLE_MESSAGE);
+  return supabase;
+}
 
 export interface SupabaseHealthCheckResult {
   isConnected: boolean;
@@ -38,7 +38,7 @@ export async function checkSupabaseConnection(): Promise<SupabaseHealthCheckResu
   const startTime = Date.now();
   try {
     // Attempt a light ping by querying auth settings or public schema
-    const { data: _data, error } = await supabase.from('orders').select('count', { count: 'exact', head: true });
+    const { data: _data, error } = await requireSupabaseClient().from('orders').select('count', { count: 'exact', head: true });
     const latencyMs = Date.now() - startTime;
 
     if (error && error.code !== 'PGRST116' && !error.message.includes('relation "public.orders" does not exist')) {
@@ -82,58 +82,3 @@ export async function checkSupabaseConnection(): Promise<SupabaseHealthCheckResu
     };
   }
 }
-
-/**
- * SQL Schema definition for Abang Colek OS
- * Can be run in Supabase SQL Editor if tables are not yet created
- */
-export const ABANGCOLEK_SQL_SCHEMA = `
--- ================================================================
--- ABANGCOLEK-OS POSTGRESQL SCHEMA (Supabase Project: bktksvhcgszaoqkdyhil)
--- ================================================================
-
--- 1. Jadual Pesanan (Orders)
-CREATE TABLE IF NOT EXISTS public.orders (
-  id VARCHAR(64) PRIMARY KEY,
-  customer_name VARCHAR(255) NOT NULL,
-  phone VARCHAR(50),
-  location VARCHAR(100) NOT NULL,
-  status VARCHAR(50) NOT NULL DEFAULT 'completed',
-  total_amount NUMERIC(10, 2) NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
-  items JSONB NOT NULL DEFAULT '[]'::jsonb
-);
-
--- 2. Jadual Inventori Botol (Inventory)
-CREATE TABLE IF NOT EXISTS public.inventory (
-  id VARCHAR(64) PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
-  sku VARCHAR(100) UNIQUE NOT NULL,
-  stock INT NOT NULL DEFAULT 0,
-  min_alert INT NOT NULL DEFAULT 10,
-  price NUMERIC(10, 2) NOT NULL,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
--- 3. Jadual Log & Invarian JEV (Audit Logs)
-CREATE TABLE IF NOT EXISTS public.jev_audit_logs (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  brand VARCHAR(50) NOT NULL,
-  issue_class VARCHAR(100) NOT NULL,
-  root_cause VARCHAR(100) NOT NULL,
-  confidence_score NUMERIC(4, 2),
-  details TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
--- Enable Row Level Security (RLS)
-ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.inventory ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.jev_audit_logs ENABLE ROW LEVEL SECURITY;
-
--- Allow read access for authenticated and anon clients with publishable key
-CREATE POLICY "Allow public read orders" ON public.orders FOR SELECT USING (true);
-CREATE POLICY "Allow public insert orders" ON public.orders FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public read inventory" ON public.inventory FOR SELECT USING (true);
-CREATE POLICY "Allow public read jev_audit_logs" ON public.jev_audit_logs FOR SELECT USING (true);
-`;

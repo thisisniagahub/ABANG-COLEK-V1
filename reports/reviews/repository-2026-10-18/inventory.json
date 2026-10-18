@@ -1,0 +1,4879 @@
+{
+  "generatedAt": "2026-10-18T12:18:03.019Z",
+  "files": [
+    {
+      "path": ".env.example",
+      "status": "present",
+      "bytes": 778,
+      "kind": "text",
+      "sha256": "059922c2b07ab3ea97fc3a6589f098256fa3a877e31cf923f2dbd1f6270f4409"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "status": "present",
+      "bytes": 831,
+      "kind": "text",
+      "sha256": "045645fef0bd4fb83cc21e3930dc17f94e2f3318f1d46214d86d41bb06413c4c"
+    },
+    {
+      "path": ".github/workflows/vercel-production.yml",
+      "status": "present",
+      "bytes": 995,
+      "kind": "text",
+      "sha256": "cfb74d18f43b82dd95da2453ca99dc3237dc622ecfc9f90ca7dab71ed6b51e72"
+    },
+    {
+      "path": ".gitignore",
+      "status": "present",
+      "bytes": 458,
+      "kind": "text",
+      "sha256": "29c0cb360864ce801e86553c5b6a7ca6d45139201932820edc9336453bcd1e87"
+    },
+    {
+      "path": ".manus/mcp-results/mcp-js-01e21954f2fb917deb6b7670420e781e.json",
+      "status": "missing-in-worktree"
+    },
+    {
+      "path": ".manus/mcp-results/mcp-js-0406fb354eb0db6b26f9a8a92f0b4f1f.json",
+      "status": "missing-in-worktree"
+    },
+    {
+      "path": ".manus/mcp-results/mcp-js-21d7ae05946b32a7d2153c7598d98cd9.json",
+      "status": "missing-in-worktree"
+    },
+    {
+      "path": ".manus/mcp-results/mcp-js-2d8d03f577c35e1cd84f002e980576a3.json",
+      "status": "missing-in-worktree"
+    },
+    {
+      "path": ".manus/mcp-results/mcp-js-4504cded387e94ce040e82ef3f4dec53.json",
+      "status": "missing-in-worktree"
+    },
+    {
+      "path": ".manus/mcp-results/mcp-js-53584ab1886d89e7906c1b74a07c376a.json",
+      "status": "missing-in-worktree"
+    },
+    {
+      "path": ".manus/mcp-results/mcp-js-56679545793147331b32bac1034cc41e.json",
+      "status": "missing-in-worktree"
+    },
+    {
+      "path": ".manus/mcp-results/mcp-js-8a7b56c7e2a93a3f4b7af25ebfa68276.json",
+      "status": "missing-in-worktree"
+    },
+    {
+      "path": ".manus/mcp-results/mcp-js-ba69d580fb5607ae1da8527ebe6d4702.json",
+      "status": "missing-in-worktree"
+    },
+    {
+      "path": ".manus/mcp-results/mcp-js-bd6f6c5c2391a1cc94cba23a653e570e.json",
+      "status": "missing-in-worktree"
+    },
+    {
+      "path": ".manus/mcp-results/mcp-js-c44a3b80e913b25e01f61815fee18e35.json",
+      "status": "missing-in-worktree"
+    },
+    {
+      "path": ".manus/mcp-results/mcp-js-c60ab0e7bdd08cf47ab0d25e75963f1e.json",
+      "status": "missing-in-worktree"
+    },
+    {
+      "path": ".manus/mcp-results/mcp-js-ccbce37333d15938efd1880c40ddb6a5.json",
+      "status": "missing-in-worktree"
+    },
+    {
+      "path": ".manus/mcp-results/mcp-js-cdcfdf7f1db99f8e61c4ec8527d33b28.json",
+      "status": "missing-in-worktree"
+    },
+    {
+      "path": ".manus/mcp-results/mcp-js-e81c141e4d27fc7dfe14083877360674.json",
+      "status": "missing-in-worktree"
+    },
+    {
+      "path": ".manus/mcp-results/mcp-js-f0b004ba781e4490e39a678ee2bf3ddb.json",
+      "status": "missing-in-worktree"
+    },
+    {
+      "path": ".manus/mcp-results/mcp-run-b5b1a8c9d05b7c81d64b773e82d3a320.json",
+      "status": "missing-in-worktree"
+    },
+    {
+      "path": ".work/brand-guidelines-visual.html",
+      "status": "present",
+      "bytes": 12172,
+      "kind": "text",
+      "sha256": "90a6527d0e55eefbe52528d9c5e0fdcfe0a5bd1626ee8fdba38c2e48171dbcb1"
+    },
+    {
+      "path": ".work/migration/checkpoint-20261016-190728.json",
+      "status": "present",
+      "bytes": 7599,
+      "kind": "text",
+      "sha256": "0c42d1972f78abce072b67fac61243ff73344e7d619bcd4fb00be6dae36cece3"
+    },
+    {
+      "path": ".work/scripts/quarantine_mixed_data.ps1",
+      "status": "present",
+      "bytes": 2740,
+      "kind": "text",
+      "sha256": "b4c794900815a000a8dcf5a54fb5026759ad4c1ee63e8bdd5fcdf866fd66c823"
+    },
+    {
+      "path": ".work/scripts/quarantine_mixed_data.py",
+      "status": "present",
+      "bytes": 2794,
+      "kind": "text",
+      "sha256": "699c14b6c1399e2c55d20a8cadcf1b3e3e9065ff1fa99f0026dd1bd2f09445f7"
+    },
+    {
+      "path": ".work/scripts/quarantine_remaining_preset_data.ps1",
+      "status": "present",
+      "bytes": 5540,
+      "kind": "text",
+      "sha256": "6d003c66e972d222fc74fdd80ec3eb17cf0de8e8738f69c3bddeb62a23b74793"
+    },
+    {
+      "path": ".work/scripts/quarantine_remaining_preset_data.py",
+      "status": "present",
+      "bytes": 6051,
+      "kind": "text",
+      "sha256": "818d0187523bfe48ba04911a29c9490bd5e521569ad1d4fcdcf10aa2f777f9bb"
+    },
+    {
+      "path": ".work/scripts/repair_social_ui.ps1",
+      "status": "present",
+      "bytes": 7468,
+      "kind": "text",
+      "sha256": "ffb0a9599fc7ea0dce25c1e1991109ecd8ec6e872ad763ef700bfc97b710380c"
+    },
+    {
+      "path": ".work/scripts/replace_preset_blocks.ps1",
+      "status": "present",
+      "bytes": 5562,
+      "kind": "text",
+      "sha256": "a909838d34426fb5c46bae736540c6044d7543ffb9b2764f0c82f1fe9c66776d"
+    },
+    {
+      "path": ".work/scripts/replace_preset_blocks.py",
+      "status": "present",
+      "bytes": 5319,
+      "kind": "text",
+      "sha256": "6b397cd82269187c8745e619c241207af52482c9212c3ef635cf62de1d93fc87"
+    },
+    {
+      "path": "JEV.md",
+      "status": "present",
+      "bytes": 11804,
+      "kind": "text",
+      "sha256": "27e92d4a2a1d11b9abb0b4a3e8ba07c405262de5e91480ab7a0095cc4d7ea140"
+    },
+    {
+      "path": "README.md",
+      "status": "present",
+      "bytes": 8069,
+      "kind": "text",
+      "sha256": "6efa54c807c00b8679753410749e68c6d3252a90029875a2c65c594727a2d57e"
+    },
+    {
+      "path": "REVIEW-2026-10-16.md",
+      "status": "present",
+      "bytes": 4327,
+      "kind": "text",
+      "sha256": "393449cc83bff2c83a8d0c41105f477be32d1a8cdd8603c8edf98fe8b162f581"
+    },
+    {
+      "path": "api/platform.ts",
+      "status": "present",
+      "bytes": 3924,
+      "kind": "text",
+      "sha256": "3144406b632ecc8b927ebf94cc166ad5af7bb3c7ef685188b1a4b64f832b9537"
+    },
+    {
+      "path": "api/platform/[...path].ts",
+      "status": "present",
+      "bytes": 132,
+      "kind": "text",
+      "sha256": "0ea12b5af7d9dc825a9205d64a0807321252267cb5d73579f117de7fbfbf39aa"
+    },
+    {
+      "path": "bun.lock",
+      "status": "present",
+      "bytes": 105661,
+      "kind": "text",
+      "sha256": "79c1531d3f4b278d8aef8952bdeb570bf06ad8df5dc85903f825e63e1850336c"
+    },
+    {
+      "path": "docs/ABANGCOLEK-PLATFORM-ARCHITECTURE.md",
+      "status": "present",
+      "bytes": 2736,
+      "kind": "text",
+      "sha256": "faafda8b456badd4f936766c3d1390e6097556b97ae25fb95687fa022903598a"
+    },
+    {
+      "path": "docs/ABANGCOLEK-PLATFORM-STATUS-2026-10-16.md",
+      "status": "present",
+      "bytes": 3036,
+      "kind": "text",
+      "sha256": "4b82b9dcea5e64280cc958ae536ea0ed60eac65c7b0a807c33a53a7a61da5f41"
+    },
+    {
+      "path": "docs/ABANGCOLEK-SOURCE-OF-TRUTH.md",
+      "status": "present",
+      "bytes": 19292,
+      "kind": "text",
+      "sha256": "62d41bc5eed90c55ff5e4d60807010a70688190b4f34282d67c21c66624cd384"
+    },
+    {
+      "path": "docs/ABANGCOLEK_DISCOVERY_AND_PLAN.md",
+      "status": "present",
+      "bytes": 8742,
+      "kind": "text",
+      "sha256": "6e0f0e80761870f2b682e53e9152fa0d2e6e65cc3d39848a83989ab47c1bc9a5"
+    },
+    {
+      "path": "docs/ABANGCOLEK_OS_UPGRADE_BLUEPRINT.md",
+      "status": "present",
+      "bytes": 20586,
+      "kind": "text",
+      "sha256": "4ab2e5a71868f37520425efcdda5b5de030293d2bfe23dc9515ab33f2d3bade4"
+    },
+    {
+      "path": "docs/AI-AGENT-ARCHITECTURE.md",
+      "status": "present",
+      "bytes": 4922,
+      "kind": "text",
+      "sha256": "1995e7654ec71be5ec0f73d8b20fe1b9302b92a704778faa4008833d32b17212"
+    },
+    {
+      "path": "docs/AI-AGENT-ROADMAP.md",
+      "status": "present",
+      "bytes": 2803,
+      "kind": "text",
+      "sha256": "287fa2274ba2976cf3cb1f1e61283a682ed0e32d033f59e8453927bd86b50cf3"
+    },
+    {
+      "path": "docs/AI-PROVIDER-FREE-MODELS-REGISTER.md",
+      "status": "present",
+      "bytes": 2441,
+      "kind": "text",
+      "sha256": "122598b556bd9a0e080b094d498d5faf377681bb0a84fc61a4062742b8c517f9"
+    },
+    {
+      "path": "docs/AUDIT_TERPERINCI_KESELURUHAN_PROJEK_ABANGCOLEK_OS.md",
+      "status": "present",
+      "bytes": 21716,
+      "kind": "text",
+      "sha256": "d6b62a2a61c7acebe67b896f1c18e06b3e9541bc8c518ed9d6d47d676c13bb2e"
+    },
+    {
+      "path": "docs/AUDIT_TERPERINCI_REPO_ABANG_COLEK_ECOSYSTEM.md",
+      "status": "present",
+      "bytes": 15433,
+      "kind": "text",
+      "sha256": "6de6f61d351931cc5227b0a688aca66560327f022647968434450d96c718d43e"
+    },
+    {
+      "path": "docs/CADANGAN_PENAMBAHBAIKAN_DAN_TEMA_LOGO_ABANGCOLEK.md",
+      "status": "present",
+      "bytes": 4319,
+      "kind": "text",
+      "sha256": "bd31e6150f278de92320c60755be886cc44df9c0c8142e8ccda52e4dfec3b57b"
+    },
+    {
+      "path": "docs/CARA_PENGOPERASIAN_SEPATUTNYA_ABANGCOLEK_OS.md",
+      "status": "present",
+      "bytes": 10923,
+      "kind": "text",
+      "sha256": "bc05b7dda72058d46786cbbdcde184184a5164ba7ab0ef3dd940a060990b43fd"
+    },
+    {
+      "path": "docs/FORENSIK_AUDIT_LENGKAP_REPO_ABANG_COLEK.md",
+      "status": "present",
+      "bytes": 24131,
+      "kind": "text",
+      "sha256": "b7efdf7ff9b5a107380a93ed90165693b5b6829a504988ada152ef148fa0520d"
+    },
+    {
+      "path": "docs/JEV_ARCH.md",
+      "status": "present",
+      "bytes": 10884,
+      "kind": "text",
+      "sha256": "5bb1502f31fc025f42b25943d2f6c6ae4ad2b6355b965df4521946a28c6e031f"
+    },
+    {
+      "path": "docs/JEV_ECOSYSTEM_AUDIT_REPORT.md",
+      "status": "present",
+      "bytes": 10977,
+      "kind": "text",
+      "sha256": "78480dc674c1274c86ccd0f612d21311260489a00a58202f6cfeacf70fd988a6"
+    },
+    {
+      "path": "docs/KATALOG_DAN_PANDUAN_SKILL_EJEN_AI.md",
+      "status": "present",
+      "bytes": 14363,
+      "kind": "text",
+      "sha256": "76b442d1728317f4a48930aaf0ddf2d12de36a38cb5c2113008d9c836931a2c3"
+    },
+    {
+      "path": "docs/KEDUDUKAN_DAN_ARKITEKTUR_JEV_DALAM_PROJEK.md",
+      "status": "present",
+      "bytes": 6419,
+      "kind": "text",
+      "sha256": "a29e4814c8b6bee0c56a12855959550c26f92139ff42391e84ca87c7a75c6707"
+    },
+    {
+      "path": "docs/PANDUAN_COMMAND_PALETTE.md",
+      "status": "present",
+      "bytes": 5061,
+      "kind": "text",
+      "sha256": "eee7845f65fa0b1466f712fbd0068ffa4702e854629be7a96f8b3da956dca5e9"
+    },
+    {
+      "path": "docs/PANDUAN_DAN_PEMASANGAN_SUPERPOWERS_DAN_JEV_SKILLS.md",
+      "status": "present",
+      "bytes": 10792,
+      "kind": "text",
+      "sha256": "09e6e81ba565c787724aac462097beb4fcb2a2a3750413e0c45ed19aed0c3faf"
+    },
+    {
+      "path": "docs/PROFILE_59_ATTESTATION.md",
+      "status": "present",
+      "bytes": 10443,
+      "kind": "text",
+      "sha256": "ab5844a2c3f8b636bb82d821bf3e5ae2cf3b857f6f46dec99d35d9ea7f9f9fbc"
+    },
+    {
+      "path": "docs/PROJECT-ALIGNMENT-BACKLOG.md",
+      "status": "present",
+      "bytes": 7865,
+      "kind": "text",
+      "sha256": "a2280910c35ff09c8765ea7c0278771ca4c1c0f5cd6738cdb2d5905966d204ea"
+    },
+    {
+      "path": "docs/README.md",
+      "status": "present",
+      "bytes": 3697,
+      "kind": "text",
+      "sha256": "34073a969f464a0af545f9681e6ba174ac3c03cc977480a2a9f80455c9d53afd"
+    },
+    {
+      "path": "docs/REVIEW_HERMES_AGENT_DAN_DEEPSEEK_JEV_MERGE.md",
+      "status": "present",
+      "bytes": 9862,
+      "kind": "text",
+      "sha256": "8dfb3af2ef40dbc122e42aff931bf24ffda9eecce38a2097d3215fcd7f7ffc43"
+    },
+    {
+      "path": "docs/STITCH_ABANGCOLEK_SPEC.md",
+      "status": "present",
+      "bytes": 4058,
+      "kind": "text",
+      "sha256": "f9932ed9236ba86b91a575d17df0916a1f86967f79ede9f559d7e397b0e0fdb0"
+    },
+    {
+      "path": "docs/decisions/0001-project-authority-and-continuity.md",
+      "status": "present",
+      "bytes": 3470,
+      "kind": "text",
+      "sha256": "be81b91be21280a1901c20f21ddac806c465d9016e326ee08b4617e0df877b6d"
+    },
+    {
+      "path": "docs/decisions/0002-zero-new-spend-hosting-topology.md",
+      "status": "present",
+      "bytes": 5760,
+      "kind": "text",
+      "sha256": "42b5182777d120ac3c6c01e678fec12cba4d8d0c95bbfeb2ede40d26e9d40937"
+    },
+    {
+      "path": "docs/design-qa.md",
+      "status": "present",
+      "bytes": 6342,
+      "kind": "text",
+      "sha256": "8accbb947a0c56456b1d04aade16f9635d681d71e10e2795c847708954a55d4f"
+    },
+    {
+      "path": "docs/design/brand-spec.md",
+      "status": "present",
+      "bytes": 3588,
+      "kind": "text",
+      "sha256": "46f4bf3f2e74c3604797afb5d132348cee180618bb25b05dfbdf3bca9a65a200"
+    },
+    {
+      "path": "docs/handover/AGENT-HANDOVER-A-Z.md",
+      "status": "present",
+      "bytes": 35693,
+      "kind": "text",
+      "sha256": "4f9c1f28fcff19a05c46fdeaf2f1a785cdae41b2780696fa58bb6ae539913f6d"
+    },
+    {
+      "path": "docs/handover/AGY-MASTER-IMPLEMENTATION-PROMPT.md",
+      "status": "present",
+      "bytes": 47954,
+      "kind": "text",
+      "sha256": "bbb198fb2939810ce49c227515ef9746d486a7ae1da2266d5fbf5501aed2dd43"
+    },
+    {
+      "path": "docs/handover/CAPABILITY-MATRIX.md",
+      "status": "present",
+      "bytes": 25059,
+      "kind": "text",
+      "sha256": "f997dd0e1603591d317439ca6f0168129effc96c3d62cdaf53bad9f7e9bd8149"
+    },
+    {
+      "path": "docs/handover/MARKDOWN-ALIGNMENT-REGISTER.md",
+      "status": "present",
+      "bytes": 60485,
+      "kind": "text",
+      "sha256": "467c379df2f1154a68a932aff47cfdb8d2365c718a9552cd13fcb14f8623bf12"
+    },
+    {
+      "path": "docs/production-release.md",
+      "status": "present",
+      "bytes": 4841,
+      "kind": "text",
+      "sha256": "8b6be7fe476be3df7bd99e30fbb53b5796a8c0cb355307ab427bbff742a51d82"
+    },
+    {
+      "path": "docs/research/RESEARCH-DISPOSITION-MATRIX.md",
+      "status": "present",
+      "bytes": 7519,
+      "kind": "text",
+      "sha256": "c8cef4ded592667a1fea4cf356a4c98f3497516216d8366e458644b76b688644"
+    },
+    {
+      "path": "docs/runbooks/credential-revocation-audit.md",
+      "status": "present",
+      "bytes": 3716,
+      "kind": "text",
+      "sha256": "176ecb1e83086abdad39ab4e874d4e6883860cb1376af9626d6752d5c52d00f3"
+    },
+    {
+      "path": "docs/runbooks/platform-recovery.md",
+      "status": "present",
+      "bytes": 16991,
+      "kind": "text",
+      "sha256": "1bccd0f02fd56335e296c10e3db2dba9aeb229fb6564fe1b844a8c4ec73fe965"
+    },
+    {
+      "path": "docs/stitch_prompts/abang_colek_agent_restock_portal.md",
+      "status": "present",
+      "bytes": 4300,
+      "kind": "text",
+      "sha256": "a85d9e0c1181db5a381ecdea5215e53c8bd91b8ebafdf5868e36f7d7942d73a8"
+    },
+    {
+      "path": "docs/stitch_prompts/abang_colek_express_bus_cargo_tracker.md",
+      "status": "present",
+      "bytes": 3931,
+      "kind": "text",
+      "sha256": "1df78781f9b36fe4c0c7ba6bbf21fcc12f494423afe7919259bba87a0e278692"
+    },
+    {
+      "path": "docs/stitch_prompts/abang_colek_jev_social_intelligence.md",
+      "status": "present",
+      "bytes": 4055,
+      "kind": "text",
+      "sha256": "f0151ac2cd5de4e9f4ff33bfe38f31ba6eda0c960ee49999c54f4fc30e59d6ab"
+    },
+    {
+      "path": "docs/stitch_prompts/abang_colek_kiosk_storefront.md",
+      "status": "present",
+      "bytes": 5614,
+      "kind": "text",
+      "sha256": "50d4e0907d162819c26ed2333408d441fd480f20eaeb7b7979b582842514f068"
+    },
+    {
+      "path": "docs/stitch_prompts/abang_colek_sovereign_command_hub.md",
+      "status": "present",
+      "bytes": 4602,
+      "kind": "text",
+      "sha256": "1d9c0a81b39676c15bcc325a97f63166a7bc1f243b09b36027eab9a4549cea55"
+    },
+    {
+      "path": "docs/stitch_prompts/stitch_project_thumbnail.png",
+      "status": "present",
+      "bytes": 19228,
+      "kind": "binary",
+      "sha256": "df946eeb61a2f8a43b745004e49b20e82cef9e1b0d8cb7a77e076163ea3525b8"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-02-platform-expansion.md",
+      "status": "present",
+      "bytes": 55787,
+      "kind": "text",
+      "sha256": "dc5c14be2d47d73f5b199bc5ce98c33d73e9e6221ac75d04df95cd4a6c6672ad"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-03-emons-live-scene-upgrade.md",
+      "status": "present",
+      "bytes": 4007,
+      "kind": "text",
+      "sha256": "76f4f4a08305e142ccbfdd7a4112bf77037488e586494457ee674aa039077362"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-03-emons-scroll-hero.md",
+      "status": "present",
+      "bytes": 3306,
+      "kind": "text",
+      "sha256": "c5c0c971fbc2d8b3279bc97dfe4e1738cbf7bb4ea33a168790f1011018a28c0a"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-03-project-alignment.md",
+      "status": "present",
+      "bytes": 3014,
+      "kind": "text",
+      "sha256": "a3757d4fe2cba9e2d8c3c955c539b551def4983199f2de31598a02d5852691c6"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-04-all-tasks-implementation.md",
+      "status": "present",
+      "bytes": 6128,
+      "kind": "text",
+      "sha256": "819c0448b617d9b1fb44615c1cb5b1ce12ca7feaaa55c4fca25f3948de2c9b56"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-18-production-release.md",
+      "status": "present",
+      "bytes": 6262,
+      "kind": "text",
+      "sha256": "18cfc1301e3d0834d479dda8c9fb55071f8d3c144303c8b419505f96538dee73"
+    },
+    {
+      "path": "index.css",
+      "status": "present",
+      "bytes": 51,
+      "kind": "text",
+      "sha256": "7c64736f3e5c73464a7c21759639bd417decbdd979eac29c8ddb6c39b30fea92"
+    },
+    {
+      "path": "index.html",
+      "status": "present",
+      "bytes": 1326,
+      "kind": "text",
+      "sha256": "1da3882c4843ee394cc26349251b86293038d7db19514c0a7aea36b9f2d49ee0"
+    },
+    {
+      "path": "index.tsx",
+      "status": "present",
+      "bytes": 925,
+      "kind": "text",
+      "sha256": "c1bfd0ba3a2ebf8b6c0f467d49bc561df28b13ecd1b092395bf43969a0d235bf"
+    },
+    {
+      "path": "metadata.json",
+      "status": "present",
+      "bytes": 257,
+      "kind": "text",
+      "sha256": "fa232ff96335cf254e3a03d5e880d8e15e4d550c80279e171b6936fca2d06b9d"
+    },
+    {
+      "path": "outputs/ABANGCOLEK_BRAND_GUIDELINES_VISUAL.png",
+      "status": "present",
+      "bytes": 1026398,
+      "kind": "binary",
+      "sha256": "71efbd6cf571bdf77950b8a539363408a9405e82698481d462bd60fbc5eaf78e"
+    },
+    {
+      "path": "outputs/ABANGCOLEK_BRAND_GUIDELINES_v1.md",
+      "status": "present",
+      "bytes": 26493,
+      "kind": "text",
+      "sha256": "6bc05c39d30de7f6691e4c3c5d540fcc437e66d4e5208c6950bd4f382c604058"
+    },
+    {
+      "path": "outputs/ABANGCOLEK_REVIEW.md",
+      "status": "present",
+      "bytes": 10130,
+      "kind": "text",
+      "sha256": "773065cacd4a1270e7ccffc13d84cb460c076281890974adb8ca8769f547fa71"
+    },
+    {
+      "path": "outputs/ABANGCOLEK_SOCIAL_CROSSPLATFORM_REVIEW.md",
+      "status": "present",
+      "bytes": 9606,
+      "kind": "text",
+      "sha256": "7588c740a98e53128699a6fb92af3017942a5f0ac0f644a9d7b7bce25ef5cdcc"
+    },
+    {
+      "path": "outputs/ABANGCOLEK_TIKTOK_FOUNDER_REVIEW.md",
+      "status": "present",
+      "bytes": 10563,
+      "kind": "text",
+      "sha256": "f9b089e7d090bd003e0aed8afc91b21faf83a29fb5f3f225144ab3d55fe76edb"
+    },
+    {
+      "path": "package.json",
+      "status": "present",
+      "bytes": 2521,
+      "kind": "text",
+      "sha256": "a3a8bfcbcc4d3c8df666226786f82b2bad7a29cfc8da59a4b77fad0a4c062258"
+    },
+    {
+      "path": "public/assets/brand/ABANG-COLEX-LOGO-2.png",
+      "status": "present",
+      "bytes": 923690,
+      "kind": "binary",
+      "sha256": "c39d7faefc2e57dd430cecaa6cb19ad7aac4031c422309baecb0838e5383a8bf"
+    },
+    {
+      "path": "public/assets/brand/ABANG-COLEX-LOGO-3.png",
+      "status": "present",
+      "bytes": 956543,
+      "kind": "binary",
+      "sha256": "8970f768dab551b7e5eb222bf8ef88d7db8534a8e7daf5c009bb7c8a7bdbf760"
+    },
+    {
+      "path": "public/assets/brand/FOUNDER2.png",
+      "status": "present",
+      "bytes": 329560,
+      "kind": "binary",
+      "sha256": "a0dbcd82c8e6f2095695452a1db16f0d35993daf07047c42fe05fa75000df129"
+    },
+    {
+      "path": "public/assets/brand/Gemini_Generated_Image_5lbbwx5lbbwx5lbb.png",
+      "status": "present",
+      "bytes": 8158397,
+      "kind": "binary",
+      "sha256": "51e04462ff754bed11520764a4c6a401fd998638cbb2be4063712d5ac8fc9e19"
+    },
+    {
+      "path": "public/assets/brand/Gemini_Generated_Image_6800ao6800ao6800 (1).png",
+      "status": "present",
+      "bytes": 329560,
+      "kind": "binary",
+      "sha256": "a0dbcd82c8e6f2095695452a1db16f0d35993daf07047c42fe05fa75000df129"
+    },
+    {
+      "path": "public/assets/brand/Gemini_Generated_Image_o4cz9so4cz9so4cz.png",
+      "status": "present",
+      "bytes": 6954728,
+      "kind": "binary",
+      "sha256": "e6154991bfbba629d584c44e0f7fb527b60f7c22017180ff06fd217966c191d0"
+    },
+    {
+      "path": "public/assets/brand/Gemini_Generated_Image_zh034qzh034qzh03.PNG",
+      "status": "present",
+      "bytes": 5783256,
+      "kind": "binary",
+      "sha256": "037d9db092a28b02dc6241cc03436c0305ea03964bd96786bf8ec68d44487db9"
+    },
+    {
+      "path": "public/assets/brand/MASKOT-1.PNG",
+      "status": "present",
+      "bytes": 1747887,
+      "kind": "binary",
+      "sha256": "70fa79a258d5bd9b8b538cba671bdb9a8d7d79c36fdb0f400d097a7e2d600174"
+    },
+    {
+      "path": "public/assets/brand/MASKOT-2.PNG",
+      "status": "present",
+      "bytes": 1803359,
+      "kind": "binary",
+      "sha256": "5e6aa2cf0147cb82df54b16c2d37dca67381f45530e4d1dd69b64f451f3baee1"
+    },
+    {
+      "path": "public/assets/brand/MASKOT-3.PNG",
+      "status": "present",
+      "bytes": 1926057,
+      "kind": "binary",
+      "sha256": "5c7ae550a833248d306a4cd20bfcbeac10abc73494f58f59469dbcd1bf036877"
+    },
+    {
+      "path": "public/assets/brand/MASKOT-4.PNG",
+      "status": "present",
+      "bytes": 1838048,
+      "kind": "binary",
+      "sha256": "e96df877085477eaedbee65a756304e32ca7047c6bbe85bf14d38c06fbd69c17"
+    },
+    {
+      "path": "public/assets/brand/MASKOT-5.PNG",
+      "status": "present",
+      "bytes": 1521040,
+      "kind": "binary",
+      "sha256": "7925cc34e54a25ab57071dfbba9411cfb99a0f9730ec1f0f4d38f7831759a26b"
+    },
+    {
+      "path": "public/assets/brand/MASKOT-LOGO.PNG",
+      "status": "present",
+      "bytes": 5783256,
+      "kind": "binary",
+      "sha256": "037d9db092a28b02dc6241cc03436c0305ea03964bd96786bf8ec68d44487db9"
+    },
+    {
+      "path": "public/assets/brand/Screenshot 2026-01-16 193536.png",
+      "status": "present",
+      "bytes": 484071,
+      "kind": "binary",
+      "sha256": "74058869f8d8b7f954801137623d575b9fa632a7836e91e830b018312521a37a"
+    },
+    {
+      "path": "public/assets/brand/abang-colex-logo-original.webp",
+      "status": "present",
+      "bytes": 472358,
+      "kind": "binary",
+      "sha256": "fef26f749b175af190820e8dae8027008909d8546f6908f0c9599e638578f0b4"
+    },
+    {
+      "path": "public/assets/brand/abangcolek-world-v1.png",
+      "status": "present",
+      "bytes": 2313324,
+      "kind": "binary",
+      "sha256": "3f24812d4d8af84de761ddaf7811c874c7ba49e8027c608d91dfdda1b92c94b7"
+    },
+    {
+      "path": "public/assets/brand/abangcolek-world-v1.webp",
+      "status": "present",
+      "bytes": 303748,
+      "kind": "binary",
+      "sha256": "d296c8f5c00b1d94a5f7574d4a1f572582ac4f933fd9456fefe5c1d2e4006d31"
+    },
+    {
+      "path": "public/assets/brand/abangcolek-world-v2.png",
+      "status": "present",
+      "bytes": 2280195,
+      "kind": "binary",
+      "sha256": "2646e03118b1342bf09a8b353bc2d851c2eec6b8debcec4a6d9b3af1dbda258e"
+    },
+    {
+      "path": "public/assets/brand/abangcolek-world-v2.webp",
+      "status": "present",
+      "bytes": 289212,
+      "kind": "binary",
+      "sha256": "cff2868c75b380a108d5d79d59fbeeed3a176f974f7b4658f03a7bd09f569afc"
+    },
+    {
+      "path": "public/assets/brand/cdb518f0-6449-4c0b-a7fb-9e973ffea56a.png",
+      "status": "present",
+      "bytes": 256618,
+      "kind": "binary",
+      "sha256": "d9d7065f60d4230a4dc3d648d2b36095dc89700263853c515a8fb8a7154d93c5"
+    },
+    {
+      "path": "public/assets/brand/concept2_executive_suite.jpg",
+      "status": "present",
+      "bytes": 603554,
+      "kind": "binary",
+      "sha256": "b6421b3a961c099eb7dfe80f22e0f76ca17a374a7951a31d55436405fa029f6f"
+    },
+    {
+      "path": "public/assets/brand/concept3_street_warfare.jpg",
+      "status": "present",
+      "bytes": 654611,
+      "kind": "binary",
+      "sha256": "f674f61b473b730df4d529451c6d273afc19a9e31a2d0b77f9d2c9a1dc8ecf7b"
+    },
+    {
+      "path": "public/assets/brand/dashboard_concept_2026.jpg",
+      "status": "present",
+      "bytes": 604946,
+      "kind": "binary",
+      "sha256": "d06b347c12a4b9abfff8a5faa60100139744a1c80fd663746eb8586d77d054e1"
+    },
+    {
+      "path": "public/assets/brand/epull.png",
+      "status": "present",
+      "bytes": 6954728,
+      "kind": "binary",
+      "sha256": "e6154991bfbba629d584c44e0f7fb527b60f7c22017180ff06fd217966c191d0"
+    },
+    {
+      "path": "public/assets/brand/founder.png",
+      "status": "present",
+      "bytes": 323290,
+      "kind": "binary",
+      "sha256": "4f2d1cd2efadddb19e5148e21727e571bbd1c1c8287b2df68a3fa921c623711e"
+    },
+    {
+      "path": "public/assets/brand/icon128.png",
+      "status": "missing-in-worktree"
+    },
+    {
+      "path": "public/assets/brand/platform-icon-192.png",
+      "status": "present",
+      "bytes": 5100,
+      "kind": "binary",
+      "sha256": "73c95bcdf3561e471df8a6e8213760ab388be78137b593afcdcb4e2e5c714d92"
+    },
+    {
+      "path": "public/assets/brand/platform-icon-512.png",
+      "status": "present",
+      "bytes": 16156,
+      "kind": "binary",
+      "sha256": "09e6b74573baea21d673d74bbeaa2b66b372debab67eb487c2064e520130bf54"
+    },
+    {
+      "path": "public/assets/brand/platform-icon.svg",
+      "status": "present",
+      "bytes": 473,
+      "kind": "text",
+      "sha256": "c00e9a8ea665d76af1e7dc928592593752ef082fe2c5ef8f78cc7142655d709b"
+    },
+    {
+      "path": "public/assets/brand/tiktok-sambal-colek-launch.webp",
+      "status": "present",
+      "bytes": 208600,
+      "kind": "binary",
+      "sha256": "3f467f77cf9559db48a1062de53921909c49492d3bb40d157559c2235623f2b3"
+    },
+    {
+      "path": "public/audio/kasi-lagi-lagi.mp3",
+      "status": "present",
+      "bytes": 1483085,
+      "kind": "binary",
+      "sha256": "9c60014fdd538dca46d141b68763c816b19faf8c51833f5ef00ef7cf1171d0f6"
+    },
+    {
+      "path": "public/manifest.webmanifest",
+      "status": "present",
+      "bytes": 573,
+      "kind": "text",
+      "sha256": "037c90420c7b4981e034dc44eb849cf3f37a622fa4ddd495e7346ace7071b595"
+    },
+    {
+      "path": "public/platform-sw.js",
+      "status": "present",
+      "bytes": 1419,
+      "kind": "text",
+      "sha256": "3c225e6e7a576704f9a58c081f639db31cb834e2e79442451fcddce1cbba585a"
+    },
+    {
+      "path": "reports/APA_YANG_DIBANGUNKAN_ABANGCOLEK_OS.md",
+      "status": "present",
+      "bytes": 9191,
+      "kind": "text",
+      "sha256": "2788abc1e00fc956e0c2fcf68fb3e02a38fa8d8d1edb77ddf004c25caa93712e"
+    },
+    {
+      "path": "reports/CODEX_REVIEW_MENYELURUH_ABANGCOLEK_OS_2026-10-01.md",
+      "status": "present",
+      "bytes": 15536,
+      "kind": "text",
+      "sha256": "ede55c9e4face9b48c22ee741029c984464709accc990abc15897cec813ebc03"
+    },
+    {
+      "path": "reports/DASHBOARD_NEXT_LEVEL_2026-10-02.md",
+      "status": "present",
+      "bytes": 2870,
+      "kind": "text",
+      "sha256": "6e7c21c35c0ff8b78959fd23d488973160e88c41418cd9565af04b42dc7dcd47"
+    },
+    {
+      "path": "reports/DASHBOARD_REFERENCE_REDESIGN_2026-10-02.md",
+      "status": "present",
+      "bytes": 6684,
+      "kind": "text",
+      "sha256": "d541a426aa386b8a13848ceced4f06326f029ce83717bd94962f4ce3e21d34a4"
+    },
+    {
+      "path": "reports/DASHBOARD_UI_UX_IMPLEMENTATION_2026-10-01.md",
+      "status": "present",
+      "bytes": 2859,
+      "kind": "text",
+      "sha256": "43f51b03e18f1ee874c75b58b5220ae24edb66ab093c37ac362a96cd965cec2e"
+    },
+    {
+      "path": "reports/DELEGASI_JIMAT_TOKEN_AGY_HERMES_2026-10-03.md",
+      "status": "present",
+      "bytes": 4902,
+      "kind": "text",
+      "sha256": "fc311a8dcde0843db52f7e7b5c79c31fe08d79a54bd54ecbd2f8e2576445df18"
+    },
+    {
+      "path": "reports/DESIGN_QA_HERO_EMONS_2026-10-03.md",
+      "status": "present",
+      "bytes": 4808,
+      "kind": "text",
+      "sha256": "5ee5f97b8740dadf42529a4ae903c9089f258e71bd868c6cb2234aa8820ef98a"
+    },
+    {
+      "path": "reports/FORENSIK_AUDIT_JEV_DAN_KOD_ABANGCOLEK_OS_2026.md",
+      "status": "present",
+      "bytes": 13790,
+      "kind": "text",
+      "sha256": "5aa19d7ad50f7c3e9066817d79656503d2a4cd2cdfeccc5598f99568d4fa4d65"
+    },
+    {
+      "path": "reports/FORENSIK_AUDIT_LENGKAP_REPO_ABANG_COLEK.md",
+      "status": "present",
+      "bytes": 24147,
+      "kind": "text",
+      "sha256": "4407e7ebca8c4a829f953c8f5605a02322a39e823ae2d931b0e7ece87478abe1"
+    },
+    {
+      "path": "reports/GLOBAL_THEME_SIDEBAR_IMPLEMENTATION_2026-10-02.md",
+      "status": "present",
+      "bytes": 5272,
+      "kind": "text",
+      "sha256": "838e9c158b74116dae027b558db29e27234f5ab4aefe606b0774187b5b72112b"
+    },
+    {
+      "path": "reports/IMPLEMENTASI_HERO_EMONS_DAN_ASET_ASLI_ABANGCOLEK_2026-10-03.md",
+      "status": "present",
+      "bytes": 19065,
+      "kind": "text",
+      "sha256": "2aeed7cb74989ed859aa8a48484cadf3d02a15bd5135fcf16db74aea3f0881f0"
+    },
+    {
+      "path": "reports/INVENTORI_IMEJ_PRODUK_ABANGCOLEK_2026-10-03.md",
+      "status": "present",
+      "bytes": 5877,
+      "kind": "text",
+      "sha256": "d478db48af2858bf5433b834ac2924cc1b1722ee0766a2a3c89f4c4ec66c989c"
+    },
+    {
+      "path": "reports/JEV_ECOSYSTEM_AUDIT_REPORT.md",
+      "status": "present",
+      "bytes": 10990,
+      "kind": "text",
+      "sha256": "07b959101736149e2d846c2e7212ecfd97c4fc23e127bc8d79cd484d028634e9"
+    },
+    {
+      "path": "reports/PLATFORM_EXPANSION_IMPLEMENTATION_2026-10-02.md",
+      "status": "present",
+      "bytes": 20360,
+      "kind": "text",
+      "sha256": "8ce54157e8bc6021beefc17dc8611da58c7bd6e9e3bcdcfd64e0b899c7756bed"
+    },
+    {
+      "path": "reports/RECAP_SINTESIS_DAN_PELAKSANAAN_ABANGCOLEK_2026-10-02.md",
+      "status": "present",
+      "bytes": 17130,
+      "kind": "text",
+      "sha256": "22fee94274ed2affd171e31234a250b48fd23c446177c895498ad7af6868dacc"
+    },
+    {
+      "path": "reports/RESEARCH_DASHBOARD_WOW_FACTOR_RM300K_2026-10-01.md",
+      "status": "present",
+      "bytes": 17056,
+      "kind": "text",
+      "sha256": "1d2ca27cd77d778b4a7e4b479df3f608e4e66fb0ee320d5f307555a2408787a1"
+    },
+    {
+      "path": "reports/RESEARCH_PRODUK_SOSIAL_ABANGCOLEK_2026-10-03.md",
+      "status": "present",
+      "bytes": 12272,
+      "kind": "text",
+      "sha256": "d5abb2ff15b3a07d3bbbd0c5e8db23ed1d96ce1f81f61005d411d3d1f5fad70e"
+    },
+    {
+      "path": "reports/REVIEW_GOOGLE_AI_STUDIO_ABANGCOLEK_2026-10-03.md",
+      "status": "present",
+      "bytes": 3161,
+      "kind": "text",
+      "sha256": "fe771eccdca97228ecdbd1be1da170cd919984682f2e80032d5d6a6864191810"
+    },
+    {
+      "path": "reports/REVIEW_KONSEP_EMONS_DAN_LANDING_ABANGCOLEK_2026-10-03.md",
+      "status": "present",
+      "bytes": 17618,
+      "kind": "text",
+      "sha256": "5b5bceffb97d5ada407f27ba906807bdb28d7842b3d994727183798622a90418"
+    },
+    {
+      "path": "reports/REVIEW_LIVE_SCROLL_EMONS_2026-10-03.md",
+      "status": "present",
+      "bytes": 12279,
+      "kind": "text",
+      "sha256": "9e9a3cc76f9db557c87af6e2b8cf25fe38282311731f255e022378ea3e742b03"
+    },
+    {
+      "path": "reports/REVIEW_SHARED_CHAT_6AC065B1_2026-10-03.md",
+      "status": "present",
+      "bytes": 24408,
+      "kind": "text",
+      "sha256": "b95c096be32b29305383e18ce56a989934a69ee1567d12ec4c6d5d043fdca9e6"
+    },
+    {
+      "path": "reports/SINTESIS_DAN_ALIGNMENT_ABANGCOLEK_2026-10-03.md",
+      "status": "present",
+      "bytes": 4323,
+      "kind": "text",
+      "sha256": "71048082cfe1fe78749f4f0d9576774685c4ae374da2df5cdc45270242d84f59"
+    },
+    {
+      "path": "reports/dashboard-ui/desktop-dark.png",
+      "status": "present",
+      "bytes": 109270,
+      "kind": "binary",
+      "sha256": "e55869b29603bb57853da46b59e6ecb4723bfa816ae2b1154195f00d55a7a8bd"
+    },
+    {
+      "path": "reports/dashboard-ui/desktop-light.png",
+      "status": "present",
+      "bytes": 98927,
+      "kind": "binary",
+      "sha256": "70fe7f1550c56c8ebee03e10f7974bcde704e5ed7bdd47e2dcfd5b93fdfa44ef"
+    },
+    {
+      "path": "reports/dashboard-ui/global-dark-agent_performance.png",
+      "status": "present",
+      "bytes": 101198,
+      "kind": "binary",
+      "sha256": "afaaf910a03c354dd031f653d9759aeb9be2a3eeb8b9d8ff68dce77baff8e097"
+    },
+    {
+      "path": "reports/dashboard-ui/global-dark-bus_freight.png",
+      "status": "present",
+      "bytes": 84649,
+      "kind": "binary",
+      "sha256": "496de191b0d82283d50327e414c90cafa0019ab73bafdabddff54cd597441ca2"
+    },
+    {
+      "path": "reports/dashboard-ui/global-dark-calendar.png",
+      "status": "present",
+      "bytes": 45155,
+      "kind": "binary",
+      "sha256": "7e3c9628dc68cf13631d91722e2d2f6023e66c1781406a4a95cdfe2612554978"
+    },
+    {
+      "path": "reports/dashboard-ui/global-dark-chat.png",
+      "status": "present",
+      "bytes": 52807,
+      "kind": "binary",
+      "sha256": "c716762380880aaff197d15bc2e9ca2116158ade8b66f41dc45498944369b735"
+    },
+    {
+      "path": "reports/dashboard-ui/global-dark-chat_workspace.png",
+      "status": "present",
+      "bytes": 55121,
+      "kind": "binary",
+      "sha256": "93701743adaebe8f09919c5aaca192a679bbd1cf4c967b4db1cc4ef560b4255f"
+    },
+    {
+      "path": "reports/dashboard-ui/global-dark-dashboards.png",
+      "status": "present",
+      "bytes": 74919,
+      "kind": "binary",
+      "sha256": "185b865fdacef36a451abfd20d4296be8eec793810ac39ff9f2d7f4e8add5cdd"
+    },
+    {
+      "path": "reports/dashboard-ui/global-dark-discovery.png",
+      "status": "present",
+      "bytes": 116750,
+      "kind": "binary",
+      "sha256": "fffa0f9464b371bf21b49604d6245ca2f2be28de60b5aff848cc4a641b0ac1d4"
+    },
+    {
+      "path": "reports/dashboard-ui/global-dark-docs.png",
+      "status": "present",
+      "bytes": 51737,
+      "kind": "binary",
+      "sha256": "013078e0fbb44f0716abfc1bedb7b8c576e8268c27243a1802d0e76428eb6681"
+    },
+    {
+      "path": "reports/dashboard-ui/global-dark-forms.png",
+      "status": "present",
+      "bytes": 91982,
+      "kind": "binary",
+      "sha256": "59ec77bfb9adac4ab8a309078a35831b6f1ac05903459365ff23f45f25ac5b16"
+    },
+    {
+      "path": "reports/dashboard-ui/global-dark-gmail.png",
+      "status": "present",
+      "bytes": 40999,
+      "kind": "binary",
+      "sha256": "7645d7db268f10307624a1452e092187dec0f5b2703aa30b3d1b34bec637e273"
+    },
+    {
+      "path": "reports/dashboard-ui/global-dark-maps.png",
+      "status": "present",
+      "bytes": 129070,
+      "kind": "binary",
+      "sha256": "fbfa128900f2eb187c5ca2b439c57b8482f3f9f6bc7b47ad0fbeb2dc63346b52"
+    },
+    {
+      "path": "reports/dashboard-ui/global-dark-meet.png",
+      "status": "present",
+      "bytes": 52612,
+      "kind": "binary",
+      "sha256": "ab9ad0ffab2ae9e5629874e150939c898b27456597f6539d786030ae0cf23011"
+    },
+    {
+      "path": "reports/dashboard-ui/global-dark-orders.png",
+      "status": "present",
+      "bytes": 62316,
+      "kind": "binary",
+      "sha256": "c12d6961dc42c07a4b52f5a1e3d82883c039ee2be3a834a0b8be76f67f65226a"
+    },
+    {
+      "path": "reports/dashboard-ui/global-dark-plugins.png",
+      "status": "present",
+      "bytes": 96224,
+      "kind": "binary",
+      "sha256": "54210d502aed27443eafeaea9ba4d6e3cd25f7af3723b235c329c3303bfb398d"
+    },
+    {
+      "path": "reports/dashboard-ui/global-dark-reports.png",
+      "status": "present",
+      "bytes": 83766,
+      "kind": "binary",
+      "sha256": "60b433b24c40e4cada6e1617f76c57e956d6800981dadde76b0b80dafab4db8c"
+    },
+    {
+      "path": "reports/dashboard-ui/global-dark-reviews.png",
+      "status": "present",
+      "bytes": 90518,
+      "kind": "binary",
+      "sha256": "2c7a128b61dc8006cbac9bcc66568cc23bea6e31495455cda2889afcd6ee3dcf"
+    },
+    {
+      "path": "reports/dashboard-ui/global-dark-sheets.png",
+      "status": "present",
+      "bytes": 47197,
+      "kind": "binary",
+      "sha256": "f304ef10d51d11e7db1ec1eddc5ef8c601d8349558b53832bf27db2705e08246"
+    },
+    {
+      "path": "reports/dashboard-ui/global-dark-tasks.png",
+      "status": "present",
+      "bytes": 51292,
+      "kind": "binary",
+      "sha256": "8eafba8ef65165e56582e37a01a45de5c89279037be7790ad320af992805691a"
+    },
+    {
+      "path": "reports/dashboard-ui/global-light-agent_performance.png",
+      "status": "present",
+      "bytes": 78640,
+      "kind": "binary",
+      "sha256": "e41aa1edeb1fadb64a2b551b1962a72a6a53b9e42765df1a2c971a779c04b537"
+    },
+    {
+      "path": "reports/dashboard-ui/global-light-bus_freight.png",
+      "status": "present",
+      "bytes": 80038,
+      "kind": "binary",
+      "sha256": "84a20354e5ae1793dbfa356e431d250783b0405017c3e1de31a882c05b7fb715"
+    },
+    {
+      "path": "reports/dashboard-ui/global-light-calendar.png",
+      "status": "present",
+      "bytes": 45016,
+      "kind": "binary",
+      "sha256": "6efbbeefa88fb6ed75b64508ad212d7a27177143298c90a6ad7afb05dba611a2"
+    },
+    {
+      "path": "reports/dashboard-ui/global-light-chat.png",
+      "status": "present",
+      "bytes": 59892,
+      "kind": "binary",
+      "sha256": "804b30c3867db428c9a3743cb3b578e0489d60dd7fcd311496344e7e3968fdd5"
+    },
+    {
+      "path": "reports/dashboard-ui/global-light-chat_workspace.png",
+      "status": "present",
+      "bytes": 52869,
+      "kind": "binary",
+      "sha256": "5672442cce3ac3e4631212c0909ac83c8578cb3e35a03d51194d6e7b781a240b"
+    },
+    {
+      "path": "reports/dashboard-ui/global-light-dashboards.png",
+      "status": "present",
+      "bytes": 52730,
+      "kind": "binary",
+      "sha256": "45c95676848388ae1ee113ca914d0052340acb8e328c4d01a5092c8a1837f08b"
+    },
+    {
+      "path": "reports/dashboard-ui/global-light-discovery.png",
+      "status": "present",
+      "bytes": 115246,
+      "kind": "binary",
+      "sha256": "cec6b84c68407d79ae5b51979bc5113532790ef8d6ca49500c3bddf455e1efcf"
+    },
+    {
+      "path": "reports/dashboard-ui/global-light-docs.png",
+      "status": "present",
+      "bytes": 51285,
+      "kind": "binary",
+      "sha256": "e6d0f27294532bdfd7c2f048be39924f45d9e59466e592844d179199ff9e22a2"
+    },
+    {
+      "path": "reports/dashboard-ui/global-light-forms.png",
+      "status": "present",
+      "bytes": 90994,
+      "kind": "binary",
+      "sha256": "0ad28a98b68798d20019029243d6eb9e63d4edd0ee3a0dcc152812bceb129bfd"
+    },
+    {
+      "path": "reports/dashboard-ui/global-light-gmail.png",
+      "status": "present",
+      "bytes": 64150,
+      "kind": "binary",
+      "sha256": "23eff89886e5d8e09a5875b668a6d0dec58ceb69ac0b65c4a8103b69bbf8726a"
+    },
+    {
+      "path": "reports/dashboard-ui/global-light-maps.png",
+      "status": "present",
+      "bytes": 97334,
+      "kind": "binary",
+      "sha256": "42becf4e741af0b83ec0e972a5a07f1634566f94b7f9d58b0f77847887c5e22b"
+    },
+    {
+      "path": "reports/dashboard-ui/global-light-meet.png",
+      "status": "present",
+      "bytes": 52788,
+      "kind": "binary",
+      "sha256": "eeb5428cc646cd0083c4592054f186b1151cc0a57d31ebf1f4ac8038e9def315"
+    },
+    {
+      "path": "reports/dashboard-ui/global-light-orders.png",
+      "status": "present",
+      "bytes": 59687,
+      "kind": "binary",
+      "sha256": "bd56e712c595cf940280bf1c736bc97ffeb52c22a97d2c80bc6461c21c872aa3"
+    },
+    {
+      "path": "reports/dashboard-ui/global-light-plugins.png",
+      "status": "present",
+      "bytes": 94733,
+      "kind": "binary",
+      "sha256": "e6fa0aa4ac974712afbfee8d752b8ecfca3d44b2e9c5f77c3b4550a952bdca8f"
+    },
+    {
+      "path": "reports/dashboard-ui/global-light-reports.png",
+      "status": "present",
+      "bytes": 84456,
+      "kind": "binary",
+      "sha256": "3f16a3f47d8cc934cd2f617eeb99e80e323fc11aa0835efe348c0313a61e3215"
+    },
+    {
+      "path": "reports/dashboard-ui/global-light-reviews.png",
+      "status": "present",
+      "bytes": 86372,
+      "kind": "binary",
+      "sha256": "83890b87dae0554d53d39a6c15d0f7ecd5fe1f089f5910a1591766b562ed6aeb"
+    },
+    {
+      "path": "reports/dashboard-ui/global-light-sheets.png",
+      "status": "present",
+      "bytes": 46335,
+      "kind": "binary",
+      "sha256": "1a74aa052a04af5ed7bb74ffd41b4e51e1746655e1ccf0a05061a006e4ab0d49"
+    },
+    {
+      "path": "reports/dashboard-ui/global-light-tasks.png",
+      "status": "present",
+      "bytes": 50644,
+      "kind": "binary",
+      "sha256": "b3a491bb34c258bf6eaa8e96c0d3fca059d10e92c321330b874a4318e7d045d8"
+    },
+    {
+      "path": "reports/dashboard-ui/global-mobile-gmail-light.png",
+      "status": "present",
+      "bytes": 23111,
+      "kind": "binary",
+      "sha256": "e3e54a65af359e32c39358ae46e10a1fee48bf71094522f0a965a5ace63ff052"
+    },
+    {
+      "path": "reports/dashboard-ui/global-mobile-sheets-dark.png",
+      "status": "present",
+      "bytes": 24272,
+      "kind": "binary",
+      "sha256": "13e5ff68234a3a274d48a19e92ef2da948b8e7b502095156f51bdbb79aceedc7"
+    },
+    {
+      "path": "reports/dashboard-ui/global-route-verification.json",
+      "status": "present",
+      "bytes": 4452,
+      "kind": "text",
+      "sha256": "7d52bc6cbf8c0bd66b8db61db9cc926394508e68abcd7e5b5b678ea41e380e2d"
+    },
+    {
+      "path": "reports/dashboard-ui/global-sidebar-expanded-dark.png",
+      "status": "present",
+      "bytes": 91901,
+      "kind": "binary",
+      "sha256": "961264c51f8f976858f23a41c8cc2284eec05dc285ac13016b6e7d72b3c2d8d8"
+    },
+    {
+      "path": "reports/dashboard-ui/global-sidebar-rail.png",
+      "status": "present",
+      "bytes": 74919,
+      "kind": "binary",
+      "sha256": "185b865fdacef36a451abfd20d4296be8eec793810ac39ff9f2d7f4e8add5cdd"
+    },
+    {
+      "path": "reports/dashboard-ui/mobile-light.png",
+      "status": "present",
+      "bytes": 36697,
+      "kind": "binary",
+      "sha256": "e53dfb6310686fdc00d1116217522198bf55f8ef56f665c66ed8a21f27b745e0"
+    },
+    {
+      "path": "reports/dashboard-ui/next-level-before.png",
+      "status": "present",
+      "bytes": 91636,
+      "kind": "binary",
+      "sha256": "47ba1c0aa32b31a538c0f7232072f91e2051fa060d101a9b4793bab0e900ca8b"
+    },
+    {
+      "path": "reports/dashboard-ui/next-level-desktop-dark.png",
+      "status": "present",
+      "bytes": 101542,
+      "kind": "binary",
+      "sha256": "9209fdcddab680994d643c77ac354f3815bcb82d93448ad92366133d09bc21d9"
+    },
+    {
+      "path": "reports/dashboard-ui/next-level-desktop-light.png",
+      "status": "present",
+      "bytes": 97044,
+      "kind": "binary",
+      "sha256": "237a724a558fd595dc5e46b19079508ee15c0c0a52abd682263d27d8964758c8"
+    },
+    {
+      "path": "reports/dashboard-ui/next-level-mobile-light.png",
+      "status": "present",
+      "bytes": 43531,
+      "kind": "binary",
+      "sha256": "a4775d36e872adfe2dad4870df263b5ce9f9de92de1f78b1e0acf8688a91788b"
+    },
+    {
+      "path": "reports/dashboard-ui/reference-before.png",
+      "status": "present",
+      "bytes": 101337,
+      "kind": "binary",
+      "sha256": "a99ebae3ef1dfc7ffb398d4370a0b4c70d0b8304714e19423bac2c326f83f536"
+    },
+    {
+      "path": "reports/dashboard-ui/reference-desktop-dark.png",
+      "status": "present",
+      "bytes": 86133,
+      "kind": "binary",
+      "sha256": "19419f9b5540f49e1a8978c18ecc86c1c2230bcca3b0fb7ec65d034c7a160b4b"
+    },
+    {
+      "path": "reports/dashboard-ui/reference-desktop-light.png",
+      "status": "present",
+      "bytes": 82592,
+      "kind": "binary",
+      "sha256": "fe0bd3a147290be6134269f15c0dbeb910150ed41d6447ce844da35ab706a29c"
+    },
+    {
+      "path": "reports/dashboard-ui/reference-mobile-dark.png",
+      "status": "present",
+      "bytes": 44361,
+      "kind": "binary",
+      "sha256": "d9334ac7353ab9dd03782faf660e799a17a2ffbe8dc6389b995d94dfc8e95aed"
+    },
+    {
+      "path": "reports/dashboard_concept_2026.jpg",
+      "status": "present",
+      "bytes": 604946,
+      "kind": "binary",
+      "sha256": "d06b347c12a4b9abfff8a5faa60100139744a1c80fd663746eb8586d77d054e1"
+    },
+    {
+      "path": "reports/research/2026-10-02/01_GROK_BOT_OVERVIEW.md",
+      "status": "present",
+      "bytes": 11536,
+      "kind": "text",
+      "sha256": "d05a7d700c6085d661bea5acb97abb3f526e54beaa11bae9c56a1741c71ea05f"
+    },
+    {
+      "path": "reports/research/2026-10-02/02_META_MUSE.md",
+      "status": "present",
+      "bytes": 13724,
+      "kind": "text",
+      "sha256": "b34f6f405a164a2deab0ef0bb2614649de26d60eefcb1d782f4877669091319c"
+    },
+    {
+      "path": "reports/research/2026-10-02/03_OPENAI_INTRODUCING_DOTS.md",
+      "status": "present",
+      "bytes": 15389,
+      "kind": "text",
+      "sha256": "1d6e525c7a88304edc16c9c6ec63533f874d5c207f360240b3b1731d59232551"
+    },
+    {
+      "path": "reports/research/2026-10-02/04_DEEPSEEK_HARNESS_QUICKSTART.md",
+      "status": "present",
+      "bytes": 15477,
+      "kind": "text",
+      "sha256": "a53fa323107c4c7e08220357cb49bcc81652cdd5adc5426a9c13b1d753a31544"
+    },
+    {
+      "path": "reports/research/2026-10-02/05_HERMES_AGENT_DOCS.md",
+      "status": "present",
+      "bytes": 17090,
+      "kind": "text",
+      "sha256": "a491997b314c00c63c7182d760d22a7d113be62db472d2c60307765827f3b0c9"
+    },
+    {
+      "path": "reports/research/2026-10-02/06_JEV_SYNTHESIS_ABANGCOLEK_OS.md",
+      "status": "present",
+      "bytes": 21362,
+      "kind": "text",
+      "sha256": "bcbadcaa201870d01ffe6da1a7f595d02f79307f55b272e010a4e3eb59c9057e"
+    },
+    {
+      "path": "reports/research/2026-10-02/07_PELAN_UPGRADE_ABANGCOLEK_OS.md",
+      "status": "present",
+      "bytes": 8415,
+      "kind": "text",
+      "sha256": "6b48cd1f3882a62be5b7b3b9b2ed7f7022d7b5db7cd403ce9faf58859751b5ff"
+    },
+    {
+      "path": "reports/research/2026-10-02/08_WHATSAPP_FLOW_ZERO_COST.md",
+      "status": "present",
+      "bytes": 17673,
+      "kind": "text",
+      "sha256": "be13b8cb14a0aed071fd4034e60d4e86ec5a4c1f8ac545b7f75d3063113ca716"
+    },
+    {
+      "path": "reports/research/2026-10-02/09_PLATFORM_EXPANSION_ZERO_COST_MASTERPLAN.md",
+      "status": "present",
+      "bytes": 36837,
+      "kind": "text",
+      "sha256": "b0e20a2fc6724caa7760ffeddb385a6e45ba5375587b86fddf8788c65d548c0e"
+    },
+    {
+      "path": "reports/research/2026-10-02/10_AGENT_STOKIS_BUSINESS_SYSTEM.md",
+      "status": "present",
+      "bytes": 21286,
+      "kind": "text",
+      "sha256": "9fb079f23b801f0a349f9a94d4a70206523376ae69007ad2d1e802b0a9c05715"
+    },
+    {
+      "path": "reports/research/2026-10-02/11_MARKETING_SOCIAL_AUTOMATION_POSTIZ_AGENT_REACH.md",
+      "status": "present",
+      "bytes": 22442,
+      "kind": "text",
+      "sha256": "ecd4b29fc7b8f6ede0fdf3af9fac7d41a8e12049588146762f77dbdd74786506"
+    },
+    {
+      "path": "reports/research/2026-10-02/12_JEV_PLATFORM_CAPABILITY_PLAN.md",
+      "status": "present",
+      "bytes": 35707,
+      "kind": "text",
+      "sha256": "065d6fefae24d3b642fc50f6b3cf7933fe228eedb5b6cf2076980ac8198dcffc"
+    },
+    {
+      "path": "reports/research/2026-10-02/README.md",
+      "status": "present",
+      "bytes": 6451,
+      "kind": "text",
+      "sha256": "0247905de915abb347ca379ce6a1373676768c7bf4930c7b2dfd308088dfd2e8"
+    },
+    {
+      "path": "scripts/capture-platform.ts",
+      "status": "present",
+      "bytes": 2189,
+      "kind": "text",
+      "sha256": "71933bb3676ac7a69794ef8db19fd789ce5e44eb6d194b4fda8f8287e304ce6f"
+    },
+    {
+      "path": "scripts/clean.ts",
+      "status": "present",
+      "bytes": 279,
+      "kind": "text",
+      "sha256": "0c25ebb6ff57fdee811aecd4040fa3a795aa5654061b2cc45115f75b0f0026bc"
+    },
+    {
+      "path": "scripts/dev.ts",
+      "status": "present",
+      "bytes": 3632,
+      "kind": "text",
+      "sha256": "30a444bebeae5ad1aa183a8b942358816b3a3278465baecc3693c3ed98193c8d"
+    },
+    {
+      "path": "scripts/export-platform-icons.ts",
+      "status": "present",
+      "bytes": 731,
+      "kind": "text",
+      "sha256": "b0b3fa5a27bbef1d14eff927d595daff276aeb8f17f108c8a174579ed28a1dc1"
+    },
+    {
+      "path": "scripts/legacy-migration-dryrun.ts",
+      "status": "present",
+      "bytes": 2245,
+      "kind": "text",
+      "sha256": "628354dc81b1c226df28a8f7695502431f536c4c21e3526226b16c2c26cda098"
+    },
+    {
+      "path": "scripts/platform-backup.ts",
+      "status": "present",
+      "bytes": 1106,
+      "kind": "text",
+      "sha256": "e6a6ec70bec4a38c20677c67baa1cf9dcee5193e9baf11f228c87624868260c7"
+    },
+    {
+      "path": "scripts/prerender-public.ts",
+      "status": "present",
+      "bytes": 3622,
+      "kind": "text",
+      "sha256": "9e2e7041d63a8bbb8a4e05a08d700031e46078d8ac05f1f7d145455b59e93879"
+    },
+    {
+      "path": "scripts/public-html.ts",
+      "status": "present",
+      "bytes": 3448,
+      "kind": "text",
+      "sha256": "661daf84c142754add14fe8e9422083c13e40549cbeba4553bb2ead1e5526313"
+    },
+    {
+      "path": "scripts/qa-platform.ts",
+      "status": "present",
+      "bytes": 3313,
+      "kind": "text",
+      "sha256": "4afa0b27fd9e22f177bce8682d9f5b2273ac774647910b79443633c8c40857fd"
+    },
+    {
+      "path": "server/automation/adapters.ts",
+      "status": "present",
+      "bytes": 7181,
+      "kind": "text",
+      "sha256": "776d7eeaf7ab414eededa9587109952ab85576c3108e761799687cfee9ea2a01"
+    },
+    {
+      "path": "server/automation/automation.ts",
+      "status": "present",
+      "bytes": 20192,
+      "kind": "text",
+      "sha256": "fc96b8c3b0dab9f1b5cef7514d7b3819e7c0259a90f2e412149487639f6fe090"
+    },
+    {
+      "path": "server/automation/definitions.ts",
+      "status": "present",
+      "bytes": 3998,
+      "kind": "text",
+      "sha256": "dbfa4f3f482a608597a6047019f81230ae0a42b493d174439d1f0cf0d39804fe"
+    },
+    {
+      "path": "server/automation/jobs.ts",
+      "status": "present",
+      "bytes": 6979,
+      "kind": "text",
+      "sha256": "6fa840649ca26b02536acdcb63850cc5078dd601dc2ed02fdc046fa89961dfcc"
+    },
+    {
+      "path": "server/automation/runtimeTransports.ts",
+      "status": "present",
+      "bytes": 6031,
+      "kind": "text",
+      "sha256": "72dbb054da8cd1b3a283f26756821dd6d5e34430493fe77f9b69d6dcf3198ad0"
+    },
+    {
+      "path": "server/automation/sourcePolicy.ts",
+      "status": "present",
+      "bytes": 907,
+      "kind": "text",
+      "sha256": "82db8fbe8b27ee3285fb02f9f01ef326bcbf6b34271bc19030ccd9df901ff10c"
+    },
+    {
+      "path": "server/index.ts",
+      "status": "present",
+      "bytes": 2822,
+      "kind": "text",
+      "sha256": "071bfdd95df589ad946a6d98e77fc50fc27f287842c9f65f644ac97182ecb5a8"
+    },
+    {
+      "path": "server/platform/app.ts",
+      "status": "present",
+      "bytes": 37521,
+      "kind": "text",
+      "sha256": "11b8a27b475d12b693a8671d6fc5223c99036923374571e62df482df446f6497"
+    },
+    {
+      "path": "server/platform/assetBundle.ts",
+      "status": "present",
+      "bytes": 601,
+      "kind": "text",
+      "sha256": "84faeb63d25e1761c932dc261ef1da8ce91ffa0ffb9e1c3ac71450f00aab97f5"
+    },
+    {
+      "path": "server/platform/auth.ts",
+      "status": "present",
+      "bytes": 10625,
+      "kind": "text",
+      "sha256": "17376904d4a95ce6f94d34d6d5edb3977ff38c8e5aeac42d9c0353e0e4a05497"
+    },
+    {
+      "path": "server/platform/backup.ts",
+      "status": "present",
+      "bytes": 5476,
+      "kind": "text",
+      "sha256": "b9679992543cd4313f44bdafda9b01fd858f6ac41ce28d71cefdcbefc07abff9"
+    },
+    {
+      "path": "server/platform/commerce.ts",
+      "status": "present",
+      "bytes": 21263,
+      "kind": "text",
+      "sha256": "c9cf0742e0d5ec3fe580b918e402572396bdc29c2800ee9ead1ee75a8dfde006"
+    },
+    {
+      "path": "server/platform/dealers.ts",
+      "status": "present",
+      "bytes": 33997,
+      "kind": "text",
+      "sha256": "4d3bea60ceceed4a0acd7394ffde47fc5d16241620abe40a048bf137aa2f62aa"
+    },
+    {
+      "path": "server/platform/evidenceFiles.ts",
+      "status": "present",
+      "bytes": 9547,
+      "kind": "text",
+      "sha256": "476fb993bebe7817ff137d7920ea672d6e7206267b1da76f491bb1330028d1ac"
+    },
+    {
+      "path": "server/platform/flows.ts",
+      "status": "present",
+      "bytes": 12379,
+      "kind": "text",
+      "sha256": "25ea7aabf3075cb68e420cb40ebf83cee09b0465a37690e8b5bbad6e8832fee7"
+    },
+    {
+      "path": "server/platform/founder-intelligence.ts",
+      "status": "present",
+      "bytes": 9493,
+      "kind": "text",
+      "sha256": "7e2c6d5fa0dccfa110b38c268ef8c8e64a4752df33defa75364129f53e260c6b"
+    },
+    {
+      "path": "server/platform/jev/assessment.ts",
+      "status": "present",
+      "bytes": 20074,
+      "kind": "text",
+      "sha256": "4199a80d9922a2f684ac9fa57cb377d606150f68add14fe7241827af9baf5793"
+    },
+    {
+      "path": "server/platform/jev/evaluations.ts",
+      "status": "present",
+      "bytes": 17084,
+      "kind": "text",
+      "sha256": "6c5fe9a18968d6df7133f15eaa7d0dbb5d2aa7c20d7c3d112321255071135a54"
+    },
+    {
+      "path": "server/platform/jev/policyEngine.ts",
+      "status": "present",
+      "bytes": 1787,
+      "kind": "text",
+      "sha256": "ad766034928f6280d897f71ffd400ce2bddc81250e5bc3d80a60f439c7c46baf"
+    },
+    {
+      "path": "server/platform/jev/questionRegistry.ts",
+      "status": "present",
+      "bytes": 3313,
+      "kind": "text",
+      "sha256": "775e4ce9803ad13db074915e9d6bdeec2e0fd127b9444e580311b95815e24347"
+    },
+    {
+      "path": "server/platform/legacyAi.ts",
+      "status": "present",
+      "bytes": 1879,
+      "kind": "text",
+      "sha256": "8fadcab1fd6526c83b4695f2097145ab68d02c9c61ae83c7340cdd3d2fdcc916"
+    },
+    {
+      "path": "server/platform/legacyPilots.ts",
+      "status": "present",
+      "bytes": 9434,
+      "kind": "text",
+      "sha256": "b8e2cd50a3442a38a25f50fdf877ef117c0d9547b7c540e55b7b2a8103aebecc"
+    },
+    {
+      "path": "server/platform/marketing.ts",
+      "status": "present",
+      "bytes": 4777,
+      "kind": "text",
+      "sha256": "606b6a0849c547ac3952e2fccfa74d26f190c05401e7ffab408c40771613e53c"
+    },
+    {
+      "path": "server/platform/migration/legacyMaps.ts",
+      "status": "present",
+      "bytes": 4140,
+      "kind": "text",
+      "sha256": "aa1e16d19bf48bb661a312331dc8abafa4f9bedacb85727d1e995a8eb0b5582b"
+    },
+    {
+      "path": "server/platform/migration/migrationReconciler.ts",
+      "status": "present",
+      "bytes": 6675,
+      "kind": "text",
+      "sha256": "8afd85b883e3a2fe17100ae8f4a641adc421f4963444bcd3040a838619f07a19"
+    },
+    {
+      "path": "server/platform/onboarding.ts",
+      "status": "present",
+      "bytes": 10760,
+      "kind": "text",
+      "sha256": "5443d54ece36851f11def8165e5f234d8ded964c71c05aa46def9e2aa382ddf4"
+    },
+    {
+      "path": "server/platform/operationalAmendments.ts",
+      "status": "present",
+      "bytes": 19658,
+      "kind": "text",
+      "sha256": "ae779e17f76347988ec0686e7d4f59fbae1936aa77eca2a6c4ab21536c1c0938"
+    },
+    {
+      "path": "server/platform/operations.ts",
+      "status": "present",
+      "bytes": 17293,
+      "kind": "text",
+      "sha256": "8cd37488ed8b894a26386e558d611e344de650ed318bbdd5847b7ae031ea3c91"
+    },
+    {
+      "path": "server/platform/reports.ts",
+      "status": "present",
+      "bytes": 12031,
+      "kind": "text",
+      "sha256": "9c89e65c5ab09b1e8073ce5ddbd6a90be10e72e16b00f688ef42697da4c14593"
+    },
+    {
+      "path": "server/platform/runtimeControls.ts",
+      "status": "present",
+      "bytes": 1908,
+      "kind": "text",
+      "sha256": "c1a88b2419ae1eccf7cc40cf48cf2643805e5a1c0f8f71818f083b788f555076"
+    },
+    {
+      "path": "server/platform/social.ts",
+      "status": "present",
+      "bytes": 4281,
+      "kind": "text",
+      "sha256": "7b054ac346244752f8dd595f4f95ae7858028cd0af525d426ebb0986076ab9cb"
+    },
+    {
+      "path": "server/platform/store.ts",
+      "status": "present",
+      "bytes": 6945,
+      "kind": "text",
+      "sha256": "7e74324157d7c78b33d5a1f08b54e46cb667afffad2d75521dccaacc5156dbc2"
+    },
+    {
+      "path": "server/platform/supabasePersistence.ts",
+      "status": "present",
+      "bytes": 8269,
+      "kind": "text",
+      "sha256": "87b4989f3cf1fcd3072a0811f17dfbfd5de33f349be0663d184fbf66e7215eb7"
+    },
+    {
+      "path": "server/platform/whatsapp.ts",
+      "status": "present",
+      "bytes": 7641,
+      "kind": "text",
+      "sha256": "83d498cd97f44570ada049acb4002c23d6677634a109fc8ba3179b4645f01b20"
+    },
+    {
+      "path": "server/platform/work.ts",
+      "status": "present",
+      "bytes": 24661,
+      "kind": "text",
+      "sha256": "2ebd06f34dc27f07078081e9a214b27b93f5c8a0416423cd37ad6e07b3712f23"
+    },
+    {
+      "path": "server/runtime-config.ts",
+      "status": "present",
+      "bytes": 1741,
+      "kind": "text",
+      "sha256": "0e91e4e545fd82c7d1f72b081490bc49ce1a630e3d1bb36f5d759ca1ad4d5603"
+    },
+    {
+      "path": "server/runtime-identity.ts",
+      "status": "present",
+      "bytes": 6464,
+      "kind": "text",
+      "sha256": "f55102b7a8bf701c3d39c76da1652ebf695b1579b63dc2e4062467002dac3485"
+    },
+    {
+      "path": "shared/automation-contracts.ts",
+      "status": "present",
+      "bytes": 2455,
+      "kind": "text",
+      "sha256": "7bdd5d1465751ab626a57e9bd33aa291e141586945841d79e237bac9f1db5b2d"
+    },
+    {
+      "path": "shared/dealer-contracts.ts",
+      "status": "present",
+      "bytes": 3034,
+      "kind": "text",
+      "sha256": "0dcd60042a4e196fbc2f512eaac211e75c808d25942d71f5ad10d80b4f9c152c"
+    },
+    {
+      "path": "shared/founder-intelligence-contracts.ts",
+      "status": "present",
+      "bytes": 2693,
+      "kind": "text",
+      "sha256": "3e89b1c5a839d6e6e3b4d6ab61b23a513bcf93282811a633be568c621e913199"
+    },
+    {
+      "path": "shared/jev-contracts.ts",
+      "status": "present",
+      "bytes": 4264,
+      "kind": "text",
+      "sha256": "58046fdb7e249bb9af2e61df64442bf91074b7cdc2dff1bd8d51682cb03cded3"
+    },
+    {
+      "path": "shared/onboarding-contracts.ts",
+      "status": "present",
+      "bytes": 1096,
+      "kind": "text",
+      "sha256": "a4a48407771c57bd9bf2fbb68f10a6669056ff86dd2253eaa2784c6a1146e700"
+    },
+    {
+      "path": "shared/operation-amendment-contracts.ts",
+      "status": "present",
+      "bytes": 2161,
+      "kind": "text",
+      "sha256": "f2e7d24cf37c1ff437beb97c214760718ceb6f17aa6b93bc6c9de436d2fef292"
+    },
+    {
+      "path": "shared/pilot-contracts.ts",
+      "status": "present",
+      "bytes": 1269,
+      "kind": "text",
+      "sha256": "7b594715e37b0e5c3d020d2947e3c8508fa673bfc7282180fbf008f11ec63517"
+    },
+    {
+      "path": "shared/platform-contracts.ts",
+      "status": "present",
+      "bytes": 13141,
+      "kind": "text",
+      "sha256": "9a2cca4e25553ef33ef7899db3d7e1266a62b5180bff531560259eac179ea1cf"
+    },
+    {
+      "path": "shared/report-contracts.ts",
+      "status": "present",
+      "bytes": 1290,
+      "kind": "text",
+      "sha256": "c728429935c6a1ad53d1fa91c7a7885ee4be8b645ced2da40b342734da142e79"
+    },
+    {
+      "path": "shared/social-contracts.ts",
+      "status": "present",
+      "bytes": 962,
+      "kind": "text",
+      "sha256": "ed90008fed45a11158b68d934d3f30653ed4c0540ff3cef6e0dab47093e2f17d"
+    },
+    {
+      "path": "shared/work-collaboration-contracts.ts",
+      "status": "present",
+      "bytes": 1267,
+      "kind": "text",
+      "sha256": "35d62996f6c89726de4cd4aeebc51d6cfb86fe69d708e7429d09b6d47d3b0675"
+    },
+    {
+      "path": "skills/STACK_PROFILES.md",
+      "status": "present",
+      "bytes": 634,
+      "kind": "text",
+      "sha256": "a7052620ab1e6ce7c5e7d638600195a077a9c43daad66625bbca87a9e9e51c07"
+    },
+    {
+      "path": "skills/architecture-design/api-design-and-versioning/SKILL.md",
+      "status": "present",
+      "bytes": 2957,
+      "kind": "text",
+      "sha256": "87beca6ba2c3ae5ef843d9a466d322e6c73019a21e9f426510e686eed03be382"
+    },
+    {
+      "path": "skills/architecture-design/api-gateway-configurator/SKILL.md",
+      "status": "present",
+      "bytes": 2961,
+      "kind": "text",
+      "sha256": "03e1cbc4489881fecb436f3046f2b8b6dd0fe8d56c8a02a643e1055612570ec3"
+    },
+    {
+      "path": "skills/architecture-design/clean-architecture-scaffolder/SKILL.md",
+      "status": "present",
+      "bytes": 2961,
+      "kind": "text",
+      "sha256": "0274620793568e8da1d4ea6040b51c0e1ce3eb9d1244fbacea01037d36684c7c"
+    },
+    {
+      "path": "skills/architecture-design/contract-first-api-development/SKILL.md",
+      "status": "present",
+      "bytes": 2939,
+      "kind": "text",
+      "sha256": "cdbae38ecb8bb78873e832b3dbd63638e9ae626d75cbb658b1aff5c42cdda85d"
+    },
+    {
+      "path": "skills/architecture-design/distributed-system-patterns/SKILL.md",
+      "status": "present",
+      "bytes": 2979,
+      "kind": "text",
+      "sha256": "1caa5b71435eefc62f032ee321efd7f31ce5f5efec28a7041e30f198d0da4bf8"
+    },
+    {
+      "path": "skills/architecture-design/domain-driven-design-builder/SKILL.md",
+      "status": "present",
+      "bytes": 2987,
+      "kind": "text",
+      "sha256": "2b1adc30e67d25bfc5ebf9a51f305cd2f88eee55b76088d79e3e1af8e9c06236"
+    },
+    {
+      "path": "skills/architecture-design/event-driven-system-designer/SKILL.md",
+      "status": "present",
+      "bytes": 2957,
+      "kind": "text",
+      "sha256": "70b40779264ebc7ad9490367e5c2ac7592ff192a6d2ffb35f0016bcfd2ebe135"
+    },
+    {
+      "path": "skills/architecture-design/hexagonal-architecture-builder/SKILL.md",
+      "status": "present",
+      "bytes": 2931,
+      "kind": "text",
+      "sha256": "c2969917d227b4bafb99465ef79bb413821d7bd0e769d9f7632b53f96bc3710a"
+    },
+    {
+      "path": "skills/architecture-design/microservices-architect/SKILL.md",
+      "status": "present",
+      "bytes": 3001,
+      "kind": "text",
+      "sha256": "3dda5ccda4dd23bb35066a4cf9a4bcc04eafff96a5072cbef9a62887f1f0b7d3"
+    },
+    {
+      "path": "skills/architecture-design/modular-monolith-designer/SKILL.md",
+      "status": "present",
+      "bytes": 2961,
+      "kind": "text",
+      "sha256": "359beb251b3b0cf3a138e52abc48a1910df946788563af2e37425bb1e270448d"
+    },
+    {
+      "path": "skills/architecture-design/monolith-to-microservices-migrator/SKILL.md",
+      "status": "present",
+      "bytes": 2981,
+      "kind": "text",
+      "sha256": "6bec62f8a84969d61c1f75dbeb1145367c6f6c431cd194255c26b4215b97ab75"
+    },
+    {
+      "path": "skills/architecture-design/multi-tenancy-architect/SKILL.md",
+      "status": "present",
+      "bytes": 2945,
+      "kind": "text",
+      "sha256": "4b0a2c019e329a271d9a8e304db63e41ae597bf3bb3deb04c5713a48c8973789"
+    },
+    {
+      "path": "skills/architecture-design/real-time-system-designer/SKILL.md",
+      "status": "present",
+      "bytes": 2969,
+      "kind": "text",
+      "sha256": "639640677ca2005ad06fad36cd7bf06352617c513358d0a95df4988e756b6505"
+    },
+    {
+      "path": "skills/architecture-design/serverless-architecture-generator/SKILL.md",
+      "status": "present",
+      "bytes": 3013,
+      "kind": "text",
+      "sha256": "be176b275710390fbe67868a46326ebf2cec2324e0c19811056ffd3fdf2ce512"
+    },
+    {
+      "path": "skills/architecture-design/system-design-documentation/SKILL.md",
+      "status": "present",
+      "bytes": 2933,
+      "kind": "text",
+      "sha256": "15f433b2352fe30d28f5f5bf1ede4f6ee4ac101c8ceaf7efd9670391d84128d2"
+    },
+    {
+      "path": "skills/codegen-scaffolding/api-mocking-server/SKILL.md",
+      "status": "present",
+      "bytes": 2899,
+      "kind": "text",
+      "sha256": "5e7b59413986588ea7418764b6d5c5d1168c1c88dfdc0b1323e82a6ce971bb4e"
+    },
+    {
+      "path": "skills/codegen-scaffolding/boilerplate-project-scaffolder/SKILL.md",
+      "status": "present",
+      "bytes": 2929,
+      "kind": "text",
+      "sha256": "37cef0f6720b3ceecbe92ee341fcf957522d72165ab4ad98ed7cf7721ae20f32"
+    },
+    {
+      "path": "skills/codegen-scaffolding/cli-tool-builder/SKILL.md",
+      "status": "present",
+      "bytes": 2901,
+      "kind": "text",
+      "sha256": "bb84374380a02d4f456cb5b2e899de04b3f21f286452185f8f75556e34158a86"
+    },
+    {
+      "path": "skills/codegen-scaffolding/code-template-engine/SKILL.md",
+      "status": "present",
+      "bytes": 2915,
+      "kind": "text",
+      "sha256": "78caec08d27379fc3a26c9965c8d200042d9f1ff3d972bcb80aa6c47e4df947a"
+    },
+    {
+      "path": "skills/codegen-scaffolding/component-library-creator/SKILL.md",
+      "status": "present",
+      "bytes": 2921,
+      "kind": "text",
+      "sha256": "47176a8b6a5f2aa1f8fab3f4943bd7a06b1c383bece9f3cc6f0c29561caae5ae"
+    },
+    {
+      "path": "skills/codegen-scaffolding/crud-generator/SKILL.md",
+      "status": "present",
+      "bytes": 2909,
+      "kind": "text",
+      "sha256": "5f1472400f34478a360ae695e8abdbd3912ec69d5233f3c4a14999784d0dcde5"
+    },
+    {
+      "path": "skills/codegen-scaffolding/database-schema-generator/SKILL.md",
+      "status": "present",
+      "bytes": 2911,
+      "kind": "text",
+      "sha256": "e84d102b406df9928c8c0f70a786c010c2d90de3b2ba5a1f7527ab9a5fbc963f"
+    },
+    {
+      "path": "skills/codegen-scaffolding/dockerfile-generator/SKILL.md",
+      "status": "present",
+      "bytes": 2907,
+      "kind": "text",
+      "sha256": "510535c322323c50e6ac1e4eb1464277f1387728ba2753d6ff4011077d1b19de"
+    },
+    {
+      "path": "skills/codegen-scaffolding/full-stack-feature-generator/SKILL.md",
+      "status": "present",
+      "bytes": 2927,
+      "kind": "text",
+      "sha256": "235846c72628b8be7a44c5dec8f29f1dd25b6ed259c47e78d77e7c96d6da9539"
+    },
+    {
+      "path": "skills/codegen-scaffolding/github-actions-workflow/SKILL.md",
+      "status": "present",
+      "bytes": 2903,
+      "kind": "text",
+      "sha256": "c601b72c8bd1dbbbfc187ac4d320bb70d786a0de7b7d57c504937fadce3234ab"
+    },
+    {
+      "path": "skills/codegen-scaffolding/graphql-schema-builder/SKILL.md",
+      "status": "present",
+      "bytes": 2909,
+      "kind": "text",
+      "sha256": "541453d3e28f968956539acd9ae056167ce965677667b8753f0933688a597b06"
+    },
+    {
+      "path": "skills/codegen-scaffolding/mock-data-generator/SKILL.md",
+      "status": "present",
+      "bytes": 2893,
+      "kind": "text",
+      "sha256": "fc89b51c09c37729afa5d8c24b3f2771afa593b8471595b246c4ae2ba14b81eb"
+    },
+    {
+      "path": "skills/codegen-scaffolding/openapi-code-generator/SKILL.md",
+      "status": "present",
+      "bytes": 2927,
+      "kind": "text",
+      "sha256": "3e229752d7abaa15193f89738355502a40cb9d554910337774ff99c6bcb9fc4a"
+    },
+    {
+      "path": "skills/codegen-scaffolding/react-hook-generator/SKILL.md",
+      "status": "present",
+      "bytes": 2897,
+      "kind": "text",
+      "sha256": "87b4e8b471476d5424c1b0aae005d5609a0b9c240aa1c8ff2f1fe19622568675"
+    },
+    {
+      "path": "skills/codegen-scaffolding/terraform-module-generator/SKILL.md",
+      "status": "present",
+      "bytes": 2929,
+      "kind": "text",
+      "sha256": "7253b87b86a152500f52e0073882a26f8f898ca4504f1effaafff17bd470f699"
+    },
+    {
+      "path": "skills/data-analytics/analytics-dashboard-generator/SKILL.md",
+      "status": "present",
+      "bytes": 2928,
+      "kind": "text",
+      "sha256": "aab8b24ac1bd0f7c88f5614988bcea936e0004dc6beaa42b817cd1061b521111"
+    },
+    {
+      "path": "skills/data-analytics/cdc-pipeline/SKILL.md",
+      "status": "present",
+      "bytes": 2898,
+      "kind": "text",
+      "sha256": "7253429199c41a5f4af8d740678ff2d0339691be4015503e7b95f61a094c5d9f"
+    },
+    {
+      "path": "skills/data-analytics/data-catalog-creator/SKILL.md",
+      "status": "present",
+      "bytes": 2890,
+      "kind": "text",
+      "sha256": "8cb92bcdc13c1689ba17a2e7024ce76b69d9b715fa8e3852392d514169fceae2"
+    },
+    {
+      "path": "skills/data-analytics/data-lake-architecture/SKILL.md",
+      "status": "present",
+      "bytes": 2910,
+      "kind": "text",
+      "sha256": "56694dc31ea78fedca2c8f7d631fe680448d48653b30b3ac07576f541367a1df"
+    },
+    {
+      "path": "skills/data-analytics/data-mesh-implementation/SKILL.md",
+      "status": "present",
+      "bytes": 2890,
+      "kind": "text",
+      "sha256": "340e27cade164e6f61583d73d562a0d27c03f981aa7f67dc29061b7aaed7c9c0"
+    },
+    {
+      "path": "skills/data-analytics/data-pipeline-builder/SKILL.md",
+      "status": "present",
+      "bytes": 2906,
+      "kind": "text",
+      "sha256": "7040d3c493121b85a228b97c94cc9afe395d43cf789b773bbe06d49b6ba5d5ba"
+    },
+    {
+      "path": "skills/data-analytics/data-quality-framework/SKILL.md",
+      "status": "present",
+      "bytes": 2924,
+      "kind": "text",
+      "sha256": "94d20491a8b8e64f906dbf7079153bb9acdc428eaf5be85b01f4e335b2167736"
+    },
+    {
+      "path": "skills/data-analytics/data-warehouse-designer/SKILL.md",
+      "status": "present",
+      "bytes": 2900,
+      "kind": "text",
+      "sha256": "e38613b1ebc1561cce5ed9b56338c67adcebb5b840babf03d7b171b193e2e569"
+    },
+    {
+      "path": "skills/data-analytics/database-migration-orchestrator/SKILL.md",
+      "status": "present",
+      "bytes": 2918,
+      "kind": "text",
+      "sha256": "0d2dbeb32f9d1b871a9225232839a9295c1587980bd74a718a0fd6b1ac1cdf85"
+    },
+    {
+      "path": "skills/data-analytics/feature-store-builder/SKILL.md",
+      "status": "present",
+      "bytes": 2908,
+      "kind": "text",
+      "sha256": "f02a1241d1c07bdfa25e4f0805d9932bc2b3355d8273817aa0b3fd2bc43edfec"
+    },
+    {
+      "path": "skills/data-analytics/graph-database-modeler/SKILL.md",
+      "status": "present",
+      "bytes": 2890,
+      "kind": "text",
+      "sha256": "bc79056c991a3a7744863ee7fcb7498e5adb55a5d64b16c515b174ac02a3dd98"
+    },
+    {
+      "path": "skills/data-analytics/ml-model-deployment/SKILL.md",
+      "status": "present",
+      "bytes": 2916,
+      "kind": "text",
+      "sha256": "e55a3fa158faf936aa91c4d04306943cb640d35f6278007cb4b7dc75ed3597d6"
+    },
+    {
+      "path": "skills/data-analytics/sql-query-optimizer/SKILL.md",
+      "status": "present",
+      "bytes": 2896,
+      "kind": "text",
+      "sha256": "399c127b4eb22378776271da224e7815753fc10d623ee378076b196d0c57f94a"
+    },
+    {
+      "path": "skills/data-analytics/stream-processing/SKILL.md",
+      "status": "present",
+      "bytes": 2920,
+      "kind": "text",
+      "sha256": "d9efa8628c2213caa1f2d4ee8a66fd6077f45f5c4d5dfe02855838bd39adfc14"
+    },
+    {
+      "path": "skills/data-analytics/time-series-database/SKILL.md",
+      "status": "present",
+      "bytes": 2884,
+      "kind": "text",
+      "sha256": "7e8dc9eb1bebc47a32dbfe3f7bd95deea451228241b89178ddb0cc6c9cfbc0a4"
+    },
+    {
+      "path": "skills/devops-infra/alerting-and-monitoring/SKILL.md",
+      "status": "present",
+      "bytes": 2912,
+      "kind": "text",
+      "sha256": "a4a19cd90199dfde8c22ebf6424fdc1383f2c5c328c458802cf8dc11079875d0"
+    },
+    {
+      "path": "skills/devops-infra/build-optimization/SKILL.md",
+      "status": "present",
+      "bytes": 2904,
+      "kind": "text",
+      "sha256": "6c00471dfc366a9ccb60494f29fc1df575a976871175cbb16cd7958eb842d287"
+    },
+    {
+      "path": "skills/devops-infra/ci-cd-pipeline-orchestrator/SKILL.md",
+      "status": "present",
+      "bytes": 2940,
+      "kind": "text",
+      "sha256": "99d46c3b3d3eb99413ceb08ce6fd4914bf210360130c0394a0433b717b7dd8f5"
+    },
+    {
+      "path": "skills/devops-infra/cloud-migration/SKILL.md",
+      "status": "present",
+      "bytes": 2912,
+      "kind": "text",
+      "sha256": "37c72543ab55958bb37619e00a14c58d5f6e7ee52453a1efc9cdd6f477f95762"
+    },
+    {
+      "path": "skills/devops-infra/configuration-management/SKILL.md",
+      "status": "present",
+      "bytes": 2896,
+      "kind": "text",
+      "sha256": "39a21d0465c92dc0725f90b7e3fb06b6dabd7632690c1db1b6e0c098065d5b55"
+    },
+    {
+      "path": "skills/devops-infra/container-orchestration/SKILL.md",
+      "status": "present",
+      "bytes": 2932,
+      "kind": "text",
+      "sha256": "fa155358dc870992a605764910650df000e8b4abaa112a506b28721e1330022c"
+    },
+    {
+      "path": "skills/devops-infra/cost-optimization/SKILL.md",
+      "status": "present",
+      "bytes": 2888,
+      "kind": "text",
+      "sha256": "c1d958dbeea6071aee0e251d1a949a79a3d1df18d2fb8f1fff167f6640cc0d25"
+    },
+    {
+      "path": "skills/devops-infra/database-administration-automation/SKILL.md",
+      "status": "present",
+      "bytes": 2944,
+      "kind": "text",
+      "sha256": "95e88d3e53bdb224699789199f3cb5cf241951688bc4c27342de96231546c6c5"
+    },
+    {
+      "path": "skills/devops-infra/disaster-recovery-planner/SKILL.md",
+      "status": "present",
+      "bytes": 2906,
+      "kind": "text",
+      "sha256": "5bee30ff0a07c7acd4443657076e5090b040d09a728a225219c68e6e2f0da9ea"
+    },
+    {
+      "path": "skills/devops-infra/gitops-workflow/SKILL.md",
+      "status": "present",
+      "bytes": 2890,
+      "kind": "text",
+      "sha256": "931a938eaa95fba75805655f6d0e58ab7f044b9ce9128a516764aa1ff83619be"
+    },
+    {
+      "path": "skills/devops-infra/infrastructure-as-code-generator/SKILL.md",
+      "status": "present",
+      "bytes": 2942,
+      "kind": "text",
+      "sha256": "d03b09fef11545d9c56c87cd6a0dcfa87bc1408803bf3c34344afec86659e267"
+    },
+    {
+      "path": "skills/devops-infra/kubernetes-cluster-manager/SKILL.md",
+      "status": "present",
+      "bytes": 2954,
+      "kind": "text",
+      "sha256": "c502d76581e180a6eea8d0bcbb65ea1b0e4598635ba1ef9371535ea8eb6caf82"
+    },
+    {
+      "path": "skills/devops-infra/logging-aggregation/SKILL.md",
+      "status": "present",
+      "bytes": 2910,
+      "kind": "text",
+      "sha256": "a689ff38f452fe0ab516316f2bc61071ddab5b35d4f9f9339d4f0b8598282025"
+    },
+    {
+      "path": "skills/devops-infra/multi-region-deployment/SKILL.md",
+      "status": "present",
+      "bytes": 2900,
+      "kind": "text",
+      "sha256": "f80f551530b253e5fdf2ce911cfdadf5c7bff9b483f31c5daa1988c37df4431c"
+    },
+    {
+      "path": "skills/devops-infra/network-infrastructure/SKILL.md",
+      "status": "present",
+      "bytes": 2906,
+      "kind": "text",
+      "sha256": "630dded516c87ae6744f7b97125c2198852dcd79c120bc9d1dbfe97ed9a42da3"
+    },
+    {
+      "path": "skills/devops-infra/observability-stack/SKILL.md",
+      "status": "present",
+      "bytes": 2902,
+      "kind": "text",
+      "sha256": "9b2837ed3a4d51478fea49b40851bc833a4888d1d323f18284131d11e9d8f019"
+    },
+    {
+      "path": "skills/devops-infra/rolling-update-strategies/SKILL.md",
+      "status": "present",
+      "bytes": 2926,
+      "kind": "text",
+      "sha256": "75f46bcf84c77fa44266d40f521d6b863f145fc7e7383c37325d2e750d02722d"
+    },
+    {
+      "path": "skills/devops-infra/secret-injection/SKILL.md",
+      "status": "present",
+      "bytes": 2902,
+      "kind": "text",
+      "sha256": "dde455daeadb68d2d540dccbbc34a4b04575968c2a7acb0802c8ac2e739eba93"
+    },
+    {
+      "path": "skills/devops-infra/serverless-framework/SKILL.md",
+      "status": "present",
+      "bytes": 2898,
+      "kind": "text",
+      "sha256": "fa62ac24711f1972ab135d8fc47fd82aa33cd9a3088434d9c90015d7c1ae4874"
+    },
+    {
+      "path": "skills/devops-infra/service-mesh-configurator/SKILL.md",
+      "status": "present",
+      "bytes": 2926,
+      "kind": "text",
+      "sha256": "3badac4b5e82cb411ae6bd8c28585e487c7ba725543211746936c7d90159f434"
+    },
+    {
+      "path": "skills/documentation-knowledge/api-documentation/SKILL.md",
+      "status": "present",
+      "bytes": 2901,
+      "kind": "text",
+      "sha256": "9968cbdeff455afb80f41bb4f0dea770164db8eb9092fdd6b2ad4b6d5a0008b2"
+    },
+    {
+      "path": "skills/documentation-knowledge/architecture-decision-records/SKILL.md",
+      "status": "present",
+      "bytes": 2925,
+      "kind": "text",
+      "sha256": "c53b083ea703d18b3d79108f8074140a922cf03dfbf4358c43176fc2858020bf"
+    },
+    {
+      "path": "skills/documentation-knowledge/changelog-automation/SKILL.md",
+      "status": "present",
+      "bytes": 2915,
+      "kind": "text",
+      "sha256": "882bb17647bca92d06434615292a2c98467ba5ab7b33946413d38b126f8bc68d"
+    },
+    {
+      "path": "skills/documentation-knowledge/code-comment-enricher/SKILL.md",
+      "status": "present",
+      "bytes": 2891,
+      "kind": "text",
+      "sha256": "710d04af9935dc005ab73f6c43f434ec2fa997e4961c39455d6c94be60b93bb5"
+    },
+    {
+      "path": "skills/documentation-knowledge/database-schema-documentation/SKILL.md",
+      "status": "present",
+      "bytes": 2917,
+      "kind": "text",
+      "sha256": "fd91684a71e8f9627e03769efec82f473bee5369241d2091f32051ca93ac97eb"
+    },
+    {
+      "path": "skills/documentation-knowledge/dependency-graph-visualizer/SKILL.md",
+      "status": "present",
+      "bytes": 2909,
+      "kind": "text",
+      "sha256": "c58ae53d5705eff7b6814ef7930f93f8c0538b8aea3d57014fc93764b5c1b2e9"
+    },
+    {
+      "path": "skills/documentation-knowledge/diagram-as-code/SKILL.md",
+      "status": "present",
+      "bytes": 2889,
+      "kind": "text",
+      "sha256": "b221a25180018e7194a901a565998debdd6f04ad161843e76990eba13601d819"
+    },
+    {
+      "path": "skills/documentation-knowledge/incident-post-mortem/SKILL.md",
+      "status": "present",
+      "bytes": 2903,
+      "kind": "text",
+      "sha256": "793c774e4aed8ea185c6ea2e632a7dcca32b235e3651d256f2bccdd505195d3a"
+    },
+    {
+      "path": "skills/documentation-knowledge/knowledge-base-builder/SKILL.md",
+      "status": "present",
+      "bytes": 2891,
+      "kind": "text",
+      "sha256": "539fb320c4889f02e01e73cda41ff7d909e52da922a73d7f2c035864bb84932b"
+    },
+    {
+      "path": "skills/documentation-knowledge/living-documentation-generator/SKILL.md",
+      "status": "present",
+      "bytes": 2925,
+      "kind": "text",
+      "sha256": "c600a8ba306a0bdd622c6709411eafb615fefa01a98754eef99dd55f2a176560"
+    },
+    {
+      "path": "skills/documentation-knowledge/onboarding-guide-creator/SKILL.md",
+      "status": "present",
+      "bytes": 2901,
+      "kind": "text",
+      "sha256": "397b1bc3cd4df89b8576795ec4d6d3fd4a15fdc8c62708402875f33360a1057f"
+    },
+    {
+      "path": "skills/documentation-knowledge/performance-baseline-documentation/SKILL.md",
+      "status": "present",
+      "bytes": 2931,
+      "kind": "text",
+      "sha256": "f99cc9822db79c5d8596ea7c2a33fe3bb1b8f433862aef3adf72673406dc8009"
+    },
+    {
+      "path": "skills/documentation-knowledge/readme-generator/SKILL.md",
+      "status": "present",
+      "bytes": 2915,
+      "kind": "text",
+      "sha256": "39dddbce1361ba50734bd965a0d696d685f15529a4783affe5709f593d939e0f"
+    },
+    {
+      "path": "skills/documentation-knowledge/runbook-generator/SKILL.md",
+      "status": "present",
+      "bytes": 2917,
+      "kind": "text",
+      "sha256": "cd4d44cdc4401777939c80450bd5e1363317f4224870dbae05d6d630d59d5e18"
+    },
+    {
+      "path": "skills/documentation-knowledge/tutorial-generator/SKILL.md",
+      "status": "present",
+      "bytes": 2897,
+      "kind": "text",
+      "sha256": "b2317bdde972d5a6d257112e9bef6e9caab0c516103f4a173f83e41f6afc448f"
+    },
+    {
+      "path": "skills/jev-core/agentic-levels/jev-10-levels-agentic-engineers/SKILL.md",
+      "status": "present",
+      "bytes": 1310,
+      "kind": "text",
+      "sha256": "acd873aa2c77c7e2f522ff65fcc7a6913c2063cafb15a6cebf61f188e66392f1"
+    },
+    {
+      "path": "skills/jev-core/agentic-levels/jev-advanced-use-cases/SKILL.md",
+      "status": "present",
+      "bytes": 1296,
+      "kind": "text",
+      "sha256": "e7fa96a7556329834d04c55814e260219190488e9ad386b957e8ef2308067bfb"
+    },
+    {
+      "path": "skills/jev-core/agents-that-act/agent-desktop/SKILL.md",
+      "status": "present",
+      "bytes": 1255,
+      "kind": "text",
+      "sha256": "bc0a0116457d99b70dcf49e53daf550f22d62c3dbd608e3c86c2f2cb496e48ca"
+    },
+    {
+      "path": "skills/jev-core/agents-that-act/blink/SKILL.md",
+      "status": "present",
+      "bytes": 1201,
+      "kind": "text",
+      "sha256": "594f56324c3433964d285aec6f63758fb4b4960706a80e6acd73d577316a24e1"
+    },
+    {
+      "path": "skills/jev-core/agents-that-act/jev-drone/SKILL.md",
+      "status": "present",
+      "bytes": 1227,
+      "kind": "text",
+      "sha256": "e5b45ed4fe0e57242ff82a142aae04b20947783bb6106b0fa0e92960c6969bb1"
+    },
+    {
+      "path": "skills/jev-core/agents-that-act/jev-ultrafast/SKILL.md",
+      "status": "present",
+      "bytes": 1233,
+      "kind": "text",
+      "sha256": "d530dc54770d2b28c935817603f672220d0e92839d7f7182b2b3e62caef9cda9"
+    },
+    {
+      "path": "skills/jev-core/build-and-judge/canny/SKILL.md",
+      "status": "present",
+      "bytes": 1229,
+      "kind": "text",
+      "sha256": "59cd6f71e4546f5670783ba733a66c67f8440a9e74791c0e6586fe6272c6ece1"
+    },
+    {
+      "path": "skills/jev-core/build-and-judge/jev-curate/SKILL.md",
+      "status": "present",
+      "bytes": 1235,
+      "kind": "text",
+      "sha256": "a2b350102a9825071acb7f2772bc87564376967a7f770b77ef1550fef6b4c57e"
+    },
+    {
+      "path": "skills/jev-core/build-and-judge/json-render/SKILL.md",
+      "status": "present",
+      "bytes": 1215,
+      "kind": "text",
+      "sha256": "6d387762060deab5a983612d049c8801548867d9e4ed9b302cc6a4c0a445eda4"
+    },
+    {
+      "path": "skills/jev-core/build-and-judge/killmyidea/SKILL.md",
+      "status": "present",
+      "bytes": 1237,
+      "kind": "text",
+      "sha256": "74a1efecd0b1a697f27a86a541ac64ab1563d09e4a531a01f0083887dc0f328d"
+    },
+    {
+      "path": "skills/jev-core/context-and-memory/fast-jev-compaction/SKILL.md",
+      "status": "present",
+      "bytes": 1312,
+      "kind": "text",
+      "sha256": "dd86a0aca6e8808932054567cb79733ac2bcc0b24a4112278fbf85077751ddc9"
+    },
+    {
+      "path": "skills/jev-core/context-and-memory/neo4jev/SKILL.md",
+      "status": "present",
+      "bytes": 1262,
+      "kind": "text",
+      "sha256": "356e3403a653e64295600ff0fe980bdfc26448cf985a8a9715000f5932d8f5a6"
+    },
+    {
+      "path": "skills/jev-core/context-and-memory/semdecide/SKILL.md",
+      "status": "present",
+      "bytes": 1220,
+      "kind": "text",
+      "sha256": "0fed93615f9b03bd2d984bce4691b910c35f5cf7bbe52c4708c1fbe71d5694e5"
+    },
+    {
+      "path": "skills/jev-core/context-and-memory/winnow/SKILL.md",
+      "status": "present",
+      "bytes": 1262,
+      "kind": "text",
+      "sha256": "d3e2207e3425d5dcb6ad1e032ccb1d785e7db451bd2f85590e8566af0d47cc8d"
+    },
+    {
+      "path": "skills/jev-core/dev-workflow/jev-codex-router/SKILL.md",
+      "status": "present",
+      "bytes": 1256,
+      "kind": "text",
+      "sha256": "4b273c75efae88dff2e2e50e4ce7afd0489801d2e196c0c7914879b4a412ba08"
+    },
+    {
+      "path": "skills/jev-core/dev-workflow/jev-mcp/SKILL.md",
+      "status": "present",
+      "bytes": 1252,
+      "kind": "text",
+      "sha256": "4589e3bcf29bc2dcfcf9b5f70305a0bc92d4b4ea50b85d364c48d35828b981f5"
+    },
+    {
+      "path": "skills/jev-core/dev-workflow/jev-review/SKILL.md",
+      "status": "present",
+      "bytes": 1244,
+      "kind": "text",
+      "sha256": "7067be21e1e5208eca6d657fa6e342f81c1311932e3211c18a587cb0cd9ba2c6"
+    },
+    {
+      "path": "skills/jev-core/dev-workflow/typesafe-mcp/SKILL.md",
+      "status": "present",
+      "bytes": 1234,
+      "kind": "text",
+      "sha256": "2772d8e39571028c6ab0b527e99754b663e380693ceed90bd846300d38cfdcaa"
+    },
+    {
+      "path": "skills/jev-core/markets-and-play/jev-trader/SKILL.md",
+      "status": "present",
+      "bytes": 1212,
+      "kind": "text",
+      "sha256": "db0a4f8466eef86921d4b466094bf0b222be489858a56d20f036b6686e330601"
+    },
+    {
+      "path": "skills/jev-core/markets-and-play/onevonejev/SKILL.md",
+      "status": "present",
+      "bytes": 1206,
+      "kind": "text",
+      "sha256": "34cf26c8e41db83c38a2198550591631ae180dab875a2169c6a154ea04c195aa"
+    },
+    {
+      "path": "skills/jev-core/markets-and-play/prism/SKILL.md",
+      "status": "present",
+      "bytes": 1222,
+      "kind": "text",
+      "sha256": "593a961c6903f1291fcc4b45325af1c1f6a917b829b4b45d6eb0202fe8cb7e10"
+    },
+    {
+      "path": "skills/jev-core/markets-and-play/typesafe-mario/SKILL.md",
+      "status": "present",
+      "bytes": 1240,
+      "kind": "text",
+      "sha256": "b73bdfd3adb1ba19c1be8f622f660c22b2152927a25399d82c47570cc4cd8424"
+    },
+    {
+      "path": "skills/maintenance-optimization/api-response-optimizer/SKILL.md",
+      "status": "present",
+      "bytes": 2910,
+      "kind": "text",
+      "sha256": "d9a89ae3733f09818e419d5d0ccaebd3c13a241f62a28ccd14f3145b880d4583"
+    },
+    {
+      "path": "skills/maintenance-optimization/bundle-size-optimizer/SKILL.md",
+      "status": "present",
+      "bytes": 2922,
+      "kind": "text",
+      "sha256": "cf392cbf92afb0b0b49893866b45c109e03d00e3f0ac85fba01393232ca6a499"
+    },
+    {
+      "path": "skills/maintenance-optimization/cache-strategy-implementer/SKILL.md",
+      "status": "present",
+      "bytes": 2910,
+      "kind": "text",
+      "sha256": "dcc187d21e9a6627e148aba92443050ce9de50927f91ca6b09df2884ab2f8c72"
+    },
+    {
+      "path": "skills/maintenance-optimization/code-complexity-reducer/SKILL.md",
+      "status": "present",
+      "bytes": 2912,
+      "kind": "text",
+      "sha256": "0d1e53100f442596fe6e42945b726f44f2f27c1bebcd67850db1867b74ff85cb"
+    },
+    {
+      "path": "skills/maintenance-optimization/code-duplication-remover/SKILL.md",
+      "status": "present",
+      "bytes": 2906,
+      "kind": "text",
+      "sha256": "c1b303169400b8e777ae15e5983f554ab542596e5584dd9a181f1ced229d19ee"
+    },
+    {
+      "path": "skills/maintenance-optimization/container-image-optimizer/SKILL.md",
+      "status": "present",
+      "bytes": 2918,
+      "kind": "text",
+      "sha256": "b5ef182f7e3c3e6ec8c0bad19182a5db2ec70a4fca268127b80ea8df741f2fe2"
+    },
+    {
+      "path": "skills/maintenance-optimization/database-query-optimizer/SKILL.md",
+      "status": "present",
+      "bytes": 2922,
+      "kind": "text",
+      "sha256": "367ae261465204e7b25080cc81a28eda78acf8f58718e549aaded55849f4d2f7"
+    },
+    {
+      "path": "skills/maintenance-optimization/dead-code-eliminator/SKILL.md",
+      "status": "present",
+      "bytes": 2898,
+      "kind": "text",
+      "sha256": "7702c18031b69408d48969cdb546dad1e3d463cd09c8e816cd284c108d129a33"
+    },
+    {
+      "path": "skills/maintenance-optimization/dependency-updater/SKILL.md",
+      "status": "present",
+      "bytes": 2916,
+      "kind": "text",
+      "sha256": "fc003ba842fc5825f951f746dbefa27854439b74469b3e37167a3b6aa4af3c9e"
+    },
+    {
+      "path": "skills/maintenance-optimization/error-handling-standardizer/SKILL.md",
+      "status": "present",
+      "bytes": 2924,
+      "kind": "text",
+      "sha256": "8f89d407e53fa6a8c8d7b73dd3958cd76a5b1c505a17bf750c9a51f39fc95a76"
+    },
+    {
+      "path": "skills/maintenance-optimization/logging-optimizer/SKILL.md",
+      "status": "present",
+      "bytes": 2896,
+      "kind": "text",
+      "sha256": "4614261d32024a2a04b270f85f7276b6a4c61bf85c760579fd35f6753140547f"
+    },
+    {
+      "path": "skills/maintenance-optimization/memory-leak-detector/SKILL.md",
+      "status": "present",
+      "bytes": 2878,
+      "kind": "text",
+      "sha256": "17b74c10493557ce61d6f49a25447254045b2d965e4f4349e82f8380ffe43e2f"
+    },
+    {
+      "path": "skills/maintenance-optimization/performance-optimizer/SKILL.md",
+      "status": "present",
+      "bytes": 2920,
+      "kind": "text",
+      "sha256": "756de89c482c65941eeceb7f5be203ff662b5d0846361ca5d6b4cced539fff2a"
+    },
+    {
+      "path": "skills/maintenance-optimization/smart-refactoring-engine/SKILL.md",
+      "status": "present",
+      "bytes": 2920,
+      "kind": "text",
+      "sha256": "1478648f1dcc78707bb74cb28e9d3e7e3f83a3d11f7e0d91263a5025ab65c481"
+    },
+    {
+      "path": "skills/maintenance-optimization/technical-debt-analyzer/SKILL.md",
+      "status": "present",
+      "bytes": 2900,
+      "kind": "text",
+      "sha256": "53f25877bc204e24777388ea4f54aacc2a3e3fb2741bd75dfbaf8a49e54fb340"
+    },
+    {
+      "path": "skills/meta/architecture-review-and-approval/SKILL.md",
+      "status": "present",
+      "bytes": 2964,
+      "kind": "text",
+      "sha256": "538945ab84a7d5c5569c31d96655b177cfdbe72b4819d687a82b2384b7e950b4"
+    },
+    {
+      "path": "skills/meta/change-management-and-rollback/SKILL.md",
+      "status": "present",
+      "bytes": 2950,
+      "kind": "text",
+      "sha256": "ac8f9c0c7c3fd33304517c84f7ffd1bcf0b38e366bb3fbb12e5b2fe2236ac992"
+    },
+    {
+      "path": "skills/meta/compliance-evidence-pack/SKILL.md",
+      "status": "present",
+      "bytes": 2926,
+      "kind": "text",
+      "sha256": "b5d176d7af2b27d93ff8c52c3592fc005880c03b117ed041f7385de6c777c617"
+    },
+    {
+      "path": "skills/meta/delivery-checklist-and-handoff/SKILL.md",
+      "status": "present",
+      "bytes": 2954,
+      "kind": "text",
+      "sha256": "4656c24951d11b564ff80b3c70c43b066f194f6cc3453fa812ec4b2f3a9294ac"
+    },
+    {
+      "path": "skills/meta/multi-skill-orchestration/SKILL.md",
+      "status": "present",
+      "bytes": 2944,
+      "kind": "text",
+      "sha256": "e50fbef9a2fe99e62fd3473eed79d49c34a69f363eefa3211bf0738aafdcadb6"
+    },
+    {
+      "path": "skills/meta/performance-budgeting/SKILL.md",
+      "status": "present",
+      "bytes": 2904,
+      "kind": "text",
+      "sha256": "4b2a97de6aa21afa20826ddd0c0314867cb42f902ab8a472df891e60db532717"
+    },
+    {
+      "path": "skills/meta/risk-and-assumption-tracker/SKILL.md",
+      "status": "present",
+      "bytes": 2958,
+      "kind": "text",
+      "sha256": "c934e0f46b4bcfbd7fef5600e860d4df7f651dc48fb490d97cf4a53e2578c9ba"
+    },
+    {
+      "path": "skills/meta/skill-intake-and-triage/SKILL.md",
+      "status": "present",
+      "bytes": 2952,
+      "kind": "text",
+      "sha256": "b8545e7efdfd187679d3a745a22ddaa95918b1f0d7ae8fb2b85d4e1fd9bbe0bf"
+    },
+    {
+      "path": "skills/meta/skill-quality-gate/SKILL.md",
+      "status": "present",
+      "bytes": 2912,
+      "kind": "text",
+      "sha256": "09867732dc45ea7d5ff17ae35a2e324e43d413db906fae935dd199938b2f8272"
+    },
+    {
+      "path": "skills/meta/stack-profile-manager/SKILL.md",
+      "status": "present",
+      "bytes": 2926,
+      "kind": "text",
+      "sha256": "d82f5b4ec42e457b22bbfae85fbf901809e4e103970bf03b191f0bbcbb3e383d"
+    },
+    {
+      "path": "skills/security-compliance/access-control-matrix/SKILL.md",
+      "status": "present",
+      "bytes": 2921,
+      "kind": "text",
+      "sha256": "1b8f02ef751e34fd70b92a7dc18c1189a9d2e9582123d228e984ed91f5ebdf17"
+    },
+    {
+      "path": "skills/security-compliance/api-security-enforcer/SKILL.md",
+      "status": "present",
+      "bytes": 2941,
+      "kind": "text",
+      "sha256": "21be75d3e69b343ffbd79e42f1133ce24781d64bf05f53477988fded4b3efb34"
+    },
+    {
+      "path": "skills/security-compliance/audit-logger/SKILL.md",
+      "status": "present",
+      "bytes": 2909,
+      "kind": "text",
+      "sha256": "46e0ed8d5ad6be3a6ea42fa52eb87a9017c2b87185dc434983af5306335728c7"
+    },
+    {
+      "path": "skills/security-compliance/authentication-system-builder/SKILL.md",
+      "status": "present",
+      "bytes": 2953,
+      "kind": "text",
+      "sha256": "41f417e38aa0a76f5a45f4a1a238eac41297929676a64ebece7bb8f76e41f4d5"
+    },
+    {
+      "path": "skills/security-compliance/certificate-manager/SKILL.md",
+      "status": "present",
+      "bytes": 2933,
+      "kind": "text",
+      "sha256": "98a0e284b513b850229a94a752d9ae6d43529fb41389bfd4189c5a1266e2c0a0"
+    },
+    {
+      "path": "skills/security-compliance/compliance-checker/SKILL.md",
+      "status": "present",
+      "bytes": 2935,
+      "kind": "text",
+      "sha256": "2f740fb6cc3ef1ec629bf8254e05abf7ece7dfee52940d72732fdd1048a6c99c"
+    },
+    {
+      "path": "skills/security-compliance/container-security-scanner/SKILL.md",
+      "status": "present",
+      "bytes": 2937,
+      "kind": "text",
+      "sha256": "21425e9e766c4213d01adf0f71c640c6b224e1f5d19539ec0ad78613fd2f7361"
+    },
+    {
+      "path": "skills/security-compliance/data-privacy-guardian/SKILL.md",
+      "status": "present",
+      "bytes": 2931,
+      "kind": "text",
+      "sha256": "d76ed67cbd622df121a17d5ee699823fe88c4616d8ef0875b3a1468eeccc4c10"
+    },
+    {
+      "path": "skills/security-compliance/penetration-testing-runner/SKILL.md",
+      "status": "present",
+      "bytes": 2923,
+      "kind": "text",
+      "sha256": "acb2ea27703063cbb1179b77c28cd10f6c926a4460f14e20931485897633ca0a"
+    },
+    {
+      "path": "skills/security-compliance/secrets-management/SKILL.md",
+      "status": "present",
+      "bytes": 2911,
+      "kind": "text",
+      "sha256": "c91f424c2f4a75bb926b10136eef862d6305bb8edf779787ce81f4ea74034860"
+    },
+    {
+      "path": "skills/security-compliance/security-hardening-auditor/SKILL.md",
+      "status": "present",
+      "bytes": 2947,
+      "kind": "text",
+      "sha256": "508bcdb23d20d1b0d96b930265bdb1b7351a1c72db22c46953fdaeb4ad3702d6"
+    },
+    {
+      "path": "skills/security-compliance/security-incident-response/SKILL.md",
+      "status": "present",
+      "bytes": 2961,
+      "kind": "text",
+      "sha256": "b0e64cf846836b5687cb51260c52deb6f6c7229bb0d5d2b1fc73d8a9611289b1"
+    },
+    {
+      "path": "skills/security-compliance/supply-chain-security/SKILL.md",
+      "status": "present",
+      "bytes": 2927,
+      "kind": "text",
+      "sha256": "4ab8cdebc928c5bf8509e414d7ef22881c03cc99e84492e789850f1428084d2a"
+    },
+    {
+      "path": "skills/security-compliance/threat-modeling-framework/SKILL.md",
+      "status": "present",
+      "bytes": 2921,
+      "kind": "text",
+      "sha256": "dcec31d0721004bb92e7124d05824ad4e01af893e983031a2e6f1256a7a73429"
+    },
+    {
+      "path": "skills/security-compliance/zero-trust-architecture/SKILL.md",
+      "status": "present",
+      "bytes": 2951,
+      "kind": "text",
+      "sha256": "bae14a56068d3be2ce4055e41ff378de045ec4bcd52647294aed0bd4642e4d05"
+    },
+    {
+      "path": "skills/superpowers/brainstorming/SKILL.md",
+      "status": "present",
+      "bytes": 17833,
+      "kind": "text",
+      "sha256": "8b883cc136d60e304dbc2cc3c2e024f5416bb9d805b4ea3c1aec5b5012da3442"
+    },
+    {
+      "path": "skills/superpowers/brainstorming/scripts/frame-template.html",
+      "status": "present",
+      "bytes": 8307,
+      "kind": "text",
+      "sha256": "7b9418e9939dded0cf8e6a5549a18162b7c7e5495deeefa83a12f3394b81395d"
+    },
+    {
+      "path": "skills/superpowers/brainstorming/scripts/helper.js",
+      "status": "present",
+      "bytes": 5782,
+      "kind": "text",
+      "sha256": "78c3a22dd5e799623cab8908b0b03e764404efde2d2edc94a8814cf450a09e81"
+    },
+    {
+      "path": "skills/superpowers/brainstorming/scripts/server.cjs",
+      "status": "present",
+      "bytes": 26416,
+      "kind": "text",
+      "sha256": "ee89af11506ac4933324c89a2cfb36b391fe611f82efb9eeb3b814e40825145f"
+    },
+    {
+      "path": "skills/superpowers/brainstorming/scripts/start-server.sh",
+      "status": "present",
+      "bytes": 7117,
+      "kind": "text",
+      "sha256": "526f3fc34bbdc56d97532d84bf861a1113f9f08fec6479c3553c13ec627c2448"
+    },
+    {
+      "path": "skills/superpowers/brainstorming/scripts/stop-server.sh",
+      "status": "present",
+      "bytes": 3383,
+      "kind": "text",
+      "sha256": "6a2f3f3b7ca84fde8ef3c43825d392e1f12126b52a93b42c4d4940779bac884d"
+    },
+    {
+      "path": "skills/superpowers/brainstorming/spec-document-reviewer-prompt.md",
+      "status": "present",
+      "bytes": 1796,
+      "kind": "text",
+      "sha256": "793f2546815a28f2712f0dcb926ab96dc4a60145fbea6f9a08d88287ec8e15bc"
+    },
+    {
+      "path": "skills/superpowers/brainstorming/visual-companion.md",
+      "status": "present",
+      "bytes": 13712,
+      "kind": "text",
+      "sha256": "95a58903eeac8e247f75335d46d5cbbe29e041e1731a15ff89aec82e96a7c989"
+    },
+    {
+      "path": "skills/superpowers/diagnosing-superpowers/SKILL.md",
+      "status": "present",
+      "bytes": 7024,
+      "kind": "text",
+      "sha256": "9c68190617f4f20eee9c7519badc067c66e732922a343825937f62af62578182"
+    },
+    {
+      "path": "skills/superpowers/diagnosing-superpowers/prompts/analyst-common.md",
+      "status": "present",
+      "bytes": 1620,
+      "kind": "text",
+      "sha256": "87f5303d6c45b3fb7ba6d54a46b06f0227e5f8f2f3fdd54c1c698d33efbaf3f6"
+    },
+    {
+      "path": "skills/superpowers/diagnosing-superpowers/prompts/cost-and-time.md",
+      "status": "present",
+      "bytes": 1668,
+      "kind": "text",
+      "sha256": "72ee384cf6bc3daeb3f954230a05edd96ca9b3c03e303bba031612fe259e2868"
+    },
+    {
+      "path": "skills/superpowers/diagnosing-superpowers/prompts/plan-adherence.md",
+      "status": "present",
+      "bytes": 1666,
+      "kind": "text",
+      "sha256": "d2681d76bf70eff9fba380c6d6c9c2b6e1af7afff32d0bd282e17c977da6fc37"
+    },
+    {
+      "path": "skills/superpowers/diagnosing-superpowers/prompts/quality-evidence.md",
+      "status": "present",
+      "bytes": 1502,
+      "kind": "text",
+      "sha256": "01b29eea22501ddd22416418b8de1c7a6124a293d13c41d417f7ecf08bb690a3"
+    },
+    {
+      "path": "skills/superpowers/diagnosing-superpowers/prompts/repeated-work.md",
+      "status": "present",
+      "bytes": 1499,
+      "kind": "text",
+      "sha256": "e9a7b8bde8521c896b959b9c63570e7f832ce75d5db3f4cfecc14f988e2e7524"
+    },
+    {
+      "path": "skills/superpowers/diagnosing-superpowers/prompts/request-conflicts.md",
+      "status": "present",
+      "bytes": 1031,
+      "kind": "text",
+      "sha256": "2fee01230cf625de4702ad2ad83cd68d3c236b69b51d3823342f9d12449ab166"
+    },
+    {
+      "path": "skills/superpowers/diagnosing-superpowers/prompts/scrub-audit.md",
+      "status": "present",
+      "bytes": 1396,
+      "kind": "text",
+      "sha256": "c230befe2ab708faee327d708760c2fbe6fc39f874653ca21fed660068209d15"
+    },
+    {
+      "path": "skills/superpowers/diagnosing-superpowers/prompts/scrub.md",
+      "status": "present",
+      "bytes": 1500,
+      "kind": "text",
+      "sha256": "58e84fb2db013a945de00ab67f2945b2829deb70abb132c0a18fad4a5cdc2216"
+    },
+    {
+      "path": "skills/superpowers/diagnosing-superpowers/prompts/similar-session.md",
+      "status": "present",
+      "bytes": 1749,
+      "kind": "text",
+      "sha256": "abec588fb5f59a2bc1c54ca0aa1bda538989ef0c48e32bb85030097c1dd43908"
+    },
+    {
+      "path": "skills/superpowers/diagnosing-superpowers/prompts/skill-timeline.md",
+      "status": "present",
+      "bytes": 1676,
+      "kind": "text",
+      "sha256": "c2f24ba30c7be3b13ae5fd1c51d4a2397bd1cdc1700f7e7b37b259f9b2357535"
+    },
+    {
+      "path": "skills/superpowers/diagnosing-superpowers/prompts/stumbles.md",
+      "status": "present",
+      "bytes": 1358,
+      "kind": "text",
+      "sha256": "bf103612b7b78dcd160fa7b6a58e31a5349334adb4092781471016ef07619e27"
+    },
+    {
+      "path": "skills/superpowers/diagnosing-superpowers/references/context-safety.md",
+      "status": "present",
+      "bytes": 1012,
+      "kind": "text",
+      "sha256": "39c5259de8416f309b9d4e7a559fb7f5f1db52d865522efc87635f7669edb334"
+    },
+    {
+      "path": "skills/superpowers/diagnosing-superpowers/references/github-issues.md",
+      "status": "present",
+      "bytes": 1691,
+      "kind": "text",
+      "sha256": "0444c209fa848cda33636fa45e834c399c31d4e3b3d86c01ee7e1123d9c6048f"
+    },
+    {
+      "path": "skills/superpowers/diagnosing-superpowers/references/redaction-policy.md",
+      "status": "present",
+      "bytes": 2277,
+      "kind": "text",
+      "sha256": "6eca8a3a16b174f2a4505fafb7d55b756904ea176147bde2aaf2e5ad5333d89b"
+    },
+    {
+      "path": "skills/superpowers/diagnosing-superpowers/references/session-discovery.md",
+      "status": "present",
+      "bytes": 1890,
+      "kind": "text",
+      "sha256": "383801d792eed50a7049f7c39997dee9d12945a7618bffa1ff9c0c1256f8d4cc"
+    },
+    {
+      "path": "skills/superpowers/diagnosing-superpowers/templates/bundle-README.md",
+      "status": "present",
+      "bytes": 3749,
+      "kind": "text",
+      "sha256": "75e2d9c9dc1bf2ab6818c0d36363d08a4b162f8f8d8ea5c8ab30d7af40b7f383"
+    },
+    {
+      "path": "skills/superpowers/diagnosing-superpowers/templates/case.md",
+      "status": "present",
+      "bytes": 3047,
+      "kind": "text",
+      "sha256": "8e5ecb243d01a9a4d6189f6ec3f179bd42a6cb28a6e781345c097e8237515ac4"
+    },
+    {
+      "path": "skills/superpowers/diagnosing-superpowers/templates/issue.md",
+      "status": "present",
+      "bytes": 1902,
+      "kind": "text",
+      "sha256": "f8a6d000e412be1159bbfd947c5475c9522512e4b13335dbc6b64bd99ae03e5d"
+    },
+    {
+      "path": "skills/superpowers/diagnosing-superpowers/templates/report.md",
+      "status": "present",
+      "bytes": 2441,
+      "kind": "text",
+      "sha256": "5844320cd9cfefb064ec1249b1deab91e6157e2199b911a30459e082035ce987"
+    },
+    {
+      "path": "skills/superpowers/dispatching-parallel-agents/SKILL.md",
+      "status": "present",
+      "bytes": 6245,
+      "kind": "text",
+      "sha256": "fc9875393a1dcd6b649bf22d9ff62f3a02080c0ce365932451bc73e63d87ddab"
+    },
+    {
+      "path": "skills/superpowers/executing-plans/SKILL.md",
+      "status": "present",
+      "bytes": 20778,
+      "kind": "text",
+      "sha256": "9e0cf3924324bd93d2e3d5cbd242d623579c80b3d7fc9c9bfcd4c8240e5595df"
+    },
+    {
+      "path": "skills/superpowers/executing-plans/scripts/task-done",
+      "status": "present",
+      "bytes": 1722,
+      "kind": "text",
+      "sha256": "5896ebbb8c2a942a523913de6975b2a6334a27d0b9bc128cedad83bd2737792a"
+    },
+    {
+      "path": "skills/superpowers/executing-plans/scripts/task-start",
+      "status": "present",
+      "bytes": 991,
+      "kind": "text",
+      "sha256": "5eb4db5457bfe9d201712fd7322896afd2f7f12b277b563900331b4e2ddfb114"
+    },
+    {
+      "path": "skills/superpowers/finishing-a-development-branch/SKILL.md",
+      "status": "present",
+      "bytes": 8006,
+      "kind": "text",
+      "sha256": "2b8cb8f9cabb1951be2ebb1d72da90d3313f7e3705fd25f5b8f2d0432e139bae"
+    },
+    {
+      "path": "skills/superpowers/receiving-code-review/SKILL.md",
+      "status": "present",
+      "bytes": 6408,
+      "kind": "text",
+      "sha256": "bbe7eb200ac9feb97f2620308ba8ecb517837465009a858bc5687695f3d0a6ae"
+    },
+    {
+      "path": "skills/superpowers/requesting-code-review/SKILL.md",
+      "status": "present",
+      "bytes": 3072,
+      "kind": "text",
+      "sha256": "c12edf804d7b064661de587920b92768ad650fc5b61917c795436637b7f00740"
+    },
+    {
+      "path": "skills/superpowers/requesting-code-review/code-reviewer.md",
+      "status": "present",
+      "bytes": 6647,
+      "kind": "text",
+      "sha256": "5e618b2a89ab9616112791b5245957948a1a26079ca6c30339f42fb378411e32"
+    },
+    {
+      "path": "skills/superpowers/subagent-driven-development/SKILL.md",
+      "status": "present",
+      "bytes": 33145,
+      "kind": "text",
+      "sha256": "3acabb8d9a3114c41a083b85f7132c281424025ed7176d5ae7d47dd10490fd06"
+    },
+    {
+      "path": "skills/superpowers/subagent-driven-development/implementer-prompt.md",
+      "status": "present",
+      "bytes": 6489,
+      "kind": "text",
+      "sha256": "bda42c4969d1578eab92bc1cca864397203329d22dbc143a8c6a896adb548b42"
+    },
+    {
+      "path": "skills/superpowers/subagent-driven-development/re-review-prompt.md",
+      "status": "present",
+      "bytes": 4876,
+      "kind": "text",
+      "sha256": "ea2d362871c1269ba44f3d5e4c6d7b6785da7572e6b7e27b7c5f92443f55d0ac"
+    },
+    {
+      "path": "skills/superpowers/subagent-driven-development/scripts/review-package",
+      "status": "present",
+      "bytes": 2082,
+      "kind": "text",
+      "sha256": "f617c52c538f09b13bd19a301cf5201584dcfd7aaf552eedefb3405f3f90fe0e"
+    },
+    {
+      "path": "skills/superpowers/subagent-driven-development/scripts/sdd-workspace",
+      "status": "present",
+      "bytes": 3347,
+      "kind": "text",
+      "sha256": "6e36a399687199dc11b9d7bd3038082d6a4637e7ad373b674dbb09f8ee1f7eea"
+    },
+    {
+      "path": "skills/superpowers/subagent-driven-development/scripts/task-brief",
+      "status": "present",
+      "bytes": 1365,
+      "kind": "text",
+      "sha256": "51bb3fb73b07f85fd19d8f29f178451f7557b8c3d084a85835c5bc6bc15869f3"
+    },
+    {
+      "path": "skills/superpowers/subagent-driven-development/task-reviewer-prompt.md",
+      "status": "present",
+      "bytes": 9238,
+      "kind": "text",
+      "sha256": "f1431b65a6e63e5fbaddda1922b4c97375cd4feeecf9ecdd9a9391ff1c405843"
+    },
+    {
+      "path": "skills/superpowers/systematic-debugging/CREATION-LOG.md",
+      "status": "present",
+      "bytes": 4376,
+      "kind": "text",
+      "sha256": "397f122f115f994372a1805e30071fc0ad86c0dc1e427fbf5b5f1b14143399f5"
+    },
+    {
+      "path": "skills/superpowers/systematic-debugging/SKILL.md",
+      "status": "present",
+      "bytes": 9748,
+      "kind": "text",
+      "sha256": "23f249e47a3a4b06c3a5030e37aaf3ced12a54f406782766b384ed127d21eca4"
+    },
+    {
+      "path": "skills/superpowers/systematic-debugging/condition-based-waiting-example.ts",
+      "status": "present",
+      "bytes": 5212,
+      "kind": "text",
+      "sha256": "0602407671f97439acc9e3cc2fe27ad42a22eb0dbca62f56d610fb223daadb0f"
+    },
+    {
+      "path": "skills/superpowers/systematic-debugging/condition-based-waiting.md",
+      "status": "present",
+      "bytes": 3631,
+      "kind": "text",
+      "sha256": "02aa854bd9e761f275e1450d7136ba60f1a4d103fe94b552fdce822dd3c99506"
+    },
+    {
+      "path": "skills/superpowers/systematic-debugging/defense-in-depth.md",
+      "status": "present",
+      "bytes": 3772,
+      "kind": "text",
+      "sha256": "9407efcbd028a5ec45edfdf6692b988716c0a7b34d1fb5e05d60146171d8041e"
+    },
+    {
+      "path": "skills/superpowers/systematic-debugging/find-polluter.sh",
+      "status": "present",
+      "bytes": 2058,
+      "kind": "text",
+      "sha256": "31aa8bbab625ffae398c357de90fe3f4cb8f6dd39b23101bf81ef6dd53638b7c"
+    },
+    {
+      "path": "skills/superpowers/systematic-debugging/root-cause-tracing.md",
+      "status": "present",
+      "bytes": 5490,
+      "kind": "text",
+      "sha256": "f6359a35f1c695f789fac7b08d46ae0bb74f9a24123f9add96a7de053019b9bb"
+    },
+    {
+      "path": "skills/superpowers/systematic-debugging/test-academic.md",
+      "status": "present",
+      "bytes": 667,
+      "kind": "text",
+      "sha256": "51e07c1c56052a6c46cde8e7d42d6612598ea076f128086fd85911f4d2d3e8dd"
+    },
+    {
+      "path": "skills/superpowers/systematic-debugging/test-pressure-1.md",
+      "status": "present",
+      "bytes": 1958,
+      "kind": "text",
+      "sha256": "fbf04219c44460e76d96642d7dc16960a2390936e0a6937d0b133e013fa55afb"
+    },
+    {
+      "path": "skills/superpowers/systematic-debugging/test-pressure-2.md",
+      "status": "present",
+      "bytes": 2351,
+      "kind": "text",
+      "sha256": "fc6b2594bed3f2a15ece75d0a211b55cb9a4668d85b9873f2bab5ee54ed31cbf"
+    },
+    {
+      "path": "skills/superpowers/systematic-debugging/test-pressure-3.md",
+      "status": "present",
+      "bytes": 2761,
+      "kind": "text",
+      "sha256": "69ed6a5a59dac92d58d284519991a46b90978bc40a229776dac0ffa3a6123bfe"
+    },
+    {
+      "path": "skills/superpowers/test-driven-development/SKILL.md",
+      "status": "present",
+      "bytes": 9908,
+      "kind": "text",
+      "sha256": "90fa0021a53360948fd1eb67799821d549ebef036ffad0ad5ceb7d8585abf159"
+    },
+    {
+      "path": "skills/superpowers/test-driven-development/writing-good-tests.md",
+      "status": "present",
+      "bytes": 8466,
+      "kind": "text",
+      "sha256": "87f56d0a4236f804165149ec038787d20062afc9b37aa240a167c394b39d2065"
+    },
+    {
+      "path": "skills/superpowers/using-git-worktrees/SKILL.md",
+      "status": "present",
+      "bytes": 6980,
+      "kind": "text",
+      "sha256": "49ac647dd5a65e0e79f87d346005dde8ce27c6886bccf966164917ee8bb4df80"
+    },
+    {
+      "path": "skills/superpowers/using-superpowers/SKILL.md",
+      "status": "present",
+      "bytes": 3257,
+      "kind": "text",
+      "sha256": "c460d4e164f6583dd980a65ac4d27c963de4fe13061a170c10e73eac8ab0b52e"
+    },
+    {
+      "path": "skills/superpowers/using-superpowers/references/antigravity-tools.md",
+      "status": "present",
+      "bytes": 1518,
+      "kind": "text",
+      "sha256": "343af08abab2936a4063399ec0908a0d3a129f66a54a42ef1f14e9b9edc0b8fa"
+    },
+    {
+      "path": "skills/superpowers/using-superpowers/references/claude-code-tools.md",
+      "status": "present",
+      "bytes": 1498,
+      "kind": "text",
+      "sha256": "fc455de197f1ca60fceeb620b8118815cae16b2b42900aff86036c1715b994b6"
+    },
+    {
+      "path": "skills/superpowers/using-superpowers/references/codex-tools.md",
+      "status": "present",
+      "bytes": 4870,
+      "kind": "text",
+      "sha256": "51d2e878aac90809bfdd0358c974281e2fb88c7d46571e6310587d9df6cd55ea"
+    },
+    {
+      "path": "skills/superpowers/using-superpowers/references/gemini-tools.md",
+      "status": "present",
+      "bytes": 4661,
+      "kind": "text",
+      "sha256": "3e0e732356eaf1780da7cfd93773723a68ff1fe03dbc519aaac38cd7e9b62e87"
+    },
+    {
+      "path": "skills/superpowers/using-superpowers/references/hermes-tools.md",
+      "status": "present",
+      "bytes": 2020,
+      "kind": "text",
+      "sha256": "32c262e22da268ac1bc33f2b318e597e78539f10be170a7453dee07ff432f36b"
+    },
+    {
+      "path": "skills/superpowers/using-superpowers/references/muse-tools.md",
+      "status": "present",
+      "bytes": 1943,
+      "kind": "text",
+      "sha256": "7fc9b703682c55b453b1ed56a498d99df2293242cdbd9b53af15f8982e513969"
+    },
+    {
+      "path": "skills/superpowers/using-superpowers/references/pi-tools.md",
+      "status": "present",
+      "bytes": 1258,
+      "kind": "text",
+      "sha256": "fb6db6991508e958b0117861b6107fb1cafcc752210c7cfe66def13f1e34d371"
+    },
+    {
+      "path": "skills/superpowers/verification-before-completion/SKILL.md",
+      "status": "present",
+      "bytes": 3766,
+      "kind": "text",
+      "sha256": "8f15b9f67e566f286d531b7da77052f4009b5065fd8edfcb659c9f837eebb4a4"
+    },
+    {
+      "path": "skills/superpowers/writing-plans/SKILL.md",
+      "status": "present",
+      "bytes": 10539,
+      "kind": "text",
+      "sha256": "0fdb0f2af96e7d8e879bbffc65413983915411c63daf85e0757034e38630445d"
+    },
+    {
+      "path": "skills/superpowers/writing-skills/SKILL.md",
+      "status": "present",
+      "bytes": 27304,
+      "kind": "text",
+      "sha256": "93e2c54d3ed8503f3f20e83327697232747e2d9d53d4abf8e5ea7930d1e6205f"
+    },
+    {
+      "path": "skills/superpowers/writing-skills/anthropic-best-practices.md",
+      "status": "present",
+      "bytes": 47347,
+      "kind": "text",
+      "sha256": "26f2fc231b4bea7ad7ec034a61615f8fe8bfff6c436ad77e60d5734be16a6a15"
+    },
+    {
+      "path": "skills/superpowers/writing-skills/examples/CLAUDE_MD_TESTING.md",
+      "status": "present",
+      "bytes": 5612,
+      "kind": "text",
+      "sha256": "3648a10c414546fdea2eae3a8f21345cda2234aca54a084042e5f933a6b332ca"
+    },
+    {
+      "path": "skills/superpowers/writing-skills/graphviz-conventions.dot",
+      "status": "present",
+      "bytes": 6141,
+      "kind": "text",
+      "sha256": "b18a02773875f6c7b92f2a260e88550c92a62549b0009df9d680f7e9541d0ecc"
+    },
+    {
+      "path": "skills/superpowers/writing-skills/persuasion-principles.md",
+      "status": "present",
+      "bytes": 6088,
+      "kind": "text",
+      "sha256": "73ffb3d9d9f510f82296de0e3509bdcc1bae13379ef56354877e3f33303b44bf"
+    },
+    {
+      "path": "skills/superpowers/writing-skills/render-graphs.js",
+      "status": "present",
+      "bytes": 5137,
+      "kind": "text",
+      "sha256": "7f558e910dc0dc1c24a30fda9b0595643399f16014f8cd12b56e1ef1ad113a84"
+    },
+    {
+      "path": "skills/superpowers/writing-skills/testing-skills-with-subagents.md",
+      "status": "present",
+      "bytes": 12942,
+      "kind": "text",
+      "sha256": "134a5d0f695d717f6d34609dff44ec9316a593c2f6db981ec94a61750fcce1bb"
+    },
+    {
+      "path": "skills/testing-quality/accessibility-testing/SKILL.md",
+      "status": "present",
+      "bytes": 2889,
+      "kind": "text",
+      "sha256": "c020f66667447e40e4ff16bf15d518b8086ec3cc5cb4a3358367282913179cc4"
+    },
+    {
+      "path": "skills/testing-quality/api-testing-suite/SKILL.md",
+      "status": "present",
+      "bytes": 2875,
+      "kind": "text",
+      "sha256": "888aded17b5bd69f6211e2292386eed0505d7c3249bc1e33db1681afb9af42f5"
+    },
+    {
+      "path": "skills/testing-quality/chaos-engineering-runner/SKILL.md",
+      "status": "present",
+      "bytes": 2903,
+      "kind": "text",
+      "sha256": "3a50bf2af71604cd36d9283de2bba05ac097f5cba19f63d0b3f22440cb37f6ae"
+    },
+    {
+      "path": "skills/testing-quality/contract-testing/SKILL.md",
+      "status": "present",
+      "bytes": 2911,
+      "kind": "text",
+      "sha256": "512bfd099c77f6e3381ecbd0ece200ac5fa11c0b52defc25a451ccc2d9c647bb"
+    },
+    {
+      "path": "skills/testing-quality/cross-browser-testing/SKILL.md",
+      "status": "present",
+      "bytes": 2895,
+      "kind": "text",
+      "sha256": "b9751afb6aa9ccb6b405de36abc4ee201ab21312ea781be7e976fd1491288f6b"
+    },
+    {
+      "path": "skills/testing-quality/database-testing/SKILL.md",
+      "status": "present",
+      "bytes": 2903,
+      "kind": "text",
+      "sha256": "0eaa852a142fb640aee3a376aacf9b551efefe25f683fb271ea635f271b5d090"
+    },
+    {
+      "path": "skills/testing-quality/fuzz-testing/SKILL.md",
+      "status": "present",
+      "bytes": 2887,
+      "kind": "text",
+      "sha256": "377aed55e4acda8c3af3bedf7bd81ae29a15011d0b519e591c0fd2c952810c69"
+    },
+    {
+      "path": "skills/testing-quality/mobile-testing-framework/SKILL.md",
+      "status": "present",
+      "bytes": 2887,
+      "kind": "text",
+      "sha256": "a395e6464455d7cdb6616b99a9fd5c7881288b10e48626ed47043b9c28bac110"
+    },
+    {
+      "path": "skills/testing-quality/performance-testing-framework/SKILL.md",
+      "status": "present",
+      "bytes": 2913,
+      "kind": "text",
+      "sha256": "726f487174a4c5b08a97a07b6776142a33cfd32876c0869d45dda84eff4cfa66"
+    },
+    {
+      "path": "skills/testing-quality/property-based-testing/SKILL.md",
+      "status": "present",
+      "bytes": 2893,
+      "kind": "text",
+      "sha256": "0254fd6ce93c989f36c97c17a36dc303812812ed393a53fe9ec60b0575d454ec"
+    },
+    {
+      "path": "skills/testing-quality/security-testing-automation/SKILL.md",
+      "status": "present",
+      "bytes": 2883,
+      "kind": "text",
+      "sha256": "e44e8dc9d99b9d309cc213c6745e80faaa9bf09da801e286626ba27027bda4d2"
+    },
+    {
+      "path": "skills/testing-quality/smoke-test-generator/SKILL.md",
+      "status": "present",
+      "bytes": 2915,
+      "kind": "text",
+      "sha256": "59e0ea13d93b63e859f414ca558142d93ecdd86e53ffd32ecaa82819720fcbed"
+    },
+    {
+      "path": "skills/testing-quality/snapshot-testing/SKILL.md",
+      "status": "present",
+      "bytes": 2879,
+      "kind": "text",
+      "sha256": "401b7d7150157f49ec9185c8036c46724602d958b78b6192128fe367ed95e750"
+    },
+    {
+      "path": "skills/testing-quality/test-automation-suite-generator/SKILL.md",
+      "status": "present",
+      "bytes": 2941,
+      "kind": "text",
+      "sha256": "8825a4a71957978e301253383d7b1677d4f5c3d97e2ffea8229c44c288ad8e79"
+    },
+    {
+      "path": "skills/testing-quality/visual-regression-tester/SKILL.md",
+      "status": "present",
+      "bytes": 2891,
+      "kind": "text",
+      "sha256": "1eb70eace2c0228f6954d89f55201c989e5a8ffe1e3e59eae3c649a9a56834c9"
+    },
+    {
+      "path": "src/App.tsx",
+      "status": "present",
+      "bytes": 64971,
+      "kind": "text",
+      "sha256": "47749cb65c62fb9278792cfe47ea681ace64097b4e6197c9121e1793bb9f3eff"
+    },
+    {
+      "path": "src/components/AbangColekDiscoveryView.tsx",
+      "status": "present",
+      "bytes": 122457,
+      "kind": "text",
+      "sha256": "cac7d236b8762f331d7533f55b366cb001dd43c62c66c056fa4dfff0b092715e"
+    },
+    {
+      "path": "src/components/AgentInsightCard.tsx",
+      "status": "present",
+      "bytes": 14988,
+      "kind": "text",
+      "sha256": "bf8da54be92d4ae536af00c89a039b4eb00cbb34c472588a84a6df163a2be7ba"
+    },
+    {
+      "path": "src/components/AgentPerformanceView.tsx",
+      "status": "present",
+      "bytes": 40313,
+      "kind": "text",
+      "sha256": "91bb056b6b276d4161857607806ce0368073fe48fe8cf068d957030adf62bb84"
+    },
+    {
+      "path": "src/components/AgentRestockPortalView.tsx",
+      "status": "present",
+      "bytes": 18543,
+      "kind": "text",
+      "sha256": "2a252dd603c5e005887d5756bbdf3044b6ee79bd6931a64742ed3a0d3d0d056b"
+    },
+    {
+      "path": "src/components/BusFreightView.tsx",
+      "status": "present",
+      "bytes": 110540,
+      "kind": "text",
+      "sha256": "c52bcc2c43bec54b690fd42973d84d5eff4a088b2917ca6528aa0b2785a317e1"
+    },
+    {
+      "path": "src/components/CalendarView.tsx",
+      "status": "present",
+      "bytes": 20326,
+      "kind": "text",
+      "sha256": "d23e3c69ce2f5787b214aa6a337667312159f4b63a7501e65f92ddcbdda7d883"
+    },
+    {
+      "path": "src/components/ChatWorkspaceView.tsx",
+      "status": "present",
+      "bytes": 14007,
+      "kind": "text",
+      "sha256": "c972b44a9cd0c12629335a644d830ac6d7f962542ab7b10255e3ff605d3e9b47"
+    },
+    {
+      "path": "src/components/CommandPalette.tsx",
+      "status": "present",
+      "bytes": 26400,
+      "kind": "text",
+      "sha256": "3c4bbe9870b01c928ffdb31b79acc9ec0ede0fa135b0fbe67e3631524ee77656"
+    },
+    {
+      "path": "src/components/DocsView.tsx",
+      "status": "present",
+      "bytes": 23855,
+      "kind": "text",
+      "sha256": "ecc3ef0237b19ac7d481b00c38bfe5e62209ea80a9ea445167f8127e9ed47b3d"
+    },
+    {
+      "path": "src/components/FormsView.tsx",
+      "status": "present",
+      "bytes": 50127,
+      "kind": "text",
+      "sha256": "93c8a7916d8528880b70bbabe1b18e20765045335b0d65defedd63d8591f0896"
+    },
+    {
+      "path": "src/components/GmailView.tsx",
+      "status": "present",
+      "bytes": 27033,
+      "kind": "text",
+      "sha256": "e7266bccc3742cca32bd1ffc4db46a16663e10647980171465eb0213bae182f7"
+    },
+    {
+      "path": "src/components/GooglePickerButton.tsx",
+      "status": "present",
+      "bytes": 2274,
+      "kind": "text",
+      "sha256": "489fad9908a6de8ca8f725d631ea60837c10a72df213aa22b0e4c6a813c3ef18"
+    },
+    {
+      "path": "src/components/GoogleSignInButton.tsx",
+      "status": "present",
+      "bytes": 2363,
+      "kind": "text",
+      "sha256": "3ca5593d323a031eb920f73310d4a02447e0c15507330d0c4b64939664180e9e"
+    },
+    {
+      "path": "src/components/KioskStorefrontView.tsx",
+      "status": "present",
+      "bytes": 26351,
+      "kind": "text",
+      "sha256": "e0487513d59079bc663617465aaaa4c5537042c9fe7f69c02aeb2cb90c3f528d"
+    },
+    {
+      "path": "src/components/MapsView.tsx",
+      "status": "present",
+      "bytes": 13850,
+      "kind": "text",
+      "sha256": "1d168b4ff27336ebb42407f64e47eeb7c6d4e5b8ef30608149e18f636467faec"
+    },
+    {
+      "path": "src/components/MeetView.tsx",
+      "status": "present",
+      "bytes": 9667,
+      "kind": "text",
+      "sha256": "e770c1da485a9a405daff8cd314ac08d8ff7aeeab621b35bf500cacf268a9233"
+    },
+    {
+      "path": "src/components/OrdersView.tsx",
+      "status": "present",
+      "bytes": 19668,
+      "kind": "text",
+      "sha256": "5b13b35d25b04f462374f1fbe18776ca6b57dee059d5d89c956af5deac18c01b"
+    },
+    {
+      "path": "src/components/PluginArtifactCard.tsx",
+      "status": "present",
+      "bytes": 35352,
+      "kind": "text",
+      "sha256": "585e5d09e94d7bc9400d76bb3961cf01992b900fcee9e905a78e6774f8648cc6"
+    },
+    {
+      "path": "src/components/PluginsView.tsx",
+      "status": "present",
+      "bytes": 24017,
+      "kind": "text",
+      "sha256": "0ef5ad9f16962fb7eda86489bd39f2f4128a766c4e9ea2115b8ca21b36d4cd50"
+    },
+    {
+      "path": "src/components/SheetsView.tsx",
+      "status": "present",
+      "bytes": 16932,
+      "kind": "text",
+      "sha256": "93e4d933181c0793af1b26a0c8aab04b8a663c56e61b6e45717948498157d745"
+    },
+    {
+      "path": "src/components/TasksView.tsx",
+      "status": "present",
+      "bytes": 21509,
+      "kind": "text",
+      "sha256": "753a4d42322d8e84d3e4780e3d1aa396e280a5afa20033c6959feaa8e0887f86"
+    },
+    {
+      "path": "src/components/WorkspaceSidebar.tsx",
+      "status": "present",
+      "bytes": 9183,
+      "kind": "text",
+      "sha256": "8ae58a7e71ef502bf7fb23bbf76f67d7dadf1451c4d08e71aa425df2192e8d84"
+    },
+    {
+      "path": "src/components/workspace-sidebar.css",
+      "status": "present",
+      "bytes": 12658,
+      "kind": "text",
+      "sha256": "000d7a011bf657f201ac29b6cb352c07cb09c464d6512dffe7a66b012af15b05"
+    },
+    {
+      "path": "src/data.json",
+      "status": "present",
+      "bytes": 11548,
+      "kind": "text",
+      "sha256": "83de56bbbe8bd43bcbbcbc589da56341fba86201e2b121e1d91248c681336109"
+    },
+    {
+      "path": "src/data/abangcolekSocialSourceOfTruth.ts",
+      "status": "present",
+      "bytes": 9355,
+      "kind": "text",
+      "sha256": "a4932aa04f357fc911c1bc8e9694ecc484093f741bce7448baae7c8588538eb5"
+    },
+    {
+      "path": "src/features/brand/BrandLogo.tsx",
+      "status": "present",
+      "bytes": 352,
+      "kind": "text",
+      "sha256": "0a5a3d15e61c1eb1449a020a21118354ba4fb0f49a74cb3d4b1f7f9a5f532bf6"
+    },
+    {
+      "path": "src/features/brand/brand-assets.ts",
+      "status": "present",
+      "bytes": 1988,
+      "kind": "text",
+      "sha256": "14935a8f7e820e344e8a7ff2b5916294521c4b0298885a36b2bd5fd48e91339c"
+    },
+    {
+      "path": "src/features/dashboard/DashboardView.tsx",
+      "status": "present",
+      "bytes": 20894,
+      "kind": "text",
+      "sha256": "1bfbf6da21ae1bfc3372d50ae1c53a54f8cf28ba952cd01e6c5947cdbf9a5a91"
+    },
+    {
+      "path": "src/features/dashboard/dashboard.css",
+      "status": "present",
+      "bytes": 20257,
+      "kind": "text",
+      "sha256": "5b6aa357ca95f2a32e4ef25c5586c3f40f0ca8c88540766ee92b71385d614bd1"
+    },
+    {
+      "path": "src/features/dashboard/model.ts",
+      "status": "present",
+      "bytes": 2699,
+      "kind": "text",
+      "sha256": "a5da4c9bc56766fad5fe525b1c68b770936536495c7e6bb7e911b470fd45929f"
+    },
+    {
+      "path": "src/features/flows/FlowForm.tsx",
+      "status": "present",
+      "bytes": 4854,
+      "kind": "text",
+      "sha256": "95412b04f0cc0567fc0c55ae00b1e1d7e74a998b7aad598c989fe2cf48612e38"
+    },
+    {
+      "path": "src/features/flows/FlowRenderer.tsx",
+      "status": "present",
+      "bytes": 21074,
+      "kind": "text",
+      "sha256": "018b2660d816237a85bd8f6cc46316cf15759c2be55e68e9cd49a8f029e5b5c7"
+    },
+    {
+      "path": "src/features/flows/customer-cart.ts",
+      "status": "present",
+      "bytes": 3785,
+      "kind": "text",
+      "sha256": "990f86c43568e507cc5ad221eb98cbbf75cc8de0a8cfa7e336d800bde60f84c0"
+    },
+    {
+      "path": "src/features/flows/flow-answers.ts",
+      "status": "present",
+      "bytes": 1619,
+      "kind": "text",
+      "sha256": "13028f7245fcf8c697078308d800a6c7e6165d030ca1541c1e6e38a31623b3c7"
+    },
+    {
+      "path": "src/features/flows/flows.css",
+      "status": "present",
+      "bytes": 3611,
+      "kind": "text",
+      "sha256": "cf6df1589bae2b9a0e035a1f3625668bede8a6c7fa05fe0c06f3bf5889639e2b"
+    },
+    {
+      "path": "src/features/jev/components/JevAssessmentCard.tsx",
+      "status": "present",
+      "bytes": 4171,
+      "kind": "text",
+      "sha256": "a8910ba88bfdca87c5ac258a48d1f29c279e5a80c05173a21cdd45c6e519d805"
+    },
+    {
+      "path": "src/features/jev/components/jev-assessment.css",
+      "status": "present",
+      "bytes": 3245,
+      "kind": "text",
+      "sha256": "8d2828187584e104738f79427bf99ad8bd91078f3f96fc3163e2cd1296455a73"
+    },
+    {
+      "path": "src/features/jev/index.ts",
+      "status": "present",
+      "bytes": 403,
+      "kind": "text",
+      "sha256": "dbf997c3df5b119603b50edcf381ddce3b90d4f3b0819becf30840fd6f1eeea8"
+    },
+    {
+      "path": "src/features/landing/AnimatedColekWorld.tsx",
+      "status": "present",
+      "bytes": 16875,
+      "kind": "text",
+      "sha256": "b34e0add347db01388b0bdcb8e9ce86d486f4232d1533d3f97104d0402ed4e30"
+    },
+    {
+      "path": "src/features/landing/LandingPage.tsx",
+      "status": "present",
+      "bytes": 13727,
+      "kind": "text",
+      "sha256": "1ac83b3c3e9f642d3d090cfefc88fb55a81b967feb84de408ba507f1d580410f"
+    },
+    {
+      "path": "src/features/landing/ScrollWorldHero.tsx",
+      "status": "present",
+      "bytes": 13678,
+      "kind": "text",
+      "sha256": "814339e61ca43b46b0c031ee52b37c7215eeb1b58b99d30159bc5d4fe5d6f3d6"
+    },
+    {
+      "path": "src/features/landing/WorldHotspot.tsx",
+      "status": "present",
+      "bytes": 4420,
+      "kind": "text",
+      "sha256": "c72ab746abd69fa02f7b6aefb79251372418c0704283c27a4ad015e26b63f13e"
+    },
+    {
+      "path": "src/features/landing/animated-colek-world.css",
+      "status": "present",
+      "bytes": 5101,
+      "kind": "text",
+      "sha256": "e67ffda18f7697d86aece795340ad71ad4928320fbddb5eb2840e3899475f80e"
+    },
+    {
+      "path": "src/features/landing/landing.css",
+      "status": "present",
+      "bytes": 18456,
+      "kind": "text",
+      "sha256": "a5624ef0b89ea0d3c7a3e57a0dbc7319d0f7f64f2dcc109ff7826c841bffb925"
+    },
+    {
+      "path": "src/features/landing/scene-controller-model.ts",
+      "status": "present",
+      "bytes": 4302,
+      "kind": "text",
+      "sha256": "be87b2b2b07834f2cb4d569f8037359dff137cf6e75aaa8234276965b35a4c7a"
+    },
+    {
+      "path": "src/features/landing/scroll-world.css",
+      "status": "present",
+      "bytes": 17768,
+      "kind": "text",
+      "sha256": "4ffe6effa3042fd244cc4c8225c4d2d527066e7e2765fae4541e08df4f608c5a"
+    },
+    {
+      "path": "src/features/landing/story-model.ts",
+      "status": "present",
+      "bytes": 2594,
+      "kind": "text",
+      "sha256": "3227c74a1b005cec32b4deafa2ee400e606a032f3ca1c89c82ea81ba69218492"
+    },
+    {
+      "path": "src/features/landing/useSceneController.ts",
+      "status": "present",
+      "bytes": 14857,
+      "kind": "text",
+      "sha256": "1d56686fedfb7f4a837d455c99246ef67b94da798edba60fce29924d9a1f7e09"
+    },
+    {
+      "path": "src/features/platform/AppRouter.tsx",
+      "status": "present",
+      "bytes": 15616,
+      "kind": "text",
+      "sha256": "6399c2507b2ad94e08cc03dcffaafb5b4fa93a62143aab90bbf6f2b0f14e291d"
+    },
+    {
+      "path": "src/features/platform/IntegrationWorkspace.tsx",
+      "status": "present",
+      "bytes": 1352,
+      "kind": "text",
+      "sha256": "9c706a53b9f50c26a7058db6954a0a6ee533686aa0207bf0cd86d62ac4c7294a"
+    },
+    {
+      "path": "src/features/platform/WorkspaceNavigation.tsx",
+      "status": "present",
+      "bytes": 5806,
+      "kind": "text",
+      "sha256": "a47cfc9e9b35b483acb15cc5f6586813a430ffcf25257d1028d83919d654a965"
+    },
+    {
+      "path": "src/features/platform/client.ts",
+      "status": "present",
+      "bytes": 7745,
+      "kind": "text",
+      "sha256": "79207381e6959744b31d46b1ebd0505ff749c005ff0ed98c59867e72e91abd69"
+    },
+    {
+      "path": "src/features/platform/offlineDrafts.ts",
+      "status": "present",
+      "bytes": 2732,
+      "kind": "text",
+      "sha256": "47d100dfad8903ffc894ecc1fa2d3fcada1d6114106a12a162e49882aaa9cecb"
+    },
+    {
+      "path": "src/features/platform/platform-shell.css",
+      "status": "present",
+      "bytes": 10976,
+      "kind": "text",
+      "sha256": "8949ae2d7fe51fd60e68d0413e9bab71cae850921593ec267eb7fa1c29c8c99f"
+    },
+    {
+      "path": "src/features/platform/routes.ts",
+      "status": "present",
+      "bytes": 6982,
+      "kind": "text",
+      "sha256": "c0f8f1fea4b2ed6edf22e62baac168dada967e355ff9bdd6ca9fc667659cd983"
+    },
+    {
+      "path": "src/features/theme/useWorkspaceTheme.ts",
+      "status": "present",
+      "bytes": 835,
+      "kind": "text",
+      "sha256": "f7550f63b4c35fce4a70cdefe5f20f60b3da661e9a1bb21cb14aaccd82bb9c75"
+    },
+    {
+      "path": "src/features/theme/workspace-theme.css",
+      "status": "present",
+      "bytes": 2676,
+      "kind": "text",
+      "sha256": "999de490f67ef369cd4e91341df643656608c120cf3d4397b4cbf4c5ab9787ed"
+    },
+    {
+      "path": "src/features/workspaces/AutomationWorkspace.tsx",
+      "status": "present",
+      "bytes": 19990,
+      "kind": "text",
+      "sha256": "080ca6bc9f97c30104bbbc5577102aace179e239a3c5361b11918fb906738307"
+    },
+    {
+      "path": "src/features/workspaces/DealerLedger.tsx",
+      "status": "present",
+      "bytes": 14860,
+      "kind": "text",
+      "sha256": "00de97295f0e8c2d3e548482b03d8e666bcf8a8cce1aefc47aa70d1e711cf537"
+    },
+    {
+      "path": "src/features/workspaces/DerivedCalendar.tsx",
+      "status": "present",
+      "bytes": 1189,
+      "kind": "text",
+      "sha256": "055ceb783f43d0537b9f335472ae7d0e101c53d964cc1995f41d2077f0fa8e53"
+    },
+    {
+      "path": "src/features/workspaces/DeveloperReports.tsx",
+      "status": "present",
+      "bytes": 5531,
+      "kind": "text",
+      "sha256": "56e42a2ea9d4aa8736be4a1086a5f45b50ad480eee45267b73bd6389d6d1b794"
+    },
+    {
+      "path": "src/features/workspaces/DeveloperSettings.tsx",
+      "status": "present",
+      "bytes": 4150,
+      "kind": "text",
+      "sha256": "b467263098af5ed765173472b495574388b497ed3f43a143a4e484a592e91894"
+    },
+    {
+      "path": "src/features/workspaces/JevEvaluationWorkspace.tsx",
+      "status": "present",
+      "bytes": 7652,
+      "kind": "text",
+      "sha256": "60690b3b891b9b4db58ecb8678b5d4ef9da7b1e7bd71173685169ba826e15d2a"
+    },
+    {
+      "path": "src/features/workspaces/LinkedRecordContext.tsx",
+      "status": "present",
+      "bytes": 1757,
+      "kind": "text",
+      "sha256": "0c9c2f1194b7ad4cf9b5364d4bd1945adf628b9be147289725b3bd7a01214312"
+    },
+    {
+      "path": "src/features/workspaces/OperationalAmendments.tsx",
+      "status": "present",
+      "bytes": 14032,
+      "kind": "text",
+      "sha256": "9e51de95c612ea081bf0326d0ecaabf9db23a4f55379a7bccbf73236cea6d6d3"
+    },
+    {
+      "path": "src/features/workspaces/PluginsWorkspace.tsx",
+      "status": "present",
+      "bytes": 8691,
+      "kind": "text",
+      "sha256": "b96ed7997680a52e211b00a997a47cd6b78f05dd05b0d395b6552a9dbfa210a4"
+    },
+    {
+      "path": "src/features/workspaces/ProductOnboarding.tsx",
+      "status": "present",
+      "bytes": 14165,
+      "kind": "text",
+      "sha256": "8bf38ba73b6e4684ca8a8d58722529cb268c25d0bba420bd0c1daf9ece01c798"
+    },
+    {
+      "path": "src/features/workspaces/ReportBuilder.tsx",
+      "status": "present",
+      "bytes": 5108,
+      "kind": "text",
+      "sha256": "90dac6da9b59519dcfc1f5d006c38da82e03314e221a53d3a0f9578a6e8f02ea"
+    },
+    {
+      "path": "src/features/workspaces/RuntimeControls.tsx",
+      "status": "present",
+      "bytes": 2756,
+      "kind": "text",
+      "sha256": "beee8e4152a55ccf404c370914b86423ad68dc94455b3ca98488842e71f75018"
+    },
+    {
+      "path": "src/features/workspaces/WorkspaceContent.tsx",
+      "status": "present",
+      "bytes": 19703,
+      "kind": "text",
+      "sha256": "f5b8269b8870bfad94ae7fca69c6fc39170a283b03b76c6d2d10ecd4b8af77fd"
+    },
+    {
+      "path": "src/features/workspaces/business.tsx",
+      "status": "present",
+      "bytes": 19460,
+      "kind": "text",
+      "sha256": "374cc22dae808dc74efd45419b2edada413a63a8b357644d79d41f8512573d86"
+    },
+    {
+      "path": "src/features/workspaces/commerce.tsx",
+      "status": "present",
+      "bytes": 31515,
+      "kind": "text",
+      "sha256": "223bf916657f0168e3f1e828f2a5e44fcf0b513189de9fdc5c0d38b55b589e20"
+    },
+    {
+      "path": "src/features/workspaces/experience-model.ts",
+      "status": "present",
+      "bytes": 2811,
+      "kind": "text",
+      "sha256": "c665d8705e75390bcde1d5de0ffdaf414bb1af01a4fe2ff6a1bc056ede833d69"
+    },
+    {
+      "path": "src/features/workspaces/marketing.tsx",
+      "status": "present",
+      "bytes": 12488,
+      "kind": "text",
+      "sha256": "fd9ffa0ef666f86658942bc0f275dc54185dd4eec2c49090bf51dea7def84b54"
+    },
+    {
+      "path": "src/features/workspaces/operations.tsx",
+      "status": "present",
+      "bytes": 16728,
+      "kind": "text",
+      "sha256": "43e618fbb2891c79f399f64e95c3a922448861826d0bb91200728ad6fdabd5c8"
+    },
+    {
+      "path": "src/features/workspaces/ui.tsx",
+      "status": "present",
+      "bytes": 8323,
+      "kind": "text",
+      "sha256": "04151f57b83e60bdd85a94486a237782299f113f32640446bea9e50d597ad37e"
+    },
+    {
+      "path": "src/features/workspaces/work.tsx",
+      "status": "present",
+      "bytes": 28461,
+      "kind": "text",
+      "sha256": "582f7993ae51c5de2058008e209e3ae06f737596273ca90a9f6a7c770bccf735"
+    },
+    {
+      "path": "src/features/workspaces/workspaces.css",
+      "status": "present",
+      "bytes": 38587,
+      "kind": "text",
+      "sha256": "7258d0281fc707ff75acc0607635a135ba3af919a74ff78750fd141d556f01fc"
+    },
+    {
+      "path": "src/index.css",
+      "status": "present",
+      "bytes": 24,
+      "kind": "text",
+      "sha256": "8a760a784f79570e06fdcb0c6a2677ea66c304230b7925ea313d63b46d8ba407"
+    },
+    {
+      "path": "src/lib/utils.ts",
+      "status": "present",
+      "bytes": 239,
+      "kind": "text",
+      "sha256": "c4c81c33181d4d202487bc7a8ad53d1c236ad99fd27ace2e72f85a0afe9d3c5e"
+    },
+    {
+      "path": "src/main.tsx",
+      "status": "present",
+      "bytes": 1254,
+      "kind": "text",
+      "sha256": "0fe07013d6759fed525b4f84a2107b5e2477980fe9e2251ff43a7e11da34c5fb"
+    },
+    {
+      "path": "src/services/abangColekRepoData.ts",
+      "status": "present",
+      "bytes": 14868,
+      "kind": "text",
+      "sha256": "3a023acc66d4e83983c42adfcf86bbd3b2cf864a0c9e0cdbed6b7873fe3fd924"
+    },
+    {
+      "path": "src/services/busFreightService.ts",
+      "status": "present",
+      "bytes": 21900,
+      "kind": "text",
+      "sha256": "bd1b598a66ed2d9cbca9abf02f5021398288ea3729814e8655f419fe85027fe1"
+    },
+    {
+      "path": "src/services/gemini.ts",
+      "status": "present",
+      "bytes": 104778,
+      "kind": "text",
+      "sha256": "ceaba021180e46230db497d1827530d4bcefd5818da917555fc9f7720c35c566"
+    },
+    {
+      "path": "src/services/geminiClient.ts",
+      "status": "present",
+      "bytes": 609,
+      "kind": "text",
+      "sha256": "b95c5e2a8da6ddfbeb49c53761d309f1810b5e303e3c1edcbbd1a5ced54d2b15"
+    },
+    {
+      "path": "src/services/googleAuth.ts",
+      "status": "present",
+      "bytes": 6117,
+      "kind": "text",
+      "sha256": "38cb92e52f0334e17fd876c697b085264d0e4f9691c05f536d5486c24b8c6516"
+    },
+    {
+      "path": "src/services/googleCalendar.ts",
+      "status": "present",
+      "bytes": 2971,
+      "kind": "text",
+      "sha256": "f0df1f02f9a70b13e54120b749b14362f0b8f418a56484d306df019f888307cf"
+    },
+    {
+      "path": "src/services/googleChat.ts",
+      "status": "present",
+      "bytes": 2625,
+      "kind": "text",
+      "sha256": "0f695a96ff2c70297aa116e64ae9ed812d6224d7a2894a2def2a7ac0ce5cfc5d"
+    },
+    {
+      "path": "src/services/googleDocs.ts",
+      "status": "present",
+      "bytes": 5225,
+      "kind": "text",
+      "sha256": "5b9f5c29d2d13a53c5c6e092bd5732922685f24093d97bfe9702260f012050f3"
+    },
+    {
+      "path": "src/services/googleForms.ts",
+      "status": "present",
+      "bytes": 14551,
+      "kind": "text",
+      "sha256": "a108862cf19733eb293b08051ee6cc27a5239e5f90939b96352fd3972b6db22b"
+    },
+    {
+      "path": "src/services/googleGmail.ts",
+      "status": "present",
+      "bytes": 8454,
+      "kind": "text",
+      "sha256": "163f4927a9b0bdcbc878e644804a1857bb506ad0bf705e7dc212386186d15653"
+    },
+    {
+      "path": "src/services/googleMeet.ts",
+      "status": "present",
+      "bytes": 1026,
+      "kind": "text",
+      "sha256": "f5511b833f9ac559bb28bfe1e9b6c89af1ae5a2433cf98289c2e31dcd8ef47cd"
+    },
+    {
+      "path": "src/services/googlePicker.ts",
+      "status": "present",
+      "bytes": 3202,
+      "kind": "text",
+      "sha256": "3c0fccf75dcadc679f246d7197324254969326013e136f67ac91dd50abd568e4"
+    },
+    {
+      "path": "src/services/googleSheets.ts",
+      "status": "present",
+      "bytes": 4274,
+      "kind": "text",
+      "sha256": "ea05197072634369e36123bfc768619e369cd4e053d3a6c7481f1d1187bed5b2"
+    },
+    {
+      "path": "src/services/googleTasks.ts",
+      "status": "present",
+      "bytes": 5020,
+      "kind": "text",
+      "sha256": "fdd8e15c28fd7161ade34bb29e90ea8417c47c1d124b5ffbcae9eaa2f8008d9c"
+    },
+    {
+      "path": "src/services/jevEngine.ts",
+      "status": "present",
+      "bytes": 15900,
+      "kind": "text",
+      "sha256": "9e3c1b760db8933224f08b060e0da60fbf367fcc0dd2937ba25ae6b5c21e2886"
+    },
+    {
+      "path": "src/services/pluginExecutors.ts",
+      "status": "present",
+      "bytes": 28413,
+      "kind": "text",
+      "sha256": "71e52919d069a5eb3e14f776205c049475d03509bb43e119f6effd84f7c5d684"
+    },
+    {
+      "path": "src/services/pluginService.ts",
+      "status": "present",
+      "bytes": 22045,
+      "kind": "text",
+      "sha256": "ed9c022014c21f1d37206bfd97c7d232582fbbfc652d10fbdb719d257f5712db"
+    },
+    {
+      "path": "src/services/store.ts",
+      "status": "present",
+      "bytes": 8828,
+      "kind": "text",
+      "sha256": "3d275c8b1ea862770aa6b5a751694b743f4896d2609312cec89521e0d3531bb7"
+    },
+    {
+      "path": "src/services/supabaseAgentPerformance.ts",
+      "status": "present",
+      "bytes": 26519,
+      "kind": "text",
+      "sha256": "f13ba79065539e8992090a2fb593cd11d1aced8075a1db7dd0efaae9dacf9db6"
+    },
+    {
+      "path": "src/services/supabaseAuth.ts",
+      "status": "present",
+      "bytes": 5201,
+      "kind": "text",
+      "sha256": "5e9046d45af277eb6ad7a8ee316580093757d22a255476a480fecab9307f2d20"
+    },
+    {
+      "path": "src/services/supabaseClient.ts",
+      "status": "present",
+      "bytes": 2926,
+      "kind": "text",
+      "sha256": "d091674e0dfac09f0a69d957949e6eaa9a73e41f44a433ecddbcecd9cebb4f27"
+    },
+    {
+      "path": "src/services/supabaseConfiguration.ts",
+      "status": "present",
+      "bytes": 1061,
+      "kind": "text",
+      "sha256": "cca2f07b44f0f70de956e10e8d1d4b023bf2b5c948547163a962c0931fedf407"
+    },
+    {
+      "path": "src/services/supabaseOrders.ts",
+      "status": "present",
+      "bytes": 4005,
+      "kind": "text",
+      "sha256": "b09aebc47d54e9d38af7961aeb0951cc08fa15f7a92db44c318d59b6a8083b4d"
+    },
+    {
+      "path": "src/services/supabaseShipments.ts",
+      "status": "present",
+      "bytes": 30289,
+      "kind": "text",
+      "sha256": "94d730d52887aece2e37c1e37394fdf71261ba069099dccae3916bed6242da1b"
+    },
+    {
+      "path": "src/services/vercelDeploy.ts",
+      "status": "present",
+      "bytes": 4759,
+      "kind": "text",
+      "sha256": "6a18e8bb7d714cad61db33d6ddbbf623e6159a04536afdaa93fee1bf23f9c5f2"
+    },
+    {
+      "path": "src/vite-env.d.ts",
+      "status": "present",
+      "bytes": 103,
+      "kind": "text",
+      "sha256": "a1f54bae150ba857c4e79c8e8bcc11fe74c4d3d270b27bc6c5a19ad6e5245dc5"
+    },
+    {
+      "path": "supabase/sql/platform-runtime.sql",
+      "status": "present",
+      "bytes": 5336,
+      "kind": "text",
+      "sha256": "c2779f8e19e92025ffa00955fec83c24ad201a5f048beee7ec191753d827449e"
+    },
+    {
+      "path": "tests/dashboard-model.test.ts",
+      "status": "present",
+      "bytes": 1731,
+      "kind": "text",
+      "sha256": "69e874fa1092bd4336aea36fb050d9368075d030f716ebe8513aeab769535707"
+    },
+    {
+      "path": "tests/e2e/appearance-accessibility.spec.ts",
+      "status": "present",
+      "bytes": 2719,
+      "kind": "text",
+      "sha256": "1e233d032835c5b6f758c0b39b1b77661812de886beb7a77f162859747b4435e"
+    },
+    {
+      "path": "tests/e2e/commerce-fulfilment.spec.ts",
+      "status": "present",
+      "bytes": 14474,
+      "kind": "text",
+      "sha256": "cc23b79816efc670870407965ce93d7bfbba1c2d6ac45f29dbb47ea73a3ae874"
+    },
+    {
+      "path": "tests/e2e/dealer-completion.spec.ts",
+      "status": "present",
+      "bytes": 11860,
+      "kind": "text",
+      "sha256": "615b9f279c3d4399feccb1eb5e2f7d797ba34611803994382d850c54a02d95b4"
+    },
+    {
+      "path": "tests/e2e/fixtures.ts",
+      "status": "present",
+      "bytes": 850,
+      "kind": "text",
+      "sha256": "1688bc90fcbe69fdc35b05b344646ca92b946a0f48390112106182e52ef9ba56"
+    },
+    {
+      "path": "tests/e2e/founder-complete.spec.ts",
+      "status": "present",
+      "bytes": 10312,
+      "kind": "text",
+      "sha256": "6b60c27f29b301525108dadbc9a71c53436b87ad56d800acc30d3a5add0bfab0"
+    },
+    {
+      "path": "tests/e2e/full-collection-summaries.spec.ts",
+      "status": "present",
+      "bytes": 5318,
+      "kind": "text",
+      "sha256": "bcca74e229fc0f2bb68ec0d1d4eacfc5ad1f94ab080ec3273e970c0b3925a9d9"
+    },
+    {
+      "path": "tests/e2e/landing-emons-touch.spec.ts",
+      "status": "present",
+      "bytes": 9091,
+      "kind": "text",
+      "sha256": "a6b5998b2d28d9b05b3df590de98bcc74002d2d9fbe05e6e3e7545c208e6569a"
+    },
+    {
+      "path": "tests/e2e/landing-emons.spec.ts",
+      "status": "present",
+      "bytes": 11269,
+      "kind": "text",
+      "sha256": "688c671ab36bc5d0d5caf2c11f1642c2471895840b2170ba195e57f2cc50ae20"
+    },
+    {
+      "path": "tests/e2e/marketing-operations.spec.ts",
+      "status": "present",
+      "bytes": 16254,
+      "kind": "text",
+      "sha256": "5074f7f8edc6dcb4a6ec5bce687e2603c7fb3c232d688ea6b3f889a57075dcc8"
+    },
+    {
+      "path": "tests/e2e/platform-commerce.spec.ts",
+      "status": "present",
+      "bytes": 7372,
+      "kind": "text",
+      "sha256": "9800dc9962b9d101bb8f426683d352ce1f9d60404476f6c14ccd02144a3388ff"
+    },
+    {
+      "path": "tests/e2e/platform-shell.spec.ts",
+      "status": "present",
+      "bytes": 1105,
+      "kind": "text",
+      "sha256": "aa1a2f2170e8b61383e935ae3be377914c2bfb82aac858b42ee438c54ebcb34f"
+    },
+    {
+      "path": "tests/e2e/privacy-offline.spec.ts",
+      "status": "present",
+      "bytes": 3395,
+      "kind": "text",
+      "sha256": "30ff68e109c29516721d0e648176ca05bb95be17ceaf0590ad5b32ac1d4defaf"
+    },
+    {
+      "path": "tests/e2e/public-metadata.spec.ts",
+      "status": "present",
+      "bytes": 1071,
+      "kind": "text",
+      "sha256": "07a47d1a6873e110ded659ae66e5d5466aa03b76db89e7160dbbc848d43086eb"
+    },
+    {
+      "path": "tests/e2e/record-navigation.spec.ts",
+      "status": "present",
+      "bytes": 2498,
+      "kind": "text",
+      "sha256": "b2bff158f90eeb856ff378e09b2cf2eeacc3b401c6fb4b580e1e03b3be41c734"
+    },
+    {
+      "path": "tests/e2e/workspace-experiences.spec.ts",
+      "status": "present",
+      "bytes": 5755,
+      "kind": "text",
+      "sha256": "742c1933d1f55a46b34abb3f8edd223edc207770dd1df9d8928be54848a1c566"
+    },
+    {
+      "path": "tests/e2e/workspace-navigation.spec.ts",
+      "status": "present",
+      "bytes": 5994,
+      "kind": "text",
+      "sha256": "85270edd60b7850c9146becc9cfdc2f9577afe9d6de300ba0134d8f42bcaed32"
+    },
+    {
+      "path": "tests/jev/api.test.ts",
+      "status": "present",
+      "bytes": 4006,
+      "kind": "text",
+      "sha256": "21ead736669147dfb511d8310191ba110dadfcd1e06e7b77864b4d4183d36a88"
+    },
+    {
+      "path": "tests/jev/assessment-regressions.test.ts",
+      "status": "present",
+      "bytes": 8089,
+      "kind": "text",
+      "sha256": "87b3c5489a63c3fef0f9812c59a6968ee7278d242acc67d889bfbb22b086bdd5"
+    },
+    {
+      "path": "tests/jev/assessment.test.ts",
+      "status": "present",
+      "bytes": 6332,
+      "kind": "text",
+      "sha256": "4800785406114bd1f44b3d15fc8bff2958dcd98426e5f40444b38218ca9d8690"
+    },
+    {
+      "path": "tests/jev/evaluation-benchmark.test.ts",
+      "status": "present",
+      "bytes": 5533,
+      "kind": "text",
+      "sha256": "809d6356f2c26a5facde65b39031af1f1421d86e4f7ca24ac062a4b5e140eebd"
+    },
+    {
+      "path": "tests/jev/execution-policy.test.ts",
+      "status": "present",
+      "bytes": 2668,
+      "kind": "text",
+      "sha256": "748f335ea0a745d5629b2941646b35978424635f68071f9ed2f27d1384180dcd"
+    },
+    {
+      "path": "tests/jev/fixtures/held-out.ts",
+      "status": "present",
+      "bytes": 4150,
+      "kind": "text",
+      "sha256": "1074786c063371875b533e3596918ea3d2d3f977b15e031828585d4540ed00a0"
+    },
+    {
+      "path": "tests/jev/history.test.ts",
+      "status": "present",
+      "bytes": 3945,
+      "kind": "text",
+      "sha256": "289e98aa58cba96ef63c2f937039c85a7c36622041ca879e4c0f5b5d7631df4c"
+    },
+    {
+      "path": "tests/jev/platform-evaluation.test.ts",
+      "status": "present",
+      "bytes": 9719,
+      "kind": "text",
+      "sha256": "67374cb2a267755c876c0c7484a9a3718c296260837dfc17b156e31bdf69e2de"
+    },
+    {
+      "path": "tests/landing-brand-theme.test.ts",
+      "status": "present",
+      "bytes": 1973,
+      "kind": "text",
+      "sha256": "67ceb5e0d9bc54a58fc023d38b05915a452641944809e9a3dd6ce69faf21f377"
+    },
+    {
+      "path": "tests/platform/agent-runtime.test.ts",
+      "status": "present",
+      "bytes": 8863,
+      "kind": "text",
+      "sha256": "625e4d11092426f9329a946531d0af1e711e67848c9dd31758a252ce9cb655af"
+    },
+    {
+      "path": "tests/platform/automation-completion-api.test.ts",
+      "status": "present",
+      "bytes": 4605,
+      "kind": "text",
+      "sha256": "5f7967ec479c59eb8af330012199d65e450c34846e81e7972f560f38e1fccd2d"
+    },
+    {
+      "path": "tests/platform/automation-completion.test.ts",
+      "status": "present",
+      "bytes": 14721,
+      "kind": "text",
+      "sha256": "d3aec8a19aa8e56587330c84d4da039f6d0e6054f0b7c0de9d586a4b7f1140dc"
+    },
+    {
+      "path": "tests/platform/backend-benefits.test.ts",
+      "status": "present",
+      "bytes": 2531,
+      "kind": "text",
+      "sha256": "63507a2a24ce1841160481f083d6f7cf711d514a2f5e86c5a5b541f36a100f0f"
+    },
+    {
+      "path": "tests/platform/backend-boundaries.test.ts",
+      "status": "present",
+      "bytes": 2751,
+      "kind": "text",
+      "sha256": "08aec0a5e37e51607af1247d39d8cd124e660dfc7d6c661df0258f92228cb6fc"
+    },
+    {
+      "path": "tests/platform/backend-domains.test.ts",
+      "status": "present",
+      "bytes": 3851,
+      "kind": "text",
+      "sha256": "52f8f23e2cac7d653932138a01a509fcd24316f61e6036d55fcdd2626d2cbd57"
+    },
+    {
+      "path": "tests/platform/backend-evidence.test.ts",
+      "status": "present",
+      "bytes": 2331,
+      "kind": "text",
+      "sha256": "af567d273a0eaeb498051fca30f663e72ab03ac9a1b60419e5feb1286012d4e6"
+    },
+    {
+      "path": "tests/platform/backend-flows-jobs.test.ts",
+      "status": "present",
+      "bytes": 3540,
+      "kind": "text",
+      "sha256": "fb25bc9f95316a7dffeeba2ff443f186c46cfa8fa0b2f516661972943827c52b"
+    },
+    {
+      "path": "tests/platform/backend-lifecycle.test.ts",
+      "status": "present",
+      "bytes": 10053,
+      "kind": "text",
+      "sha256": "90beeaa0ccd9e3668171488a043970bf387819df37cf1c2c26b67291eeaae1c5"
+    },
+    {
+      "path": "tests/platform/backend-review-regressions.test.ts",
+      "status": "present",
+      "bytes": 5277,
+      "kind": "text",
+      "sha256": "17888f51926e716f37c2db98499c3424a385eb928e7fd685ed8c530c70103c2a"
+    },
+    {
+      "path": "tests/platform/backend-security.test.ts",
+      "status": "present",
+      "bytes": 6481,
+      "kind": "text",
+      "sha256": "35378e891190c7960dd4c52eaf43ba69d7e1cd6a6163eed80dd8bca8276be8a0"
+    },
+    {
+      "path": "tests/platform/backend-workspaces.test.ts",
+      "status": "present",
+      "bytes": 6507,
+      "kind": "text",
+      "sha256": "635f2a24e3f9a009a97ec1631bd74932ea7fa32e09be259158d42c369d951581"
+    },
+    {
+      "path": "tests/platform/backup-restore.test.ts",
+      "status": "present",
+      "bytes": 1748,
+      "kind": "text",
+      "sha256": "3bef564abb265f2dde452be2249d47b28ffc3250e9c094d6f39f7dba64179d8f"
+    },
+    {
+      "path": "tests/platform/business-journeys.test.ts",
+      "status": "present",
+      "bytes": 16939,
+      "kind": "text",
+      "sha256": "1fb334d533c151a4180ce1820e658401676d04514856f4c17b35c915fc7a5af9"
+    },
+    {
+      "path": "tests/platform/capability-navigation.test.ts",
+      "status": "present",
+      "bytes": 6907,
+      "kind": "text",
+      "sha256": "b3b2cd270935dfa01987f8a43ec1914f00dc7154861b940f48dfc7a3fe261fb5"
+    },
+    {
+      "path": "tests/platform/client-pagination.test.ts",
+      "status": "present",
+      "bytes": 928,
+      "kind": "text",
+      "sha256": "a45cea12c9048a6b94dc8192717f7fb6e7d563ff0d573199ec3f44d618eb8c98"
+    },
+    {
+      "path": "tests/platform/client-retry.test.ts",
+      "status": "present",
+      "bytes": 1062,
+      "kind": "text",
+      "sha256": "40fbb5ed7e0506a05868449813b14b4ca9180f98e5a4cd47baf5caa31c58ece3"
+    },
+    {
+      "path": "tests/platform/client-session-race.test.ts",
+      "status": "present",
+      "bytes": 925,
+      "kind": "text",
+      "sha256": "e9fd4f8ee8008fe6e8265ac7b3c67c07ef556af9b3125d85d7d5ccbe32d6a913"
+    },
+    {
+      "path": "tests/platform/create-retry.test.ts",
+      "status": "present",
+      "bytes": 1038,
+      "kind": "text",
+      "sha256": "c868c5cc323f0f28eae563567598b58fdc50122fc4a4c396ebb5d806e0ab4e19"
+    },
+    {
+      "path": "tests/platform/customer-cart.test.ts",
+      "status": "present",
+      "bytes": 4343,
+      "kind": "text",
+      "sha256": "bebd710a377fd83e7a25f7e9368f3cc8d57f6abc3edb4e534a63cf57c7d6ac85"
+    },
+    {
+      "path": "tests/platform/dealer-approval.test.ts",
+      "status": "present",
+      "bytes": 9001,
+      "kind": "text",
+      "sha256": "f49b8d3fb4c4c2f9aaffe6e6dddcc88b115d13593dafcfb21db6514b8b51004c"
+    },
+    {
+      "path": "tests/platform/dealer-completion.test.ts",
+      "status": "present",
+      "bytes": 25658,
+      "kind": "text",
+      "sha256": "b1e7053ca61b4ee181084a03ec24ddee7c016e19781ba9ddaba65853b7a981af"
+    },
+    {
+      "path": "tests/platform/developer-workspaces.test.ts",
+      "status": "present",
+      "bytes": 6174,
+      "kind": "text",
+      "sha256": "b2763508438d54c75471d65dfd1007564f39035327e0a146e5aa052f7ddbd086"
+    },
+    {
+      "path": "tests/platform/experience-model.test.ts",
+      "status": "present",
+      "bytes": 2438,
+      "kind": "text",
+      "sha256": "583af63258bc95d792a0075d3a081e66a53ea84370867188385840d44fdad893"
+    },
+    {
+      "path": "tests/platform/finance-review.test.ts",
+      "status": "present",
+      "bytes": 2207,
+      "kind": "text",
+      "sha256": "91a6be2ca3a2a808422debd64598625e1234e2e771a855c2922c97fea68ea19e"
+    },
+    {
+      "path": "tests/platform/fixtures/lifecycle-worker.ts",
+      "status": "present",
+      "bytes": 981,
+      "kind": "text",
+      "sha256": "c4bdefda6549ecdc8ed808b65690c8eb06076205ba7b2cb0770a8ac6741ab6e4"
+    },
+    {
+      "path": "tests/platform/flow-answers.test.ts",
+      "status": "present",
+      "bytes": 776,
+      "kind": "text",
+      "sha256": "1d7e6cd2b35ced4eeb27b980de6807e43c326e9eaa39fb9e49436524c61f148c"
+    },
+    {
+      "path": "tests/platform/flow-review-pagination.test.ts",
+      "status": "present",
+      "bytes": 3562,
+      "kind": "text",
+      "sha256": "e48e76be995259bcb47493c591bc80806acabfa09dbc78b23bfaf7c31c7e09da"
+    },
+    {
+      "path": "tests/platform/founder-intelligence.test.ts",
+      "status": "present",
+      "bytes": 3488,
+      "kind": "text",
+      "sha256": "f8ae15ced2a8454fa58067850194a12811c9eac3686e98221b4d25d6d6de1aa6"
+    },
+    {
+      "path": "tests/platform/full-collection-summaries.test.ts",
+      "status": "present",
+      "bytes": 6626,
+      "kind": "text",
+      "sha256": "3a8d0d55ca570046fd25337203737ebb5e16d0ada0f4e641dc804bc6a9c195b5"
+    },
+    {
+      "path": "tests/platform/host-security.test.ts",
+      "status": "present",
+      "bytes": 8267,
+      "kind": "text",
+      "sha256": "57f3a02f8eb9ae42fb87f37035ec14a2b77187ecfcff66b2f0a4d92ca6a8874d"
+    },
+    {
+      "path": "tests/platform/landing-scene-controller.test.ts",
+      "status": "present",
+      "bytes": 7190,
+      "kind": "text",
+      "sha256": "52ae76d4963c71356e0af650c7c1536b8e51acbcf0782eb60e0ab43950bc7c56"
+    },
+    {
+      "path": "tests/platform/landing-story.test.ts",
+      "status": "present",
+      "bytes": 3803,
+      "kind": "text",
+      "sha256": "8e44a997af0ec0766d68bb9385c06d9a791d776a0a44a27634aa359dbb918c73"
+    },
+    {
+      "path": "tests/platform/legacy-migration.test.ts",
+      "status": "present",
+      "bytes": 7589,
+      "kind": "text",
+      "sha256": "fa94f8f7655c8701acf8e5704b13f2c39e814e53c53b3782c1aeee6c2937b3e2"
+    },
+    {
+      "path": "tests/platform/legacy-pilots.test.ts",
+      "status": "present",
+      "bytes": 5171,
+      "kind": "text",
+      "sha256": "03157e5487f9d3f866ebc9842df390c5bbb94d3b29b5f1c35efd77281408b2fd"
+    },
+    {
+      "path": "tests/platform/marketing-publish.test.ts",
+      "status": "present",
+      "bytes": 16703,
+      "kind": "text",
+      "sha256": "cbc5e519d30217134c4ddc0ea03d780aecc639e5e69a95af8b6e1fef82756448"
+    },
+    {
+      "path": "tests/platform/no-seeded-business.test.ts",
+      "status": "present",
+      "bytes": 281,
+      "kind": "text",
+      "sha256": "5cb205ce30b6a1945ffdddb8bbd7dbf101b04cc8bc7ffa3600ec44d8b1c536e5"
+    },
+    {
+      "path": "tests/platform/offline-cache.test.ts",
+      "status": "present",
+      "bytes": 2704,
+      "kind": "text",
+      "sha256": "a43b9aa9d9e88df816b9c07d3ebbc7fc961bd500184d21dcce2b5dd21f715455"
+    },
+    {
+      "path": "tests/platform/operational-amendments-api.test.ts",
+      "status": "present",
+      "bytes": 7629,
+      "kind": "text",
+      "sha256": "e370f4d5854ec82681a1b7e73db90b840dc8a29100b7942fae39f21d748b5300"
+    },
+    {
+      "path": "tests/platform/operational-amendments.test.ts",
+      "status": "present",
+      "bytes": 10390,
+      "kind": "text",
+      "sha256": "1e88d449f50340ab78355d2c14d1ffa86f763dbcfa82c875fdad8958d9a7dc8d"
+    },
+    {
+      "path": "tests/platform/product-onboarding.test.ts",
+      "status": "present",
+      "bytes": 8386,
+      "kind": "text",
+      "sha256": "50f2265975cc4016f879bf291ee1115ae10691e55688723f399a5c9f64bfee7b"
+    },
+    {
+      "path": "tests/platform/production-persistence.test.ts",
+      "status": "present",
+      "bytes": 8110,
+      "kind": "text",
+      "sha256": "ad117776495f945316cea187bda30b1dfc958445f462d3d48455e1ebc80a1c28"
+    },
+    {
+      "path": "tests/platform/public-html.test.ts",
+      "status": "present",
+      "bytes": 2108,
+      "kind": "text",
+      "sha256": "6c238bf2a92a2fac80abba3fd4204d12584248359abba2eca08417f28b869363"
+    },
+    {
+      "path": "tests/platform/remote-evidence.test.ts",
+      "status": "present",
+      "bytes": 2615,
+      "kind": "text",
+      "sha256": "e6c0425adda2c82c51eff6f2d114f8e7823631fc0d271754645356a820adb37e"
+    },
+    {
+      "path": "tests/platform/report-builder.test.ts",
+      "status": "present",
+      "bytes": 2846,
+      "kind": "text",
+      "sha256": "7f6dd9b274fce8b77ebf99e0b40e2cc394e046d98ca46c8e118b4a73efe152e8"
+    },
+    {
+      "path": "tests/platform/reviewer-boundaries.test.ts",
+      "status": "present",
+      "bytes": 1722,
+      "kind": "text",
+      "sha256": "6b408a25cb1af58b1e3b25ea695f8f73b750b232137f7d91cc1a124e66617936"
+    },
+    {
+      "path": "tests/platform/routes.test.ts",
+      "status": "present",
+      "bytes": 3769,
+      "kind": "text",
+      "sha256": "dddf62ec3aa9b6666dc5ae94afeb173c180612c80be519e5921386918ef0321e"
+    },
+    {
+      "path": "tests/platform/runtime-config.test.ts",
+      "status": "present",
+      "bytes": 1187,
+      "kind": "text",
+      "sha256": "5111c933b175b8bb005eb2e38cc17b41b9435cc80a324baf2ec0b244b6dd8076"
+    },
+    {
+      "path": "tests/platform/runtime-identity.test.ts",
+      "status": "present",
+      "bytes": 6128,
+      "kind": "text",
+      "sha256": "ae4c7c91eb7838dcf0bbb0613e4c26fd6a452f484a48f34a58da8313e9f0a3d1"
+    },
+    {
+      "path": "tests/platform/runtime-launcher.integration.test.ts",
+      "status": "present",
+      "bytes": 8772,
+      "kind": "text",
+      "sha256": "a6101fd40e81b76468f5a844be3faba09c241ad24904203d1790b953f0df1205"
+    },
+    {
+      "path": "tests/platform/supabase-configuration.test.ts",
+      "status": "present",
+      "bytes": 1194,
+      "kind": "text",
+      "sha256": "0da41eeea95ebdd6bac70475408b0aed80ca09c3d87233621705e13ec4a951a9"
+    },
+    {
+      "path": "tests/platform/supabase-persistence.test.ts",
+      "status": "present",
+      "bytes": 7620,
+      "kind": "text",
+      "sha256": "bed8e8f4ea16f0a3c251b4c4f819416c0d8888968274ea5c19d5aca11e4b20c3"
+    },
+    {
+      "path": "tests/platform/supabase-query.test.ts",
+      "status": "present",
+      "bytes": 454,
+      "kind": "text",
+      "sha256": "7385b7eae186388819368021b7ddd5325be7663e852c312756bf6cd222a0b852"
+    },
+    {
+      "path": "tests/platform/supabase-unavailable.test.ts",
+      "status": "present",
+      "bytes": 488,
+      "kind": "text",
+      "sha256": "d3e83737747f23dde31224841f6794fd3dcc055c72f3e8b58d85e17c67686e32"
+    },
+    {
+      "path": "tests/platform/upload-revocation.test.ts",
+      "status": "present",
+      "bytes": 2035,
+      "kind": "text",
+      "sha256": "12ff87e7082576f1eb1673314dc87adc8ef645fc688fdd0860ecfc5c256c7628"
+    },
+    {
+      "path": "tests/platform/vercel-entry.test.ts",
+      "status": "present",
+      "bytes": 2670,
+      "kind": "text",
+      "sha256": "dcb70f5633f698dc2f7d4f0ed388b7c94525a649712ca30a2d4c1d1399f8da40"
+    },
+    {
+      "path": "tests/platform/whatsapp-flows.test.ts",
+      "status": "present",
+      "bytes": 11615,
+      "kind": "text",
+      "sha256": "97335f63c4a52e2fcd34e47e869765608df868c149ffe75665f6d87e8616117e"
+    },
+    {
+      "path": "tests/platform/work-collaboration-api.test.ts",
+      "status": "present",
+      "bytes": 4803,
+      "kind": "text",
+      "sha256": "4a9f9b0990889a74ce6445af14bb3a2de9e64fa61e7418b52002ea48bd286f1b"
+    },
+    {
+      "path": "tests/platform/work-collaboration.test.ts",
+      "status": "present",
+      "bytes": 9917,
+      "kind": "text",
+      "sha256": "1332a8c4d98ca3cfdf2339344eb164645030dfd2e239794bb58e20828ce70da2"
+    },
+    {
+      "path": "tests/platform/worker-process-recovery.test.ts",
+      "status": "present",
+      "bytes": 2556,
+      "kind": "text",
+      "sha256": "426aadc9fefc071c6790b5180cb12d4841cac6ef00bc0483a51e41c2be1f83ae"
+    },
+    {
+      "path": "tests/playwright.config.ts",
+      "status": "present",
+      "bytes": 433,
+      "kind": "text",
+      "sha256": "42dd4fb8569f93a09765a2d1818be4b81f5f01da4905e63f7b3ff16f52737818"
+    },
+    {
+      "path": "tsconfig.json",
+      "status": "present",
+      "bytes": 698,
+      "kind": "text",
+      "sha256": "63ade01e644fc4b4dcbb79290ac73a19d24800255ee4080a11cacbe0331108b0"
+    },
+    {
+      "path": "tsconfig.platform.json",
+      "status": "present",
+      "bytes": 401,
+      "kind": "text",
+      "sha256": "bcebe985018e35b7dd67909b960487875686abc0b812f2d69b7b1933b9796b26"
+    },
+    {
+      "path": "vercel.json",
+      "status": "present",
+      "bytes": 605,
+      "kind": "text",
+      "sha256": "7481527bf203ea0abd76653c17c424e06ed121476ed6f6a34cf5dd591966f76d"
+    },
+    {
+      "path": "vite.config.ts",
+      "status": "present",
+      "bytes": 875,
+      "kind": "text",
+      "sha256": "cfd43a0ad7707bdcd553b6dd6b3e4d3e874ee84423b846e52946c39642d7009f"
+    }
+  ]
+}

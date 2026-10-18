@@ -1,30 +1,77 @@
 import { useEffect,useState } from 'react';
-import { ArrowRight,Box,Package,ShoppingBag,Truck } from 'lucide-react';
+import { ArrowRight,Box,Minus,Package,Plus,ShoppingBag,ShoppingCart,Truck } from 'lucide-react';
 import type { CatalogueProduct,DealerApplication,DealerTerms,InventoryMovement,OrderRecord,PublicProduct,RestockRecord,SessionData,StockLot,VersionedQuote,WorkspaceRole } from '../../../shared/platform-contracts';
 import { api,useResource } from '../platform/client';
 import { DealerLedger } from './DealerLedger';
 import { amountToSen,dateLabel,money,nextFulfilment,positiveQuantity } from './experience-model';
 import { Empty,field,FormPanel,MutationButton,Panel,RecordMeta,Refresh,ResourceState,SearchBox,splitRefs,Status } from './ui';
+import { decodeCustomerCart,decrementCustomerCartQuantity,encodeCustomerCart,MAX_CUSTOMER_CART_LINES,validateCustomerCart,type CustomerCartLine } from '../flows/customer-cart';
+import { evidenceFileSizeAllowed } from '../../../shared/upload-limits';
 
 export function Shop({ onNavigate }: { onNavigate: (path: string) => void; }) {
   const resource=useResource<PublicProduct[]>('/catalogue');
-  return <Panel title="Pilih colek anda" eyebrow="Published catalogue" action={<Refresh onClick={resource.reload} />}>
-    <ResourceState {...resource} />
-    <div className="xp-product-grid">{resource.data?.map(product => <article className="xp-product" key={product.id}>
-      <div className="xp-product-art">
-        <Package size={50} strokeWidth={1} />
-        <span>ABANG<br />COLEK</span>
-      </div>
-      <p className="xp-eyebrow">Pack {product.packSize} · Version {product.publishedVersion}</p>
-      <h3>{product.name}</h3>
-      <p>{product.description}</p>
-      <div className="xp-product-footer">
-        <strong>{money(product.priceSen)}</strong>
-        <Status value={product.availableQuantity>0? 'available':'out_of_stock'} />
-      </div>
-      <button className="xp-button" disabled={product.availableQuantity<1} onClick={() => onNavigate(`/flows/order?product=${encodeURIComponent(product.id)}`)}>Beli sekarang <ArrowRight size={17} />
-      </button>
-    </article>)}</div>{!resource.loading&&!resource.error&&!resource.data?.length&&<Empty title="Katalog belum diterbitkan" description="Founder perlu mengesahkan produk, harga dan stok sebelum pesanan boleh dibuat." />}</Panel>;
+  const [cart,setCart]=useState<CustomerCartLine[]>(()=>decodeCustomerCart(new URLSearchParams(window.location.search).get('cart'))??[]);
+  const [cartNotice,setCartNotice]=useState('');
+  const cartRows=cart.map(line=>({line,product:resource.data?.find(product=>product.id===line.productId)}));
+  const cartTotal=cartRows.reduce((sum,row)=>sum+(row.product?.priceSen??0)*row.line.quantity,0);
+  const cartReady=cart.length>0&&cartRows.every(row=>row.product&&row.line.quantity<=row.product.availableQuantity&&row.line.quantity%row.product.packSize===0);
+  const itemCount=cart.reduce((sum,line)=>sum+line.quantity,0);
+  useEffect(()=>{
+    const params=new URLSearchParams();
+    if(cart.length)params.set('cart',encodeCustomerCart(cart));
+    const query=params.toString();window.history.replaceState(window.history.state,'',`${window.location.pathname}${query?`?${query}`:''}`);
+  },[cart]);
+  useEffect(()=>{
+    if(!cart.length||!resource.data||!resource.hasMore||resource.loadingMore||resource.error)return;
+    if(cart.some(line=>!resource.data?.some(product=>product.id===line.productId)))void resource.loadMore();
+  },[cart,resource.data,resource.hasMore,resource.loadingMore,resource.error,resource.loadMore]);
+  function changeQuantity(product:PublicProduct,next:number) {
+    if(next<=0){setCart(current=>current.filter(line=>line.productId!==product.id));setCartNotice('');return;}
+    if(!Number.isSafeInteger(next)||next>10_000||next>product.availableQuantity||next%product.packSize!==0){setCartNotice(`Kuantiti ${product.name} mesti gandaan pek ${product.packSize} dan tidak melebihi stok tersedia.`);return;}
+    setCartNotice('');
+    setCart(current=>{
+      const existing=current.find(line=>line.productId===product.id);
+      return existing?current.map(line=>line.productId===product.id?{...line,quantity:next}:line):[...current,{productId:product.id,quantity:next}];
+    });
+  }
+  function checkout() {
+    if(!resource.data)return;
+    try {
+      const lines=validateCustomerCart(cart,resource.data);
+      onNavigate(`/flows/order?cart=${encodeURIComponent(encodeCustomerCart(lines))}`);
+    } catch(reason) { setCartNotice(reason instanceof Error?reason.message:'Troli perlu disemak semula.'); }
+  }
+  return <>
+    <Panel title="Pilih colek anda" eyebrow="Published catalogue" action={<Refresh onClick={resource.reload} />}>
+      <ResourceState {...resource} />
+      <div className="xp-product-grid">{resource.data?.map(product=>{
+        const quantity=cart.find(line=>line.productId===product.id)?.quantity??0;
+        const atLimit=cart.length>=MAX_CUSTOMER_CART_LINES&&!quantity;
+        return <article className="xp-product" key={product.id}>
+          <div className="xp-product-art"><Package size={50} strokeWidth={1}/><span>ABANG<br/>COLEK</span></div>
+          <p className="xp-eyebrow">Pack {product.packSize} · Version {product.publishedVersion}</p>
+          <h3>{product.name}</h3><p>{product.description}</p>
+          <div className="xp-product-footer"><strong>{money(product.priceSen)}</strong><Status value={product.availableQuantity>0?'available':'out_of_stock'}/></div>
+          <button type="button" className="xp-button" disabled={product.availableQuantity<1||atLimit||quantity+product.packSize>product.availableQuantity} onClick={()=>changeQuantity(product,quantity+product.packSize)}>
+            <ShoppingCart size={17}/>{quantity?'Tambah lagi':'Tambah ke troli'}
+          </button>
+          {quantity>0&&<p className="xp-muted" aria-live="polite">{quantity} unit dalam troli</p>}
+        </article>;
+      })}</div>
+      {resource.hasMore&&<button type="button" className="xp-button xp-secondary" disabled={resource.loadingMore} onClick={()=>void resource.loadMore()}>{resource.loadingMore?'Memuatkan produk…':'Muat lagi produk'}</button>}
+      {!resource.loading&&!resource.error&&!resource.data?.length&&<Empty title="Katalog belum diterbitkan" description="Founder perlu mengesahkan produk, harga dan stok sebelum pesanan boleh dibuat."/>}
+    </Panel>
+    <Panel title={`Troli anda · ${itemCount} unit`} eyebrow="Semak sebelum checkout">
+      {cart.length===0?<Empty title="Troli masih kosong" description="Tambah produk daripada katalog. Harga dan stok akan disemak semula sebelum pesanan dihantar."/>:<div className="xp-cart-list">{cartRows.map(({line,product})=><article className="xp-cart-row" key={line.productId}>
+        <div className="xp-cart-product"><strong>{product?.name??'Produk tidak lagi dalam katalog'}</strong><span>{product?`${money(product.priceSen)} seunit · Pek ${product.packSize}`:line.productId}</span></div>
+        <div className="xp-cart-controls">
+          {product?<><button type="button" className="xp-icon-button" aria-label={`Kurangkan ${product.name}`} onClick={()=>changeQuantity(product,decrementCustomerCartQuantity(line.quantity,product))}><Minus size={17}/></button><strong>{line.quantity}</strong><button type="button" className="xp-icon-button" aria-label={`Tambah ${product.name}`} disabled={line.quantity+product.packSize>product.availableQuantity} onClick={()=>changeQuantity(product,line.quantity+product.packSize)}><Plus size={17}/></button><strong>{money(product.priceSen*line.quantity)}</strong><button type="button" className="xp-button xp-secondary" onClick={()=>setCart(current=>current.filter(item=>item.productId!==line.productId))} aria-label={`Buang ${product.name}`}>Buang item</button></>:<button type="button" className="xp-button xp-secondary" onClick={()=>setCart(current=>current.filter(item=>item.productId!==line.productId))}>Buang item</button>}
+        </div>
+      </article>)}</div>}
+      {cartNotice&&<p className="xp-inline-error" role="alert">{cartNotice}</p>}
+      {cart.length>0&&<div className="xp-cart-checkout"><div><span>Jumlah produk</span><strong>{money(cartTotal)}</strong></div><p className="xp-muted">Jumlah ini belum termasuk penghantaran jika berkenaan. Server mengesahkan semula harga, katalog dan stok pada langkah checkout.</p><button type="button" className="xp-button" disabled={!cartReady||resource.loading} onClick={checkout}>Teruskan ke checkout <ArrowRight size={17}/></button></div>}
+    </Panel>
+  </>;
 }
 export function Orders({ role,onChanged,entityId }: { entityId?:string;role: WorkspaceRole; onChanged?: () => void; }) {
   const resource=useResource<OrderRecord[]>('/orders');
@@ -97,7 +144,7 @@ export function EvidenceUpload({ entityId,onChanged }: { entityId: string; onCha
   const evidence=useResource<{ id: string; name: string; kind: string; createdAt: string; downloadUrl?: string; }[]>(`/evidence?entityId=${encodeURIComponent(entityId)}`);
   async function upload() {
     if(!file||busy) return; setMessage('');
-    if(file.size>10*1024*1024) { setMessage('Fail maksimum 10 MB.'); return; }
+    if(!evidenceFileSizeAllowed(file.size)) { setMessage('Pilih fail yang tidak kosong, maksimum 3.8 MB.'); return; }
     setBusy(true);
     try {
       const form=new FormData(); form.append('entityId',entityId); form.append('file',file);
@@ -108,7 +155,7 @@ export function EvidenceUpload({ entityId,onChanged }: { entityId: string; onCha
   }
   return <div className="xp-evidence">
     <h3>Bukti / attachments</h3>
-    <p className="xp-muted">Gambar atau PDF. Bukti disimpan secara private; upload tidak mengesahkan payment atau QC.</p>
+    <p className="xp-muted">Gambar atau PDF, maksimum 3.8 MB. Bukti disimpan secara private; upload tidak mengesahkan payment atau QC.</p>
     <label className="xp-field">
       <span>Pilih fail</span>
       <input type="file" accept="image/jpeg,image/png,image/webp,application/pdf" onChange={event => setFile(event.target.files?.[0]??null)} />

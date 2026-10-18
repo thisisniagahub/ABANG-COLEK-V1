@@ -11,7 +11,7 @@ import { purgeUserCache } from './offlineDrafts';
 import './platform-shell.css';
 import { WorkspaceNavigation } from './WorkspaceNavigation';
 import BrandLogo from '../brand/BrandLogo';
-import { supabase } from '../../services/supabaseClient';
+
 
 const LandingPage = lazy(() => import('../landing/LandingPage'));
 const Workspaces = lazy(() => import('../workspaces/WorkspaceContent').then(module => ({ default: module.WorkspaceContent })));
@@ -42,11 +42,6 @@ function LoginForm({ setup, onSuccess, onNavigate }: { setup: boolean; onSuccess
     } catch (reason) { setError(reason instanceof Error ? reason.message : 'Sesi tidak dapat dibuka.'); }
     finally { setBusy(false); }
   }
-  async function continueWithGoogle() {
-    setBusy(true); setError('');
-    const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/login` } });
-    if (error) { setError(error.message); setBusy(false); }
-  }
   return <main id="platform-main" className="platform-login">
     <div className="platform-login-story"><BrandLogo className="platform-login-logo" /><span className="platform-eyebrow"><Flame size={18} /> ABANGCOLEK PLATFORM</span><h2>Satu bisnes.<br />Satu tempat<br /><em>untuk bergerak.</em></h2><p>Pesanan, pasukan, stokis dan marketing. Sambung kerja dengan konteks yang sama.</p><div className="platform-role-chips">{roleOrder.map(role => <span key={role}><ShieldCheck size={14} />{roles[role]}</span>)}</div></div>
     <form onSubmit={submit} className="platform-auth-card"><button type="button" className="platform-text-button" onClick={() => onNavigate('/')}><ArrowLeft size={16} />Halaman utama</button><span className="platform-eyebrow">{setup ? 'OWNER PROVISIONING' : 'YOUR WORKSPACE'}</span><h1>{setup ? 'Sediakan founder pertama' : mode === 'login' ? 'Masuk ke ABANGCOLEK' : 'Buka akaun customer'}</h1><p>{setup ? 'Token sekali guna dikeluarkan pada host. Founder tidak ditentukan melalui email atau pilihan role.' : 'Akses workspace mengikut membership yang disahkan server.'}</p>
@@ -57,7 +52,8 @@ function LoginForm({ setup, onSuccess, onNavigate }: { setup: boolean; onSuccess
       {setup && <label>Token founder<input name="token" type="password" autoComplete="off" required maxLength={150} /><span className="platform-field-hint">Fail setempat: var/run/owner-bootstrap.token. Token tidak dihantar ke AI.</span></label>}
       {error && <p role="alert" className="platform-alert">{error}</p>}
       <button type="submit" className="platform-primary" disabled={busy}>{busy ? 'Mengesahkan sesi…' : setup ? 'Provision founder' : mode === 'login' ? 'Masuk workspace' : 'Daftar customer'}<ArrowUpRight size={18} /></button>
-      {!setup && <button type="button" className="platform-text-button" onClick={() => { void continueWithGoogle(); }} disabled={busy}>Teruskan dengan Google</button>}
+      {!setup && <p className="platform-field-hint">Google login belum tersedia untuk workspace ini. Gunakan email dan password.</p>}
+      {!setup && <button type="button" className="platform-text-button" disabled>Teruskan dengan Google</button>}
       {!setup && <button type="button" className="platform-text-button" onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); }}>{mode === 'login' ? 'Belum ada akaun? Daftar customer' : 'Sudah ada akaun? Masuk'}</button>}
     </form>
   </main>;

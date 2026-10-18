@@ -60,3 +60,24 @@ describe('durable local identity and authoritative commerce', () => {
 });
 
 export { harness, call, user };
+
+describe('business pilot access isolation', () => {
+  test('customers cannot read or mutate business logistics or founder context', async () => {
+    const { app } = harness();
+    const owner = await user(app, 'pilot-owner', true);
+    const customer = await user(app, 'pilot-customer');
+    const payload = { routeId: 'LARKIN-MBKT', packageDescription: 'Manual freight record', cartonCount: 1, totalWeightKg: 2 };
+    expect((await call(app, '/pilots/bus-freight/shipments', undefined, customer)).response.status).toBe(403);
+    expect((await call(app, '/pilots/bus-freight/shipments', payload, customer)).response.status).toBe(403);
+    expect((await call(app, '/pilots/founder-assistant/propose', { query: 'Semak stok' }, customer)).response.status).toBe(403);
+    const created = await call(app, '/pilots/bus-freight/shipments', payload, owner);
+    expect(created.response.status).toBe(200);
+    expect((await call(app, `/pilots/bus-freight/shipments/${created.json.data.id}/status`, { status: 'departed' }, customer)).response.status).toBe(403);
+    expect((await call(app, `/pilots/bus-freight/shipments/${created.json.data.id}/status`, { status: 'departed' }, owner)).response.status).toBe(200);
+  });
+});
+
+ test('health identifies Supabase persistence without returning configuration secrets',async()=>{
+   const app=createPlatformApp({databasePath:':memory:',bootstrapToken:'test-bootstrap-token-long-enough',origin:'http://localhost:3000',persistenceMode:'supabase'});
+   try{const owner=await user(app,'cloud-health',true);const result=await call(app,'/health',undefined,owner);expect(result.response.status).toBe(200);expect(result.json.data.find((item:{component:string})=>item.component==='platform_database').reasonCode).toBe('SUPABASE_SNAPSHOT');expect(JSON.stringify(result.json)).not.toContain('test-bootstrap-token-long-enough');}finally{app.close();}
+ });

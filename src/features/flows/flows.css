@@ -26,4 +26,10 @@
 .flow-offline-option input { min-height:20px!important; margin-top:1px; }
 .flow-footer { display:flex; align-items:flex-start; gap:10px; margin-top:36px; color:var(--ui-muted); font-size:11px; line-height:1.65; }.flow-footer svg { flex-shrink:0; }
 .flow-receipt { border-color:var(--ui-accent); }.flow-receipt>p { margin-bottom:16px; overflow-wrap:anywhere; }
+.flow-field-label { display:block; margin:0 0 8px; font-size:13px; }
+.flow-cart-lines { padding:14px; border:1px solid var(--ui-border); border-radius:14px; background:var(--ui-soft); }
+.flow-cart-lines ul { list-style:none; padding:0; margin:12px 0; }
+.flow-cart-lines li { display:flex; justify-content:space-between; gap:12px; padding:12px 0; border-bottom:1px solid var(--ui-border); font-size:13px; }
+.flow-cart-lines li span { overflow-wrap:anywhere; text-wrap:pretty; }
+.flow-cart-lines small { display:block; color:var(--ui-muted); font-size:11px; line-height:1.6; }
 @media(max-width:480px) { .flow-intro,.flow-card,.flow-receipt { padding:24px 20px; border-radius:22px; }.flow-review>div { grid-template-columns:1fr; gap:5px; }.flow-card h2 { font-size:23px; } }

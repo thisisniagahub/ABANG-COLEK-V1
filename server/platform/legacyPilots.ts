@@ -43,7 +43,7 @@ export class LegacyPilotsService {
   // ==========================================
 
   grantWorkspaceConsent(actorId: string, scopes: ('docs.draft' | 'calendar.sync' | 'sheets.export')[]): WorkspaceConsentGrant {
-    if (!scopes || scopes.length === 0) {
+    if (!Array.isArray(scopes) || scopes.length === 0 || scopes.length > 3 || scopes.some(scope => !['docs.draft','calendar.sync','sheets.export'].includes(scope))) {
       fail('INVALID_SCOPES', 400, 'Sekurang-kurangnya satu skop integrasi diperlukan.');
     }
     const grant: WorkspaceConsentGrant = {
@@ -91,25 +91,8 @@ export class LegacyPilotsService {
       throw new DomainError('CONSENT_REQUIRED', 403, `Persetujuan pengguna bagi skop '${requiredScope}' diperlukan sebelum operasi dijalankan.`);
     }
 
-    const receiptId = id();
-    const externalRef = `gsuite-${operation}-${Date.now().toString(36)}`;
-    const actionUrl = `https://workspace.google.com/preview/${externalRef}`;
-
-    const receipt: WorkspaceActionReceipt = {
-      id: receiptId,
-      grantId: validGrant.id,
-      service: 'google_workspace',
-      operation,
-      entityId,
-      externalRef,
-      actionUrl,
-      status: 'completed',
-      executedAt: now(),
-    };
-
-    this.store.save('workspace_receipts', receipt);
-    this.store.audit(actorId, `WORKSPACE_OP_${operation.toUpperCase()}`, receipt.id, 1);
-    return receipt;
+    // Consent alone cannot establish that a provider operation actually happened.
+    fail('WORKSPACE_UNAVAILABLE',409,'Integrasi Google Workspace belum tersedia.');
   }
 
   // ==========================================
