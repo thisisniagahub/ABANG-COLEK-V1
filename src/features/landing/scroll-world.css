@@ -37,6 +37,15 @@
 }
 
 .ac-world-visual { position: absolute; inset: 0; overflow: clip; }
+.ac-world-film {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 55%;
+}
 .ac-world-camera {
   display: block;
   width: 100%;

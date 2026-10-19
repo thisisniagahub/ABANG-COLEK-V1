@@ -7,6 +7,16 @@ import { BRAND_ASSETS } from '../brand/brand-assets';
 import './scroll-world.css';
 
 const worldScenes = BRAND_ASSETS.worldScenes;
+const FILM_URL = '/assets/world/film.mp4';
+const FILM_POSTER = '/assets/world/scene-1-dapur.webp';
+const FILM_SECTIONS: ReadonlyArray<{ start: number; end: number; transitionIn?: { start: number; end: number } }> = [
+  { start: 0.7, end: 6.8 },
+  { start: 7.7, end: 13.8, transitionIn: { start: 6.4, end: 8.7 } },
+  { start: 14.7, end: 20.8, transitionIn: { start: 13.4, end: 15.7 } },
+  { start: 21.7, end: 27.8, transitionIn: { start: 20.4, end: 22.7 } },
+  { start: 28.7, end: 34.8, transitionIn: { start: 27.4, end: 29.7 } },
+  { start: 35.7, end: 41.8, transitionIn: { start: 34.4, end: 36.7 } },
+];
 const chapters = [
   { id: 'dapur', label: 'Dapur', icon: Flame, eyebrow: '01 / Dari dapur', title: ['Colek buah', 'segar.'], accentLine: 1, description: 'Mangga, jambu, kedondong — dihiris segar setiap hari dan dicampur sambal colek. Pedas manis likat melekat.', action: 'Jom pilih produk', path: '/products', detail: 'Colek disediakan dalam kuantiti kecil, segar setiap hari.' },
   { id: 'qc', label: 'Kualiti', icon: ClipboardCheck, eyebrow: '02 / Semakan kualiti', title: ['Disahkan.', 'Sebelum dijual.'], accentLine: 1, description: 'Setiap cawan colek melalui semakan sebelum diterima masuk katalog. Tutup disemak, kuantiti disahkan.', action: 'Lihat katalog', path: '/products', detail: 'Semakan kualiti disimpan sebagai evidence dalam platform.' },
@@ -22,19 +32,60 @@ interface ModeChangeSnapshot extends StoryViewportSnapshot { viewportWidth: numb
 export default function ScrollWorldHero({ onNavigate }: { onNavigate: (path: string) => void }) {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  const filmRef = useRef<HTMLVideoElement>(null);
   const [motionPaused, setMotionPaused] = useState(false);
   const [shortViewport, setShortViewport] = useState(() => window.matchMedia(SHORT_VIEWPORT_QUERY).matches);
   const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia(REDUCED_MOTION_QUERY).matches);
   const [failedScenes, setFailedScenes] = useState<ReadonlySet<string>>(() => new Set());
+  const [filmFailed, setFilmFailed] = useState(false);
   const [hotspotOpen, setHotspotOpen] = useState(false);
   const scenesAvailable = failedScenes.size < worldScenes.length;
   const staticMode = Boolean(reducedMotion || motionPaused || shortViewport);
+  const filmMode = scenesAvailable && !filmFailed && !staticMode;
   const { active, phase, direction, visible, selectScene, releaseScene } = useSceneController({ sectionRef, enabled: !staticMode, blocked: hotspotOpen, sceneCount: chapters.length });
   const productPhotoVisible = !staticMode && active === chapters.length - 1;
   const modeRef = useRef({ staticMode, motionPaused, active });
   modeRef.current = { staticMode, motionPaused, active };
   const modeChangeRef = useRef<ModeChangeSnapshot | null>(null);
   const settledViewportRef = useRef<ModeChangeSnapshot | null>(null);
+
+  useEffect(() => {
+    const video = filmRef.current;
+    if (!filmMode || !video) return;
+    const section = FILM_SECTIONS[active];
+    let loopHandler: (() => void) | null = null;
+    let transitionTimer: number | null = null;
+    const startLoop = () => {
+      loopHandler = () => {
+        if (video.currentTime >= section.end) video.currentTime = section.start;
+      };
+      video.addEventListener('timeupdate', loopHandler);
+      if (video.paused) video.play().catch(() => {});
+    };
+    const move = () => {
+      if (section.transitionIn && direction === 1) {
+        video.currentTime = section.transitionIn.start;
+        if (video.paused) video.play().catch(() => {});
+        transitionTimer = window.setTimeout(startLoop, (section.transitionIn.end - section.transitionIn.start) * 1000);
+      } else {
+        video.currentTime = section.start;
+        startLoop();
+      }
+    };
+    if (video.readyState >= 1) move();
+    else video.addEventListener('loadedmetadata', move, { once: true });
+    return () => {
+      if (loopHandler) video.removeEventListener('timeupdate', loopHandler);
+      if (transitionTimer !== null) window.clearTimeout(transitionTimer);
+    };
+  }, [active, direction, filmMode]);
+
+  useEffect(() => {
+    const video = filmRef.current;
+    if (!video || filmFailed) return;
+    if (filmMode && visible && !hotspotOpen) video.play().catch(() => {});
+    else video.pause();
+  }, [filmMode, visible, hotspotOpen, filmFailed]);
 
   const readViewportSnapshot = (manual = false): ModeChangeSnapshot | null => {
     const section = sectionRef.current;
@@ -133,8 +184,8 @@ export default function ScrollWorldHero({ onNavigate }: { onNavigate: (path: str
 
   return <section ref={sectionRef} className={`ac-world-journey${staticMode ? ' is-static' : ''}`} tabIndex={staticMode ? undefined : 0} aria-label="Terokai dunia ABANGCOLEK" aria-describedby={staticMode ? undefined : 'ac-world-instructions'} data-scene={chapters[active].id} data-motion={staticMode ? 'static' : 'scene'} data-phase={staticMode ? 'idle' : phase} data-direction={direction}>
     <div ref={stageRef} className="ac-world-stage">
-      <div className={`ac-world-visual${scenesAvailable ? ' is-journey' : ' asset-fallback'}`} aria-hidden="true">
-        {scenesAvailable ? worldScenes.map((scene, index) => <img key={scene.id} className={`ac-world-scene${index === active ? ' is-active' : ''}`} data-scene={scene.id} src={scene.src} alt="" width={scene.width} height={scene.height} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" onError={() => markSceneFailed(scene.id)} />) : <img key="fallback" className="ac-world-camera" src={BRAND_ASSETS.world.src} alt="" width={BRAND_ASSETS.world.width} height={BRAND_ASSETS.world.height} decoding="async" />}
+      <div className={`ac-world-visual${filmMode ? ' is-film' : scenesAvailable ? ' is-journey' : ' asset-fallback'}`} aria-hidden="true">
+        {filmMode ? <video ref={filmRef} className="ac-world-film" src={FILM_URL} poster={FILM_POSTER} muted playsInline autoPlay preload="auto" onError={() => setFilmFailed(true)} /> : scenesAvailable ? worldScenes.map((scene, index) => <img key={scene.id} className={`ac-world-scene${index === active ? ' is-active' : ''}`} data-scene={scene.id} src={scene.src} alt="" width={scene.width} height={scene.height} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" onError={() => markSceneFailed(scene.id)} />) : <img key="fallback" className="ac-world-camera" src={BRAND_ASSETS.world.src} alt="" width={BRAND_ASSETS.world.width} height={BRAND_ASSETS.world.height} decoding="async" />}
       </div>
       <div className="ac-world-shade" aria-hidden="true" />
       {/* A native touch keeps its starting target until touchend; retain this node across scenes. */}
