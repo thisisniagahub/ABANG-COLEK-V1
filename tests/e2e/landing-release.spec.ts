@@ -1,7 +1,8 @@
 import { expect, test } from '@playwright/test';
 
 const hero = '.ac-world-journey';
-test.use({ viewport: { width: 1440, height: 900 } });
+// Media fault injection must reach page.route rather than the production cache.
+test.use({ viewport: { width: 1440, height: 900 }, serviceWorkers: 'block' });
 
 test('six chapters navigate, map film correctly and release to catalogue', async ({ page }) => {
   await page.goto('/');
