@@ -35,7 +35,7 @@ import { HermesAdapter, type AutomationOptions } from '../automation/adapters';
 import { Loyalty } from './loyalty';
 import { GoogleAdkAgent, A2UI_ALLOWLISTED_COMPONENTS } from './adkAgent';
 import { FreeModelRouter } from './freeModelRouter';
-import { globalDomainTools } from './domainTools';
+import { globalDomainTools, getActorCanonicalRole } from './domainTools';
 import { operationsBriefApp } from './mcp/operationsBrief';
 
 export interface PlatformAppOptions { googleIdentityVerifier?:GoogleIdentityVerifier; persistenceMode?:'local'|'supabase'; evidenceStorage?:EvidenceStorage; databasePath?:string; bootstrapToken?:string; origin?:string; allowedOrigins?:string[]; rateLimits?:{identityGlobal:number;identityAccount:number;actor:number}; automationOptions?:AutomationOptions; whatsappTransport?:WhatsAppTransport; adkAgent?:GoogleAdkAgent; freeModelRouter?:FreeModelRouter; backupScheduler?:BackupSchedulerOptions|boolean; log?:(entry:{requestId:string;code:string;status:number})=>void }
@@ -200,7 +200,7 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
           paidFallbackAllowed: false,
         };
       }
-      if(path==='/copilot/tools'){auth.operational(actor);return globalDomainTools.listTools(actor.user.role as any);}
+      if(path==='/copilot/tools'){auth.operational(actor);return globalDomainTools.listTools(getActorCanonicalRole(actor));}
       if(path==='/copilot/mcp/brief/daily'){auth.operational(actor);return operationsBriefApp.getDailyBrief();}
       if(path==='/copilot/mcp/brief/urgent'){auth.operational(actor);return operationsBriefApp.getUrgentBrief();}
     }

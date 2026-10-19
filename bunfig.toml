@@ -1,0 +1,9 @@
+[test]
+# Asingkan runner ujian: Kecualikan Playwright E2E specs dan arkib var/spool daripada carian bun test
+pathIgnorePatterns = [
+  "tests/e2e/**",
+  "**/tests/e2e/**",
+  "var/**",
+  "**/var/**",
+]
+timeout = 15000

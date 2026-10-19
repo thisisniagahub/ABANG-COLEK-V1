@@ -29,6 +29,20 @@ import { operationsBriefApp } from './mcp/operationsBrief';
 
 export type CanonicalRole = 'founder' | 'staff' | 'dealer' | 'customer';
 
+export function getActorCanonicalRole(actor?: Principal): CanonicalRole {
+  if (actor?.memberships?.length) {
+    if (actor.memberships.some((m) => m.role === 'founder' && m.status === 'active')) return 'founder';
+    if (actor.memberships.some((m) => m.role === 'staff' && m.status === 'active')) return 'staff';
+    if (actor.memberships.some((m) => (m.role as string) === 'dealer' || (m.dealerOrgId && m.status === 'active'))) return 'dealer';
+    return 'customer';
+  }
+  const fallbackRole = (actor as any)?.user?.role;
+  if (fallbackRole === 'founder' || fallbackRole === 'staff' || fallbackRole === 'dealer' || fallbackRole === 'customer') {
+    return fallbackRole;
+  }
+  return 'customer';
+}
+
 export interface JSONSchemaProperty {
   type: 'string' | 'number' | 'boolean' | 'object' | 'array';
   description?: string;
@@ -79,7 +93,7 @@ export class DomainToolRegistry {
     this.registerStandardTools();
   }
 
-  registerTool<TInput, TOutput>(tool: ToolDefinition<TInput, TOutput>) {
+  registerTool<TInput = any, TOutput = any>(tool: ToolDefinition<any, any>) {
     this.tools.set(tool.name, tool);
   }
 
@@ -181,7 +195,7 @@ export class DomainToolRegistry {
     }
 
     // 1. Kawalan Akses Peranan Kanonikal
-    const actorRole = (context.actor?.user?.role as CanonicalRole) || 'customer';
+    const actorRole = getActorCanonicalRole(context.actor);
     if (!tool.allowedRoles.includes(actorRole)) {
       throw new Error(
         `Akses ditolak: Peranan '${actorRole}' tidak dibenarkan melaksanakan tool '${name}'.`
@@ -358,7 +372,7 @@ export class DomainToolRegistry {
         },
         required: ['orderId'],
       },
-      async execute(ctx, input) {
+      async execute(ctx, input: any) {
         const orderId = input.orderId;
         return {
           ok: true,
@@ -443,7 +457,7 @@ export class DomainToolRegistry {
         },
         required: ['consignmentNo'],
       },
-      async execute(ctx, input) {
+      async execute(ctx, input: any) {
         const consignmentNo = input.consignmentNo;
         return {
           ok: true,
@@ -507,7 +521,7 @@ export class DomainToolRegistry {
         },
         required: ['amountSen'],
       },
-      async execute(ctx, input) {
+      async execute(ctx, input: any) {
         const amountSen = input.amountSen;
         const isStrictInteger = Number.isInteger(amountSen);
         const integerAmount = Math.floor(amountSen);
@@ -616,7 +630,7 @@ export class DomainToolRegistry {
         },
         required: ['points'],
       },
-      async execute(ctx, input) {
+      async execute(ctx, input: any) {
         const points = Math.floor(input.points);
         const valueSen = points * 5; // 1 mata = 5 sen (formula integer deterministik)
         return {
@@ -668,7 +682,7 @@ export class DomainToolRegistry {
           },
         },
       },
-      async execute(ctx, input) {
+      async execute(ctx, input: any) {
         const discountPercent = input?.discountPercent !== undefined ? input.discountPercent : 10;
         const margin = 28.5;
         return {
@@ -826,7 +840,7 @@ export class DomainToolRegistry {
           },
         },
       },
-      async execute(ctx, input) {
+      async execute(ctx, input: any) {
         const briefType = input?.type === 'urgent' ? 'urgent' : 'daily';
         const brief = operationsBriefApp.getOperationsBrief({ type: briefType });
         return {

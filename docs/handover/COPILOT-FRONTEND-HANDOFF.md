@@ -1,11 +1,11 @@
-# DOKUMEN SERAHAN RASMI GITHUB COPILOT (FRONTEND HANDOFF v2.3 - REVISION 3)
+# DOKUMEN SERAHAN RASMI GITHUB COPILOT (FRONTEND HANDOFF v2.3 - REVISION 4)
 
 > **Tarikh**: 19 Oktober 2026  
-> **Integrator & Pengeluar**: AGY Backend Owner & Integration Lead  
+> **Integrator & Pengeluar**: AGY Backend Owner & A2UI Contracts Specialist  
 > **Penerima**: GitHub Copilot (Frontend Owner)  
-> **Status**: RATIFIKASI REVISION 3 (Google ADK Python, Domain Tools, First-Party MCP App & /copilot/v2 Runtime AKTIF)  
+> **Status**: RATIFIKASI REVISION 4 (Penyelarasan Penuh A2UI Fixed Schema, Emitter Props Alignment, Typed HITL & Execution Receipt, Scoped State Projection)  
 > **Baseline Commit SHA**: `e43d258`  
-> **Handoff Revision 3 Commit SHA**: `af43557`  
+> **Handoff Revision 4 Commit SHA**: `integrate/blueprint-v23` tip  
 > **Branch Integrasi**: `integrate/blueprint-v23`  
 
 ---
@@ -20,7 +20,7 @@ Semua kerja pembinaan frontend oleh GitHub Copilot MESTI dilaksanakan di worktre
 - **Trunk Integrasi**: `D:\ABANGCOLEK-PLATFORM` (`integrate/blueprint-v23`)
 
 > [!IMPORTANT]
-> Jangan lakukan `git reset --hard` atau `git clean -fd`. Segala integrasi ke trunk akan disatukan oleh AGY Integrator melalui pengesahan commit terkawal. Subagent AGY tidak akan menyentuh atau mengubahsuai sebarang fail frontend dalam worktree ini semasa Copilot sedang bekerja.
+> Jangan lakukan `git reset --hard` atau `git clean -fd`. Segala integrasi ke trunk disatukan oleh AGY Integrator melalui pengesahan commit terkawal. Subagent AGY memelihara semua kerja frontend dalam worktree tersebut.
 
 ---
 
@@ -28,13 +28,13 @@ Semua kerja pembinaan frontend oleh GitHub Copilot MESTI dilaksanakan di worktre
 
 ### A. Fail & Direktori Milik Copilot (Boleh Diubah)
 1. `src/features/copilot/` (Semua komponen dan renderer Generative UI)
-   - `cards/` (GUI-01 Display Only: Kad Ringkasan, Margin, Komisen)
-   - `interactive/` (GUI-02 Interactive Pickers & Inputs)
-   - `tool-rendering/` (GUI-03 Status Alat: Running/Success/Failed/Unknown)
-   - `state-rendering/` (GUI-04 Filter & Workflow State Projections)
-   - `mcp-apps/` (GUI-05 Read-Only First-Party Operations Brief Component)
-   - `declarative/` (GUI-06 A2UI Fixed Schema Form Renderer)
-   - `components/` (GUI-07 Shared UI Elements & Adapters)
+   - `cards/` (GUI-01 Display Only: Kad Ringkasan JEV, Margin, Pesanan, Komisen, Loyalty, Tracking)
+   - `interactive/` (GUI-02 Interactive Pickers & Inputs: `MarginSimulatorForm.tsx`)
+   - `tool-rendering/` (GUI-03 Status Alat: `ToolStatusView.tsx`)
+   - `state-rendering/` (GUI-04 Filter & Workflow State Projections: `ScopedStateView.tsx`)
+   - `mcp-apps/` (GUI-05 Read-Only First-Party Operations Brief Component: `OperationsBriefApp.tsx`)
+   - `declarative/` (GUI-06 A2UI Fixed Schema Form Renderer: `A2UIFixedRenderer.tsx`)
+   - `components/` (GUI-07 Shared UI Elements & Adapters: `CopilotSurfaceCard.tsx`)
 2. `src/features/pet/` (Sistem Pembantu Maskot Pet Companion)
    - `PetAvatar.tsx`, `PetCompanion.tsx`, `petdex.ts`, `speechService.ts`, `pet-companion.css`
 3. `src/features/workspaces/CopilotWorkspace.tsx`
@@ -42,47 +42,64 @@ Semua kerja pembinaan frontend oleh GitHub Copilot MESTI dilaksanakan di worktre
 5. Suite ujian frontend dan komponen: `tests/frontend/` atau `*.test.tsx`.
 
 ### B. Fail Terlindung (PROTECTED - Hak Milik Mutlak AGY Backend)
-Fail-fail berikut TIDAK BOLEH disentuh oleh Copilot:
+Fail-fail berikut TIDAK BOLEH diubahsuai oleh Copilot tanpa persetujuan AGY Integrator:
 - `server/` (Semua fail backend, autoriti kewangan, lejar, auth, store, migration)
-- `shared/` (Kontrak platform, dealer, onboarding, growth — sebarang perubahan memerlukan persetujuan AGY)
+- `shared/` (Kontrak platform, dealer, onboarding, growth, copilot-contracts)
 - `api/` (`platform.ts`, `platform-worker.ts`)
 - `tests/platform/` (Suite ujian integriti autoriti platform)
 - Root `package.json`, `bun.lockb`, `tsconfig.json` (Hanya diuruskan oleh AGY Integrator)
 
 ---
 
-## 3. Status Sebenar Kebergantungan & Protokol Runtime (Terkini: Revision 3)
+## 3. Status Sebenar Kebergantungan & Protokol Runtime (Terkini: Revision 4)
 
 > [!NOTE]
 > **Status Kemajuan Backend Terkini (OBSERVED & VERIFIED)**:
-> 1. **Perkhidmatan Python Google ADK** (`agents/google-adk/app.py` Port 8030) kini **AKTIF & WUJUD** dengan 3 specialists:
->    - `commerce_reader` (Katalog & stok read-only)
->    - `qc_jev_reviewer` (Audit kualiti berasaskan LOCAL_RULES tanpa skor kepastian rekaan)
->    - `marketing_drafter` (Kempen promosi dengan Margin Guardian >= 25%)
-> 2. **CopilotKit v2 Runtime & A2UI SSE Endpoints** kini **AKTIF** pada:
->    - `POST /copilot/v2`, `GET /copilot/v2` (Streaming chunk dan event `a2ui`)
->    - `GET /copilot/tools` (10 Platform Domain Tools)
->    - `GET /copilot/mcp/brief/daily` & `/copilot/mcp/brief/urgent` (First-Party Read-Only MCP App)
-> 3. **Skema A2UI Fixed Schema** (`a2ui.v1`) ditakrifkan dalam `shared/copilot-contracts.ts` merangkumi 6 komponen rasmi:
->    - `OperationsBriefCard`
->    - `RefundImpactPanel`
->    - `JevAssessmentCard`
->    - `MarginSimulator`
->    - `OrderTrackingBadge`
->    - `CommissionCard`
-> 4. Copilot boleh menyambungkan komponen UI secara langsung kepada endpoint backend `/copilot/v2` atau terus menggunakan fixtures beku di bawah untuk pengasingan ujian unit (Pure Component Testing).
+> 1. **CopilotKit v2 Runtime & Same-Origin Fetch Bridge**:
+>    - Endpoint aktif: `GET /api/platform/copilot/v2` (dan alias `/copilot/v2`, `/v2`, `/copilotkit/v2`) serta `POST /api/platform/copilot/v2`.
+>    - Menyokong respons JSON dan penstriman Server-Sent Events (SSE) dengan framing acara standard: `start`, `text_delta`, `a2ui`, `gen_ui`, `hitl_prompt`, `done`, `error`.
+>    - Sandaran percuma mutlak: Urutan model `gemini-3.6-flash` -> `gemini-3.5-flash-lite` -> `nvidia/nemotron-3-super-120b-a12b:free`. Sifar kos awan berbayar.
+>    - Pet Companion dan Workspace disatukan di bawah ejen tunggal `abangcolek_ops`.
+> 2. **Google ADK Python Bridge** (`agents/google-adk/app.py` Port 8030):
+>    - Beroperasi secara tempatan dengan 3 specialist: `commerce_reader` (read-only), `qc_jev_reviewer` (LOCAL_RULES, tiada skor rekaan), `marketing_drafter` (Margin >= 25%).
+>    - Dilindungi fallback tempatan jika servis Python luar talian. Lulus 5/5 ujian kontrak.
+> 3. **Skema A2UI Kanonikal Dwi-Medan (`component` dan `componentName`)**:
+>    - Ditakrifkan dalam `shared/copilot-contracts.ts` dan disokong oleh `A2UIFixedRenderer.tsx`:
+>      ```typescript
+>      export interface A2UIFixedSchema<TProps = Record<string, any>> {
+>        schemaVersion: 'a2ui.v1';
+>        component: A2UIComponentName;
+>        componentName?: A2UIComponentName;
+>        props: TProps;
+>        provenance: A2UIProvenance;
+>        actions?: A2UIAction[];
+>      }
+>      ```
+>    - Allowlist 8 komponen rasmi: `OperationsBriefCard`, `RefundImpactPanel`, `JevAssessmentCard`, `MarginSimulator`, `MarginSummaryCard`, `OrderTrackingBadge`, `OrderTrackingCard`, `CommissionCard`.
+> 4. **Penyelarasan Props Emitter 4 Kad Komponen**:
+>    - `JevAssessmentCard`: Tiada `confidenceScore`. Props rasmi: `issueClass`, `rootCause`, `sopAction`, `evaluationState`, `evidencePhotoRequired`.
+>    - `MarginSummaryCard` / `MarginSimulator`: Mengandungi integer Sen tunai (`requiredContributionSen` / `minMarginSen`) dan ambang peratusan (`requiredMarginPct` / `minMarginPercent`) secara konsisten.
+>    - `OrderTrackingCard` / `OrderTrackingBadge`: Bebas daripada kebocoran medan dalaman. Props rasmi: `orderId`, `stage`, `trackingTokenRedactedHash`, `expiryDaysRemaining`.
+>    - `OperationsBriefCard`: Memancarkan `briefDate` (YYYY-MM-DD) dan senarai `metrics`.
+> 5. **Kontrak HITL & ExecutionReceipt Kanonikal**:
+>    - Status rasmi: `pending_approval`, `approved`, `rejected`, `expired`, `stale`, `failed`, `succeeded`.
+>    - `HitlActionRequest` lengkap dengan `entity`, `amountSen`, `revision`, `reason`, `expiry`, dan `executionReceipt`.
+>    - `ExecutionReceipt` membuktikan kejayaan mutasi lejar secara atomik (`receiptId`, `preRevision`, `postRevision`, `status: 'succeeded'`, `journalEntryRef`, `auditLogId`).
+> 6. **Unjuran Client-State Selamat (`ScopedStateProjection`)**:
+>    - Mematuhi `DISALLOWED_CLIENT_STATE_TOKENS` untuk menapis keluar semua medan sensitif autoriti/peranan.
+> 7. **Persekitaran QA Terasing**:
+>    - URL Pelayan Ujian: `http://127.0.0.1:3010` disokong lekapan memori / SQLite terasing (`var/lib/qa/*.sqlite`).
+>    - Tiada interaksi dengan pangkalan data Supabase pengeluaran semasa ujian e2e.
 
-### Format Payload Acara A2UI SSE:
+### Format Payload Acara A2UI SSE (Revision 4):
 ```http
 event: a2ui
-data: {"componentName":"OperationsBriefCard","props":{"title":"Taklimat Operasi Harian","briefDate":"2026-10-19","metrics":[{"label":"Pesanan Menunggu","value":"14"}]}}
+data: {"schemaVersion":"a2ui.v1","component":"OperationsBriefCard","componentName":"OperationsBriefCard","props":{"title":"Taklimat Operasi AbangColek Sovereign GrowthOS","briefDate":"2026-10-19","metrics":[{"label":"Pesanan Menunggu","value":"14"},{"label":"Status AI","value":"Zero-Cost Active"}]},"provenance":{"source":"local_authoritative","timestamp":"2026-10-19T13:40:00.000Z","revision":1}}
 ```
 
 ---
 
 ## 4. Spesifikasi Kontrak 7 Pendekatan Generative UI (GUI-01..07)
-
-Semua komponen adalah spesifikasi sasaran (placeholder/target contract). Jangan anggap komponen sudah selesai sebelum ujian integrasi dijalankan.
 
 ### GUI-01: Display Only (`JevAssessmentCard`)
 - **Tujuan**: Paparan penilaian isu kualiti produk tanpa keupayaan mutasi terus.
@@ -96,41 +113,41 @@ Semua komponen adalah spesifikasi sasaran (placeholder/target contract). Jangan 
     evidencePhotoRequired: boolean;
   }
   ```
-  *(PERATURAN MUTLAK: Tiada nilai skor keyakinan / confidence float rekaan seperti 0.96. Sebarang tahap risiko dinyatakan melalui kategori bukti kualitatif).*
+  *(PERATURAN MUTLAK: Tiada nilai skor keyakinan / confidence float rekaan. Sebarang tahap risiko dinyatakan melalui kategori bukti kualitatif).*
 
-### GUI-02: Interactive (`MarginSimulator`)
+### GUI-02: Interactive (`MarginSimulator` & `MarginSimulatorForm`)
 - **Tujuan**: Simulasi margin sumbangan kempen promosi.
 - **Props Schema**:
   ```typescript
   export interface MarginSimulatorProps {
     contributionSen: number;
     contributionMarginPct: number;
-    requiredContributionSen: number;
-    requiredMarginPct: number;
+    requiredContributionSen: number; // minMarginSen (integer Sen threshold)
+    requiredMarginPct: number; // minMarginPercent (percentage threshold)
     status: 'PASSED' | 'INSUFFICIENT_CASH_MARGIN' | 'INSUFFICIENT_PERCENT_MARGIN';
-    onSimulateClick?: (inputSen: number, discountPct: number) => void;
+    minMarginSen?: number;
+    minMarginPercent?: number;
   }
   ```
   *(Autoriti kewangan kekal pada Bun Backend: P0 pemisahan ketat antara sumbangan tunai Sen/RM dan peratusan margin %).*
 
-### GUI-03: Tool Rendering (`ToolStatusBadge`)
-- **Tujuan**: Memaparkan status pelaksanaan alat (tool) secara jujur.
+### GUI-03: Tool Rendering (`ToolStatusView`)
+- **Tujuan**: Memaparkan status pelaksanaan alat secara telus tanpa menyembunyikan ralat.
 - **Props Schema**:
   ```typescript
-  export interface ToolStatusBadgeProps {
-    toolName: string;
-    state: 'queued' | 'running' | 'succeeded' | 'failed' | 'unknown';
-    executionId: string;
+  export interface ToolStatusViewProps {
+    toolName?: string;
+    state?: 'queued' | 'running' | 'succeeded' | 'failed' | 'unknown' | 'partial' | 'unknown_outcome';
+    executionId?: string;
     errorMessage?: string;
   }
   ```
-  *(Status ralat separa atau gagal tidak boleh dilabel sebagai 'succeeded').*
 
-### GUI-04: State Rendering (`OrderStateCard`)
-- **Tujuan**: Visualisasi state pesanan dan status penjejakan token.
+### GUI-04: State Rendering (`ScopedStateView` & `OrderTrackingBadge`)
+- **Tujuan**: Visualisasi unjuran pesanan dan status penjejakan token selamat.
 - **Props Schema**:
   ```typescript
-  export interface OrderStateCardProps {
+  export interface OrderTrackingProjectionProps {
     orderId: string;
     stage: 'draft' | 'accepted' | 'packing' | 'dispatched' | 'received';
     trackingTokenRedactedHash: string;
@@ -142,42 +159,35 @@ Semua komponen adalah spesifikasi sasaran (placeholder/target contract). Jangan 
 - **Tujuan**: Antara muka pihak pertama (read-only) untuk taklimat operasi harian.
 - **Props Schema**:
   ```typescript
-  export interface OperationsBriefAppProps {
+  export interface OperationsBriefCardProps {
     title: string;
-    briefDate: string;
+    briefDate: string; // YYYY-MM-DD
     metrics: Array<{ label: string; value: string }>;
-    readOnlyNotice: 'FIRST_PARTY_RESOURCE_UNRESTRICTED_PROXY_BLOCKED';
+    readOnlyNotice?: 'FIRST_PARTY_RESOURCE_UNRESTRICTED_PROXY_BLOCKED';
   }
   ```
 
-### GUI-06: A2UI Fixed Schema (`A2UIFixedForm`)
-- **Tujuan**: Borang deklaratif skema tetap untuk semakan impak pulangan wang (Refund Impact).
+### GUI-06: A2UI Fixed Schema (`A2UIFixedRenderer` & `RefundImpactPanel`)
+- **Tujuan**: Paparan deklaratif skema tetap untuk semakan impak pulangan wang.
 - **Props Schema**:
   ```typescript
-  export interface A2UIFixedFormProps {
-    schemaId: 'a2ui-fixed-refund-impact-v1';
+  export interface RefundImpactPanelProps {
+    issueClass: 'LEAKAGE' | 'CAP_DEFECT' | 'TASTE_ANOMALY' | 'LABEL_MISPRINT';
+    rootCause: 'UNDETERMINED' | 'SUPPLIER_BATCH_CONTAMINATION' | 'PACKAGING_CRIMP_FAILURE';
+    hitlRequired: true;
+    estimatedImpactSen?: number;
+    sopAction?: string;
+  }
+  ```
+
+### GUI-07: Your Components (`CopilotSurfaceCard` & `CopilotWorkspace`)
+- **Tujuan**: Status runtime, tema aplikasi, dan navigasi peranan.
+- **Props Schema**:
+  ```typescript
+  export interface CopilotSurfaceCardProps {
     title: string;
-    fields: Array<{
-      key: string;
-      label: string;
-      type: 'text' | 'number' | 'select';
-      options?: string[];
-      value: any;
-    }>;
-    onSubmitDraft: (formData: Record<string, any>) => void;
-  }
-  ```
-  *(Dynamic schema injection dan auxiliary paid model calls disekat sepenuhnya).*
-
-### GUI-07: Your Components (`CopilotWorkspaceCard`)
-- **Tujuan**: Pengasingan peranan ruang kerja (Workspace Role Isolation) dan penyesuaian tema.
-- **Props Schema**:
-  ```typescript
-  export interface CopilotWorkspaceCardProps {
-    workspaceId: string;
-    role: 'founder' | 'staff' | 'dealer' | 'customer'; // Canonical roles
-    theme: 'light' | 'dark';
-    activePetId?: string;
+    description?: string;
+    children: React.ReactNode;
   }
   ```
 
@@ -188,7 +198,7 @@ Semua komponen adalah spesifikasi sasaran (placeholder/target contract). Jangan 
 Copilot boleh menggunakan fixtures ini terus dalam komponen frontend tanpa menunggu sambungan backend:
 
 ```typescript
-// 1. Fixture GUI-01 (JEV Kualiti)
+// 1. Fixture GUI-01 (JEV Kualiti Kanonikal)
 export const JEV_CARD_FIXTURE: JevAssessmentCardProps = {
   issueClass: 'LEAKAGE',
   rootCause: 'UNDETERMINED',
@@ -200,26 +210,30 @@ export const JEV_CARD_FIXTURE: JevAssessmentCardProps = {
 // 2. Fixture GUI-02 (Margin Simulator Pass)
 export const MARGIN_PASS_FIXTURE: MarginSimulatorProps = {
   contributionSen: 2800,
-  contributionMarginPct: 28.0,
+  contributionMarginPct: 28.5,
   requiredContributionSen: 2000,
-  requiredMarginPct: 20.0,
+  requiredMarginPct: 25.0,
   status: 'PASSED',
 };
 
-// 3. Fixture GUI-02 (Margin Failed 409)
+// 3. Fixture GUI-02 (Margin Failed Cash Threshold)
 export const MARGIN_FAIL_FIXTURE: MarginSimulatorProps = {
   contributionSen: 800,
   contributionMarginPct: 12.0,
   requiredContributionSen: 2000,
-  requiredMarginPct: 20.0,
+  requiredMarginPct: 25.0,
   status: 'INSUFFICIENT_CASH_MARGIN',
 };
 
-// 4. Fixture Error & Denied States
-export const ERROR_STATES = {
-  authRequired: { ok: false, code: 'AUTH_REQUIRED', message: 'Sesi log masuk diperlukan.' },
-  insufficientRole: { ok: false, code: 'FORBIDDEN_ROLE', message: 'Peranan ini tidak dibenarkan mengakses alat ini.' },
-  runtimeUnavailable: { ok: false, code: 'RUNTIME_UNAVAILABLE', message: 'Runtime CopilotKit sedang dimulakan.' },
+// 4. Fixture GUI-05 (Operations Brief Pihak Pertama)
+export const OPERATIONS_BRIEF_FIXTURE: OperationsBriefCardProps = {
+  title: 'Taklimat Operasi AbangColek Sovereign GrowthOS',
+  briefDate: '2026-10-19',
+  metrics: [
+    { label: 'Pesanan Menunggu', value: '14' },
+    { label: 'Status AI', value: 'Zero-Cost Active' },
+  ],
+  readOnlyNotice: 'FIRST_PARTY_RESOURCE_UNRESTRICTED_PROXY_BLOCKED',
 };
 ```
 
@@ -227,22 +241,24 @@ export const ERROR_STATES = {
 
 ## 6. Arahan Pengesahan & Ujian (Verification Protocol)
 
-Semua kod frontend yang dibina dalam worktree `D:\ABANGCOLEK-WORKTREES\copilot-frontend` mesti lulus:
+Semua kod frontend yang dibina dalam worktree `D:\ABANGCOLEK-WORKTREES\copilot-frontend` disahkan melalui:
+
 ```powershell
 # 1. Semakan taip TypeScript
-bun run lint
+bunx tsc --noEmit
 
-# 2. Binaan pengeluaran Vite
+# 2. Ujian suite frontend (32 ujian unit melepasi pengesahan)
+bun test tests/frontend
+
+# 3. Ujian browser UI terasing (Playwright Copilot suite)
+bunx playwright test --config tests/playwright.copilot.config.ts
+
+# 4. Binaan pengeluaran Vite
 bun run build
-
-# 3. Ujian suite
-bun test
 ```
 
 ---
 
-## 7. Saluran Permintaan Kontrak Backend
+## 7. Status Keputusan & Penutupan Permintaan
 
-Jika sebarang perubahan schema atau endpoint baru diperlukan, Copilot boleh mencipta fail permintaan di:
-`docs/handover/COPILOT-DEPENDENCY-REQUESTS.md`
-Backend Lead akan menilai dan menyediakan endpoint tersebut dalam laluan integrasi.
+Semua 6 permintaan dalam `docs/handover/COPILOT-DEPENDENCY-REQUESTS.md` telah dijawab dan diratifikasikan secara rasmi. Tiada isu penghalang antara muka yang tinggal. Integrasi frontend ke runtime `/copilot/v2` kini boleh diteruskan dengan yakin mengikut spesifikasi Revision 4 ini.

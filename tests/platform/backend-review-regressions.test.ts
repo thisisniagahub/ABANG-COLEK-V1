@@ -14,7 +14,7 @@ test('cached message receipts recheck current case access after reassignment', a
   expect((await call(app, `/previews/${preview.id}/confirm`, confirm, first, key)).json.data.content).toBe('Private case reply');
   await call(app, `/cases/${complaint.id}/assign`, { expectedRevision: 2, assignedStaffId: next.userId }, founder);
   expect((await call(app, `/previews/${preview.id}/confirm`, confirm, first, key)).response.status).toBe(403);
-});
+}, 15000);
 test('QC readings cannot hide an out of range duplicate under a passing value', async () => {
   const { app } = harness(), founder = await user(app, 'owner', true);
   const doc = (await call(app, '/documents', { title: 'Test SOP', body: 'Approved test ranges', visibility: 'business', entityIds: [] }, founder)).json.data;

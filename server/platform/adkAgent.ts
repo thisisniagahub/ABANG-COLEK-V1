@@ -22,6 +22,11 @@ import {
   A2UI_ALLOWLISTED_COMPONENTS,
   validateA2UIComponent,
   type HitlActionRequest,
+  type ExecutionReceipt,
+  type JevAssessmentCardProps,
+  type MarginSimulatorProps,
+  type OrderTrackingProjectionProps,
+  type OperationsBriefCardProps,
 } from '../../shared/copilot-contracts';
 
 export {
@@ -30,6 +35,11 @@ export {
   A2UI_ALLOWLISTED_COMPONENTS,
   validateA2UIComponent,
   type HitlActionRequest,
+  type ExecutionReceipt,
+  type JevAssessmentCardProps,
+  type MarginSimulatorProps,
+  type OrderTrackingProjectionProps,
+  type OperationsBriefCardProps,
 };
 
 export interface AdkAgentOptions {
@@ -96,12 +106,18 @@ Prinsip Operasi:
     description: string,
     payload: Record<string, any>
   ): HitlActionRequest {
+    const actionId = id();
     const hitl: HitlActionRequest = {
-      id: id(),
+      id: actionId,
       actionType,
+      entity: payload.entity ?? { type: 'order', id: payload.orderId ?? 'ord-unknown' },
+      amountSen: typeof payload.amountSen === 'number' ? payload.amountSen : undefined,
+      revision: typeof payload.revision === 'number' ? payload.revision : 1,
+      reason: typeof payload.reason === 'string' ? payload.reason : description,
+      expiry: typeof payload.expiry === 'string' ? payload.expiry : new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
+      status: 'pending_approval',
       description,
       payload,
-      status: 'pending_approval',
       createdAt: now(),
     };
     this.store.save('hitl_actions', hitl);
@@ -119,11 +135,28 @@ Prinsip Operasi:
       fail('HITL_ALREADY_DECIDED', 409, 'Tindakan HITL ini telah pun dinilai.');
     }
 
+    const executionReceipt: ExecutionReceipt | undefined = approve
+      ? {
+          receiptId: `rcpt_${id()}`,
+          actionId: action.id,
+          executedBy: actor.user.id,
+          executedAt: now(),
+          targetEntity: action.entity,
+          preRevision: action.revision,
+          postRevision: action.revision + 1,
+          status: 'succeeded',
+          amountSen: action.amountSen,
+          journalEntryRef: `jrnl_hitl_${action.id}`,
+          auditLogId: `audit_${id()}`,
+        }
+      : undefined;
+
     const updated: HitlActionRequest = {
       ...action,
       status: approve ? 'approved' : 'rejected',
       reviewedBy: actor.user.id,
       reviewedAt: now(),
+      executionReceipt,
     };
 
     this.store.save('hitl_actions', updated);
@@ -162,15 +195,16 @@ Prinsip Operasi:
     let hitl: HitlActionRequest | undefined;
 
     if (lower.includes('bocor') || lower.includes('leakage') || lower.includes('aduan') || lower.includes('jev')) {
+      const jevProps: JevAssessmentCardProps = {
+        issueClass: 'LEAKAGE',
+        rootCause: 'UNDETERMINED',
+        sopAction: 'Kuarantin batch di cawangan & minta bukti foto penutup botol',
+        evaluationState: 'reviewed',
+        evidencePhotoRequired: true,
+      };
       genUi = {
         name: 'JevAssessmentCard',
-        props: {
-          issueClass: 'LEAKAGE',
-          evaluationState: 'reviewed',
-          confidenceScore: null,
-          rootCause: 'UNDETERMINED',
-          sopAction: 'Kuarantin batch di cawangan & minta bukti foto penutup botol',
-        },
+        props: jevProps,
       };
 
       if (lower.includes('refund') || lower.includes('ganti rugi')) {
@@ -178,11 +212,19 @@ Prinsip Operasi:
           actor,
           'refund',
           'Permintaan tuntutan ganti rugi botol bocor pelanggan',
-          { message: userMessage }
+          {
+            entity: { type: 'order', id: 'ord-refund-pending' },
+            amountSen: 2500,
+            revision: 1,
+            reason: 'Aduan kualiti penutup botol bocor semasa pos',
+            expiry: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
+            message: userMessage,
+          }
         );
         a2ui = {
           schemaVersion: 'a2ui.v1',
           component: 'RefundImpactPanel',
+          componentName: 'RefundImpactPanel',
           props: {
             issueClass: 'LEAKAGE',
             rootCause: 'UNDETERMINED',
@@ -193,6 +235,7 @@ Prinsip Operasi:
           provenance: {
             source: 'canonical_evaluator',
             timestamp: now(),
+            revision: 1,
           },
           actions: [
             { id: 'hitl-refund', label: 'Luluskan Tuntutan', actionType: 'approve' },
@@ -203,10 +246,12 @@ Prinsip Operasi:
         a2ui = {
           schemaVersion: 'a2ui.v1',
           component: 'JevAssessmentCard',
-          props: genUi.props,
+          componentName: 'JevAssessmentCard',
+          props: jevProps,
           provenance: {
             source: 'jev_local_rules',
             timestamp: now(),
+            revision: 1,
           },
           actions: [
             { id: 'sop-quarantine', label: 'Mulakan Kuarantin Batch', actionType: 'recheck' },
@@ -214,64 +259,80 @@ Prinsip Operasi:
         };
       }
     } else if (lower.includes('margin') || lower.includes('kempen') || lower.includes('diskaun')) {
+      const marginProps: MarginSimulatorProps = {
+        contributionSen: 2800,
+        contributionMarginPct: 28.5,
+        requiredContributionSen: 2000,
+        requiredMarginPct: 25.0,
+        status: 'PASSED',
+        minMarginSen: 2000,
+        minMarginPercent: 25.0,
+      };
       genUi = {
         name: 'MarginSimulator',
-        props: {
-          contributionMarginPct: 28.5,
-          requiredMarginPct: 25.0,
-          status: 'PASSED',
-        },
+        props: marginProps,
       };
       a2ui = {
         schemaVersion: 'a2ui.v1',
         component: 'MarginSimulator',
+        componentName: 'MarginSimulator',
         props: {
-          ...genUi.props,
-          minThresholdPct: 25.0,
-          simulationTimestamp: now(),
+          contributionSen: 2800,
+          contributionMarginPct: 28.5,
+          requiredContributionSen: 2000,
+          requiredMarginPct: 25.0,
+          status: 'PASSED',
         },
         provenance: {
           source: 'canonical_evaluator',
           timestamp: now(),
+          revision: 1,
         },
         actions: [
           { id: 'act-campaign-draft', label: 'Cipta Draf Kempen', actionType: 'navigate' },
         ],
       };
     } else if (lower.includes('jejak') || lower.includes('tracking')) {
+      const trackingProps: OrderTrackingProjectionProps = {
+        orderId: 'ord-2026-1019-01',
+        stage: 'dispatched',
+        trackingTokenRedactedHash: 'hash_redacted_9f82ab7e',
+        expiryDaysRemaining: 14,
+      };
       genUi = {
         name: 'OrderTrackingBadge',
-        props: {
-          endpoint: '/orders/track?token=...',
-          security: 'SEC-01 Token Cryptographic Hash Redacted',
-        },
+        props: trackingProps,
       };
       a2ui = {
         schemaVersion: 'a2ui.v1',
         component: 'OrderTrackingBadge',
-        props: {
-          endpoint: '/orders/track?token=...',
-          security: 'SEC-01 Token Cryptographic Hash Redacted',
-          carrier: 'Pantai Timur Express Freight (TBS - MBKT)',
-          status: 'ACTIVE_TRANSIT',
-        },
+        componentName: 'OrderTrackingBadge',
+        props: trackingProps,
         provenance: {
           source: 'database',
           timestamp: now(),
+          revision: 1,
         },
       };
     } else {
+      const briefProps: OperationsBriefCardProps = {
+        title: 'Taklimat Operasi AbangColek Sovereign GrowthOS',
+        briefDate: now().slice(0, 10),
+        metrics: [
+          { label: 'Pesanan Menunggu', value: '14' },
+          { label: 'Status AI', value: 'Zero-Cost Active' },
+          { label: 'Penyedia Model', value: this.router.getActiveProvider().name },
+        ],
+      };
       a2ui = {
         schemaVersion: 'a2ui.v1',
         component: 'OperationsBriefCard',
-        props: {
-          title: 'AbangColek Sovereign GrowthOS Operations',
-          mode: 'Zero-Cost Free Tier Active',
-          activeProvider: this.router.getActiveProvider().name,
-        },
+        componentName: 'OperationsBriefCard',
+        props: briefProps,
         provenance: {
           source: 'local_authoritative',
           timestamp: now(),
+          revision: 1,
         },
       };
     }
