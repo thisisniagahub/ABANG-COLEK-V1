@@ -7,7 +7,7 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "destination": "/index.html",
+      "destination": "/",
       "source": "/((?!api(?:/|$)).*)"
     }
   ],
