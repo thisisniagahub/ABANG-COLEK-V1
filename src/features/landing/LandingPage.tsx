@@ -4,6 +4,7 @@ import type { PublicProduct } from '../../../shared/platform-contracts';
 import { useResource } from '../platform/client';
 import { money } from '../workspaces/experience-model';
 import ScrollWorldHero from './ScrollWorldHero';
+import GengColekShare from './GengColekShare';
 import BrandLogo from '../brand/BrandLogo';
 import './landing.css';
 
@@ -100,10 +101,10 @@ export default function LandingPage({ onNavigate,view='home',productId,theme='da
       </article>)}</div>{!productId&&catalogue.hasMore&&<button className="ac-button ac-button-outline" disabled={catalogue.loadingMore} onClick={()=>void catalogue.loadMore()}>{catalogue.loadingMore?'Memuatkan…':'Muat lagi produk'}</button>}{!catalogue.loading&&!catalogue.error&&!visibleProducts?.length&&<div className="ac-catalogue-empty">
         <Package size={36} />
         <h3>Katalog sedang disediakan.</h3>
-        <p>Produk akan dipaparkan selepas nama, harga dan stok disahkan. Semak kembali atau masuk untuk mengurus pesanan anda.</p>
-        <button className="ac-button ac-button-dark" onClick={() => onNavigate('/customer/orders')}>Pesanan saya <ArrowRight size={17} />
-        </button>
-      </div>}</section>}{view==='home'&&<section className="ac-how">
+        <p>Produk Jerux akan dipaparkan selepas nama, harga dan stok disahkan. Ikuti perkembangan ABANGCOLEK sementara katalog dikemas kini.</p>
+        <a className="ac-button ac-button-dark" href="https://www.tiktok.com/@styloairpool" target="_blank" rel="noopener noreferrer">Ikuti ABANGCOLEK <ArrowUpRight size={17} />
+        </a>
+      </div>}<GengColekShare products={visibleProducts} /></section>}{view==='home'&&<section className="ac-how">
         <div className="ac-section-heading">
           <div>
             <p className="ac-eyebrow">How it works</p>

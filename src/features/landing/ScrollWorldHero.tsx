@@ -1,37 +1,91 @@
 import { useEffect, useLayoutEffect, useRef, useState, type MouseEvent } from 'react';
-import { ArrowDown, ArrowRight, ArrowUpRight, Box, CirclePause, CirclePlay, PackageCheck, ShoppingBag, Truck, Users } from 'lucide-react';
+import { ArrowDown, ArrowRight, ArrowUpRight, Box, CirclePause, CirclePlay, Citrus, Flame, ShoppingBag, Truck, User, Users } from 'lucide-react';
 import { storyModeScrollTarget, storyModeSnapshot, type StoryViewportSnapshot } from './story-model';
 import { useSceneController } from './useSceneController';
-import AnimatedColekWorld from './AnimatedColekWorld';
 import WorldHotspot from './WorldHotspot';
 import { BRAND_ASSETS } from '../brand/brand-assets';
 import './scroll-world.css';
 
+const worldScenes = BRAND_ASSETS.worldScenes;
+const FILM_URL = '/assets/world/film.mp4';
+const FILM_POSTER = '/assets/world/scene-6-hero.webp';
+const FILM_SECTIONS: ReadonlyArray<{ start: number; end: number }> = [
+  { start: 0.7, end: 6.8 },
+  { start: 7.7, end: 13.8 },
+  { start: 14.7, end: 20.8 },
+  { start: 21.7, end: 27.8 },
+  { start: 28.7, end: 34.8 },
+  { start: 35.7, end: 41.8 },
+];
 const chapters = [
-  { id: 'produk', label: 'Produk', icon: ShoppingBag, eyebrow: '01 / The colek connection', title: ['Colek.', 'Connect.', 'Repeat.'], description: 'Dari pilihan pertama hingga pesanan anda. Terokai dunia ABANGCOLEK, satu perjalanan pada satu masa.', action: 'Jom pilih produk', path: '/products', detail: 'Pilih produk daripada katalog yang disahkan.' },
-  { id: 'packing', label: 'Packing', icon: PackageCheck, eyebrow: '02 / Behind your next dip', title: ['Setiap pesanan.', 'Ada perjalanan.'], description: 'Pilih, semak dan ikuti perkembangan pesanan. Status packing dikemas kini dalam timeline pesanan anda.', action: 'Lihat pesanan saya', path: '/customer/orders', detail: 'Status pesanan berada dalam satu timeline.' },
-  { id: 'penghantaran', label: 'Penghantaran', icon: Truck, eyebrow: '03 / From here to you', title: ['Lebih dekat.', 'Lebih connected.'], description: 'Semak update dispatch dalam ruang pelanggan. Pilihan fulfilment mengikut pesanan dan lokasi yang dikonfigurasi.', action: 'Lihat lokasi pickup', path: '/locations', detail: 'Semak lokasi dan pilihan pickup yang disahkan.' },
-  { id: 'rangkaian', label: 'Rangkaian', icon: Users, eyebrow: '04 / Grow the connection', title: ['Satu jenama.', 'Banyak peluang.'], description: 'Pelanggan, ejen dan stokis dalam satu ekosistem. Mohon menjadi rakan bisnes dan sambung kerja dalam ruang anda.', action: 'Jadi ejen / stokis', path: '/become-dealer', detail: 'Permohonan dan terma bisnes melalui semakan founder.' },
+  { id: 'dunia', label: 'Dunia', icon: Flame, eyebrow: '01 / Masuk dunia colek', title: ['Dunia', 'ABANGCOLEK.'], accentLine: 1, description: 'Colek buah, jeruk dan sambal — dibuat dengan tangan, dijaga dengan kualiti. Selamat datang ke dunia kami.', action: 'Jom pilih produk', path: '/products', detail: 'Packaging dan produk dipaparkan daripada katalog yang disahkan.' },
+  { id: 'pilih', label: 'Pilih buah', icon: Citrus, eyebrow: '02 / Pilih buah anda', title: ['Pilih buah', 'anda.'], accentLine: 1, description: 'Varian daripada katalog aktif — nama, harga dan stok sentiasa dari data semasa, bukan tangkapan media sosial.', action: 'Lihat katalog', path: '/products', detail: 'Ketersediaan mengikut katalog yang disahkan.' },
+  { id: 'rasa', label: 'Rasa & reaksi', icon: Users, eyebrow: '03 / Rasa & reaksi', title: ['Rasa sekali,', 'jatuh cinta.'], accentLine: 1, description: 'Tekstur kuah colek yang likat melekat dan reaksi pelanggan sebenar — bukti rasa yang boleh disemak sumbernya.', action: 'Lihat katalog', path: '/products', detail: 'Media pelanggan digunakan dengan attribution dan kebenaran owner.' },
+  { id: 'founder', label: 'Founder', icon: User, eyebrow: '04 / Kenal founder', title: ['Kenal', 'founder.'], accentLine: 1, description: 'Di sebalik setiap cawan ada pemilik yang menjual, memasak dan melayan komuniti — Founder | Motivator.', action: 'Ikuti di TikTok', path: 'https://www.tiktok.com/@styloairpool', detail: 'Nama dan cerita founder dipaparkan hanya dengan kelulusan founder.' },
+  { id: 'jerux', label: 'Dapatkan', icon: Truck, eyebrow: '05 / Dapatkan Jerux anda', title: ['Dapatkan', 'Jerux anda.'], accentLine: 1, description: 'Pra-tempahan dan made-to-order mengikut rekod yang disahkan — pickup di lokasi disahkan atau ikut update dispatch.', action: 'Lihat lokasi pickup', path: '/locations', detail: 'Order melalui flow pesanan yang sama; status datang dari server.' },
+  { id: 'pesanan', label: 'Pesanan', icon: ShoppingBag, eyebrow: '06 / Pilihan & pesanan', title: ['Pilihan', '& pesanan.'], accentLine: 1, description: 'Lineup aktif dari katalog — pilih, pesan dan jejak dalam satu aliran. Ejen dan stokis mempunyai laluan berasingan.', action: 'Pesan sekarang', path: '/products', detail: 'Pendaftaran ejen ialah laluan berasingan daripada pembelian.' },
 ] as const;
 const SHORT_VIEWPORT_QUERY = '(max-height: 560px), (max-width: 750px) and (max-height: 740px)';
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
+// Chapter → world-asset mapping (scene content verified visually): dunia→hero, pilih→dapur, rasa→komuniti, founder→qc, jerux→dispatch, pesanan→stokis.
+const CHAPTER_ASSETS = [5, 0, 4, 1, 3, 2] as const;
 interface ModeChangeSnapshot extends StoryViewportSnapshot { viewportWidth: number; chapter: number; manual: boolean; }
 
 export default function ScrollWorldHero({ onNavigate }: { onNavigate: (path: string) => void }) {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  const filmRef = useRef<HTMLVideoElement>(null);
   const [motionPaused, setMotionPaused] = useState(false);
   const [shortViewport, setShortViewport] = useState(() => window.matchMedia(SHORT_VIEWPORT_QUERY).matches);
   const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia(REDUCED_MOTION_QUERY).matches);
-  const [worldAsset, setWorldAsset] = useState<'world' | 'mascot' | 'none'>('world');
+  const [failedScenes, setFailedScenes] = useState<ReadonlySet<string>>(() => new Set());
+  const [filmFailed, setFilmFailed] = useState(false);
   const [hotspotOpen, setHotspotOpen] = useState(false);
+  const handlePlaybackError = (error: unknown) => {
+    if (error instanceof Error && ['NotAllowedError', 'NotSupportedError'].includes(error.name)) setFilmFailed(true);
+  };
+  const scenesAvailable = failedScenes.size < worldScenes.length;
   const staticMode = Boolean(reducedMotion || motionPaused || shortViewport);
+  const filmMode = scenesAvailable && !filmFailed && !staticMode;
   const { active, phase, direction, visible, selectScene, releaseScene } = useSceneController({ sectionRef, enabled: !staticMode, blocked: hotspotOpen, sceneCount: chapters.length });
-  const productPhotoVisible = !staticMode && active === 0;
+  const productPhotoVisible = !staticMode && active === chapters.length - 1;
   const modeRef = useRef({ staticMode, motionPaused, active });
   modeRef.current = { staticMode, motionPaused, active };
   const modeChangeRef = useRef<ModeChangeSnapshot | null>(null);
   const settledViewportRef = useRef<ModeChangeSnapshot | null>(null);
+
+  useEffect(() => {
+    const video = filmRef.current;
+    if (!filmMode || !video) return;
+    const section = FILM_SECTIONS[CHAPTER_ASSETS[active]];
+    let loopHandler: (() => void) | null = null;
+    const startLoop = () => {
+      loopHandler = () => {
+        if (video.currentTime >= section.end) video.currentTime = section.start;
+      };
+      video.addEventListener('timeupdate', loopHandler);
+      if (visible && !hotspotOpen && video.paused) video.play().catch(handlePlaybackError);
+    };
+    const move = () => {
+      // The chapter order differs from the film's original edit. Its transition
+      // clips belong to the original adjacent scenes, so seek to this chapter.
+      video.currentTime = section.start;
+      startLoop();
+    };
+    if (video.readyState >= 1) move();
+    else video.addEventListener('loadedmetadata', move, { once: true });
+    return () => {
+      if (loopHandler) video.removeEventListener('timeupdate', loopHandler);
+      video.removeEventListener('loadedmetadata', move);
+    };
+  }, [active, filmMode, visible, hotspotOpen]);
+
+  useEffect(() => {
+    const video = filmRef.current;
+    if (!video || filmFailed) return;
+    if (filmMode && visible && !hotspotOpen) video.play().catch(handlePlaybackError);
+    else video.pause();
+  }, [filmMode, visible, hotspotOpen, filmFailed]);
 
   const readViewportSnapshot = (manual = false): ModeChangeSnapshot | null => {
     const section = sectionRef.current;
@@ -119,14 +173,21 @@ export default function ScrollWorldHero({ onNavigate }: { onNavigate: (path: str
     catalogue.scrollIntoView({ behavior: 'auto', block: 'start' });
     catalogue.focus({ preventScroll: true });
   };
+  const markSceneFailed = (id: string) => {
+    setFailedScenes(current => {
+      if (current.has(id)) return current;
+      const next = new Set(current);
+      next.add(id);
+      return next;
+    });
+  };
 
   return <section ref={sectionRef} className={`ac-world-journey${staticMode ? ' is-static' : ''}`} tabIndex={staticMode ? undefined : 0} aria-label="Terokai dunia ABANGCOLEK" aria-describedby={staticMode ? undefined : 'ac-world-instructions'} data-scene={chapters[active].id} data-motion={staticMode ? 'static' : 'scene'} data-phase={staticMode ? 'idle' : phase} data-direction={direction}>
     <div ref={stageRef} className="ac-world-stage">
-      <div className={`ac-world-visual${worldAsset !== 'world' ? ' asset-fallback' : ''}`} aria-hidden="true">
-        {worldAsset !== 'none' && <img key={worldAsset} className="ac-world-camera" src={worldAsset === 'mascot' ? '/assets/brand/MASKOT-1.PNG' : BRAND_ASSETS.world.src} alt="" width={BRAND_ASSETS.world.width} height={BRAND_ASSETS.world.height} decoding="async" onError={() => setWorldAsset(current => current === 'world' ? 'mascot' : 'none')} />}
+      <div className={`ac-world-visual${filmMode ? ' is-film' : scenesAvailable ? ' is-journey' : ' asset-fallback'}`} aria-hidden="true">
+        {filmMode ? <video ref={filmRef} className="ac-world-film" src={FILM_URL} poster={FILM_POSTER} muted playsInline autoPlay preload="auto" onError={() => setFilmFailed(true)} /> : scenesAvailable ? CHAPTER_ASSETS.map((assetIndex, chapterIndex) => { const scene = worldScenes[assetIndex]; return <img key={scene.id} className={`ac-world-scene${chapterIndex === active ? ' is-active' : ''}`} data-scene={scene.id} src={failedScenes.has(scene.id) ? BRAND_ASSETS.world.src : scene.src} alt="" width={scene.width} height={scene.height} loading={chapterIndex === 0 ? 'eager' : 'lazy'} decoding="async" onError={() => markSceneFailed(scene.id)} />; }) : <img key="fallback" className="ac-world-camera" src={BRAND_ASSETS.world.src} alt="" width={BRAND_ASSETS.world.width} height={BRAND_ASSETS.world.height} decoding="async" />}
       </div>
       <div className="ac-world-shade" aria-hidden="true" />
-      {!staticMode && <div className="ac-world-animation"><AnimatedColekWorld active={active} phase={phase} direction={direction} paused={!visible || hotspotOpen} /></div>}
       {/* A native touch keeps its starting target until touchend; retain this node across scenes. */}
       {!staticMode && <figure className="ac-world-product-photo" aria-hidden={!productPhotoVisible}>
         <div><img src={BRAND_ASSETS.productEditorial.src} alt={BRAND_ASSETS.productEditorial.alt} width={405} height={720} decoding="async" fetchPriority="high" /></div>
@@ -141,14 +202,14 @@ export default function ScrollWorldHero({ onNavigate }: { onNavigate: (path: str
       <div className="ac-world-scenes">
         {chapters.map((chapter, index) => <article key={chapter.id} id={`world-${chapter.id}`} tabIndex={-1} className={`ac-world-copy${index === active ? ' is-active' : ''}`} aria-hidden={!staticMode && index !== active} inert={!staticMode && index !== active}>
           <p className="ac-world-eyebrow"><span />{chapter.eyebrow}</p>
-          {index === 0 ? <h1>{chapter.title.map((line, lineIndex) => <span key={line} className={lineIndex === 2 ? 'ac-world-accent' : ''}>{line}</span>)}</h1> : <h2>{chapter.title.map(line => <span key={line}>{line}</span>)}</h2>}
+          {index === 0 ? <h1>{chapter.title.map((line, lineIndex) => <span key={line} className={lineIndex === chapter.accentLine ? 'ac-world-accent' : ''}>{line}</span>)}</h1> : <h2>{chapter.title.map(line => <span key={line}>{line}</span>)}</h2>}
           <p className="ac-world-description">{chapter.description}</p>
           <div className="ac-world-actions">
-            <button className="ac-button" onClick={() => onNavigate(chapter.path)}>{chapter.action}<ArrowUpRight size={18} /></button>
-            {index === 0 && <button className="ac-world-secondary" onClick={() => onNavigate('/become-dealer')}>Jadi rakan bisnes <ArrowRight size={16} /></button>}
+            {chapter.path.startsWith('http') ? <a className="ac-button" href={chapter.path} target="_blank" rel="noopener noreferrer">{chapter.action}<ArrowUpRight size={18} /></a> : <button className="ac-button" onClick={() => onNavigate(chapter.path)}>{chapter.action}<ArrowUpRight size={18} /></button>}
+            {index === chapters.length - 1 && <button className="ac-world-secondary" onClick={() => onNavigate('/become-dealer')}>Jadi rakan bisnes <ArrowRight size={16} /></button>}
           </div>
           <p className="ac-world-detail"><chapter.icon size={15} />{chapter.detail}</p>
-          {index === 0 && staticMode && <a className="ac-world-static-product" href={BRAND_ASSETS.productEditorial.source} target="_blank" rel="noopener noreferrer"><img src={BRAND_ASSETS.productEditorial.src} alt={BRAND_ASSETS.productEditorial.alt} width={405} height={720} loading="lazy" /><span>Sambal Colek · Foto TikTok rasmi <ArrowUpRight size={14} /></span></a>}
+          {index === chapters.length - 1 && staticMode && <a className="ac-world-static-product" href={BRAND_ASSETS.productEditorial.source} target="_blank" rel="noopener noreferrer"><img src={BRAND_ASSETS.productEditorial.src} alt={BRAND_ASSETS.productEditorial.alt} width={405} height={720} loading="lazy" /><span>Sambal Colek · Foto TikTok rasmi <ArrowUpRight size={14} /></span></a>}
         </article>)}
       </div>
       {!staticMode && <WorldHotspot active={active} paused={!visible || hotspotOpen} onOpenChange={setHotspotOpen} onNavigate={onNavigate} />}

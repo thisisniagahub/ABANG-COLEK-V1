@@ -3,10 +3,12 @@ import { ArrowUpRight, Plus, X } from 'lucide-react';
 import { BRAND_ASSETS } from '../brand/brand-assets';
 
 const details = [
-  { title: 'Kenali colek anda.', label: 'Terokai produk', text: 'Lihat foto asal Sambal Colek dan buka katalog untuk pilihan, harga serta ketersediaan yang disahkan.', points: ['Foto daripada TikTok rasmi ABANG COLEK.', 'Harga dan stok mengikut katalog semasa.'], action: 'Buka katalog', path: '/products' },
-  { title: 'Satu pesanan. Satu timeline.', label: 'Terokai proses packing', text: 'Sambung urusan pesanan dalam ruang pelanggan. Semak perkembangan packing dan bukti pembayaran pada pesanan anda.', points: ['Upload resit dihantar untuk semakan.', 'Pengesahan bayaran memerlukan semakan pihak yang dibenarkan.'], action: 'Lihat pesanan saya', path: '/customer/orders' },
-  { title: 'Dari sini, ke anda.', label: 'Terokai penghantaran', text: 'Semak lokasi pickup yang diterbitkan dan ikuti update dispatch melalui pesanan anda.', points: ['Pilihan fulfilment mengikut pesanan dan lokasi.', 'Rujuk timeline pesanan untuk status sebenar.'], action: 'Semak lokasi pickup', path: '/locations' },
-  { title: 'Grow the connection.', label: 'Terokai ejen & stokis', text: 'Mohon menjadi rakan bisnes ABANGCOLEK. Profil dan terma perniagaan disemak sebelum ruang B2B diaktifkan.', points: ['MOQ, pack size dan harga tertakluk kepada terma yang diluluskan.', 'Tiada pendapatan atau komisen dijamin.'], action: 'Mohon ejen / stokis', path: '/become-dealer' },
+  { title: 'Selamat datang ke dunia kami.', label: 'Terokai dunia', text: 'Colek buah, jeruk dan sambal dibuat dengan tangan. Packaging dan produk dipaparkan daripada sumber terkawal.', points: ['Jerux aktif dipesan melalui pra-tempahan mengikut rekod yang disahkan.', 'Paparan stok sentiasa dari katalog semasa.'], action: 'Jom pilih produk', path: '/products' },
+  { title: 'Pilih buah anda.', label: 'Terokai varian', text: 'Mangga, jambu, kedondong dan varian lain mengikut katalog aktif — bukan katalog penuh dan bukan pengesahan stok.', points: ['Nama, harga dan stok dari katalog semasa.', 'Varian media sosial dipaparkan sebagai editorial sahaja.'], action: 'Buka katalog', path: '/products' },
+  { title: 'Rasa sekali, jatuh cinta.', label: 'Terokai rasa & reaksi', text: 'Close-up kuah colek yang likat melekat dan reaksi pelanggan sebenar dari kandungan yang diberi kebenaran.', points: ['Setiap media ada attribution.', 'Kebenaran owner direkod sebelum digunakan.'], action: 'Lihat katalog', path: '/products' },
+  { title: 'Kenal founder.', label: 'Terokai founder', text: 'Founder | Motivator — wajah, suara dan komuniti jenama. Nama dan cerita dipaparkan hanya dengan kelulusan founder.', points: ['Tiada biodata atau pengiktirafan yang direka.', 'Ikuti kandungan rasmi di TikTok.'], action: 'Ikuti di TikTok', path: 'https://www.tiktok.com/@styloairpool' },
+  { title: 'Dapatkan Jerux anda.', label: 'Terokai pickup', text: 'Cara order, lokasi pickup dan fulfillment mengikut rekod yang disahkan.', points: ['Lokasi dipaparkan dari data /public-info.', 'Status order datang dari server, bukan redirect.'], action: 'Semak lokasi pickup', path: '/locations' },
+  { title: 'Pilihan & pesanan.', label: 'Terokai pesanan', text: 'Lineup aktif, harga dan stok mengikut katalog semasa; ejen dan stokis mempunyai laluan berasingan.', points: ['Pesan melalui flow order yang sama.', 'Pendaftaran ejen melalui /become-dealer.'], action: 'Pesan sekarang', path: '/products' },
 ] as const;
 
 interface WorldHotspotProps {
@@ -48,11 +50,11 @@ export default function WorldHotspot({ active, paused, onOpenChange, onNavigate 
       if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) close();
     }}>
       <div className="ac-world-dialog-top"><span>0{active + 1} / THE COLEK CONNECTION</span><button autoFocus onClick={close} aria-label="Tutup maklumat"><X size={20} /></button></div>
-      {active === 0 && <figure className="ac-world-dialog-photo"><img src={BRAND_ASSETS.productEditorial.src} alt={BRAND_ASSETS.productEditorial.alt} width={405} height={720} /><figcaption><a href={BRAND_ASSETS.productEditorial.source} target="_blank" rel="noopener noreferrer">Foto TikTok rasmi <ArrowUpRight size={13} /></a></figcaption></figure>}
+      {active === details.length - 1 && <figure className="ac-world-dialog-photo"><img src={BRAND_ASSETS.productEditorial.src} alt={BRAND_ASSETS.productEditorial.alt} width={405} height={720} /><figcaption><a href={BRAND_ASSETS.productEditorial.source} target="_blank" rel="noopener noreferrer">Foto TikTok rasmi <ArrowUpRight size={13} /></a></figcaption></figure>}
       <h2 id="ac-world-detail-title">{detail.title}</h2>
       <p id="ac-world-detail-description">{detail.text}</p>
       <ul>{detail.points.map(point => <li key={point}>{point}</li>)}</ul>
-      <button className="ac-button" onClick={() => { close(); onNavigate(detail.path); }}>{detail.action}<ArrowUpRight size={17} /></button>
+      {detail.path.startsWith('http') ? <a className="ac-button" href={detail.path} target="_blank" rel="noopener noreferrer">{detail.action}<ArrowUpRight size={17} /></a> : <button className="ac-button" onClick={() => { close(); onNavigate(detail.path); }}>{detail.action}<ArrowUpRight size={17} /></button>}
     </dialog>
   </div>;
 }

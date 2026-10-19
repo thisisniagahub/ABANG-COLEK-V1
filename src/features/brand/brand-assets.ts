@@ -11,6 +11,14 @@ export const BRAND_ASSETS = {
     width: 1774,
     height: 887,
   },
+  worldScenes: [
+    { id: 'dapur', src: '/assets/world/scene-1-dapur.webp', width: 1536, height: 1024 },
+    { id: 'qc', src: '/assets/world/scene-2-qc.webp', width: 1536, height: 1024 },
+    { id: 'stokis', src: '/assets/world/scene-3-stokis.webp', width: 1536, height: 1024 },
+    { id: 'penghantaran', src: '/assets/world/scene-4-dispatch.webp', width: 1536, height: 1024 },
+    { id: 'komuniti', src: '/assets/world/scene-5-komuniti.webp', width: 1536, height: 1024 },
+    { id: 'produk', src: '/assets/world/scene-6-hero.webp', width: 1536, height: 1024 },
+  ],
   founder: {
     primary: {
       src: '/assets/brand/FOUNDER.png',

@@ -978,3 +978,26 @@
 }
 
 }
+
+/* Geng Jerux Kau — kad pilihan boleh kongsi. Share hanya atas tindakan pengguna; token sedia ada sahaja. */
+.ac-geng { max-width: 1440px; margin: 96px auto 0; padding: 0 32px; }
+.ac-geng-body { display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: start; }
+.ac-geng-picker { display: flex; flex-wrap: wrap; gap: 10px; }
+.ac-geng-chip { position: relative; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 16px; border-radius: 10px; border: 1px solid var(--ac-border); background: var(--ac-card); color: var(--ac-text); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; }
+.ac-geng-chip input { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+.ac-geng-chip.is-selected { border-color: var(--ac-brand-gold); box-shadow: 0 0 0 2px var(--ac-brand-gold); }
+.ac-geng-chip:has(input:focus-visible) { outline: 3px solid var(--ac-brand-gold); outline-offset: 2px; }
+.ac-geng-card { width: min(320px, 100%); display: flex; flex-direction: column; gap: 10px; padding: 24px; border-radius: 20px; border: 1px solid var(--ac-border); background: var(--ac-card); color: var(--ac-text); font-family: 'DM Sans', sans-serif; }
+.ac-geng-card .ac-geng-logo { width: 96px; height: auto; }
+.ac-geng-card h3 { margin: 0; font-family: Outfit, sans-serif; font-size: 24px; letter-spacing: -.6px; }
+.ac-geng-card p { margin: 0; font-size: 13px; line-height: 1.5; color: var(--ac-muted); }
+.ac-geng-card strong { font-size: 18px; }
+.ac-geng-card small { font-size: 11px; color: var(--ac-muted); }
+.ac-geng-link { font-size: 11px; color: var(--ac-muted); word-break: break-all; }
+.ac-geng-actions { margin-top: 20px; display: flex; align-items: center; gap: 16px; }
+.ac-geng-actions p { min-height: 20px; font-size: 13px; color: var(--ac-text); }
+.ac-geng-actions p:empty { display: none; }
+@media (max-width: 750px) {
+  .ac-geng { margin: 64px auto 0; padding: 0 20px; }
+  .ac-geng-body { grid-template-columns: 1fr; }
+}
