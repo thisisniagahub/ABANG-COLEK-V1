@@ -4,6 +4,8 @@ import {DomainError} from './store';
 /** Bound cloud responses before the hosting platform replaces them with an opaque error. */
 export async function boundHostedResponse(response:Response,maximum=4_000_000,timeoutMs=10_000):Promise<Response>{
   if(!response.body)return response;
+  const contentType = response.headers.get('content-type') || '';
+  if(contentType.includes('text/event-stream')) return response;
   try{
     const bytes=await boundedBody(response,maximum,timeoutMs);
     return new Response(bytes as BodyInit,{status:response.status,statusText:response.statusText,headers:response.headers});

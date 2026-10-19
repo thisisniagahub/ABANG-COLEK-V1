@@ -11,6 +11,13 @@
  * 6. Groq / OpenAI Codex Compatible (api.groq.com)
  */
 
+import {
+  type FreeModelCandidate,
+  STRICT_FREE_CANDIDATE_SEQUENCE,
+} from '../../shared/copilot-contracts';
+
+export { type FreeModelCandidate, STRICT_FREE_CANDIDATE_SEQUENCE };
+
 export interface FreeProviderConfig {
   id: 'openrouter' | 'nvidia' | 'opencode_zen' | 'gemini_free' | 'ollama' | 'groq';
   name: string;
@@ -21,15 +28,31 @@ export interface FreeProviderConfig {
   rateLimitNote: string;
 }
 
+export function assertFreeModelOnly(modelName: string, providerId: string): void {
+  const lower = modelName.toLowerCase();
+  if (
+    lower.includes(':paid') ||
+    lower.includes('gpt-4o') ||
+    lower.includes('claude-3-5') ||
+    lower.includes('claude-3-opus') ||
+    lower.includes('gemini-1.5-pro-paid')
+  ) {
+    throw new Error(`PERLANGGARAN POLISI SIFAR KOS: Model '${modelName}' dikesan sebagai model berbayar. Tiada paid fallback dibenarkan.`);
+  }
+  if (providerId === 'openrouter' && !lower.endsWith(':free')) {
+    throw new Error(`PERLANGGARAN POLISI SIFAR KOS: OpenRouter hanya dibenarkan model dengan akhiran :free. Model '${modelName}' ditolak.`);
+  }
+}
+
 export const FREE_PROVIDERS: Record<string, FreeProviderConfig> = {
   openrouter: {
     id: 'openrouter',
     name: 'OpenRouter Free Tier',
     baseUrl: 'https://openrouter.ai/api/v1',
     apiKeyEnv: 'OPENROUTER_API_KEY',
-    defaultModel: 'meta-llama/llama-3.3-70b-instruct:free',
+    defaultModel: 'nvidia/nemotron-3-super-120b-a12b:free',
     contextWindow: 131072,
-    rateLimitNote: 'Free tier with rotating community quota',
+    rateLimitNote: 'Free tier with rotating community quota (:free)',
   },
   nvidia: {
     id: 'nvidia',
@@ -54,7 +77,7 @@ export const FREE_PROVIDERS: Record<string, FreeProviderConfig> = {
     name: 'Google Gemini Flash (AI Studio)',
     baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/',
     apiKeyEnv: 'GEMINI_API_KEY',
-    defaultModel: 'gemini-2.5-flash',
+    defaultModel: 'gemini-3.6-flash',
     contextWindow: 1048576,
     rateLimitNote: '15 RPM / 1M TPM free tier',
   },
@@ -87,8 +110,10 @@ export interface ChatMessageParam {
 
 export interface CompletionOptions {
   providerOrder?: ('openrouter' | 'nvidia' | 'opencode_zen' | 'gemini_free' | 'ollama' | 'groq')[];
+  candidateModels?: Array<{ providerId: string; model: string }>;
   temperature?: number;
   maxTokens?: number;
+  timeoutMs?: number;
   stream?: boolean;
 }
 
@@ -113,6 +138,10 @@ export class FreeModelRouter {
     if (FREE_PROVIDERS[defaultProvider]) {
       this.activeProviderId = defaultProvider;
     }
+  }
+
+  getStrictFreeCandidates(): readonly FreeModelCandidate[] {
+    return STRICT_FREE_CANDIDATE_SEQUENCE;
   }
 
   setMockHandler(handler: ((messages: ChatMessageParam[], options: CompletionOptions) => Promise<CompletionResult | null>) | null) {
@@ -140,7 +169,11 @@ export class FreeModelRouter {
   }
 
   /**
-   * Execute chat completion with automatic zero-cost failover.
+   * Execute chat completion with automatic zero-cost failover adhering strictly to
+   * 1. gemini-3.6-flash
+   * 2. gemini-3.5-flash-lite
+   * 3. nvidia/nemotron-3-super-120b-a12b:free (OpenRouter)
+   * Without any paid fallback!
    */
   async complete(
     messages: ChatMessageParam[],
@@ -151,21 +184,51 @@ export class FreeModelRouter {
       if (mockResult) return mockResult;
     }
 
-    const candidateProviders = options.providerOrder || [
-      this.activeProviderId as any,
-      'gemini_free',
-      'nvidia',
-      'openrouter',
-      'opencode_zen',
-      'groq',
-      'ollama',
-    ];
+    // Build ordered list of candidate (providerId, model) pairs
+    const candidatesToTry: Array<{ providerId: string; model: string }> = [];
 
-    // Deduplicate candidate providers
-    const uniqueProviders = Array.from(new Set(candidateProviders));
+    if (options.candidateModels && options.candidateModels.length > 0) {
+      candidatesToTry.push(...options.candidateModels);
+    } else if (options.providerOrder && options.providerOrder.length > 0) {
+      for (const pid of options.providerOrder) {
+        const conf = FREE_PROVIDERS[pid];
+        if (conf) candidatesToTry.push({ providerId: pid, model: conf.defaultModel });
+      }
+    } else if (this.activeProviderId !== 'gemini_free') {
+      const activeConf = this.getActiveProvider();
+      candidatesToTry.push({ providerId: activeConf.id, model: activeConf.defaultModel });
+    } else {
+      // Default strict candidate sequence:
+      // 1. gemini-3.6-flash (gemini_free)
+      // 2. gemini-3.5-flash-lite (gemini_free)
+      // 3. nvidia/nemotron-3-super-120b-a12b:free (openrouter)
+      for (const cand of STRICT_FREE_CANDIDATE_SEQUENCE) {
+        if (!candidatesToTry.some(c => c.providerId === cand.providerId && c.model === cand.model)) {
+          candidatesToTry.push({ providerId: cand.providerId, model: cand.model });
+        }
+      }
+
+      // Append remaining free providers as backup
+      const otherFreeProviders: Array<'nvidia' | 'opencode_zen' | 'groq' | 'ollama'> = [
+        'nvidia',
+        'opencode_zen',
+        'groq',
+        'ollama',
+      ];
+      for (const pid of otherFreeProviders) {
+        const conf = FREE_PROVIDERS[pid];
+        if (conf && !candidatesToTry.some(c => c.providerId === pid)) {
+          candidatesToTry.push({ providerId: pid, model: conf.defaultModel });
+        }
+      }
+    }
+
     let lastError: Error | null = null;
 
-    for (const providerId of uniqueProviders) {
+    for (const { providerId, model: targetModel } of candidatesToTry) {
+      // Strict Zero-Cost Enforcement: Reject any paid model
+      assertFreeModelOnly(targetModel, providerId);
+
       const config = FREE_PROVIDERS[providerId];
       if (!config) continue;
 
@@ -178,6 +241,7 @@ export class FreeModelRouter {
       try {
         const response = await fetch(`${config.baseUrl}/chat/completions`, {
           method: 'POST',
+          signal: AbortSignal.timeout(options.timeoutMs ?? 3500),
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${apiKey}`,
@@ -189,7 +253,7 @@ export class FreeModelRouter {
               : {}),
           },
           body: JSON.stringify({
-            model: config.defaultModel,
+            model: targetModel,
             messages,
             temperature: options.temperature ?? 0.3,
             max_tokens: options.maxTokens ?? 2048,
@@ -207,7 +271,7 @@ export class FreeModelRouter {
 
         return {
           providerId: config.id,
-          model: data.model || config.defaultModel,
+          model: data.model || targetModel,
           content,
           toolCalls: choice?.message?.tool_calls,
           usage: data.usage
@@ -220,7 +284,7 @@ export class FreeModelRouter {
         };
       } catch (err: any) {
         lastError = err;
-        // Continue to next free provider in failover queue
+        // Continue to next free candidate model in failover queue
         continue;
       }
     }

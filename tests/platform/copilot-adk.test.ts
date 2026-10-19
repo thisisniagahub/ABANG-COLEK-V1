@@ -1,8 +1,8 @@
 import { describe, expect, test } from 'bun:test';
 import { unlinkSync } from 'node:fs';
 import { createPlatformApp } from '../../server/platform/app';
-import { FreeModelRouter, FREE_PROVIDERS } from '../../server/platform/freeModelRouter';
-import { GoogleAdkAgent } from '../../server/platform/adkAgent';
+import { FreeModelRouter, FREE_PROVIDERS, assertFreeModelOnly, STRICT_FREE_CANDIDATE_SEQUENCE } from '../../server/platform/freeModelRouter';
+import { GoogleAdkAgent, A2UI_ALLOWLISTED_COMPONENTS, validateA2UIComponent } from '../../server/platform/adkAgent';
 
 function cleanup(path: string) {
   for (const suffix of ['', '-wal', '-shm']) {
@@ -185,5 +185,144 @@ describe('Google ADK Agent & Free Model Router Integration', () => {
 
     app.close();
     cleanup(db);
+  }, 25000);
+
+  test('Strict candidate model sequence and zero paid fallback enforcement', () => {
+    const router = new FreeModelRouter('gemini_free');
+    const candidates = router.getStrictFreeCandidates();
+    expect(candidates).toHaveLength(3);
+
+    // 1. gemini-3.6-flash (Primary Free)
+    expect(candidates[0].model).toBe('gemini-3.6-flash');
+    expect(candidates[0].providerId).toBe('gemini_free');
+
+    // 2. gemini-3.5-flash-lite (Secondary Free)
+    expect(candidates[1].model).toBe('gemini-3.5-flash-lite');
+    expect(candidates[1].providerId).toBe('gemini_free');
+
+    // 3. nvidia/nemotron-3-super-120b-a12b:free (OpenRouter Free)
+    expect(candidates[2].model).toBe('nvidia/nemotron-3-super-120b-a12b:free');
+    expect(candidates[2].providerId).toBe('openrouter');
+
+    // Zero paid fallback: rejects any paid model
+    expect(() => assertFreeModelOnly('gpt-4o', 'openai')).toThrow(/PERLANGGARAN POLISI SIFAR KOS/);
+    expect(() => assertFreeModelOnly('claude-3-5-sonnet', 'anthropic')).toThrow(/PERLANGGARAN POLISI SIFAR KOS/);
+    expect(() => assertFreeModelOnly('meta-llama/llama-3.3-70b-instruct', 'openrouter')).toThrow(/OpenRouter hanya dibenarkan model dengan akhiran :free/);
+
+    // Free models pass validation
+    expect(() => assertFreeModelOnly('gemini-3.6-flash', 'gemini_free')).not.toThrow();
+    expect(() => assertFreeModelOnly('gemini-3.5-flash-lite', 'gemini_free')).not.toThrow();
+    expect(() => assertFreeModelOnly('nvidia/nemotron-3-super-120b-a12b:free', 'openrouter')).not.toThrow();
   });
+
+  test('CopilotKit Runtime /v2 endpoint with A2UI Fixed Schema and streaming', async () => {
+    const db = `var/lib/qa/copilot-v2-${Date.now()}.sqlite`;
+    cleanup(db);
+    const app = createPlatformApp({ databasePath: db, bootstrapToken: 'qa-token', origin: 'http://localhost:3000' });
+
+    // Bootstrap Founder
+    const boot = await app.fetch(new Request('http://localhost:3000/api/platform/auth/bootstrap', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Origin: 'http://localhost:3000' },
+      body: JSON.stringify({ email: 'founder-v2@test.local', password: 'password123456', name: 'Founder V2', token: 'qa-token' }),
+    }));
+    expect(boot.status).toBe(200);
+    const cookie = boot.headers.get('set-cookie')!;
+    const csrf = (await boot.clone().json() as any).data.csrfToken;
+
+    // 1. GET /api/platform/v2 returns v2 runtime descriptor
+    const getV2Res = await app.fetch(new Request('http://localhost:3000/api/platform/v2', {
+      method: 'GET',
+      headers: { Cookie: cookie, Origin: 'http://localhost:3000' }
+    }));
+    expect(getV2Res.status).toBe(200);
+    const v2Desc = (await getV2Res.json() as any).data;
+    expect(v2Desc.version).toBe('2.0.0');
+    expect(v2Desc.runtime).toBe('copilotkit-v2-agui');
+    expect(v2Desc.schema).toBe('a2ui.v1');
+    expect(v2Desc.paidFallbackAllowed).toBe(false);
+    expect(v2Desc.candidateModels[0].model).toBe('gemini-3.6-flash');
+    expect(v2Desc.candidateModels[1].model).toBe('gemini-3.5-flash-lite');
+    expect(v2Desc.candidateModels[2].model).toBe('nvidia/nemotron-3-super-120b-a12b:free');
+
+    // Also verify GET /api/platform/copilot/v2 returns identical descriptor
+    const getCopilotV2Res = await app.fetch(new Request('http://localhost:3000/api/platform/copilot/v2', {
+      method: 'GET',
+      headers: { Cookie: cookie, Origin: 'http://localhost:3000' }
+    }));
+    expect(getCopilotV2Res.status).toBe(200);
+    expect((await getCopilotV2Res.json() as any).data.schema).toBe('a2ui.v1');
+
+    // 2. POST /api/platform/v2 with CopilotKit messages array format
+    const postV2Res = await app.fetch(new Request('http://localhost:3000/api/platform/v2', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Origin: 'http://localhost:3000',
+        Cookie: cookie,
+        'x-csrf-token': csrf
+      },
+      body: JSON.stringify({
+        messages: [
+          { role: 'user', content: 'Pelanggan minta refund ganti rugi kerana botol bocor semasa pos' }
+        ]
+      })
+    }));
+    expect(postV2Res.status).toBe(200);
+    const postV2Data = (await postV2Res.json() as any).data;
+    expect(postV2Data.a2ui).toBeDefined();
+    expect(postV2Data.a2ui.schemaVersion).toBe('a2ui.v1');
+    expect(postV2Data.a2ui.component).toBe('RefundImpactPanel');
+    expect(postV2Data.a2ui.provenance).toBeDefined();
+    expect(postV2Data.a2ui.provenance.source).toBe('canonical_evaluator');
+    expect(postV2Data.hitlAction).toBeDefined();
+
+    // 3. POST /api/platform/v2 with margin simulation inquiry
+    const marginV2Res = await app.fetch(new Request('http://localhost:3000/api/platform/v2', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Origin: 'http://localhost:3000',
+        Cookie: cookie,
+        'x-csrf-token': csrf
+      },
+      body: JSON.stringify({
+        messages: [
+          { role: 'user', content: 'Bolehkah saya buat kempen diskaun margin sekarang?' }
+        ]
+      })
+    }));
+    expect(marginV2Res.status).toBe(200);
+    const marginV2Data = (await marginV2Res.json() as any).data;
+    expect(marginV2Data.a2ui.component).toBe('MarginSimulator');
+    expect(marginV2Data.a2ui.props.contributionMarginPct).toBe(28.5);
+    expect(marginV2Data.a2ui.provenance.source).toBe('canonical_evaluator');
+
+    // 4. POST /api/platform/v2 with SSE stream returns event: a2ui
+    const streamV2Res = await app.fetch(new Request('http://localhost:3000/api/platform/v2', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'text/event-stream',
+        Origin: 'http://localhost:3000',
+        Cookie: cookie,
+        'x-csrf-token': csrf
+      },
+      body: JSON.stringify({
+        message: 'Aduan kualiti penutup botol pecah dan bocor',
+        stream: true
+      })
+    }));
+    expect(streamV2Res.status).toBe(200);
+    expect(streamV2Res.headers.get('content-type')).toContain('text/event-stream');
+    const streamV2Text = await streamV2Res.text();
+    expect(streamV2Text).toContain('event: start');
+    expect(streamV2Text).toContain('a2ui.v1');
+    expect(streamV2Text).toContain('event: a2ui');
+    expect(streamV2Text).toContain('JevAssessmentCard');
+    expect(streamV2Text).toContain('event: done');
+
+    app.close();
+    cleanup(db);
+  }, 25000);
 });

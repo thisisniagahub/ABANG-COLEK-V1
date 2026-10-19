@@ -9,14 +9,14 @@
 </p>
 
 <p align="center">
-  <a href="https://vercel.com/niaga-hub-pro"><img src="https://img.shields.io/badge/Production-Vercel-black?logo=vercel" alt="Production on Vercel" /></a>
+  <a href="https://vercel.com/niaga-hub-pro/abang-colek-v1"><img src="https://img.shields.io/badge/Production-Vercel-black?logo=vercel" alt="Production on Vercel" /></a>
   <a href="https://github.com/thisisniagahub/ABANG-COLEK-V1/actions"><img src="https://img.shields.io/github/actions/workflow/status/thisisniagahub/ABANG-COLEK-V1/vercel-production.yml?branch=main&label=CI%20%2B%20deploy" alt="CI and deploy status" /></a>
   <img src="https://img.shields.io/badge/runtime-Bun%201.4.2-f9f1e1?logo=bun&logoColor=black" alt="Bun 1.4.2" />
   <img src="https://img.shields.io/badge/frontend-React%20%2B%20Vite-61dafb?logo=react&logoColor=black" alt="React and Vite" />
 </p>
 
 <p align="center">
-  <a href="https://vercel.com/niaga-hub-pro">Live deployment</a> ·
+  <a href="https://vercel.com/niaga-hub-pro/abang-colek-v1">Live deployment</a> ·
   <a href="https://github.com/thisisniagahub/ABANG-COLEK-V1/actions">Actions</a> ·
   <a href="docs/README.md">Documentation index</a> ·
   <a href="docs/runbooks/platform-recovery.md">Recovery runbook</a>
@@ -52,11 +52,12 @@ flowchart TD
     A[Landing + AppRouter + role workspaces] --> B[/api/platform + typed contracts/]
     B --> C[Auth · CSRF · revision · idempotency]
     C --> D[Bun domain modules]
-    D --> E[(SQLite + files)]
+    D --> E[(Local SQLite + private files)]
+    D --> K[Hosted Supabase snapshot CAS + private evidence]
     D --> F[Evidence + JEV review]
     D --> G[Local job worker + automation]
     H[GitHub Actions] --> I[lint + platform tests + build]
-    I --> J[Vercel Production: niaga-hub-pro]
+    L[Main Git integration] --> J[Vercel: abang-colek-v1]
 ```
 
 ### Repository map
@@ -85,8 +86,9 @@ flowchart TD
 ### Install dan run
 
 ```bash
-git clone https://github.com/thisisniagahub/ABANG-COLEK-V1.git
-cd ABANG-COLEK-V1
+# Existing workspace: verify root and git status before modifying.
+cd D:/ABANGCOLEK-PLATFORM
+# Install only when dependencies are missing and installation is authorized.
 bun install --frozen-lockfile
 bun run dev
 ```
@@ -116,7 +118,7 @@ bun run test:e2e
 bun run qa:server
 ```
 
-Build membaca `PLATFORM_DATABASE` atau default database checkout. Jika database tiada, catalogue public boleh kosong; itu bukan bukti bahawa business catalogue production telah onboarded.
+Local build membaca `PLATFORM_DATABASE` atau default database checkout. Configured cloud build membaca authoritative Supabase snapshot dan gagal tertutup jika tidak dapat dibaca. Jika database tiada, catalogue public boleh kosong; itu bukan bukti bahawa business catalogue production telah onboarded.
 
 ## Environment configuration
 
@@ -140,15 +142,15 @@ Setiap push ke `main` menjalankan workflow [`.github/workflows/vercel-production
 3. jalankan `lint`;
 4. jalankan `test:platform`;
 5. jalankan production build;
-6. deploy ke project Vercel **[niaga-hub-pro](https://vercel.com/niaga-hub-pro)**.
+6. optional CLI deploy hanya jika `VERCEL_TOKEN` dikonfigurasi; canonical autodeploy ialah Vercel Git integration ke **niaga-hub-pro/abang-colek-v1**. Sahkan exact SHA dalam deployment; CI boleh blocked sebelum berjalan dan tidak menjamin deploy.
 
-### Required GitHub secret
+### Optional GitHub CLI deployment secret
 
-Tambahkan secret repository berikut di **GitHub → Settings → Secrets and variables → Actions**:
+Untuk optional CLI deployment sahaja, konfigurasi secret repository berikut di **GitHub → Settings → Secrets and variables → Actions**:
 
 | Secret | Kegunaan |
 | --- | --- |
-| `VERCEL_TOKEN` | Token Vercel milik account/team yang mempunyai akses ke project `niaga-hub-pro` |
+| `VERCEL_TOKEN` | Token Vercel milik account/team yang mempunyai akses ke team `niaga-hub-pro`, project `abang-colek-v1` |
 
 Workflow tidak menyimpan token dalam source code. Jika token pernah terdedah, revoke token lama dahulu dan cipta token baharu sebelum menambahnya ke GitHub Actions.
 
@@ -167,7 +169,9 @@ Workflow tidak menyimpan token dalam source code. Jika token pernah terdedah, re
 
 - [Documentation index](docs/README.md)
 - [Source of truth](docs/ABANGCOLEK-SOURCE-OF-TRUTH.md)
-- [Platform status](docs/ABANGCOLEK-PLATFORM-STATUS-2026-10-16.md)
+- [Master Blueprint v2.3](docs/ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md)
+- [Implementation prompts](docs/prompts/README.md)
+- [Status snapshot 16 Oktober](docs/archive/legacy-oct2026/ABANGCOLEK-PLATFORM-STATUS-2026-10-16.md)
 - [AI agent architecture](docs/AI-AGENT-ARCHITECTURE.md)
 - [Capability matrix](docs/handover/CAPABILITY-MATRIX.md)
 - [Platform recovery runbook](docs/runbooks/platform-recovery.md)
@@ -186,3 +190,11 @@ Workflow tidak menyimpan token dalam source code. Jika token pernah terdedah, re
 ## License
 
 Status license dan hak penggunaan assets perlu disahkan oleh pemilik projek sebelum public redistribution. Brand assets dalam repository adalah untuk penggunaan ABANGCOLEK Platform sehingga dinyatakan sebaliknya.
+
+## Blueprint alignment — 19 Oktober 2026
+
+[Blueprint v2.3](docs/ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) ialah target contract. Scope Copilot: **10 ciri**, **10 modul**, **32 logical capabilities** dan **7 Generative UI approaches**. Rujuk [AI architecture](docs/AI-AGENT-ARCHITECTURE.md), [tool registry](docs/design/copilot-advanced-tools.md) dan [free-only policy](docs/research/2026-10-19-free-model-policy.md). Custom chat/SSE/kad dan class bernama ADK bukan bukti integrasi framework rasmi. Jangan lapor kesemua ciri aktif melalui documentation update.
+
+Sasaran: React/Vite + TypeScript CopilotRuntime pada Bun -> Google ADK Python/AG-UI -> canonical scoped domain tools. Founder pilot, fixed-schema A2UI dan first-party read-only MCP App. Model/evaluator/voice/title/summary free-only; tiada paid fallback. Intelligence Streams/Learning mempunyai gate kos/data/entitlement berasingan. LOCAL_RULES JEV tidak memberi calibrated model probability atau financial authority.
+
+Local SQLite dan hosted Supabase CAS ialah runtime berbeza. [Release runbook](docs/production-release.md) menerangkan temporary SQLite, CAS commit, private evidence dan cloud worker limits. Jangan migrate data/folder atau mount legacy app hanya kerana struktur sasaran didokumenkan. Use existing assets dan workflows; scripts/tests/runtime mesti diperiksa sebelum completion. Alignment Markdown ini tidak menjalankan test/deploy baharu.

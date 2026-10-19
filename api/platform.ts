@@ -29,7 +29,14 @@ export function createProductionHandler(environment: Environment, bodyTimeoutMs 
   let handler: ((request: Request) => Promise<Response>) | undefined;
   return async (request: Request): Promise<Response> => {
     const pathname = new URL(request.url).pathname;
-    if (pathname !== '/api/platform' && !pathname.startsWith('/api/platform/')) {
+    if (
+      pathname !== '/api/platform' &&
+      !pathname.startsWith('/api/platform/') &&
+      pathname !== '/v2' &&
+      !pathname.startsWith('/v2/') &&
+      pathname !== '/copilotkit/v2' &&
+      !pathname.startsWith('/copilotkit/v2/')
+    ) {
       return failure(404, 'NOT_FOUND', 'Halaman API tidak ditemui.');
     }
     const length = request.headers.get('content-length');

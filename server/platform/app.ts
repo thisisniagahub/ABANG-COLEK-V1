@@ -33,8 +33,10 @@ import { SocialConnections } from './social';
 import { HermesAdapter, type AutomationOptions } from '../automation/adapters';
 
 import { Loyalty } from './loyalty';
-import { GoogleAdkAgent } from './adkAgent';
+import { GoogleAdkAgent, A2UI_ALLOWLISTED_COMPONENTS } from './adkAgent';
 import { FreeModelRouter } from './freeModelRouter';
+import { globalDomainTools } from './domainTools';
+import { operationsBriefApp } from './mcp/operationsBrief';
 
 export interface PlatformAppOptions { googleIdentityVerifier?:GoogleIdentityVerifier; persistenceMode?:'local'|'supabase'; evidenceStorage?:EvidenceStorage; databasePath?:string; bootstrapToken?:string; origin?:string; allowedOrigins?:string[]; rateLimits?:{identityGlobal:number;identityAccount:number;actor:number}; automationOptions?:AutomationOptions; whatsappTransport?:WhatsAppTransport; adkAgent?:GoogleAdkAgent; freeModelRouter?:FreeModelRouter; backupScheduler?:BackupSchedulerOptions|boolean; log?:(entry:{requestId:string;code:string;status:number})=>void }
 const cookieClear='platform_session=; HttpOnly; SameSite=Strict; Path=/api/platform; Max-Age=0';
@@ -186,6 +188,21 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
       if(path==='/pilots/founder-assistant/proposals'){auth.founder(actor);return store.all('founder_proposals');}
       if(path==='/copilot/providers'){auth.operational(actor);return freeModelRouter.listProviders();}
       if(path==='/copilot/hitl'){auth.founder(actor);return adkAgent.listHitlActions();}
+      if(path==='/copilot/v2'||path==='/v2'||path==='/copilotkit/v2'){
+        auth.operational(actor);
+        return {
+          version: '2.0.0',
+          runtime: 'copilotkit-v2-agui',
+          schema: 'a2ui.v1',
+          activeProvider: freeModelRouter.getActiveProvider().id,
+          candidateModels: freeModelRouter.getStrictFreeCandidates(),
+          allowlistedComponents: A2UI_ALLOWLISTED_COMPONENTS,
+          paidFallbackAllowed: false,
+        };
+      }
+      if(path==='/copilot/tools'){auth.operational(actor);return globalDomainTools.listTools(actor.user.role as any);}
+      if(path==='/copilot/mcp/brief/daily'){auth.operational(actor);return operationsBriefApp.getDailyBrief();}
+      if(path==='/copilot/mcp/brief/urgent'){auth.operational(actor);return operationsBriefApp.getUrgentBrief();}
     }
     if(method==='POST') {
       if(path==='/auth/logout'){auth.logout(actor);return {loggedOut:true};}
@@ -320,6 +337,10 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
         const approve=b.approve!==undefined?Boolean(b.approve):b.decision==='approved';
         return adkAgent.decideHitlAction(actor,segments[2],approve);
       }
+      if(segments[0]==='copilot'&&segments[1]==='tools'&&segments[2]&&segments[3]==='execute'){
+        auth.operational(actor);
+        return globalDomainTools.executeTool(segments[2], { actor, store, commerce, dealers, loyalty }, input);
+      }
     }
     fail('NOT_FOUND',404,'Laluan tidak ditemui.');
   }
@@ -330,7 +351,7 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
       const requestId=randomUUID();
       try {
         const url=new URL(request.url),path=url.pathname.replace(/^\/api\/platform/,'');
-        if(!url.pathname.startsWith('/api/platform/'))fail('NOT_FOUND',404);
+        if(!url.pathname.startsWith('/api/platform/')&&!url.pathname.startsWith('/v2')&&!url.pathname.startsWith('/copilotkit/v2'))fail('NOT_FOUND',404);
         if(!['GET','POST'].includes(request.method))fail('METHOD_NOT_ALLOWED',405);
         // Provider callbacks use their signature as authority, never browser cookies or CSRF.
         if(request.method==='POST'&&path==='/whatsapp/webhook'){
@@ -430,11 +451,18 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
           auth.founder(actor);
           return json({ok:true,data:await backupScheduler.runBackup('founder_manual')});
         }
-        if(request.method==='POST'&&path==='/copilot/chat'){
+        if(request.method==='POST'&&(path==='/copilot/chat'||path==='/copilot/v2'||path==='/v2'||path==='/copilotkit/v2')){
           auth.operational(actor);
           const b=object(input);
-          const messageText=text(b.message,'Mesej copilot',10000);
-          const conversationHistory=(Array.isArray(b.history)?b.history:[]) as any[];
+          const rawMessage = typeof b.message === 'string'
+            ? b.message
+            : (Array.isArray(b.messages) && b.messages.length > 0
+                ? (typeof b.messages[b.messages.length - 1]?.content === 'string' ? b.messages[b.messages.length - 1]?.content : '')
+                : (typeof b.query === 'string' ? b.query : ''));
+          const messageText=text(rawMessage,'Mesej copilot',10000);
+          const conversationHistory=(Array.isArray(b.history)
+            ? b.history
+            : (Array.isArray(b.messages) ? b.messages.slice(0, -1) : [])) as any[];
           const streamRequested=request.headers.get('accept')?.includes('text/event-stream')||b.stream===true;
 
           if(streamRequested){
@@ -442,8 +470,11 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
             const stream=new ReadableStream({
               async start(controller){
                 try{
-                  controller.enqueue(encoder.encode(`event: start\ndata: ${JSON.stringify({activeProvider:freeModelRouter.getActiveProvider().id,model:freeModelRouter.getActiveProvider().defaultModel})}\n\n`));
+                  controller.enqueue(encoder.encode(`event: start\ndata: ${JSON.stringify({activeProvider:freeModelRouter.getActiveProvider().id,model:freeModelRouter.getActiveProvider().defaultModel,runtime:'v2',schemaVersion:'a2ui.v1'})}\n\n`));
                   const result=await adkAgent.processMessage(actor,messageText,conversationHistory);
+                  if(result.a2ui){
+                    controller.enqueue(encoder.encode(`event: a2ui\ndata: ${JSON.stringify(result.a2ui)}\n\n`));
+                  }
                   if(result.generativeUi){
                     controller.enqueue(encoder.encode(`event: gen_ui\ndata: ${JSON.stringify(result.generativeUi)}\n\n`));
                   }

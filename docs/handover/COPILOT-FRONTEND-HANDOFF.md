@@ -1,9 +1,9 @@
-# DOKUMEN SERAHAN RASMI GITHUB COPILOT (FRONTEND HANDOFF v2.3 - REVISION 2)
+# DOKUMEN SERAHAN RASMI GITHUB COPILOT (FRONTEND HANDOFF v2.3 - REVISION 3)
 
 > **Tarikh**: 19 Oktober 2026  
 > **Integrator & Pengeluar**: AGY Backend Owner & Integration Lead  
 > **Penerima**: GitHub Copilot (Frontend Owner)  
-> **Status**: SEMAKAN RATIFIKASI REVISION 2 (Menghapuskan nilai rekaan, memperjelas status runtime)  
+> **Status**: RATIFIKASI REVISION 3 (Google ADK Python, Domain Tools, First-Party MCP App & /copilot/v2 Runtime AKTIF)  
 > **Baseline Commit SHA**: `e43d258`  
 > **Branch Integrasi**: `integrate/blueprint-v23`  
 
@@ -50,20 +50,32 @@ Fail-fail berikut TIDAK BOLEH disentuh oleh Copilot:
 
 ---
 
-## 3. Status Sebenar Kebergantungan & Protokol Runtime
+## 3. Status Sebenar Kebergantungan & Protokol Runtime (Terkini: Revision 3)
 
-> [!WARNING]
-> **Status Kebergantungan Semasa (Realiti Runtime)**:
-> 1. Pakej rasmi `@copilotkit/runtime` dan `@ag-ui/core` **BELUM** dimasukkan ke dalam `package.json`.
-> 2. Perkhidmatan Python Google ADK `agents/google-adk/app.py` **BELUM** wujud pada lokasi sasaran.
-> 3. Oleh itu, Copilot **TIDAK BOLEH** menganggap runtime `/v2` atau AG-UI sedia hidup secara langsung di persekitaran semasa.
-> 4. Copilot dinasihatkan membina komponen UI berasaskan **Pure Component & Fixture-Driven Development** menggunakan fixtures beku di bawah sehingga backend selesai memasang dan mengaktifkan runtime sasaran.
+> [!NOTE]
+> **Status Kemajuan Backend Terkini (OBSERVED & VERIFIED)**:
+> 1. **Perkhidmatan Python Google ADK** (`agents/google-adk/app.py` Port 8030) kini **AKTIF & WUJUD** dengan 3 specialists:
+>    - `commerce_reader` (Katalog & stok read-only)
+>    - `qc_jev_reviewer` (Audit kualiti berasaskan LOCAL_RULES tanpa skor kepastian rekaan)
+>    - `marketing_drafter` (Kempen promosi dengan Margin Guardian >= 25%)
+> 2. **CopilotKit v2 Runtime & A2UI SSE Endpoints** kini **AKTIF** pada:
+>    - `POST /copilot/v2`, `GET /copilot/v2` (Streaming chunk dan event `a2ui`)
+>    - `GET /copilot/tools` (10 Platform Domain Tools)
+>    - `GET /copilot/mcp/brief/daily` & `/copilot/mcp/brief/urgent` (First-Party Read-Only MCP App)
+> 3. **Skema A2UI Fixed Schema** (`a2ui.v1`) ditakrifkan dalam `shared/copilot-contracts.ts` merangkumi 6 komponen rasmi:
+>    - `OperationsBriefCard`
+>    - `RefundImpactPanel`
+>    - `JevAssessmentCard`
+>    - `MarginSimulator`
+>    - `OrderTrackingBadge`
+>    - `CommissionCard`
+> 4. Copilot boleh menyambungkan komponen UI secara langsung kepada endpoint backend `/copilot/v2` atau terus menggunakan fixtures beku di bawah untuk pengasingan ujian unit (Pure Component Testing).
 
-### Perbezaan Protokol: Custom SSE vs AG-UI Sasaran
-- **Custom Local Endpoint** (`POST /api/platform/copilot/chat`):
-  Endpoint pembangunan dalaman sedia ada. Memulangkan JSON atau Server-Sent Events (SSE) teks ringkas dengan payload `{ reply, generativeUi, hitlAction }`.
-- **Target AG-UI / CopilotKit v2 Runtime Protocol**:
-  Protokol sasaran ADR-0003 yang menggunakan endpoint `/v2` dengan streaming chunk standard CopilotKit (`text_delta`, `tool_call`, `state_snapshot`). Akan disediakan oleh AGY Backend dalam fasa seterusnya.
+### Format Payload Acara A2UI SSE:
+```http
+event: a2ui
+data: {"componentName":"OperationsBriefCard","props":{"title":"Taklimat Operasi Harian","briefDate":"2026-10-19","metrics":[{"label":"Pesanan Menunggu","value":"14"}]}}
+```
 
 ---
 

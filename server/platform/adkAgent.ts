@@ -16,6 +16,21 @@ import { Auth, type Principal } from './auth';
 import { Commerce } from './commerce';
 import { Dealers } from './dealers';
 import { Loyalty } from './loyalty';
+import {
+  type A2UIFixedSchema,
+  type A2UIComponentName,
+  A2UI_ALLOWLISTED_COMPONENTS,
+  validateA2UIComponent,
+  type HitlActionRequest,
+} from '../../shared/copilot-contracts';
+
+export {
+  type A2UIFixedSchema,
+  type A2UIComponentName,
+  A2UI_ALLOWLISTED_COMPONENTS,
+  validateA2UIComponent,
+  type HitlActionRequest,
+};
 
 export interface AdkAgentOptions {
   providerId?: string;
@@ -24,24 +39,14 @@ export interface AdkAgentOptions {
   router?: FreeModelRouter;
 }
 
-export interface HitlActionRequest {
-  id: string;
-  actionType: 'refund' | 'stock_quarantine' | 'founder_override' | 'commission_contra';
-  description: string;
-  payload: Record<string, any>;
-  status: 'pending_approval' | 'approved' | 'rejected';
-  createdAt: string;
-  reviewedBy?: string;
-  reviewedAt?: string;
-}
-
 export interface AdkStreamChunk {
-  type: 'text_delta' | 'thought_delta' | 'gen_ui' | 'tool_call' | 'hitl_prompt' | 'done';
+  type: 'text_delta' | 'thought_delta' | 'gen_ui' | 'a2ui' | 'tool_call' | 'hitl_prompt' | 'done';
   content?: string;
   component?: {
     name: 'JevAssessmentCard' | 'MarginSimulator' | 'OrderTrackingBadge' | 'CommissionCard';
     props: Record<string, any>;
   };
+  a2ui?: A2UIFixedSchema;
   hitlAction?: HitlActionRequest;
 }
 
@@ -141,6 +146,7 @@ Prinsip Operasi:
       name: string;
       props: Record<string, any>;
     };
+    a2ui?: A2UIFixedSchema;
     hitlAction?: HitlActionRequest;
   }> {
     const messages: ChatMessageParam[] = [
@@ -149,17 +155,19 @@ Prinsip Operasi:
       { role: 'user', content: userMessage },
     ];
 
-    // 1. Semakan Pintar untuk Generative UI / HITL
+    // 1. Semakan Pintar untuk Generative UI / HITL & A2UI Fixed Schema
     const lower = userMessage.toLowerCase();
     let genUi: { name: string; props: Record<string, any> } | undefined;
+    let a2ui: A2UIFixedSchema | undefined;
     let hitl: HitlActionRequest | undefined;
 
-    if (lower.includes('bocor') || lower.includes('leakage') || lower.includes('aduan')) {
+    if (lower.includes('bocor') || lower.includes('leakage') || lower.includes('aduan') || lower.includes('jev')) {
       genUi = {
         name: 'JevAssessmentCard',
         props: {
           issueClass: 'LEAKAGE',
-          confidence: 0.96,
+          evaluationState: 'reviewed',
+          confidenceScore: null,
           rootCause: 'UNDETERMINED',
           sopAction: 'Kuarantin batch di cawangan & minta bukti foto penutup botol',
         },
@@ -172,6 +180,38 @@ Prinsip Operasi:
           'Permintaan tuntutan ganti rugi botol bocor pelanggan',
           { message: userMessage }
         );
+        a2ui = {
+          schemaVersion: 'a2ui.v1',
+          component: 'RefundImpactPanel',
+          props: {
+            issueClass: 'LEAKAGE',
+            rootCause: 'UNDETERMINED',
+            hitlRequired: true,
+            estimatedImpactSen: 2500,
+            sopAction: 'Kuarantin batch di cawangan & minta bukti foto penutup botol',
+          },
+          provenance: {
+            source: 'canonical_evaluator',
+            timestamp: now(),
+          },
+          actions: [
+            { id: 'hitl-refund', label: 'Luluskan Tuntutan', actionType: 'approve' },
+            { id: 'hitl-reject', label: 'Tolak Tuntutan', actionType: 'reject' },
+          ],
+        };
+      } else {
+        a2ui = {
+          schemaVersion: 'a2ui.v1',
+          component: 'JevAssessmentCard',
+          props: genUi.props,
+          provenance: {
+            source: 'jev_local_rules',
+            timestamp: now(),
+          },
+          actions: [
+            { id: 'sop-quarantine', label: 'Mulakan Kuarantin Batch', actionType: 'recheck' },
+          ],
+        };
       }
     } else if (lower.includes('margin') || lower.includes('kempen') || lower.includes('diskaun')) {
       genUi = {
@@ -182,6 +222,22 @@ Prinsip Operasi:
           status: 'PASSED',
         },
       };
+      a2ui = {
+        schemaVersion: 'a2ui.v1',
+        component: 'MarginSimulator',
+        props: {
+          ...genUi.props,
+          minThresholdPct: 25.0,
+          simulationTimestamp: now(),
+        },
+        provenance: {
+          source: 'canonical_evaluator',
+          timestamp: now(),
+        },
+        actions: [
+          { id: 'act-campaign-draft', label: 'Cipta Draf Kempen', actionType: 'navigate' },
+        ],
+      };
     } else if (lower.includes('jejak') || lower.includes('tracking')) {
       genUi = {
         name: 'OrderTrackingBadge',
@@ -190,6 +246,38 @@ Prinsip Operasi:
           security: 'SEC-01 Token Cryptographic Hash Redacted',
         },
       };
+      a2ui = {
+        schemaVersion: 'a2ui.v1',
+        component: 'OrderTrackingBadge',
+        props: {
+          endpoint: '/orders/track?token=...',
+          security: 'SEC-01 Token Cryptographic Hash Redacted',
+          carrier: 'Pantai Timur Express Freight (TBS - MBKT)',
+          status: 'ACTIVE_TRANSIT',
+        },
+        provenance: {
+          source: 'database',
+          timestamp: now(),
+        },
+      };
+    } else {
+      a2ui = {
+        schemaVersion: 'a2ui.v1',
+        component: 'OperationsBriefCard',
+        props: {
+          title: 'AbangColek Sovereign GrowthOS Operations',
+          mode: 'Zero-Cost Free Tier Active',
+          activeProvider: this.router.getActiveProvider().name,
+        },
+        provenance: {
+          source: 'local_authoritative',
+          timestamp: now(),
+        },
+      };
+    }
+
+    if (a2ui && !validateA2UIComponent(a2ui.component)) {
+      fail('A2UI_UNKNOWN_COMPONENT', 400, `Komponen A2UI '${a2ui.component}' tidak dibenarkan.`);
     }
 
     // 2. Hantar kepada Router Model Percuma
@@ -203,6 +291,7 @@ Prinsip Operasi:
       providerUsed: result.providerId,
       modelUsed: result.model,
       generativeUi: genUi,
+      a2ui,
       hitlAction: hitl,
     };
   }

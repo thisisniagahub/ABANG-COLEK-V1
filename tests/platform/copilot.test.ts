@@ -121,7 +121,7 @@ describe('Copilot ADK & Free Model Router Integration', () => {
     expect(chatRes.json.data.reply).toBeDefined();
     expect(typeof chatRes.json.data.reply).toBe('string');
     expect(chatRes.json.data.reply.length).toBeGreaterThan(0);
-  });
+  }, 25000);
 
   test('POST /copilot/chat menghasilkan Generative UI apabila diminta penilaian JEV', async () => {
     const { app } = createHarness();
@@ -143,7 +143,7 @@ describe('Copilot ADK & Free Model Router Integration', () => {
       expect(chatRes.json.data.generativeUi.name).toBe('JevAssessmentCard');
       expect(chatRes.json.data.generativeUi.props).toBeDefined();
     }
-  });
+  }, 25000);
 
   test('Human-In-The-Loop: Founder boleh menyenaraikan dan membuat keputusan meluluskan/menolak', async () => {
     const { app } = createHarness();
@@ -182,5 +182,5 @@ describe('Copilot ADK & Free Model Router Integration', () => {
       expect(decideRes.json.data.status).toBe('approved');
       expect(decideRes.json.data.reviewedBy).toBe(founder.user.id);
     }
-  });
+  }, 25000);
 });

@@ -1,8 +1,20 @@
-<!-- ABANGCOLEK_DOC_AUTHORITY_V1 -->
-> **RESEARCH_REFERENCE — context diselaraskan 3 Oktober 2026.** Kandungan/metadata asal di bawah ialah bukti atau cadangan pada tarikh asal, bukan current runtime/authorization/release proof. Gunakan [Source of Truth](docs/ABANGCOLEK-SOURCE-OF-TRUTH.md) dan [handover A–Z](docs/handover/AGENT-HANDOVER-A-Z.md) untuk keputusan semasa. Server3000/3010 STOPPED pada snapshot20:25MYT; data kekal OS; Emons goal PAUSED. Native provider/benchmark/cost/complete claims perlu verifikasi sendiri.
->
-> Errata: 15–70ms,100–400x-cost/speed ialah vendor/research assertions, bukan local benchmark, calibrated model atau free usage entitlement. Source semasa menggunakan LOCAL_RULES.
+# JEV — current boundary dan historical research
 
+Diselaraskan: **19 Oktober 2026**, mengikut [Master Blueprint v2.3](docs/ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md). **Current mode: LOCAL_RULES; native TypeSafe bukan verified connected.** [AI architecture](docs/AI-AGENT-ARCHITECTURE.md) dan [free-only policy](docs/research/2026-10-19-free-model-policy.md) mengatasi cadangan integrasi sejarah di bawah.
+
+## Kontrak semasa
+
+- Source canonical: `server/platform/jev/assessment.ts`, `policyEngine.ts`, `evaluations.ts`; evidence/version/scope dan unknown/abstention dikekalkan.
+- Local deterministic score bukan calibrated probability/confidence model. Foto yang dilampirkan tidak membuktikan vision inference.
+- JEV membantu QC triage, review dan routing. Refund/stok/komisen/reward dikawal deterministic domain commands; model score tidak meluluskan wang atau bypass approval.
+- Native TypeSafe disabled sehingga free-production entitlement, terms/data handling, transport/schema, evaluation, deadline/quota dan actual provider receipt dibuktikan. Tiada paid evaluator fallback.
+- Tool `triage_case` memulangkan mode/rule version/reasons/missing data/SOP provenance. Jika bukti tidak cukup, abstain; jangan reka confidence 0.96 atau dakwaan latency.
+- Untuk development review, gunakan typed finding/evidence/missing-data rubric atau available JEV review skill; jangan menyebutnya native inference.
+- Semua angka latensi/kos, SDK contoh dan sejarah di bawah ialah **RESEARCH_REFERENCE**, bukan API contract semasa, benchmark ABANGCOLEK, correctness guarantee atau zero-cost entitlement. Semak current official docs sebelum penggunaan SDK. Structured output compliance tidak menjamin keputusan betul.
+
+## Historical research retained
+
+Bahagian asal dikekalkan untuk provenance. Nama model, founder/vendor assertions, code examples dan connected-Workspace claims tidak disahkan semula melalui kemas kini dokumentasi ini. Tiada test, API call atau benchmark baharu dijalankan.
 # JEV: Model "System One" dari TypeSafe AI
 ### Penyelidikan Mendalam, Dokumentasi Lengkap & Cadangan Integrasi ke dalam Projek ABANGCOLEK-OS
 
@@ -172,7 +184,7 @@ Pada masa ini, semua proses logik bergantung kepada LLM tunggal (`gemini-3.1-fla
 * **Masalah**: Membenarkan ejen AI meluluskan bayaran balik (`issue_refund`) semata-mata berasaskan gesaan teks boleh terdedah kepada manipulasi gesaan (*prompt injection*).
 * **Solusi Jev**: Sebelum fungsi `issue_refund` dijalankan, panggil Jev dengan primitif `Noul`:
   - Soalan: *"Does the order delay or dispute satisfy the return policy threshold without indicators of fraud?"*
-  - Jika `probability >= 0.85`, teruskan kelulusan; jika tidak, cipta Google Task untuk semakan manusia.
+  - Cadangan sejarah threshold ini bukan approval rule. Probability tidak memberikan authorization; hasil hanya triage, kemudian domain policy, human approval yang diwajibkan dan durable command receipt.
 
 ### 3. Penilaian Sentimen Google Forms Secara Automatik (*Real-Time CSAT Scoring*)
 * **Masalah**: Respons borang Google Forms perlu dianalisis dengan konsisten tanpa variasi jawapan LLM.
@@ -180,14 +192,14 @@ Pada masa ini, semua proses logik bergantung kepada LLM tunggal (`gemini-3.1-fla
 
 ### 4. Logistics Alert Heatmap & Meeting Trigger (Google Maps + Meet)
 * **Masalah**: Pengesanan krisis logistik pada peta penghantaran memerlukan ambang kepastian (*confidence threshold*).
-* **Solusi Jev**: Menilai data bandar dan kelewatan pengangkut dengan soalan `Choice` tahap ancaman logistik. Jika `severity === 'CRITICAL'` dengan `confidence > 0.90`, ejen secara autonomi mencipta bilik mesyuarat Google Meet untuk bilik perang operasi (*war room*).
+* **Solusi Jev**: Menilai data bandar dan kelewatan pengangkut dengan soalan `Choice` tahap ancaman logistik. Jika `severity === 'CRITICAL'` dengan `confidence > 0.90`, ejen mencadangkan draf tindakan; Google Meet creation memerlukan scoped provider grant, explicit intent dan receipt, bukan confidence sahaja.
 
 ---
 
 ## 8. Ringkasan & Langkah Pelaksanaan Seterusnya
 
 1. **Fail Khidmat (`src/services/jev.ts`)**:
-   Menyediakan fungsi pembalut (*wrapper*) untuk memanggil TypeSafe API dengan sokongan fallback simulasi pintar jika API key belum dikonfigurasi.
+   Menyediakan fungsi pembalut (*wrapper*) untuk memanggil TypeSafe API dengan sokongan fallback LOCAL_RULES berlabel jika native provider tidak tersedia; jangan cipta model probabilities atau provider identity palsu.
 2. **Integrasi Tool Ejen**:
    Menambah fungsi perkakas `jev_system_one_evaluate` ke dalam senarai perkakas Gemini (`gemini.ts`) supaya ejen boleh menjalankan inferens System-1 berkependaman rendah bila-bila masa diperlukan.
 3. **Kad UI Eksekusi**:
