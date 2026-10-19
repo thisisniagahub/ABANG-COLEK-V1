@@ -23,5 +23,5 @@
     }
   ],
   "installCommand": "bun install --frozen-lockfile",
-  "bunVersion": "1.4.x"
+  "bunVersion": "1.x"
 }
