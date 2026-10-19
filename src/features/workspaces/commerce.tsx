@@ -1,6 +1,7 @@
 import { useEffect,useState } from 'react';
 import { ArrowRight,Box,Minus,Package,Plus,ShoppingBag,ShoppingCart,Truck } from 'lucide-react';
 import type { CatalogueProduct,DealerApplication,DealerTerms,InventoryMovement,OrderRecord,PublicProduct,RestockRecord,SessionData,StockLot,VersionedQuote,WorkspaceRole } from '../../../shared/platform-contracts';
+import { formatWhatsAppUrl } from '../../../shared/growth-contracts';
 import { api,useResource } from '../platform/client';
 import { DealerLedger } from './DealerLedger';
 import { amountToSen,dateLabel,money,nextFulfilment,positiveQuantity } from './experience-model';
@@ -10,6 +11,15 @@ import { evidenceFileSizeAllowed } from '../../../shared/upload-limits';
 
 export function Shop({ onNavigate }: { onNavigate: (path: string) => void; }) {
   const resource=useResource<PublicProduct[]>('/catalogue');
+  const [referralCode]=useState<string>(()=>{
+    const ref=new URLSearchParams(window.location.search).get('ref')||new URLSearchParams(window.location.search).get('referralCode')||'';
+    const clean=ref.trim();
+    return /^[a-zA-Z0-9_-]{3,32}$/.test(clean)?clean:'';
+  });
+  const [agentPhone]=useState<string>(()=>{
+    const phone=new URLSearchParams(window.location.search).get('phone')||new URLSearchParams(window.location.search).get('agentPhone')||new URLSearchParams(window.location.search).get('refPhone')||'';
+    return phone.trim();
+  });
   const [cart,setCart]=useState<CustomerCartLine[]>(()=>decodeCustomerCart(new URLSearchParams(window.location.search).get('cart'))??[]);
   const [cartNotice,setCartNotice]=useState('');
   const cartRows=cart.map(line=>({line,product:resource.data?.find(product=>product.id===line.productId)}));
@@ -19,8 +29,10 @@ export function Shop({ onNavigate }: { onNavigate: (path: string) => void; }) {
   useEffect(()=>{
     const params=new URLSearchParams();
     if(cart.length)params.set('cart',encodeCustomerCart(cart));
+    if(referralCode)params.set('ref',referralCode);
+    if(agentPhone)params.set('phone',agentPhone);
     const query=params.toString();window.history.replaceState(window.history.state,'',`${window.location.pathname}${query?`?${query}`:''}`);
-  },[cart]);
+  },[cart,referralCode,agentPhone]);
   useEffect(()=>{
     if(!cart.length||!resource.data||!resource.hasMore||resource.loadingMore||resource.error)return;
     if(cart.some(line=>!resource.data?.some(product=>product.id===line.productId)))void resource.loadMore();
@@ -38,11 +50,31 @@ export function Shop({ onNavigate }: { onNavigate: (path: string) => void; }) {
     if(!resource.data)return;
     try {
       const lines=validateCustomerCart(cart,resource.data);
-      onNavigate(`/flows/order?cart=${encodeURIComponent(encodeCustomerCart(lines))}`);
+      const query=new URLSearchParams({cart:encodeCustomerCart(lines)});
+      if(referralCode)query.set('ref',referralCode);
+      if(agentPhone)query.set('phone',agentPhone);
+      onNavigate(`/flows/order?${query.toString()}`);
     } catch(reason) { setCartNotice(reason instanceof Error?reason.message:'Troli perlu disemak semula.'); }
   }
   return <>
     <Panel title="Pilih colek anda" eyebrow="Published catalogue" action={<Refresh onClick={resource.reload} />}>
+      {referralCode && (
+        <div className="xp-referral-banner" role="status" style={{ background: '#ecfdf5', border: '1px solid #10b981', padding: '10px 16px', borderRadius: '12px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontWeight: 800, color: '#065f46' }}>🏪 Kedai Mini Ejen · Dirujuk oleh:</span>
+            <code style={{ background: '#10b981', color: '#fff', padding: '2px 8px', borderRadius: '6px', fontWeight: 700 }}>{referralCode}</code>
+          </div>
+          <a
+            href={formatWhatsAppUrl(agentPhone, `Salam Ejen ${referralCode}, saya sedang melihat katalog produk di kedai mini anda.`)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="xp-button xp-secondary"
+            style={{ fontSize: '12px', padding: '6px 12px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+          >
+            Hubungi Ejen (WhatsApp)
+          </a>
+        </div>
+      )}
       <ResourceState {...resource} />
       <div className="xp-product-grid">{resource.data?.map(product=>{
         const quantity=cart.find(line=>line.productId===product.id)?.quantity??0;
@@ -69,7 +101,7 @@ export function Shop({ onNavigate }: { onNavigate: (path: string) => void; }) {
         </div>
       </article>)}</div>}
       {cartNotice&&<p className="xp-inline-error" role="alert">{cartNotice}</p>}
-      {cart.length>0&&<div className="xp-cart-checkout"><div><span>Jumlah produk</span><strong>{money(cartTotal)}</strong></div><p className="xp-muted">Jumlah ini belum termasuk penghantaran jika berkenaan. Server mengesahkan semula harga, katalog dan stok pada langkah checkout.</p><button type="button" className="xp-button" disabled={!cartReady||resource.loading} onClick={checkout}>Teruskan ke checkout <ArrowRight size={17}/></button></div>}
+      {cart.length>0&&<div className="xp-cart-checkout"><div><span>Jumlah produk</span><strong>{money(cartTotal)}</strong></div>{referralCode&&<p className="xp-muted">Pesanan dirujuk oleh Ejen: <strong>{referralCode}</strong></p>}<p className="xp-muted">Jumlah ini belum termasuk penghantaran jika berkenaan. Server mengesahkan semula harga, katalog dan stok pada langkah checkout.</p><button type="button" className="xp-button" disabled={!cartReady||resource.loading} onClick={checkout}>Teruskan ke checkout <ArrowRight size={17}/></button>{referralCode&&<a href={formatWhatsAppUrl(agentPhone, `*PESANAN KEDAI MINI EJEN (${referralCode})*\n`+cartRows.map(r=>`• ${r.product?.name??r.line.productId} x ${r.line.quantity} (${money((r.product?.priceSen??0)*r.line.quantity)})`).join('\n')+`\nJumlah: ${money(cartTotal)}\n\nSila sahkan pesanan saya.`)} target="_blank" rel="noopener noreferrer" className="xp-button xp-secondary" style={{marginTop:'8px',textDecoration:'none',display:'inline-flex',alignItems:'center',justifyContent:'center'}}>Pesan Terus ke WhatsApp Ejen</a>}</div>}
     </Panel>
   </>;
 }

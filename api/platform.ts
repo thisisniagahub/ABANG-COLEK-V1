@@ -2,6 +2,9 @@ import { createPlatformApp } from '../server/platform/app';
 import { MAX_PLATFORM_REQUEST_BYTES } from '../shared/upload-limits';
 import { boundedBody } from '../server/platform/evidenceFiles';
 import { DomainError } from '../server/platform/store';
+import { boundHostedResponse } from '../server/platform/hostedResponse';
+import { createGoogleIdentityVerifier } from '../server/platform/googleIdentity';
+import { drainLocalJobs } from '../server/automation/cloudWorker';
 import { createDurableHandler, SupabaseEvidenceStorage, SupabaseSnapshotRepository } from '../server/platform/supabasePersistence';
 
 /** Includes multipart overhead and stays below Vercel's 4.5 MB function limit. */
@@ -36,20 +39,28 @@ export function createProductionHandler(environment: Environment, bodyTimeoutMs 
     if (!handler) {
       try {
         const url = environment.SUPABASE_URL?.trim();
-        const key = environment.SUPABASE_SERVICE_ROLE_KEY?.trim();
+        const key = (environment.SUPABASE_SECRET_KEY ?? environment.SUPABASE_SERVICE_ROLE_KEY)?.trim();
         if (!url || !key) throw new Error('Missing server configuration.');
         const origins = trustedOrigins(environment.PLATFORM_ALLOWED_ORIGINS);
         const workspace = environment.PLATFORM_WORKSPACE_ID ?? 'business';
         const repository = new SupabaseSnapshotRepository(url, key, workspace);
         const evidenceStorage = new SupabaseEvidenceStorage(url, key, workspace);
-        handler = createDurableHandler(repository, databasePath => createPlatformApp({
+        handler = createDurableHandler(repository, databasePath => {
+          const app = createPlatformApp({
           databasePath,
           persistenceMode: 'supabase',
           evidenceStorage,
+          googleIdentityVerifier: createGoogleIdentityVerifier(url,key),
           bootstrapToken: environment.PLATFORM_BOOTSTRAP_TOKEN,
           origin: origins[0],
           allowedOrigins: origins,
-        }));
+          log: entry => console.warn(JSON.stringify({component:'platform_api',...entry})),
+          });
+          return {store:app.store,close:()=>app.close(),fetch:async request=>{
+            drainLocalJobs(app.jobs,{maximumJobs:2,workerId:'vercel-request'});
+            return app.fetch(request);
+          }};
+        });
       } catch {
         return failure(503, 'PLATFORM_CONFIGURATION_UNAVAILABLE', 'Konfigurasi platform belum tersedia. Hubungi pentadbir.');
       }
@@ -65,7 +76,7 @@ export function createProductionHandler(environment: Environment, bodyTimeoutMs 
         return failure(400, 'INVALID_REQUEST_BODY', 'Permintaan tidak dapat dibaca. Cuba semula.');
       }
     }
-    return handler(request);
+    return boundHostedResponse(await handler(request));
   };
 }
 

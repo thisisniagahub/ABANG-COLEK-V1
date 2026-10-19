@@ -1,48 +1,42 @@
-# Indeks dokumentasi ABANGCOLEK-PLATFORM
+# ABANGCOLEK — indeks dokumentasi
 
-**Last reviewed:** 16 Oktober 2026. Gunakan dokumen berlabel **CURRENT_AUTHORITY** untuk keputusan dan operasi. Dokumen bertarikh dalam `reports/` ialah evidence sejarah atau research reference, bukan bukti runtime/provider semasa.
+Diselaraskan: **19 Oktober 2026**. Blueprint ialah kontrak sasaran; source/runtime evidence menentukan apa yang benar-benar tersedia. `implemented`, `verified_local` dan `verified_production` ialah status berasingan. Tiada test/deployment baharu dibuat melalui alignment Markdown ini.
 
 ## Mula di sini
 
-1. [README projek](../README.md) — cara menjalankan, struktur repo dan verification commands.
-2. [Source of Truth](ABANGCOLEK-SOURCE-OF-TRUTH.md) — source, runtime/data authority, roles, feature registry dan boundaries.
-3. [Platform status 16 Oktober](ABANGCOLEK-PLATFORM-STATUS-2026-10-16.md) — snapshot semasa yang menyatukan Social, Plugins, Automation, Founder login dan preview.
-4. [Project alignment backlog](PROJECT-ALIGNMENT-BACKLOG.md) — task IDs, dependencies dan acceptance.
-5. [Handover A–Z](handover/AGENT-HANDOVER-A-Z.md) — startup, recovery, ownership dan rollback.
-6. [Markdown alignment register](handover/MARKDOWN-ALIGNMENT-REGISTER.md) — klasifikasi dokumen dan historical provenance.
+1. [Master Blueprint v2.3](ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) — kontrak bisnes, topology, Copilot dan acceptance.
+2. [Source of Truth](ABANGCOLEK-SOURCE-OF-TRUTH.md) — source/data authority dan baseline berbanding sejarah.
+3. [Prompt implementasi induk dan peringkat](prompts/README.md) — keputusan tetap, skills/tools, preflight, acceptance dan blocker rules.
+4. [README projek](../README.md) — menjalankan dan memeriksa projek sedia ada.
+5. [Platform architecture](ABANGCOLEK-PLATFORM-ARCHITECTURE.md) — domain dan runtime boundaries.
+6. [Struktur repo sasaran](design/repository-structure.md) dan [research GitHub](research/2026-10-19-github-project-structure.md) — pemetaan, dependency rules dan migrasi berperingkat; belum bukti fail dipindahkan.
 
-## AI Agent — current design, bukan claim selesai
+## Operations Copilot
 
-- [AI Agent architecture](AI-AGENT-ARCHITECTURE.md) — role packs, provider abstraction, tool access, CRUD, approval dan mobile-first UX.
-- [AI Agent roadmap](AI-AGENT-ROADMAP.md) — phase, acceptance dan definition of done.
-- [AI provider/free-model register](AI-PROVIDER-FREE-MODELS-REGISTER.md) — catalog provider perlu source URL, quota note dan verification date.
+- [Architecture](AI-AGENT-ARCHITECTURE.md) dan [roadmap](AI-AGENT-ROADMAP.md).
+- [Tujuh pendekatan Generative UI](design/copilot-generative-ui-seven-approaches.md).
+- [10 ciri CopilotKit](design/copilotkit-ten-features.md) — Chat, Streams, Learning, Generative/Declarative UI, HITL, Frontend tools, Shared state, Headless UI, Sub-agents.
+- [32 logical capabilities dan 10 modul](design/copilot-advanced-tools.md) — registry, scope, deterministic calculations dan execution.
+- [Pelan implementasi terperinci](superpowers/plans/2026-10-19-copilotkit-ten-features.md).
+- [Free-only policy](research/2026-10-19-free-model-policy.md) dan [activation register](AI-PROVIDER-FREE-MODELS-REGISTER.md).
+- [JEV](../JEV.md) — current LOCAL_RULES boundaries diikuti research sejarah; bukan native provider proof.
 
-**Peringatan:** AI Agent, provider adapters dan unrestricted app access belum boleh dianggap production-connected sehingga source, tests dan runtime receipt wujud. "Free model" tidak bermaksud unlimited atau tanpa hardware/network cost.
+Tujuh UI approaches—Display Only, Interactive, Tool Rendering, State Rendering, MCP Apps, A2UI, Your Components—diperinci melalui blueprint/design/prompt. Intelligence Streams/Learning kekal gated jika entitlement, kos atau data policy belum tersedia. Model percuma tidak menjadikan servis Intelligence percuma.
 
-## Current operations
+## Operasi, keselamatan dan recovery
 
-- [Platform recovery runbook](runbooks/platform-recovery.md) — pilih source/runtime/data dengan sengaja.
-- [Credential revocation audit](runbooks/credential-revocation-audit.md) — owner action untuk revoke/rotate tanpa meletakkan secret dalam chat atau Git.
-- [Architecture](ABANGCOLEK-PLATFORM-ARCHITECTURE.md) — domain boundaries untuk founder intelligence dan content/outcome records.
-- [Decisions](decisions/) — ADR dan keputusan governance yang mengatasi cadangan historical.
+- [Production release](production-release.md) — Vercel/Bun + authoritative Supabase CAS, evidence dan exact release SHA.
+- [Recovery](runbooks/platform-recovery.md) — local selectors, backup/restore dan cloud reconciliation.
+- [Credential audit](runbooks/credential-revocation-audit.md) — rotate/revoke tanpa nilai rahsia.
+- [Design QA](design-qa.md) — current acceptance dengan evidence sejarah berasingan.
+- [Decisions](decisions/) — ADR; semak status accepted/superseded bersama blueprint semasa.
+- [Handover A–Z](handover/AGENT-HANDOVER-A-Z.md), [capabilities](handover/CAPABILITY-MATRIX.md) dan [Markdown alignment register](handover/MARKDOWN-ALIGNMENT-REGISTER.md).
 
-## Product dan domain references
+## Research dan sejarah
 
-- [Social research](../reports/RESEARCH_PRODUK_SOSIAL_ABANGCOLEK_2026-10-03.md) — product/image evidence dan unknowns.
-- [Image inventory](../reports/INVENTORI_IMEJ_PRODUK_ABANGCOLEK_2026-10-03.md) — foto sebenar berbanding mascot/artwork.
-- [JEV](../JEV.md) — research/reference; runtime semasa kekal LOCAL_RULES sehingga receipt baharu mengesahkan sebaliknya.
-- [Research index](../reports/research/2026-10-02/README.md) — dated research tentang Grok Bot, Hermes, DeepSeek, Muse, social automation dan domain bisnes.
+- [Review chat/blueprint](handoffs/2026-10-19-blueprint-finalization-review.md).
+- [Product social research](../reports/RESEARCH_PRODUK_SOSIAL_ABANGCOLEK_2026-10-03.md) dan [image inventory](../reports/INVENTORI_IMEJ_PRODUK_ABANGCOLEK_2026-10-03.md).
+- [Research index 2 Oktober](../reports/research/2026-10-02/README.md).
+- [Archive](archive/legacy-oct2026/) dan [status 16 Oktober](archive/legacy-oct2026/ABANGCOLEK-PLATFORM-STATUS-2026-10-16.md) ialah dated references; bukan live proof.
 
-## Cara membaca folder
-
-| Folder | Authority | Kegunaan |
-|---|---|---|
-| `docs/` | Current decisions, runbooks, architecture dan plans | Rujukan kerja harian |
-| `docs/decisions/` | Current ADR | Keputusan yang mengikat design/operations |
-| `docs/handover/` | Current handover dan inventory | Continuity, recovery dan provenance |
-| `docs/superpowers/plans/` | Historical atau implementation plan | Jangan anggap sebagai receipt tanpa test/runtime evidence |
-| `reports/` | Historical snapshot/research/audit | Evidence bertarikh; semak authority banner |
-| `var/` | Runtime/log artifacts | Bukan source of truth dan tidak dibaca sebagai product docs |
-| `.kilo/worktrees/` | Worktree/tool artifacts | Di luar scope dokumentasi canonical |
-
-Dokumen lama dikekalkan untuk provenance. Ia tidak dipadam atau ditulis semula hanya untuk menghilangkan sejarah; jika bercanggah, dokumen current authority dan receipt terbaru mengatasi kandungan lama.
+`docs/design` ialah sasaran, `docs/prompts` execution packets, `docs/runbooks` prosedur, `docs/decisions` governance, `reports` evidence/research bertarikh. `var` runtime private; `.agents/skills` dan `skills` ialah instructions, bukan dependencies aplikasi. Jangan mengemas kini vendor skills hanya untuk menukar produk blueprint.

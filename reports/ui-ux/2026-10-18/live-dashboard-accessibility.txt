@@ -1,0 +1,141 @@
+Browser tab: 936086189, Title: "ABANGCOLEK-OS - Retail Operations & Google Workspace Platform", URL: "https://abangcolek-os.vercel.app/".
+0 AXWebArea ABANGCOLEK-OS - Retail Operations & Google Workspace Platform, URL: abangcolek-os.vercel.app/
+	1 container
+		2 button Buka Menu Operasi
+		3 button Abang Colek ABANGCOLEK ™ Enterprise Pusat Perintah Operasi · v4.2
+			4 image Abang Colek
+			5 text ABANGCOLEK
+			6 text ™
+			7 text Enterprise
+			8 text Pusat Perintah Operasi
+			9 text ·
+			10 text v4.2
+		11 button Description: Perintah Suara Global, Help: Tahan untuk Suara (Push-to-Talk) atau Klik untuk Buka
+		12 text 13:38:08 MYT
+		13 button Muat turun lejar operasi format .CSV / .XLS
+		14 button Ask AI, Help: Togol AI Sidecar (Alt+A)
+		15 button Description: Pintasan Papan Kekunci, Help: Pintasan Papan Kekunci (?)
+		16 button HQ Megat Epull HQ Admin
+			17 text HQ
+			18 text Megat Epull
+			19 text HQ Admin
+		20 container
+			21 image Abang Colek
+			22 heading Pusat Perintah Abang Colek, Value: 1
+				23 text Pusat Perintah Abang Colek
+			24 text · Sistem Langsung · Enterprise v4.2
+			25 container
+				26 text Selamat bertugas,  Megat Epull (Founder)  · Gambaran Operasi Bersepadu Semasa
+			27 button Maskot Semakan Aset Imej · 18 Fail, Help: Buka Semakan Aset Imej & Maskot Teliti
+				28 image Maskot
+				29 text Semakan Aset Imej
+				30 text · 18 Fail
+			31 button Hari Ini
+			32 button 7 Hari
+			33 button Operasi
+			34 button Jualan
+			35 button Logistik
+			36 container
+				37 image Maskot Cili Padu
+				38 text HQ Hab Perisikan Jenama & Operasi Abang Colek · 18 Aset Visual Disahkan "Semua sistem logistik kargo bas TBS, pengurusan stok botol kuah colek, dan lejar kewangan beroperasi tanpa gangguan. Aset visual rasmi dan siri maskot telah disahkan untuk kualiti paparan dan ketelusan alfa."
+				39 image Megat Epull
+				40 text Megat Epull (Pengasas Liurleleh House) · Johor Bahru & Hub Pantai Timur
+				41 button Lihat Galeri Aset
+				42 button Pantau Bas TBS
+			43 container
+				44 text JUALAN HARI INI
+				45 text Source
+				46 text RM 4,848.00
+				47 text 20 transaksi disahkan
+			48 container
+				49 text PESANAN PERLU TINDAKAN
+				50 text 5
+				51 text Menunggu Semakan
+				52 text 5 pesanan dalam proses/tertangguh
+			53 container
+				54 text KESIHATAN STOK
+				55 text 995 unit
+				56 text 2
+				57 text  SKU Rendah
+				58 text Pakej Borong Stokis ... baki rendah
+			59 container
+				60 text PENGHANTARAN AKTIF
+				61 text 2
+				62 text 1
+				63 text  Zon 1-Jam
+				64 text Terminal Bersepadu Selatan (TBS), KL → Terminal MBKT Kuala Terengganu
+			65 heading NEEDS ATTENTION (GILIRAN TINDAKAN OPERASI), Value: 2
+				66 text NEEDS ATTENTION (GILIRAN TINDAKAN OPERASI)
+			67 text Tindakan Diperlukan Aduan Penutup Botol Bocor (LEAKAGE) AC-ORD-1023
+			68 container
+				69 text Pelanggan: Pn. Zulaikha • JEV Status:  UNDETERMINED  • Gambar slip kurier belum lengkap
+			70 link Description: WhatsApp, Help: Hubungi WhatsApp Pn. Zulaikha, Value: wa.me/601123456789?text=Salam%20Pn.%20Zulaikha%2C%20HQ%20Abang%20Colek%20ingin%20mengesahkan%20gantian%201%20botol%20kuah%20colek%20berikutan%20aduan%20penutup%20botol%20longgar%20(%23AC-ORD-1023).
+			71 button Perincian
+			72 button Luluskan Gantian
+			73 text Sahkan Bayaran DuitNow QR (RM120.00) AC-ORD-1028
+			74 text Pesanan Ejen: Kedai Buah Pok Nik • Resit slip telah dimuat naik ke Google Drive
+			75 link Description: WhatsApp, Help: Hubungi WhatsApp Kedai Buah Pok Nik, Value: wa.me/60198765432?text=Salam%20Pok%20Nik%2C%20resit%20DuitNow%20RM120.00%20untuk%20pesanan%20AC-ORD-1028%20sedang%20disahkan%20oleh%20HQ%20Abang%20Colek.
+			76 button Sahkan Resit
+			77 text Amaran Stok: Kuah Colek Signature 350ml Baki Kritis
+			78 text Paras inventori di bawah paras selamat 50 botol. Perlukan bancuhan baharu di dapur HQ Johor Bahru
+			79 button Pesan Dapur HQ
+			80 text Permohonan Stokis Baharu (Pantai Timur) EJEN-KT-04
+			81 text Pemohon: Cikgu Razak (Kuala Nerus) • Kuota cadangan: 100 botol/bulan • Borang Forms sedia disemak
+			82 button Luluskan Ejen
+			83 text Sistem Pengawasan Berautoriti ABANGCOLEK-OS
+			84 button Buka Semua Aduan & QC
+			85 heading LOGISTICS RADAR (KARGO BAS TBS), Value: 2
+				86 text LOGISTICS RADAR (KARGO BAS TBS)
+			87 button Buka Peta Penuh
+			88 container
+				89 text TBS → MBKT Kuala Terengganu 1-HOUR ZONE Bas: Sani Express (WXX 4821) ETA 15:30 Pemandu: Pak Mat • Kargo: 3 Kotak (90 botol) untuk Kak Siti
+				90 button ⚡ Notis Amaran Ejen
+				91 button Maklumat
+			92 text TBS → Kota Bharu (Kelantan) Dalam Perjalanan Perdana Express • 2 Kotak (60 botol) ETA 17:45 Larkin JB → TBS Terminal Restok Hab KKKL Express • 10 Kotak Kilang HQ ETA 18:10 Terminal: TBS, MBKT, KB, Larkin
+			93 button Radar Terminal
+			94 text SALES VELOCITY Target: 250
+			95 text 20 pesanan diproses hari ini
+			96 text KESIHATAN INVENTORI 995  Tersedia 995  Elok 100 Ejen 12 Kuarantin KES PELANGGAN & QC JEV System-1 Aduan Botol Bocor (LEAKAGE) 1 kes Semakan Punca Operasi UNDETERMINED
+			97 text SOP Penutup Kedap Induksi aktif bagi semua batch baru
+			98 text EJEN AI & AUTOMASI Gemini 2.5 Flash Peranan AI OS Sidecar & Triage Kawalan Keselamatan Pengesahan Diperlukan
+			99 text Tool Registry & Pengawasan Keputusan Berautoriti Aktif
+			100 heading OPERATING TIMELINE (DIARI AKTIVITI & BUKTI TRANSAKSI RASMI), Value: 2
+				101 text OPERATING TIMELINE (DIARI AKTIVITI & BUKTI TRANSAKSI RASMI)
+			102 text 5  Peristiwa Direkodkan 01:05 PTG  MYT
+			103 heading Bayaran DuitNow Disahkan, Value: 3
+				104 text Bayaran DuitNow Disahkan
+			105 text Order AC-ORD-1024 (RM84.00)
+			106 text oleh  Krew TBS 12:51 PTG  MYT
+			107 heading Aduan Leakage Dibuka, Value: 3
+				108 text Aduan Leakage Dibuka
+			109 text Order AC-ORD-1017 (JEV Triage)
+			110 text oleh  Sistem Aduan 12:37 PTG  MYT
+			111 heading Amaran Zon 1-Jam Kargo Bas, Value: 3
+				112 text Amaran Zon 1-Jam Kargo Bas
+			113 text Kargo Bas TBS → MBKT (Sani Express)
+			114 text oleh  Logistics Radar 12:28 PTG  MYT
+			115 heading Ejen Rasmi Diluluskan, Value: 3
+				116 text Ejen Rasmi Diluluskan
+			117 text Stokis Kuantan (Cikgu Razak)
+			118 text oleh  Megat Epull (Founder) 12:14 PTG  MYT
+			119 heading Klasifikasi JEV Selesai, Value: 3
+				120 text Klasifikasi JEV Selesai
+			121 text Status: REVIEW_REQUIRED (Kilang QC)
+			122 text oleh  JEV System-1 Intelligence & Discovery via 
+			123 link Description: ABANGCOLEK Discovery Engine (v4.2.0), Value: github.com/thisisabangcolek-web/Abang-Colek.git
+		124 container Navigasi Mudah Alih
+			125 container
+				126 button Kokpit
+					127 text Kokpit
+				128 button 5 Pesanan
+					129 text 5
+					130 text Pesanan
+				131 button 2 Bas TBS
+					132 text 2
+					133 text Bas TBS
+				134 button Kedai
+					135 text Kedai
+				136 button Description: Buka Menu Modul Penuh, Help: Buka Menu Modul Penuh (Laci Operasi)
+					137 text Menu
+
+The focused UI element is 0 AXWebArea ABANGCOLEK-OS - Retail Operations & Google Workspace Platform, URL: abangcolek-os.vercel.app/

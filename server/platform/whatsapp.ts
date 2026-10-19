@@ -1,5 +1,5 @@
 import type { FlowIntent } from '../../shared/platform-contracts';
-import { hash, type Principal } from './auth';
+import { Auth, hash, type Principal } from './auth';
 import type { PlatformStore } from './store';
 import { DomainError, fail, fields, id, list, now, object, oneOf, text } from './store';
 import type { Flows } from './flows';
@@ -176,19 +176,48 @@ export class WhatsAppService {
     const maskedRecipient = rawTo.length > 7 ? rawTo.slice(0, 4) + '*****' + rawTo.slice(-3) : '***';
 
     // Idempotency check
-    const attemptId = hash(`${recipientHash}:${templateName}:${safeKey}`);
-    const existing = this.store.get<WhatsAppMessageReceipt>('whatsapp_receipts', attemptId);
+    const auth = new Auth(this.store);
+    auth.founder(auth.revalidate(actor));
+    const parameterInput = object(input.parameters ?? {});
+    if (Object.keys(parameterInput).length > 30) fail('TOO_MANY_PARAMETERS', 400);
+    const parameters = Object.fromEntries(Object.keys(parameterInput).sort().map(key => [text(key, 'Parameter', 100), text(parameterInput[key], 'Parameter value', 2000, 0)]));
+    const inputHash = hash(JSON.stringify({ to: rawTo, templateName, parameters }));
+    const attemptId = hash(`${actor.user.id}:${safeKey}`);
+    const existing = this.store.get<WhatsAppMessageReceipt & { inputHash: string }>('whatsapp_receipts', attemptId);
     if (existing) {
+      if (existing.inputHash !== inputHash) fail('IDEMPOTENCY_CONFLICT', 409);
       return existing;
     }
 
     const controller = new AbortController();
-    const parameters = (input.parameters as Record<string, string>) ?? {};
-
-    const outcome = await this.transport.sendTemplate(rawTo, templateName, parameters, controller.signal);
+    const reserved = { id: attemptId, recipientHash, maskedRecipient, templateName, inputHash, status: 'requested' as const, createdAt: now(), updatedAt: now() };
+    const claimed = this.store.atomic(() => {
+      const concurrent = this.store.get<WhatsAppMessageReceipt & { inputHash: string }>('whatsapp_receipts', attemptId);
+      if (concurrent) {
+        if (concurrent.inputHash !== inputHash) fail('IDEMPOTENCY_CONFLICT', 409);
+        return concurrent;
+      }
+      this.store.save('whatsapp_receipts', reserved);
+      this.store.audit(actor.user.id, 'whatsapp.send.request', attemptId);
+      return null;
+    });
+    if (claimed) return claimed;
+    let outcome: { messageId: string; status: 'accepted' | 'sent' | 'failed' | 'unknown'; reasonCode?: string };
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      auth.founder(auth.revalidate(actor));
+      outcome = await Promise.race([
+        this.transport.sendTemplate(rawTo, templateName, parameters, controller.signal),
+        new Promise<never>((_, reject) => { timer = setTimeout(() => { controller.abort(); reject(new Error('WHATSAPP_TIMEOUT')); }, 10_000); }),
+      ]);
+      try { auth.founder(auth.revalidate(actor)); }
+      catch { outcome = { ...outcome, status: 'unknown', reasonCode: 'AUTHORITY_REVOKED_AFTER_SEND' }; }
+    } catch {
+      outcome = { messageId: '', status: 'unknown', reasonCode: controller.signal.aborted ? 'WHATSAPP_TIMEOUT' : 'WHATSAPP_RESULT_UNVERIFIED' };
+    } finally { controller.abort(); if (timer) clearTimeout(timer); }
 
     const receipt: WhatsAppMessageReceipt = {
-      id: attemptId,
+      ...reserved,
       recipientHash,
       maskedRecipient,
       templateName,

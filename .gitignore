@@ -15,10 +15,13 @@ dist-ssr
 .gmp_cache
 var/
 firebase-applet-config.json
+*.zip
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+!.vscode/mcp.json
+!.vscode/settings.json
 .idea
 .DS_Store
 *.suo
@@ -32,3 +35,8 @@ firebase-applet-config.json
 
 # Generated browser profiles may contain private session material.
 .work/chrome-*-profile/
+.work/
+.manus/
+manus-slides/
+PRODUCT LLH-*/
+Product Photo-*/

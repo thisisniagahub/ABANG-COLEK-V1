@@ -197,6 +197,7 @@ export class Automation {
   }
 
   async publishPostiz(actor: Principal, campaignId: string, raw: unknown, key: unknown): Promise<PublishOutcome> {
+    actor = this.auth.revalidate(actor);
     this.auth.founder(actor);
     const input = object(raw);
     fields(input, ['expectedRevision', 'channel', 'accountId']);
@@ -212,13 +213,23 @@ export class Automation {
     if (campaign.scheduledAt && campaign.scheduledAt > campaign.approvalExpiresAt) {
       fail('APPROVAL_EXPIRES_BEFORE_SCHEDULE', 409);
     }
+    if (campaign.marginResult) {
+      if (!campaign.marginResult.isContributionPass) {
+        fail('INSUFFICIENT_CASH_MARGIN', 409, 'Penerbitan disekat: Sumbangan margin tunai gagal.');
+      }
+      if (!campaign.marginResult.isMarginPctPass && !campaign.founderOverride?.approved) {
+        fail('FOUNDER_OVERRIDE_REQUIRED', 409, 'Penerbitan automatik disekat (FIN-01): Peratusan margin gagal tanpa Founder Override.');
+      }
+    }
 
     const channel = text(input.channel, 'Intended channel', 120);
     const safeKey = text(key, 'Idempotency key', 120, 8);
-    const intentId = hash(`${campaign.id}:${campaign.revision}:${channel}:${safeKey}`);
+    const intentId = hash(`${actor.user.id}:${campaign.id}:${safeKey}`);
+    const inputHash = hash(JSON.stringify({ expectedRevision: input.expectedRevision, channel, accountId: input.accountId ?? null }));
 
-    const existing = this.store.get<PublishOutcome & { campaignId: string }>('postiz_publish_intents', intentId);
+    const existing = this.store.get<PublishOutcome & { campaignId: string; inputHash?: string }>('postiz_publish_intents', intentId);
     if (existing) {
+      if (existing.inputHash !== inputHash) fail('IDEMPOTENCY_CONFLICT', 409);
       if (existing.status === 'unknown') {
         fail('RECONCILIATION_REQUIRED', 409, 'Penerbitan terdahulu tidak diketahui statusnya. Lakukan penyesuaian (reconcile) sebelum cuba semula.');
       }
@@ -240,9 +251,22 @@ export class Automation {
 
     const publisher = new PostizPublisherAdapter(this.options.postiz, this.options.timeoutMs);
     const controller = new AbortController();
-    const outcome = await publisher.publish(intent, controller.signal);
+    const reservation = this.store.atomic(() => {
+      if (this.store.get('postiz_publish_intents', intentId)) fail('RECONCILIATION_REQUIRED', 409);
+      const record = { id: intentId, intentId, campaignId: campaign.id, ownerId: actor.user.id, inputHash, status: 'unknown' as const, evidenceIds: [], reasonCode: 'PUBLISH_IN_PROGRESS_NO_REPLAY', channel, createdAt: now() };
+      this.store.save('postiz_publish_intents', record);
+      this.store.audit(actor.user.id, 'postiz.publish.request', intentId, campaign.revision);
+      return record;
+    });
+    this.auth.founder(this.auth.revalidate(actor));
+    let outcome = await publisher.publish(intent, controller.signal);
+    try {
+      this.auth.founder(this.auth.revalidate(actor));
+      const latest = this.marketing.get(actor, campaignId);
+      if (latest.revision !== campaign.revision || latest.approvalExpiresAt! <= now() || latest.catalogueVersion !== this.commerce.version()) throw new Error('STALE_AUTHORITY');
+    } catch { outcome = { ...outcome, status: 'unknown', reasonCode: 'AUTHORITY_CHANGED_AFTER_PUBLISH' }; }
 
-    const record = { id: intentId, ...outcome, campaignId: campaign.id, channel, createdAt: now() };
+    const record = { ...reservation, ...outcome };
     this.store.save('postiz_publish_intents', record);
     this.store.audit(actor.user.id, 'postiz.publish', intentId, 1);
 
@@ -250,14 +274,17 @@ export class Automation {
   }
 
   async reconcilePostiz(actor: Principal, raw: unknown): Promise<{ status: string; providerRef?: string; reasonCode: string }> {
-    this.auth.founder(actor);
+    this.auth.founder(this.auth.revalidate(actor));
     const input = object(raw);
     fields(input, ['providerRef', 'intentId']);
     const intentId = text(input.intentId, 'Intent ID', 120);
-    const existing = this.store.require<PublishOutcome & { id: string; campaignId: string }>('postiz_publish_intents', intentId);
+    const existing = this.store.require<PublishOutcome & { id: string; campaignId: string; ownerId?: string }>('postiz_publish_intents', intentId);
+    const providerRef = text(input.providerRef, 'Provider reference', 200);
+    if (existing.ownerId !== actor.user.id || existing.providerRef !== providerRef) fail('PUBLISH_REFERENCE_MISMATCH', 409);
 
     const publisher = new PostizPublisherAdapter(this.options.postiz, this.options.timeoutMs);
-    const reconciled = await publisher.reconcile(text(input.providerRef, 'Provider reference', 200), new AbortController().signal);
+    const reconciled = await this.boundedProvider(signal => publisher.reconcile(providerRef, signal));
+    this.auth.founder(this.auth.revalidate(actor));
 
     const updated = { ...existing, id: intentId, status: reconciled.status as PublishOutcome['status'], reasonCode: reconciled.reasonCode };
     this.store.save('postiz_publish_intents', updated);
@@ -266,13 +293,39 @@ export class Automation {
   }
 
   async cancelPostiz(actor: Principal, raw: unknown): Promise<CancelOutcome> {
-    this.auth.founder(actor);
+    this.auth.founder(this.auth.revalidate(actor));
     const input = object(raw);
     fields(input, ['providerRef']);
     const providerRef = text(input.providerRef, 'Provider reference', 200);
+    const intent = this.store.all<PublishOutcome & { id: string; ownerId?: string }>('postiz_publish_intents').find(record => record.ownerId === actor.user.id && record.providerRef === providerRef);
+    if (!intent) fail('PUBLISH_REFERENCE_MISMATCH', 409);
+    const cancellationId = hash(`${actor.user.id}:${intent.id}:${providerRef}`);
+    const reserved = this.store.atomic(() => {
+      const existing = this.store.get<CancelOutcome & { id: string }>('postiz_cancel_intents', cancellationId);
+      if (existing) return existing;
+      this.store.save('postiz_cancel_intents', { id: cancellationId, providerRef, status: 'unknown', evidenceIds: [] });
+      return null;
+    });
+    if (reserved) return reserved;
     const publisher = new PostizPublisherAdapter(this.options.postiz, this.options.timeoutMs);
-    const outcome = await publisher.cancel(providerRef, new AbortController().signal);
+    let outcome: CancelOutcome;
+    try {
+      this.auth.founder(this.auth.revalidate(actor));
+      outcome = await this.boundedProvider(signal => publisher.cancel(providerRef, signal));
+      this.auth.founder(this.auth.revalidate(actor));
+    } catch { outcome = { providerRef, status: 'unknown', evidenceIds: [] }; }
+    this.store.save('postiz_cancel_intents', { ...outcome, id: cancellationId });
     this.store.audit(actor.user.id, 'postiz.cancel', providerRef, 1);
     return outcome;
+  }
+
+  private async boundedProvider<T>(operation: (signal: AbortSignal) => Promise<T>): Promise<T> {
+    const controller = new AbortController();
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      return await Promise.race([operation(controller.signal), new Promise<never>((_, reject) => {
+        timer = setTimeout(() => { controller.abort(); reject(new Error('PROVIDER_TIMEOUT')); }, boundedTimeout(this.options.timeoutMs));
+      })]);
+    } finally { controller.abort(); if (timer) clearTimeout(timer); }
   }
 }

@@ -35,4 +35,30 @@ describe('workspace input boundaries', () => {
     expect(campaignApprovalIssues({ copy: 'Approved wording', assets: [{ rights: '', consent: '' }] })).toHaveLength(1);
     expect(campaignApprovalIssues({ copy: 'Approved wording', assets: [{ rights: 'owned', consent: 'obtained' }] })).toEqual([]);
   });
+  test('campaign approval checks margin guardian results and FIN-01 override', () => {
+    expect(campaignApprovalIssues({
+      copy: 'Approved wording',
+      assets: [{ rights: 'owned', consent: 'obtained' }],
+      marginResult: { isContributionPass: true, isMarginPctPass: true, allowed: true }
+    })).toEqual([]);
+
+    expect(campaignApprovalIssues({
+      copy: 'Approved wording',
+      assets: [{ rights: 'owned', consent: 'obtained' }],
+      marginResult: { isContributionPass: false, isMarginPctPass: true, allowed: false }
+    })).toContain('Sumbangan margin tunai gagal melepasi paras minimum.');
+
+    expect(campaignApprovalIssues({
+      copy: 'Approved wording',
+      assets: [{ rights: 'owned', consent: 'obtained' }],
+      marginResult: { isContributionPass: true, isMarginPctPass: false, allowed: false }
+    })).toContain('Penerbitan disekat (FIN-01): Peratusan margin gagal, memerlukan Founder Override.');
+
+    expect(campaignApprovalIssues({
+      copy: 'Approved wording',
+      assets: [{ rights: 'owned', consent: 'obtained' }],
+      marginResult: { isContributionPass: true, isMarginPctPass: false, allowed: false },
+      founderOverride: { approved: true }
+    })).toEqual([]);
+  });
 });

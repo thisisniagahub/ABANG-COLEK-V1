@@ -1,7 +1,25 @@
-# ABANGCOLEK — skills, plugins, MCP dan fallback
+# ABANGCOLEK — capability matrix: skills, MCP, plugins dan fallbacks
 
-Tarikh semakan: **3 Oktober 2026**. Rujukan: [handover](AGENT-HANDOVER-A-Z.md). Inventory ialah capability sesi/mesin semasa; receiving agent mesti rediscover sebelum call. `DECLARED`, `EXPOSED`, `CLI_PRESENT`, `VERIFIED_SOURCE` dan `CONNECTED` ialah status berbeza. Snapshot handover asal tidak menguji provider execution; refresh21:01MYT membuktikan satu audit AGY CLI berhasil. Business adapters aplikasi kekal dengan status sendiri.
+Diselaraskan: **19 Oktober 2026**. [Blueprint v2.3](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) dan [prompts](../prompts/README.md) menentukan task semasa. Inventori sesi 3–4 Oktober di bawah ialah sejarah, bukan bukti semua MCP/CLI masih installed/authenticated. `DECLARED`, `EXPOSED`, `CLI_PRESENT`, `VERIFIED_SOURCE` dan `CONNECTED` mesti berasingan. Tiada provider/test/deploy diuji melalui alignment ini.
 
+## Current required capabilities
+
+| Task | Instruction/capability | Gate |
+|---|---|---|
+| CopilotKit integration | `.agents/skills/copilotkit/SKILL.md` | Current official docs/source sebelum API code; skill presence bukan SDK install |
+| Wiring verification | `.agents/skills/copilotkit-cli/SKILL.md` | Verify actual runtime/agent IDs; CLI help/docs sebelum command |
+| Supabase/CAS/SQL | Available Supabase + Postgres best-practices skills | Source/project/auth proof; database writes mengikut autorisasi aktif |
+| JEV evidence review | `skills/jev-core/dev-workflow/jev-review/SKILL.md` | Typed evidence review; tiada native provider inference implied |
+| Behavior implementation | Applicable TDD/debugging/review/verification skills | Meaningful failing test sebelum fix, final-source gates selepas edits |
+| UI verification | Available browser/Playwright/Product Design skill | Actual rendered/runtime evidence pada isolated QA |
+| GitHub/Vercel | Callable MCP atau git/gh/Vercel CLI yang tersedia | Account/scope/remote/SHA verified per operation |
+| External providers/MCP Apps | Allowlisted tool + UI resources, auth dan sandbox | First-party read-only MCP App pilot; bukan blanket external access |
+
+Stack: React/Vite/Bun + local SQLite atau hosted Supabase CAS; ADK Python agent berasingan. Tiada semua vendor MCP diwajibkan. Install/configure hanya apabila task/authorization memerlukannya. Missing provider/entitlement/cost gate -> blocked_external; teruskan dependency-independent tasks. Intelligence/paid inference tidak dibenarkan automatik. Tiada default AGY swarm atau external data export.
+
+## Historical capability and execution records
+
+Semua perkataan “verified/current/exposed/complete” dalam sections bertarikh di bawah merujuk receipt asal sahaja. Refresh sebelum digunakan. Historical COMPLETE B01 bukan receipt rotation; E01 bukan native provider benchmark; E02/E03/E04 local fixtures bukan live vendor execution.
 ## 1. Minimum untuk menyambung projek
 
 Terminal read/write + Git + Bun1.4.2 + repository + approved browser untuk UI verification. Tidak perlu setiap MCP/plugin aktif. Core aplikasi ialah Bun/SQLite; third-party research tidak menjadi runtime dependency automatik.
@@ -39,7 +57,7 @@ Terminal read/write + Git + Bun1.4.2 + repository + approved browser untuk UI ve
 
 [Stack profiles](../../skills/STACK_PROFILES.md): Profile A adapted to local React/Vite+Bun+SQLite. Do not apply cloud suggestions as mandatory paid infrastructure. Skills are guidance; README/native benchmarks within skills do not certify the runtime.
 
-## 3. Plugins/MCP actually exposed in this session
+## 3. Historical plugins/MCP exposed in the original session
 
 | Tool surface | Status | Limits/routing |
 |---|---|---|
@@ -59,7 +77,7 @@ Catalog advertised Product Design audit/ideation/image-to-code, Figma, Supabase,
 
 - Existing app UI audit: Product Design audit + live browser; capture evidence then interact. Emons acceptance must include scroll behavior.
 - Figma work only when requested/needed; load mandatory Figma skill before respective tool. No Figma dependency for local implementation.
-- Supabase work requires Supabase skill; database changes require Postgres best-practices. Current runtime SQLite, so do not fabricate Supabase migration.
+- Supabase work requires Supabase skill; database changes require Postgres best-practices. Current local mode SQLite; hosted mode authoritative Supabase CAS. Semak target environment, jangan fabricate normalized migration.
 - New standalone Sites project is outside current app scope unless user requests it.
 - Plugin management discovery only for genuine capability gap; do not install/remove/change accounts to make this matrix look complete.
 - Use project/user Malay-English style. No need to read unrelated private writing samples.
@@ -155,7 +173,7 @@ Current output `var/log/implementation-final` memegang suite/build/coverage/deal
 
 ## 11. Implementation Swarm Wave 3 & Full Project Handover — 4 Oktober 2026
 
-Mengikut arahan komprehensif dalam [AGY Master Implementation Prompt](AGY-MASTER-IMPLEMENTATION-PROMPT.md), kesemua 18 baki work item telah disiapkan dan diverifikasi dengan bukti empirikal 100% lulus.
+Laporan 4 Oktober bagi [AGY Master Implementation Prompt](AGY-MASTER-IMPLEMENTATION-PROMPT.md) merekod 18 item sebagai COMPLETE. Jadual dikekalkan untuk provenance; label asal tidak membuktikan seluruh backlog semasa, native JEV, rotation atau live providers/production selesai. Receipt asal perlu tersedia dan scope diuji semula sebelum digunakan.
 
 | Task ID | Domain / Scope | Status Akhir | Receipt & Bukti Verifikasi |
 |---|---|---|---|
@@ -178,9 +196,8 @@ Mengikut arahan komprehensif dalam [AGY Master Implementation Prompt](AGY-MASTER
 | **F01** | Documentation Baseline & Emons Assets Preserved | COMPLETE | Dokumen baseline, aset asli, scroll-world hero, dan unit tests dikekalkan tanpa regresi. |
 | **F02** | Audited Root Housekeeping to $\le 15$ Core Files | COMPLETE | Root directory dibersihkan daripada 17 fail kepada tepat 14 fail teras. |
 
-### Metrik Verifikasi Akhir
+### Metrik laporan sejarah — bukan gate terkini
 - **Test Suite**: `bun run test:platform` ➔ **260 passed, 0 failed across 59 files** (1,595 assertions).
 - **Static Analysis**: `bun run lint` ➔ **0 errors** (TypeScript app & platform clean).
 - **Production Build**: `bun run build` ➔ **PASS** (15.80s Vite + prerender).
 - **Background Hygiene**: `manage_task(Action='list')` ➔ **0 active background tasks**.
-

@@ -1,3 +1,8 @@
+<!-- blueprint-alignment: 2026-10-19 -->
+> **Penyelarasan autoriti — 19 Oktober 2026.** REKOD SEJARAH / RUJUKAN — pemerhatian, metrik ujian, status deployment, harga/model dan cadangan di bawah terikat kepada tarikh serta skop asal. Ia bukan checklist execution semasa atau pengesahan bahawa dapatan masih benar. Kekalkan bukti asal; revalidate sebelum mendakwa fixed, connected atau production-ready.
+>
+> Rujukan semasa: [Master Growth Blueprint](../../../docs/ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) dan [prompt pelaksanaan canonical](../../../docs/prompts/IMPLEMENT-ABANGCOLEK.md). Blueprint menetapkan 10 kemampuan CopilotKit, 10 modul bisnes, 32 kemampuan tool dan tujuh pendekatan Generative UI sebagai skop sasaran, bukan status siap. Polisi free-only melarang paid fallback; local rules bukan native model, approval bukan execution dan transaksi cloud memerlukan durable CAS commit. Senarai skill, MCP atau plugin bukan bukti ia tersedia atau aktif. Kemas kini dokumentasi ini tidak menjalankan ujian aplikasi, benchmark model, migrasi atau deployment.
+
 # Backend and shared boundary review — 18 October 2026
 
 Scope: inventory of all tracked server/, shared/, api/ files, with direct inspection of authentication, routing, persistence, evidence, transport, commerce, onboarding, migration, jobs and policy boundaries. This is source and focused regression evidence; it does not certify unconfigured external providers or the production Supabase schema.

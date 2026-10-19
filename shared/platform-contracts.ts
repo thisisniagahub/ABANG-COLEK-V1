@@ -1,3 +1,4 @@
+import type { MarginSimulationInput, MarginSimulationResult } from './growth-contracts';
 /** Browser-safe public contracts. Authority is resolved by the server for every request. */
 export type WorkspaceRole = 'customer' | 'staff' | 'founder' | 'developer';
 export type Result<T> = { ok: true; data: T } | { ok: false; code: string; requestId: string; message?: string };
@@ -11,9 +12,10 @@ export type FulfilmentStatus = 'requested' | 'review' | 'accepted' | 'packing' |
 export type PaymentState = 'pending' | 'verified' | 'refund_requested' | 'part_refunded' | 'refunded' | 'rejected';
 export interface PublicProduct { id: string; name: string; description: string; priceSen: number; currency: 'MYR'; packSize: number; publishedVersion: number; availableQuantity: number }
 export interface CatalogueProduct extends PublicProduct { revision: number; status: 'draft' | 'published' | 'retired' }
-export interface OrderInput { lines: { productId: string; quantity: number }[]; catalogueVersion: number; fulfilment: 'pickup' | 'delivery'; contactRef: string; outletId?: string }
+export interface OrderInput { lines: { productId: string; quantity: number }[]; catalogueVersion: number; fulfilment: 'pickup' | 'delivery'; contactRef: string; outletId?: string; referralCode?: string; redeemPoints?: number }
 export interface OrderLine { productId: string; name: string; quantity: number; priceSen: number; publishedVersion: number }
-export interface OrderRecord { id: string; customerId: string; dealerOrgId?: string; lines: OrderLine[]; amountSen: number; fulfilment: 'pickup' | 'delivery'; contactRef: string; outletId: string; fulfilmentStatus: FulfilmentStatus; revision: number; paymentState: PaymentState; paidAmountSen: number; refundAmountSen: number; createdAt: string; updatedAt: string }
+export interface OrderRecord { id: string; customerId: string; dealerOrgId?: string; referralCode?: string; lines: OrderLine[]; amountSen: number; fulfilment: 'pickup' | 'delivery'; contactRef: string; outletId: string; fulfilmentStatus: FulfilmentStatus; revision: number; paymentState: PaymentState; paidAmountSen: number; refundAmountSen: number; createdAt: string; updatedAt: string; trackingTokenHash?: string; trackingTokenExpiresAt?: string; redeemPoints?: number; loyaltyDiscountSen?: number; subtotalSen?: number; loyaltyPointsEarned?: number }
+export interface TrackedOrder { id: string; orderId: string; status: FulfilmentStatus; fulfilmentStatus: FulfilmentStatus; outletId: string; hub: string; fulfilment: 'pickup' | 'delivery'; deliveryType: 'pickup' | 'delivery'; city: string; createdAt: string; updatedAt: string }
 export interface InventoryReservation { id: string; orderId: string; productId: string; ownerId: string; locationId: string; quantity: number; status: 'active' | 'consumed' | 'released' | 'expired'; expiresAt: string; revision: number }
 export interface InventoryMovement { id: string; productId: string; ownerId: string; locationId: string; quantityDelta: number; operationKey: string; sourceEntityId: string; createdAt: string }
 export interface StockLot { id: string; productId: string; ownerId: string; locationId: string; custodyId: string; quantity: number; status: 'available' | 'quarantine' | 'damaged'; batchId?: string; expiryAt?: string; revision: number }
@@ -45,7 +47,7 @@ export interface BusinessSettings { id: string; version: number; approvedPolicie
 export interface DealerTerms { version: number; minimumQuantity: number; packMultiple: number; priceBasisPoints: number; ownership: 'owned' | 'consigned'; returnRules: string; approvedAt: string }
 export interface DealerApplication { id: string; customerId: string; organization: string; description: string; status: 'pending' | 'approved' | 'rejected'; revision: number; dealerOrgId?: string; createdAt: string }
 export interface RestockInput { dealerOrgId: string; lines: { productId: string; quantity: number }[]; priceVersion: number }
-export interface VersionedQuote { id: string; priceVersion: number; catalogueVersion: number; lines: OrderLine[]; totalSen: number; expiresAt: string; dealerOrgId?: string; ownerId: string }
+export interface VersionedQuote { id: string; priceVersion: number; catalogueVersion: number; lines: OrderLine[]; totalSen: number; expiresAt: string; dealerOrgId?: string; ownerId: string; subtotalSen?: number; redeemPoints?: number; discountSen?: number; estimatedPointsEarned?: number }
 export interface ReceiptInput { shipmentId: string; lines: { productId: string; quantity: number }[]; expectedRevision: number }
 export interface StockReceipt { id: string; movementIds: string[]; receivedAt: string }
 export interface RestockRecord { id: string; dealerOrgId: string; customerId: string; quoteId: string; lines: OrderLine[]; totalSen: number; status: 'requested' | 'approved' | 'dispatched' | 'received' | 'rejected'; revision: number; ownership: 'owned' | 'consigned'; receipt?: StockReceipt; receivedQuantities?: Record<string,number>; receipts?: StockReceipt[] }
@@ -53,7 +55,7 @@ export interface EligiblePaidOrder { orderId: string; paidAmountSen: number; pay
 export interface CommissionPolicy { id: string; version: number; eligibleProductIds: string[]; rateBasisPoints: number; approvedAt: string }
 export interface EarnedBenefit { orderId: string; policyVersion: number; amountSen: number; reasonCode: string }
 export interface CampaignAsset { id: string; name: string; evidenceId?: string; rights: string; consent: string }
-export interface CampaignRecord { id: string; title: string; objective: string; copy: string; status: 'draft' | 'approved' | 'planned' | 'exported'; ownerId: string; revision: number; assets: CampaignAsset[]; productIds: string[]; catalogueVersion: number; scheduledAt?: string; approvedBy?: string; approvalExpiresAt?: string; createdAt: string }
+export interface CampaignRecord { id: string; title: string; objective: string; copy: string; status: 'draft' | 'approved' | 'planned' | 'exported'; ownerId: string; revision: number; assets: CampaignAsset[]; productIds: string[]; catalogueVersion: number; scheduledAt?: string; approvedBy?: string; approvalExpiresAt?: string; createdAt: string; marginSimulation?: MarginSimulationInput; marginResult?: MarginSimulationResult; founderOverride?: { approved: boolean; reason: string; approvedBy: string; approvedAt: string; } }
 export interface PublishIntent { id: string; campaignId: string; assetVersion: number; channel: string; accountId?: string; scheduledAt?: string; approvalId: string; approvalExpiresAt: string; grantVersion: number; idempotencyKey: string }
 export interface PublishOutcome { intentId: string; status: 'published' | 'blocked' | 'unknown'; providerRef?: string; evidenceIds: string[]; reasonCode: string }
 export interface CancelOutcome { providerRef: string; status: 'cancelled' | 'cancel_pending' | 'unknown'; evidenceIds: string[] }

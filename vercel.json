@@ -23,5 +23,6 @@
     }
   ],
   "installCommand": "bun install --frozen-lockfile",
-  "bunVersion": "1.4.x"
+  "bunVersion": "1.4.x",
+  "crons": [{"path":"/api/platform-worker","schedule":"0 2 * * *"}]
 }

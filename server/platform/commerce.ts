@@ -1,10 +1,91 @@
-import type { CatalogueProduct, PublicProduct, InventoryMovement, InventoryReservation, OrderInput, OrderLine, OrderRecord, StockLot, PaymentState, FulfilmentStatus, VersionedQuote, EvidenceRecord } from '../../shared/platform-contracts';
+import { randomBytes } from 'node:crypto';
+import type { CatalogueProduct, PublicProduct, InventoryMovement, InventoryReservation, OrderInput, OrderLine, OrderRecord, StockLot, PaymentState, FulfilmentStatus, VersionedQuote, EvidenceRecord, TrackedOrder } from '../../shared/platform-contracts';
+import { REFERRAL_CODE_REGEX } from '../../shared/growth-contracts';
 import { Auth, hash, type Principal } from './auth';
 import { fields, fail, id, integer, list, now, object, oneOf, PlatformStore, strings, text, date } from './store';
+import { Loyalty } from './loyalty';
+
+export function extractCity(contactRef: string, outletId?: string): string {
+  if (!contactRef || typeof contactRef !== 'string') return outletId && outletId !== 'hq' ? outletId : 'Kuala Lumpur';
+  
+  const legacyMatch = contactRef.match(/\[LEGACY_IMPORT\][^-]+-\s*(.+)/i);
+  if (legacyMatch && legacyMatch[1]) {
+    return legacyMatch[1].trim();
+  }
+
+  const knownCities = [
+    'Kuala Lumpur', 'Petaling Jaya', 'Shah Alam', 'Subang Jaya', 'Klang',
+    'Johor Bahru', 'Batu Pahat', 'Muar', 'Kluang', 'Segamat', 'Kulai', 'Pontian', 'Kota Tinggi', 'Mersing', 'Pasir Gudang', 'Skudai', 'Tangkak', 'Yong Peng', 'Iskandar Puteri',
+    'Kota Bharu', 'Kuala Krai', 'Pasir Mas', 'Tumpat', 'Tanah Merah', 'Gua Musang', 'Pasir Puteh', 'Machang', 'Bachok', 'Jeli',
+    'Kuantan', 'Kemaman', 'Dungun', 'Kuala Terengganu', 'Temerloh', 'Bentong', 'Pekan', 'Rompin', 'Raub', 'Jerantut', 'Bera', 'Mentakab', 'Cameron Highlands', 'Marang', 'Besut', 'Chukai', 'Setiu',
+    'Melaka', 'Bandar Melaka', 'Ayer Keroh', 'Alor Gajah', 'Jasin', 'Batu Berendam',
+    'Seremban', 'Port Dickson', 'Nilai', 'Senawang', 'Rembau', 'Tampin', 'Bahau',
+    'Ipoh', 'Taiping', 'Teluk Intan', 'Manjung', 'Sitiawan', 'Lumut', 'Kuala Kangsar', 'Batu Gajah', 'Kampar', 'Tanjung Malim',
+    'George Town', 'Georgetown', 'Butterworth', 'Bukit Mertajam', 'Bayan Lepas', 'Seberang Perai', 'Penang', 'Pulau Pinang',
+    'Alor Setar', 'Sungai Petani', 'Kulim', 'Langkawi', 'Jitra',
+    'Kangar', 'Arau', 'Perlis', 'Kedah', 'Perak', 'Selangor', 'Negeri Sembilan', 'Pahang', 'Terengganu', 'Kelantan', 'Johor', 'Sabah', 'Sarawak',
+    'Kuching', 'Miri', 'Sibu', 'Bintulu', 'Samarahan', 'Sri Aman', 'Sarikei', 'Kapit', 'Limbang',
+    'Kota Kinabalu', 'Sandakan', 'Tawau', 'Lahad Datu', 'Keningau', 'Penampang', 'Inanam', 'Labuan',
+    'Putrajaya', 'Cyberjaya', 'Bangi', 'Kajang', 'Cheras', 'Ampang', 'Rawang', 'Banting', 'Sepang', 'Puchong', 'Seri Kembangan', 'Semenyih', 'Selayang', 'Gombak'
+  ];
+
+  for (const city of knownCities) {
+    const regex = new RegExp(`\\b${city}\\b`, 'i');
+    if (regex.test(contactRef)) {
+      return city;
+    }
+  }
+
+  const postcodeMatch = contactRef.match(/\b\d{5}\s+([A-Za-z\s]{3,30})\b/);
+  if (postcodeMatch && postcodeMatch[1]) {
+    const candidate = postcodeMatch[1].trim();
+    if (!/^(jalan|jln|lorong|tingkat|unit|blok|batu)\b/i.test(candidate)) {
+      return candidate;
+    }
+  }
+
+  const parts = contactRef.split(',').map(s => s.trim()).filter(Boolean);
+  // Never treat parts[0] as city (it is customer name in contact references).
+  // Only search parts[1..n] if there are more than 2 components and skip names/phone/instructions.
+  if (parts.length > 2) {
+    for (let i = parts.length - 1; i >= 1; i--) {
+      const part = parts[i];
+      if (/^[\d+\-\s()]{7,}$/.test(part)) continue;
+      if (/^\d{5}$/.test(part)) continue;
+      if (/^(no|lot|jalan|jln|lorong|tingkat|unit|blok|batu|pt)\b/i.test(part)) continue;
+      if (/\b(bin|binti|bt\b|anak|mr|mrs|ms|cik|puan|encik|dato|datuk)\b/i.test(part)) continue;
+      if (/\b(kaunter|counter|pickup|ambil|tinggal|call|meja|table|box|pos|cod|urgent)\b/i.test(part)) continue;
+      const cleaned = part.replace(/^\d{5}\s+/, '').trim();
+      if (cleaned.length >= 3 && cleaned.length <= 40 && !/^\d+$/.test(cleaned)) {
+        return cleaned;
+      }
+    }
+  }
+
+  if (outletId && outletId !== 'hq') {
+    return outletId;
+  }
+
+  return 'Kuala Lumpur';
+}
+
+export function validateReferralCode(code: unknown): string | undefined {
+  if (code === undefined || code === null || code === '') return undefined;
+  if (typeof code !== 'string') fail('INVALID_REFERRAL_CODE', 400, 'Kod referral mesti teks yang sah.');
+  const trimmed = code.trim();
+  if (!trimmed) return undefined;
+  if (!REFERRAL_CODE_REGEX.test(trimmed)) {
+    fail('INVALID_REFERRAL_CODE', 400, 'Kod referral tidak sah. Gunakan 3-32 aksara alfanumerik, sempang atau garis bawah.');
+  }
+  return trimmed;
+}
 
 export interface PaymentRecord { id:string; orderId:string; amountSen:number; method:'cash'|'bank'; reference:string; state:'confirmed'|'refunded'; confirmedBy:string; createdAt:string }
 export class Commerce {
-  constructor(readonly store:PlatformStore, readonly auth:Auth) {}
+  readonly loyalty: Loyalty;
+  constructor(readonly store:PlatformStore, readonly auth:Auth, loyalty?: Loyalty) {
+    this.loyalty = loyalty ?? new Loyalty(store, auth);
+  }
   idem<T>(actor:Principal,operation:string,key:unknown,input:unknown,command:()=>T): T {
     const safeKey=text(key,'Idempotency key',120,8),inputHash=hash(JSON.stringify(input));
     return this.store.atomic(()=>{
@@ -53,7 +134,8 @@ export class Commerce {
     return result;
   }
   quote(actor:Principal,raw:unknown):VersionedQuote {
-    const input=object(raw);fields(input,['lines','catalogueVersion','fulfilment','contactRef','outletId']);
+    const input=object(raw);fields(input,['lines','catalogueVersion','fulfilment','contactRef','outletId','referralCode','redeemPoints']);
+    if (input.referralCode !== undefined) validateReferralCode(input.referralCode);
     if (integer(input.catalogueVersion)!==this.version()) fail('REQUOTE_REQUIRED',409,'Harga katalog berubah. Semak semula pesanan.');
     const lines:OrderLine[]=this.lines(input.lines).map(line=>{
       const product=this.store.require<CatalogueProduct>('catalogue',line.productId);
@@ -61,22 +143,114 @@ export class Commerce {
       if (line.quantity%product.packSize!==0) fail('INVALID_PACK_QUANTITY',400);
       return {...line,name:product.name,priceSen:product.priceSen,publishedVersion:this.version()};
     });
-    const totalSen=lines.reduce((sum,l)=>sum+l.priceSen*l.quantity,0);integer(totalSen,'Jumlah',1,1_000_000_000);
-    const quote:VersionedQuote={id:id(),priceVersion:this.version(),catalogueVersion:this.version(),lines,totalSen,expiresAt:new Date(Date.now()+15*60_000).toISOString(),ownerId:actor.user.id};
+    const subtotalSen=lines.reduce((sum,l)=>sum+l.priceSen*l.quantity,0);integer(subtotalSen,'Jumlah',1,1_000_000_000);
+    let totalSen = subtotalSen;
+    let redeemPoints = 0;
+    let discountSen = 0;
+    if (input.redeemPoints !== undefined && input.redeemPoints !== null) {
+      redeemPoints = integer(input.redeemPoints, 'Poin ditebus', 0, 10_000_000);
+      if (redeemPoints > 0) {
+        const balance = this.loyalty.getBalance(actor.user.id);
+        if (balance < redeemPoints) {
+          fail('INSUFFICIENT_LOYALTY_POINTS', 400, `Baki mata kesetiaan (${balance}) tidak mencukupi untuk penebusan ${redeemPoints} mata.`);
+        }
+        discountSen = this.loyalty.pointsToDiscountSen(redeemPoints);
+        if (discountSen > subtotalSen) {
+          fail('EXCESSIVE_LOYALTY_REDEMPTION', 400, 'Diskaun poin melebihi jumlah pesanan.');
+        }
+        totalSen = subtotalSen - discountSen;
+      }
+    }
+    const estimatedPointsEarned = this.loyalty.calculatePointsEarned(totalSen);
+    const quote:VersionedQuote={
+      id:id(),
+      priceVersion:this.version(),
+      catalogueVersion:this.version(),
+      lines,
+      subtotalSen,
+      redeemPoints,
+      discountSen,
+      totalSen,
+      estimatedPointsEarned,
+      expiresAt:new Date(Date.now()+15*60_000).toISOString(),
+      ownerId:actor.user.id
+    };
     return this.store.save('quotes',quote);
   }
-  submitOrder(actor:Principal,raw:unknown,key:unknown):OrderRecord {
+  submitOrder(actor:Principal,raw:unknown,key:unknown):OrderRecord & { trackingToken: string } {
     return this.idem(actor,'order.submit',key,raw,()=>{
       this.expireReservations();const input=object(raw);
       const quote=this.quote(actor,raw),outletId=input.outletId===undefined?'hq':text(input.outletId,'Lokasi',120);
       const fulfilment=oneOf(input.fulfilment,['pickup','delivery'] as const),contactRef=text(input.contactRef,'Maklumat penerimaan',2000);
       if (outletId!=='hq'&&!this.store.get<import('../../shared/platform-contracts').BusinessSettings>('settings','business')?.approvedPolicies.locations?.some(l=>l.id===outletId)) fail('LOCATION_UNAVAILABLE',409);
       for (const line of quote.lines) if (this.available(line.productId,'business',outletId)<line.quantity) fail('INSUFFICIENT_STOCK',409,'Stok tidak mencukupi.');
-      const dealerOrgId=actor.memberships.find(m=>m.role==='customer'&&m.dealerOrgId)?.dealerOrgId;const order:OrderRecord={id:id(),customerId:actor.user.id,...(dealerOrgId?{dealerOrgId}:{}),lines:quote.lines,amountSen:quote.totalSen,fulfilment,contactRef,outletId,fulfilmentStatus:'requested',revision:1,paymentState:'pending',paidAmountSen:0,refundAmountSen:0,createdAt:now(),updatedAt:now()};
+      const dealerOrgId=actor.memberships.find(m=>m.role==='customer'&&m.dealerOrgId)?.dealerOrgId;
+      const referralCode=validateReferralCode(input.referralCode);
+      if (dealerOrgId && referralCode && dealerOrgId.toLowerCase() === referralCode.toLowerCase()) {
+        fail('SELF_REFERRAL_DISALLOWED', 400, 'Rujukan sendiri tidak dibenarkan.');
+      }
+      const trackingToken = randomBytes(32).toString('base64url');
+      const trackingTokenHash = hash(trackingToken);
+      const trackingTokenExpiresAt = new Date(Date.now() + 14 * 24 * 3600_000).toISOString();
+      const order:OrderRecord={
+        id:id(),
+        customerId:actor.user.id,
+        ...(dealerOrgId?{dealerOrgId}:{}),
+        ...(referralCode?{referralCode}:{}),
+        subtotalSen: quote.subtotalSen,
+        loyaltyDiscountSen: quote.discountSen,
+        loyaltyPointsEarned: quote.estimatedPointsEarned,
+        ...(quote.redeemPoints ? { redeemPoints: quote.redeemPoints } : {}),
+        lines:quote.lines,
+        amountSen:quote.totalSen,
+        fulfilment,
+        contactRef,
+        outletId,
+        fulfilmentStatus:'requested',
+        revision:1,
+        paymentState:'pending',
+        paidAmountSen:0,
+        refundAmountSen:0,
+        createdAt:now(),
+        updatedAt:now(),
+        trackingTokenHash,
+        trackingTokenExpiresAt
+      };
       this.store.save('orders',order);
       for (const line of order.lines) this.store.save<InventoryReservation>('reservations',{id:id(),orderId:order.id,productId:line.productId,ownerId:'business',locationId:outletId,quantity:line.quantity,status:'active',expiresAt:new Date(Date.now()+24*3600_000).toISOString(),revision:1});
-      this.store.audit(actor.user.id,'order.submit',order.id);return order;
+      if (quote.redeemPoints && quote.redeemPoints > 0) {
+        this.loyalty.redeemPoints(actor.user.id, quote.redeemPoints, order.id, `Penebusan ${quote.redeemPoints} mata bagi pesanan #${order.id}`);
+      }
+      this.store.audit(actor.user.id,'order.submit',order.id);
+      return {...order, trackingToken};
     });
+  }
+  trackOrder(token: unknown): TrackedOrder {
+    if (typeof token !== 'string' || !token.trim() || token.includes('\0') || token.length > 2048) {
+      fail('INVALID_TOKEN', 400, 'Token penjejakan diperlukan.');
+    }
+    const tokenHash = hash(token.trim());
+    const order = this.store.all<OrderRecord>('orders').find(o => o.trackingTokenHash === tokenHash);
+    if (!order) {
+      fail('ORDER_NOT_FOUND', 404, 'Pesanan tidak ditemui atau token penjejakan tidak sah.');
+    }
+    if (order.trackingTokenExpiresAt && order.trackingTokenExpiresAt <= now()) {
+      fail('TRACKING_TOKEN_EXPIRED', 410, 'Token penjejakan telah luput.');
+    }
+    const city = extractCity(order.contactRef, order.outletId);
+    return {
+      id: order.id,
+      orderId: order.id,
+      status: order.fulfilmentStatus,
+      fulfilmentStatus: order.fulfilmentStatus,
+      outletId: order.outletId,
+      hub: order.outletId,
+      fulfilment: order.fulfilment,
+      deliveryType: order.fulfilment,
+      city,
+      createdAt: order.createdAt,
+      updatedAt: order.updatedAt,
+    };
   }
   order(actor:Principal,orderId:string) { const order=this.store.require<OrderRecord>('orders',orderId);this.auth.own(actor,order.customerId,order.outletId);return order; }
   orders(actor:Principal) { return this.store.all<OrderRecord>('orders').filter(o=>o.customerId===actor.user.id||this.auth.has(actor,'founder')||actor.memberships.some(m=>m.role==='staff'&&m.outletIds.includes(o.outletId))); }
@@ -116,7 +290,10 @@ export class Commerce {
     if(next==='accepted'){const reservations=this.store.all<InventoryReservation>('reservations').filter(r=>r.orderId===order.id);if(reservations.length!==order.lines.length||reservations.some(r=>r.status!=='active'||r.expiresAt<=now()))fail('RESERVATION_EXPIRED',409);for(const reservation of reservations)this.store.save('reservations',{...reservation,expiresAt:'9999-12-31T23:59:59.999Z',revision:reservation.revision+1});}
     if (['packed','dispatched','received'].includes(next)) this.evidence(actor,input.evidenceIds,order.id,1);
     if (next==='packed') this.consume(order);
-    if (next==='cancelled') for (const reservation of this.store.all<InventoryReservation>('reservations').filter(r=>r.orderId===order.id&&r.status==='active')) this.store.save('reservations',{...reservation,status:'released' as const,revision:reservation.revision+1});
+    if (next==='cancelled') {
+      for (const reservation of this.store.all<InventoryReservation>('reservations').filter(r=>r.orderId===order.id&&r.status==='active')) this.store.save('reservations',{...reservation,status:'released' as const,revision:reservation.revision+1});
+      this.loyalty.reversePointsForOrder(order.customerId, order.id, 'Pembatalan pesanan');
+    }
     const updated={...order,fulfilmentStatus:next,revision:order.revision+1,updatedAt:now()};this.store.save('orders',updated);this.store.audit(actor.user.id,`order.${next}`,order.id,updated.revision);return updated;
   }
   payment(actor:Principal,orderId:string,raw:unknown,key:unknown) {
@@ -133,12 +310,16 @@ export class Commerce {
         if (action==='reject') { if (paymentState!=='pending') fail('INVALID_TRANSITION',409);paymentState='rejected'; }
         if (action==='verify') {
           if (!['pending','rejected'].includes(paymentState)) fail('INVALID_TRANSITION',409);
-          const amount=integer(input.amountSen,'Amaun diterima',1,1_000_000_000);if (amount!==order.amountSen) fail('PAYMENT_AMOUNT_MISMATCH',409);
+          const amount=integer(input.amountSen,'Amaun diterima',0,1_000_000_000);if (amount!==order.amountSen) fail('PAYMENT_AMOUNT_MISMATCH',409);
           const reference=text(input.reference,'Rujukan bank/terimaan tunai yang diperiksa',200);
           this.evidence(actor,input.evidenceIds,orderId,1);
           if (this.store.all<PaymentRecord>('payments').some(p=>p.reference===reference)||this.store.all<{reference:string}>('dealer_settlement_payments').some(p=>p.reference===reference)) fail('PAYMENT_REFERENCE_USED',409);
           const method=oneOf(input.method,['cash','bank'] as const);
           this.store.save<PaymentRecord>('payments',{id:id(),orderId,amountSen:amount,method,reference,state:'confirmed',confirmedBy:actor.user.id,createdAt:now()});paidAmountSen=amount;paymentState='verified';
+          const pointsEarned = this.loyalty.calculatePointsEarned(amount);
+          if (pointsEarned > 0) {
+            this.loyalty.awardPoints(order.customerId, pointsEarned, orderId, `Ganjaran ${pointsEarned} mata kesetiaan untuk pesanan #${orderId}`);
+          }
         }
         if (action==='refund') {
           if (!['refund_requested','part_refunded','verified'].includes(paymentState)) fail('INVALID_TRANSITION',409);
@@ -146,6 +327,48 @@ export class Commerce {
           this.evidence(actor,input.evidenceIds,orderId,1);
           if (this.store.all<PaymentRecord>('payments').some(p=>p.reference===reference)||this.store.all<{reference:string}>('dealer_settlement_payments').some(p=>p.reference===reference)) fail('PAYMENT_REFERENCE_USED',409);
           this.store.save<PaymentRecord>('payments',{id:id(),orderId,amountSen:amount,method:oneOf(input.method,['cash','bank'] as const),reference,state:'refunded',confirmedBy:actor.user.id,createdAt:now()});refundAmountSen+=amount;paymentState=refundAmountSen===paidAmountSen?'refunded':'part_refunded';
+          if (refundAmountSen === paidAmountSen) {
+            this.loyalty.reversePointsForOrder(order.customerId, orderId, `Pemulangan wang pesanan: ${reference}`);
+          }
+          const commissions = this.store.all<import('../../shared/dealer-contracts').CommissionTransaction>('commission_ledger').filter(c => c.orderId === orderId);
+          for (const comm of commissions) {
+            if (comm.status === 'paid') {
+              const existingContras = commissions.filter(c => c.status === 'reversed' && c.amountSen < 0);
+              const alreadyContradSen = existingContras.reduce((sum, c) => sum + Math.abs(c.amountSen), 0);
+              const policy = this.store.all<import('../../shared/platform-contracts').CommissionPolicy>('commission_policies').find(p => p.version === comm.policyVersion);
+              const rateBasisPoints = policy?.rateBasisPoints ?? 1000;
+              const maxContra = comm.amountSen - alreadyContradSen;
+              if (maxContra > 0) {
+                const contraSen = Math.min(maxContra, Number(BigInt(amount) * BigInt(rateBasisPoints) / 10000n) || (refundAmountSen === paidAmountSen ? maxContra : 0));
+                if (contraSen > 0) {
+                  const contra: import('../../shared/dealer-contracts').CommissionTransaction = {
+                    id: id(),
+                    orderId: comm.orderId,
+                    dealerOrgId: comm.dealerOrgId,
+                    agentUserId: comm.agentUserId,
+                    amountSen: -contraSen,
+                    status: 'reversed',
+                    eligibleAt: comm.eligibleAt,
+                    reversedAt: now(),
+                    contraReason: `Pelarasan kontra pemulangan wang selepas bayaran komisen (PAY-03): ${reference}`,
+                    contraOfId: comm.id,
+                    policyVersion: comm.policyVersion,
+                    createdAt: now(),
+                  };
+                  this.store.save('commission_ledger', contra);
+                  this.store.audit(actor.user.id, 'commission.contra_adjustment', contra.id, 1);
+                }
+              }
+            } else if (['pending', 'eligible', 'approved'].includes(comm.status) && refundAmountSen === paidAmountSen) {
+              this.store.save('commission_ledger', {
+                ...comm,
+                status: 'reversed',
+                reversedAt: now(),
+                contraReason: `Pembatalan/refund pesanan sebelum komisen dibayar: ${reference}`,
+              });
+              this.store.audit(actor.user.id, 'commission.reversed', comm.id, 1);
+            }
+          }
         }
       }
       const updated={...order,paymentState,paidAmountSen,refundAmountSen,revision:order.revision+1,updatedAt:now()};this.store.save('orders',updated);this.store.audit(actor.user.id,`payment.${action}`,orderId,updated.revision);return updated;

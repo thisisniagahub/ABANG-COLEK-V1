@@ -196,7 +196,7 @@
   white-space:nowrap;
   text-transform:capitalize
 }
-.xp-status-verified,.xp-status-done,.xp-status-available,.xp-status-ready,.xp-status-approved,.xp-status-received,.xp-status-released,.xp-status-confirmed{
+.xp-status-verified,.xp-status-done,.xp-status-available,.xp-status-ready,.xp-status-approved,.xp-status-received,.xp-status-released,.xp-status-confirmed,.xp-status-lulus{
   color:var(--ui-success-text);
   background:color-mix(in srgb,var(--ui-success-text) 9%,var(--ui-surface));
   border-color:color-mix(in srgb,var(--ui-success-text) 22%,var(--ui-border))
@@ -206,7 +206,7 @@
   background:color-mix(in srgb,var(--ui-warning-text) 8%,var(--ui-surface));
   border-color:color-mix(in srgb,var(--ui-warning-text) 24%,var(--ui-border))
 }
-.xp-status-rejected,.xp-status-failed,.xp-status-damaged,.xp-status-revoked{
+.xp-status-rejected,.xp-status-failed,.xp-status-damaged,.xp-status-revoked,.xp-status-gagal{
   color:var(--ui-danger-text);
   background:color-mix(in srgb,var(--ui-danger-text) 8%,var(--ui-surface))
 }

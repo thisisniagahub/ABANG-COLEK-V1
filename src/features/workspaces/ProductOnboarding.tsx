@@ -4,14 +4,23 @@ import { BRAND_ASSETS } from '../brand/brand-assets';
 import { api, useResource } from '../platform/client';
 import type {
   ProductOnboardingDraft,
+  LocationOnboardingDraft,
+  DealerTermsDraft,
   OnboardingValidationResult,
   OnboardingCommitResult,
 } from '../../../shared/onboarding-contracts';
-import type { CatalogueProduct } from '../../../shared/platform-contracts';
+import type { BusinessSettings, CatalogueProduct } from '../../../shared/platform-contracts';
 import { Panel, Refresh, ResourceState, Status } from './ui';
 
 export function ProductOnboarding({ onNavigate, onChanged }: { onNavigate?: (path: string) => void; onChanged?: () => void }) {
   const catalogue = useResource<CatalogueProduct[]>('/catalogue/admin');
+  const settings = useResource<BusinessSettings>('/settings');
+  const [includeProducts, setIncludeProducts] = useState(true);
+  const [includeLocation, setIncludeLocation] = useState(false);
+  const [includeTerms, setIncludeTerms] = useState(false);
+  const [location, setLocation] = useState<LocationOnboardingDraft>({ id: '', name: '', address: '', hours: '', verifiedAt: '', approved: false });
+  const [terms, setTerms] = useState<DealerTermsDraft>({ minimumQuantity: 1, packMultiple: 1, priceBasisPoints: 10000, ownership: 'owned', returnRules: '', approved: false });
+  const [settingsConflict, setSettingsConflict] = useState(false);
   const [draftProducts, setDraftProducts] = useState<ProductOnboardingDraft[]>([
     {
       sku: 'COLEK-500G-ORI',
@@ -31,26 +40,28 @@ export function ProductOnboarding({ onNavigate, onChanged }: { onNavigate?: (pat
   const [busy, setBusy] = useState(false);
   const [commitMessage, setCommitMessage] = useState('');
   const [error, setError] = useState('');
+  const packet = () => ({ products: includeProducts ? draftProducts : [], ...(includeLocation ? { locations: [location] } : {}), ...(includeTerms ? { dealerTerms: terms } : {}), expectedSettingsVersion: settings.data?.version });
 
   // Run validation on draftProducts change
   useEffect(() => {
     let active = true;
+    setValidation(null);
     async function runValidation() {
       try {
         const result = await api<OnboardingValidationResult>('/onboarding/validate', {
           method: 'POST',
-          body: JSON.stringify({ products: draftProducts }),
+          body: JSON.stringify(packet()),
         });
-        if (active) setValidation(result);
+        if (active) { setValidation(result); setError(''); }
       } catch (err) {
-        if (active) setError(err instanceof Error ? err.message : 'Ralat validasi');
+        if (active) { setValidation(null); setError(err instanceof Error ? err.message : 'Ralat validasi'); }
       }
     }
     runValidation();
     return () => {
       active = false;
     };
-  }, [draftProducts]);
+  }, [draftProducts, includeProducts, includeLocation, includeTerms, location, terms, settings.data?.version]);
 
   const toggleOwnerApproval = (index: number) => {
     setDraftProducts(prev =>
@@ -98,20 +109,23 @@ export function ProductOnboarding({ onNavigate, onChanged }: { onNavigate?: (pat
   };
 
   const handleCommit = async () => {
+    if ((includeLocation || includeTerms) && (!settings.data || settingsConflict)) return;
     setBusy(true);
     setCommitMessage('');
     setError('');
     try {
       const result = await api<OnboardingCommitResult>('/onboarding/commit', {
         method: 'POST',
-        body: JSON.stringify({ products: draftProducts }),
+        body: JSON.stringify(packet()),
       });
       setCommitMessage(
-        `Onboarding Berjaya: ${result.committedProductsCount} produk disimpan, ${result.publishedProductsCount} diterbitkan (Katalog v${result.catalogueVersion}).`
+        `Onboarding Berjaya: ${result.committedProductsCount} produk disimpan, ${result.publishedProductsCount} diterbitkan, ${result.locationsCount} lokasi diluluskan (Katalog v${result.catalogueVersion}).`
       );
       catalogue.reload();
+      settings.reload();
       onChanged?.();
     } catch (err) {
+      if (err instanceof Error && 'code' in err && err.code === 'REVISION_CONFLICT') setSettingsConflict(true);
       setError(err instanceof Error ? err.message : 'Commit onboarding gagal');
     } finally {
       setBusy(false);
@@ -164,6 +178,37 @@ export function ProductOnboarding({ onNavigate, onChanged }: { onNavigate?: (pat
       </Panel>
 
       {/* Product Onboarding & Approval Review */}
+      <Panel title="Lokasi & Terma Pengedar" eyebrow="Kelulusan polisi pemilik">
+        <ResourceState {...settings} />
+        {settings.data && <p>Versi tetapan semasa: {settings.data.version}. {settings.data.approvedPolicies.locations?.length ?? 0} lokasi diluluskan.</p>}
+        <p>Isi maklumat sebenar dan semak sebelum meluluskan. Produk dan polisi disimpan bersama. Nyahpilih draf produk untuk menyimpan polisi sahaja.</p>
+        {onNavigate && <button className="xp-button xp-secondary" onClick={() => onNavigate('/founder/settings')}>Semak tetapan perniagaan</button>}
+        <label><input type="checkbox" checked={includeProducts} onChange={e => setIncludeProducts(e.target.checked)} /> Sertakan draf produk dalam simpanan ini</label>
+        <label><input type="checkbox" checked={includeLocation} onChange={e => setIncludeLocation(e.target.checked)} /> Sertakan lokasi</label>
+        <fieldset disabled={busy || !includeLocation}>
+          <legend>Lokasi perniagaan</legend>
+          <label>ID lokasi<input value={location.id} maxLength={120} onChange={e => setLocation({ ...location, id: e.target.value, approved: false })} /></label>
+          <label>Nama lokasi<input value={location.name} maxLength={200} onChange={e => setLocation({ ...location, name: e.target.value, approved: false })} /></label>
+          <label>Alamat lokasi<textarea value={location.address} maxLength={2000} onChange={e => setLocation({ ...location, address: e.target.value, approved: false })} /></label>
+          <label>Waktu operasi lokasi<input value={location.hours} maxLength={1000} onChange={e => setLocation({ ...location, hours: e.target.value, approved: false })} /></label>
+          <label>Tarikh pengesahan lokasi<input type="date" value={location.verifiedAt} onChange={e => setLocation({ ...location, verifiedAt: e.target.value, approved: false })} /></label>
+          <label><input type="checkbox" checked={location.approved === true} onChange={e => setLocation({ ...location, approved: e.target.checked })} /> Luluskan lokasi ini</label>
+        </fieldset>
+        <label><input type="checkbox" checked={includeTerms} onChange={e => setIncludeTerms(e.target.checked)} /> Sertakan terma pengedar</label>
+        <fieldset disabled={busy || !includeTerms}>
+          <legend>Terma pengedar</legend>
+          <p>Nilai angka awal ialah draf. 10000 basis points bermaksud harga penuh (100%).</p>
+          <label>Kuantiti minimum pengedar<input type="number" min="1" max="1000000" value={terms.minimumQuantity} onChange={e => setTerms({ ...terms, minimumQuantity: Number(e.target.value), approved: false })} /></label>
+          <label>Gandaan pek pengedar<input type="number" min="1" max="10000" value={terms.packMultiple} onChange={e => setTerms({ ...terms, packMultiple: Number(e.target.value), approved: false })} /></label>
+          <label>Harga pengedar (basis points)<input type="number" min="1" max="10000" value={terms.priceBasisPoints} onChange={e => setTerms({ ...terms, priceBasisPoints: Number(e.target.value), approved: false })} /></label>
+          <label>Pemilikan stok pengedar<select value={terms.ownership} onChange={e => setTerms({ ...terms, ownership: e.target.value as DealerTermsDraft['ownership'], approved: false })}><option value="owned">Milik pengedar</option><option value="consigned">Konsainan</option></select></label>
+          <label>Peraturan pemulangan pengedar<textarea value={terms.returnRules} maxLength={6000} onChange={e => setTerms({ ...terms, returnRules: e.target.value, approved: false })} /></label>
+          <label><input type="checkbox" checked={terms.approved} onChange={e => setTerms({ ...terms, approved: e.target.checked })} /> Luluskan terma pengedar ini</label>
+        </fieldset>
+        {settingsConflict && <p role="alert">Tetapan berubah. Muat semula dan semak polisi sebelum meluluskan semula.</p>}
+        <button className="xp-button xp-secondary" disabled={busy || settings.loading} onClick={() => { settings.reload(); setSettingsConflict(false); setLocation({ ...location, approved: false }); setTerms({ ...terms, approved: false }); }}>Muat semula tetapan & semak kelulusan</button>
+      </Panel>
+
       <Panel
         title="Draf Produk & Semakan Kelulusan Pemilik"
         eyebrow="B05 + D07 Onboarding Engine"
@@ -288,7 +333,7 @@ export function ProductOnboarding({ onNavigate, onChanged }: { onNavigate?: (pat
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
               <button
                 className="xp-button"
-                disabled={!validation.canCommit || busy}
+                disabled={!validation.canCommit || busy || ((includeLocation || includeTerms) && (!settings.data || settingsConflict))}
                 onClick={handleCommit}
               >
                 {busy ? 'Menyimpan...' : 'Sahkan & Simpan Ke Pangkalan Data'}
@@ -310,7 +355,7 @@ export function ProductOnboarding({ onNavigate, onChanged }: { onNavigate?: (pat
       </Panel>
 
       {/* Live Catalogue Snapshot */}
-      <Panel title="Katalog Pengeluaran Semasa" eyebrow="Authoritative SQLite Live State" action={<Refresh onClick={catalogue.reload} />}>
+      <Panel title="Katalog Pengeluaran Semasa" eyebrow="Katalog rasmi semasa" action={<Refresh onClick={catalogue.reload} />}>
         <ResourceState {...catalogue} />
         {catalogue.data && catalogue.data.length > 0 ? (
           <div className="xp-record-list">
@@ -328,7 +373,7 @@ export function ProductOnboarding({ onNavigate, onChanged }: { onNavigate?: (pat
           </div>
         ) : (
           <p className="xp-muted" style={{ padding: '1rem 0' }}>
-            Pangkalan data rasmi kini mempunyai 0 produk diterbitkan. Gunakan draf di atas untuk onboarding.
+            {catalogue.loading ? 'Memuatkan katalog rasmi...' : catalogue.error ? 'Katalog belum dapat disahkan. Semak ralat sambungan di atas.' : 'Tiada rekod katalog dimuatkan. Gunakan draf di atas untuk onboarding.'}
           </p>
         )}
       </Panel>

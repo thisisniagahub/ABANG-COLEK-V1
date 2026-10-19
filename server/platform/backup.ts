@@ -4,7 +4,7 @@ import {dirname,join,relative,resolve,isAbsolute} from 'node:path';
 import type {EvidenceRecord} from '../../shared/platform-contracts';
 import {PlatformStore} from './store';
 
-interface BackupManifest {version:1;createdAt:string;recordCount:number;files:{name:string;sha256:string;size:number}[]}
+export interface BackupManifest {version:1;createdAt:string;recordCount:number;files:{name:string;sha256:string;size:number}[]}
 const digest=(bytes:Uint8Array)=>new Bun.CryptoHasher('sha256').update(bytes).digest('hex');
 function safeNewDirectory(input:string){
  const target=resolve(input);if(existsSync(target))throw new Error('Destination already exists; an active database is never overwritten.');

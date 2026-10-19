@@ -76,7 +76,8 @@ export class LegacyMigrationReconciler {
     const candidateOrderIds = candidateOrders.map(o => o.id);
 
     const hash = createHash('sha256');
-    hash.update(JSON.stringify(candidateOrderIds));
+    // Fingerprint source content, not only IDs: edits to amounts/status must change provenance.
+    hash.update(JSON.stringify(records));
     const sourceChecksum = hash.digest('hex');
 
     return {

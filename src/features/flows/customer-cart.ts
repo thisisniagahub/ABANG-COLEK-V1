@@ -60,15 +60,102 @@ export function validateCustomerCart(lines: CustomerCartLine[], products: Public
   return normalized;
 }
 
-export function customerCartOrderAnswers(lines: CustomerCartLine[], products: PublicProduct[]): Record<string, unknown> {
+import {
+  LOYALTY_EARN_RATE_SEN_PER_POINT,
+  LOYALTY_REDEMPTION_POINTS_PER_RM,
+  LOYALTY_POINT_VALUE_SEN,
+  calculateLoyaltyPointsEarned,
+  loyaltyPointsToDiscountSen,
+  discountSenToLoyaltyPoints,
+} from '../../../shared/growth-contracts';
+
+export {
+  LOYALTY_EARN_RATE_SEN_PER_POINT,
+  LOYALTY_REDEMPTION_POINTS_PER_RM,
+  LOYALTY_POINT_VALUE_SEN,
+  calculateLoyaltyPointsEarned,
+  loyaltyPointsToDiscountSen,
+  discountSenToLoyaltyPoints,
+};
+
+export interface CustomerCartTotals {
+  subtotalSen: number;
+  redeemPoints: number;
+  discountSen: number;
+  totalSen: number;
+  estimatedPointsEarned: number;
+}
+
+export function calculateCustomerCartTotals(
+  lines: CustomerCartLine[],
+  products: PublicProduct[],
+  redeemPoints = 0,
+  userLoyaltyBalance?: number
+): CustomerCartTotals {
+  const validated = validateCustomerCart(lines, products);
+  const subtotalSen = validated.reduce((sum, line) => {
+    const product = products.find((item) => item.id === line.productId)!;
+    return sum + product.priceSen * line.quantity;
+  }, 0);
+
+  if (!Number.isSafeInteger(redeemPoints) || redeemPoints < 0) {
+    throw new Error('Poin penebusan mesti integer positif atau sifar.');
+  }
+
+  if (userLoyaltyBalance !== undefined) {
+    if (!Number.isSafeInteger(userLoyaltyBalance) || userLoyaltyBalance < 0) {
+      throw new Error('Baki poin pengguna tidak sah.');
+    }
+    if (redeemPoints > userLoyaltyBalance) {
+      throw new Error('Baki poin kesetiaan tidak mencukupi.');
+    }
+  }
+
+  const discountSen = loyaltyPointsToDiscountSen(redeemPoints);
+  if (discountSen > subtotalSen) {
+    throw new Error('Diskaun poin melebihi jumlah pesanan.');
+  }
+
+  const totalSen = Math.max(0, subtotalSen - discountSen);
+  const estimatedPointsEarned = calculateLoyaltyPointsEarned(totalSen);
+
+  return {
+    subtotalSen,
+    redeemPoints,
+    discountSen,
+    totalSen,
+    estimatedPointsEarned,
+  };
+}
+
+export function customerCartOrderAnswers(
+  lines: CustomerCartLine[],
+  products: PublicProduct[],
+  referralCode?: string,
+  redeemPoints?: number,
+  userLoyaltyBalance?: number
+): Record<string, unknown> {
   const validated = validateCustomerCart(lines, products);
   const selected = validated.map((line) => products.find((product) => product.id === line.productId)!);
   const versions = new Set(selected.map((product) => product.publishedVersion));
   if (versions.size !== 1) throw new Error('Versi katalog berubah. Semak semula troli sebelum checkout.');
-  return {
+  const answers: Record<string, unknown> = {
     lines: validated,
     catalogueVersion: selected[0].publishedVersion,
   };
+  if (referralCode && typeof referralCode === 'string') {
+    const clean = referralCode.trim();
+    if (clean && /^[a-zA-Z0-9_-]{3,32}$/.test(clean)) {
+      answers.referralCode = clean;
+    }
+  }
+  if (redeemPoints !== undefined && redeemPoints !== null) {
+    const totals = calculateCustomerCartTotals(lines, products, redeemPoints, userLoyaltyBalance);
+    if (totals.redeemPoints > 0) {
+      answers.redeemPoints = totals.redeemPoints;
+    }
+  }
+  return answers;
 }
 
 /** A stale cart must always be reducible after stock or pack changes. Zero removes the line. */

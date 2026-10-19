@@ -1,53 +1,63 @@
-# ABANGCOLEK AI Agent — implementation roadmap
+# ABANGCOLEK — Operations Copilot roadmap
 
-**Status:** PROPOSED / NOT IMPLEMENTED YET
-**Last reviewed:** 16 Oktober 2026.
+Diselaraskan: **19 Oktober 2026**. Status: **PLANNED**. [Blueprint v2.3](ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md), [architecture](AI-AGENT-ARCHITECTURE.md), [pelan terperinci](superpowers/plans/2026-10-19-copilotkit-ten-features.md) dan [prompts](prompts/README.md) menentukan urutan. Tidak ada checkbox lulus melalui kemas kini Markdown ini.
 
-Dokumen ini memisahkan keputusan design daripada receipt implementation. Jangan tandakan item selesai hanya kerana UI mock atau provider catalog sudah ditambah.
+## 0. Baseline dan safety
 
-## Phase 0 — contract dan safety
+- [ ] Rekod HEAD/branch/dirty manifest, runtime identity dan data selectors; preserve kerja orang lain.
+- [ ] Petakan agent ABANGCOLEK-OS/custom Copilot kepada canonical tools.
+- [ ] Ganti angka margin/confidence tetap dan provider/success fallback palsu.
+- [ ] Buktikan role/resource checks, CSRF, redaction, payload/deadline limits.
+- [ ] Bezakan ledger CAS, ADK sessions dan external durable intent/outbox.
 
-- [ ] `shared/ai-agent-contracts.ts`: roles, provider connections, models, agent profiles, conversations, tool calls, approvals dan receipts.
-- [ ] `server/platform/ai-agent.ts`: role-aware policy, CRUD, revision, idempotency dan audit.
-- [ ] Tool registry bersatu dengan capability metadata dan risk class.
-- [ ] Negative tests untuk prompt injection, cross-role access, secret leakage dan unapproved mutation.
+## 1. Integrasi dan free-only routing
 
-## Phase 1 — provider adapters
+- [ ] Gunakan versi/stack tetap dalam master/prompt; semak compatibility sebenar sebelum lockfile. Pin registry bukan runtime proof.
+- [ ] TypeScript CopilotRuntime + AG-UI + Google ADK Python service; kekalkan React/Vite/Bun.
+- [ ] Exact-model allowlist dan account/data/cost verification TTL maksimum 24 jam; stale -> disabled.
+- [ ] Benchmark minimum 60 kes sintetik BM/English/tools/grounding/safety mengikut free-only policy.
+- [ ] No paid fallback/overflow; semua provider gagal -> labeled local rules/unavailable.
 
-- [ ] BYOK OpenAI-compatible adapter dengan encrypted secret reference.
-- [ ] OpenRouter adapter dengan model catalog refresh dan quota/status metadata.
-- [ ] NVIDIA NIM adapter untuk self-hosted/API deployment yang dikonfigurasi.
-- [ ] OpenCode Zen adapter hanya selepas official endpoint/auth contract disahkan.
-- [ ] Ollama adapter untuk local network/device deployment; model pull kekal explicit.
-- [ ] Mock provider untuk deterministic tests dan local preview.
+## 2. Founder pilot dan empat ciri asas
 
-## Phase 2 — role packs dan CRUD UI
+- [ ] Chat + Headless UI: Workspace/Pet berkongsi thread/run, cancel/timeout/deduplication.
+- [ ] Frontend tools: navigate/filter/highlight/draft allowlist.
+- [ ] Shared state: minimum projection, fresh revision/scope, clear on logout/revocation.
+- [ ] Phone/tablet/desktop, keyboard, reduced motion dan voice text fallback.
 
-- [ ] Founder Agent: business context, marketing, approvals dan operational summaries.
-- [ ] Developer Agent: diagnostics, contracts, tests dan runtime readiness.
-- [ ] Staff/Agent Assistant: assigned queue, QC, dealer dan SOP.
-- [ ] Customer Assistant: product, order status, receipt dan complaint intake.
-- [ ] CRUD screens untuk agent profile, provider, model preference, conversation dan tool grants.
+## 3. Generative UI dan human approval
 
-## Phase 3 — mobile-first experience
+Kontrak khusus: [7 pendekatan Generative UI](design/copilot-generative-ui-seven-approaches.md).
 
-- [ ] Phone composer dengan streaming state, attachments dan voice-ready boundary.
-- [ ] Tablet two-pane layout.
-- [ ] Desktop sidebar + conversation + tool receipt panel.
-- [ ] Approval cards dengan payload, scope, expiry, Approve, Reject dan Undo.
-- [ ] Offline draft sahaja; jangan execute external mutation ketika offline.
+- [ ] Display Only, Interactive, Tool Rendering, State Rendering dan Your Components dengan data canonical.
+- [ ] Declarative catalog + fixed-schema A2UI; arbitrary HTML/code/URL ditolak.
+- [ ] First-party read-only MCP App, tool/UI resources allowlist dan sandbox.
+- [ ] Approval -> fresh authorization -> durable command/receipt; stale/rejected/expired/replayed negative tests.
+- [ ] Margin, partial refund dan cumulative commission/loyalty reversal deterministic.
 
-## Phase 4 — integrations dan automations
+## 4. Semua modul dan capabilities
 
-- [ ] Connect ke existing Social, Plugins dan Automations contracts.
-- [ ] Calendar → content draft → provider-specific preview → founder approval.
-- [ ] Read-only app search dahulu; write tools dibuka satu per satu dengan receipt.
-- [ ] Scheduled jobs dengan lease, retry bound dan failure notification.
+- [ ] MOD-01 Storefront & katalog; MOD-02 Orders & tracking.
+- [ ] MOD-03 Inventory; MOD-04 QC & JEV.
+- [ ] MOD-05 Dealer & komisen; MOD-06 Loyalty & referral.
+- [ ] MOD-07 Marketing; MOD-08 Finance & day-close.
+- [ ] MOD-09 Tasks, documents & SOP; MOD-10 Automations & integrations.
+- [ ] ADV-01..32 mengikut registry; setiap modul/tool mempunyai provenance, missing-data, negative scope dan workflow acceptance.
 
-## Definition of done
+## 5. Sub-agents dan optional Intelligence
 
-- Lint, unit/platform tests, build dan mobile/tablet/desktop browser checks lulus.
-- Setiap provider yang ditanda `free` ada source URL, verification date dan quota note.
-- Tiada provider/API key/secret dipalsukan dalam mock atau docs.
-- Founder boleh revoke connection dan archive agent profile.
-- Current Source of Truth dan docs index dikemas kini bersama receipt.
+- [ ] Commerce Reader, QC/JEV Reviewer, Marketing Drafter: bounded delegation/subset grants/shared parent budget.
+- [ ] Native JEV disabled sehingga free-production/data/eval gates; LOCAL_RULES kekal jujur.
+- [ ] AG-UI Streams hanya apabila Intelligence cost/data/entitlement gate lulus; replay tidak execute mutation.
+- [ ] Automatic Learning: reviewed/versioned skills; tiada autonomous financial policy update.
+- [ ] Jika gate belum lulus, dua ciri Intelligence `blocked_external`; jangan label mock/custom alternatif sebagai integrasi rasmi siap.
+
+## 6. Release dan definition of done
+
+- [ ] Lint, platform tests, build dan isolated browser journeys mengikut release runbook.
+- [ ] Local + cloud CAS, cross-request persistence, private evidence dan unknown-outcome/outbox tests.
+- [ ] Exact SHA/dirty manifest, command/output/date/environment dan actual provider/model/cost receipt.
+- [ ] Preview/production mengikut autorisasi aktif; backup/restore dan rollback dibuktikan berasingan.
+- [ ] Laporan berasingan: 10 ciri, 10 modul, 32 capabilities, 7 UI approaches; status planned/implemented/verified_local/verified_production/blocked_external.
+
+Skills ialah panduan, MCP/plugin presence bukan connection proof. Tiada pemasangan servis/langganan automatik. Semua pilihan implementasi telah ditetapkan dalam prompt induk; missing credentials/entitlements dilapor blocked_external, bukan alasan mereka source atau kos palsu.

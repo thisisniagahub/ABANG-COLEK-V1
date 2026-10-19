@@ -1,0 +1,446 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ * Styles for Si Colek Pet Companion, Hermes Radial Arc Menu & Sidecar Drawer
+ */
+
+.pet-companion-root {
+  position: fixed;
+  z-index: 9999;
+  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  user-select: none;
+  touch-action: none;
+}
+
+.pet-companion-root * {
+  box-sizing: border-box;
+}
+
+/* --- PURE TRANSPARENT HERMES CHARM / SHIMEJI STYLE (NO BOX, NO BACKGROUND) --- */
+.pet-charm-wrapper {
+  pointer-events: auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  cursor: grab;
+  user-select: none;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease;
+}
+
+.pet-charm-wrapper:active {
+  cursor: grabbing;
+  transform: scale(1.08) translateY(-4px);
+}
+
+.pet-charm-wrapper:hover {
+  filter: drop-shadow(0 14px 28px rgba(234, 88, 12, 0.55));
+}
+
+/* Floating Sleek Dock below Mascot (100% Transparent, Borderless ala Charm) */
+.pet-dock-bar {
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 1px 4px;
+  opacity: 0.85;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.pet-charm-wrapper:hover .pet-dock-bar {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+.pet-dock-name {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 2px 8px rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pet-dock-mic {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pet-dock-mic:hover {
+  background: #ea580c;
+  color: #ffffff;
+  transform: scale(1.15);
+}
+
+.pet-dock-mic.listening {
+  background: #ef4444;
+  color: #ffffff;
+  animation: pulse 1.5s infinite;
+}
+
+/* Ambient Speech Bubble */
+.pet-ambient-bubble {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.94);
+  color: #f8fafc;
+  border: 1px solid rgba(234, 88, 12, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 8px 14px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px -4px rgba(0, 0, 0, 0.45);
+  font-size: 12px;
+  font-weight: 500;
+  max-width: 260px;
+  text-align: center;
+  pointer-events: auto;
+  animation: petBubblePop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pet-ambient-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid rgba(15, 23, 42, 0.94);
+}
+
+@keyframes petBubblePop {
+  0% { transform: scale(0.8) translateY(10px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* --- CYBERPUNK RADIAL ORBIT MENU (Hermes Wheel) --- */
+.pet-radial-menu {
+  position: absolute;
+  bottom: 50%;
+  right: 50%;
+  transform: translate(50%, 50%);
+  width: 210px;
+  height: 210px;
+  pointer-events: auto;
+  z-index: 10002;
+  animation: radialPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes radialPop {
+  0% { transform: translate(50%, 50%) scale(0.6); opacity: 0; }
+  100% { transform: translate(50%, 50%) scale(1); opacity: 1; }
+}
+
+.pet-radial-node {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--ui-surface, #ffffff);
+  border: 2px solid #ea580c;
+  box-shadow: 0 6px 16px rgba(234, 88, 12, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--ui-text, #0f172a);
+  font-size: 16px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pet-radial-node:hover {
+  transform: scale(1.18);
+  background: #ea580c;
+  color: #ffffff;
+}
+
+/* 5 Orbital Node Positions (Circumference) */
+.node-talk   { top: 5px;   left: 83px; }  /* Top */
+.node-pet    { top: 48px;  right: 8px; }  /* Right-top */
+.node-sleep  { bottom: 48px; right: 8px; } /* Right-bottom */
+.node-vitals { bottom: 5px; left: 83px; }  /* Bottom */
+.node-drawer { top: 48px;  left: 8px; }   /* Left-top */
+
+/* Drawer Backdrop */
+.pet-drawer-backdrop {
+  pointer-events: auto;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(3px);
+  z-index: 10000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.25s ease;
+}
+
+.pet-drawer-backdrop.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Sidecar Drawer */
+.pet-sidecar-drawer {
+  pointer-events: auto;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 440px;
+  max-width: 95vw;
+  background: var(--ui-surface, #ffffff);
+  border-left: 1px solid var(--ui-border, #e2e8f0);
+  box-shadow: -10px 0 35px -5px rgba(0, 0, 0, 0.12);
+  z-index: 10001;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pet-sidecar-drawer.open {
+  transform: translateX(0);
+}
+
+/* Drawer Header */
+.pet-drawer-header {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--ui-border, #e2e8f0);
+  background: var(--ui-soft, #f8fafc);
+}
+
+.pet-drawer-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pet-icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--ui-border, #e2e8f0);
+  background: var(--ui-surface, #ffffff);
+  color: var(--ui-text, #334155);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pet-icon-btn:hover {
+  background: var(--ui-soft, #f1f5f9);
+  color: #ea580c;
+  border-color: #ea580c;
+}
+
+/* Petdex Skin Switcher Row */
+.pet-skin-switcher {
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--ui-soft, #f1f5f9);
+  border-bottom: 1px solid var(--ui-border, #e2e8f0);
+}
+
+.pet-skin-chip {
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1.5px solid transparent;
+  background: var(--ui-surface, #ffffff);
+  color: var(--ui-text, #475569);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.pet-skin-chip.active {
+  border-color: #ea580c;
+  color: #ea580c;
+  box-shadow: 0 2px 6px rgba(234, 88, 12, 0.2);
+}
+
+/* Drawer Chat Area */
+.pet-messages-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pet-msg {
+  display: flex;
+  gap: 10px;
+  max-width: 88%;
+}
+
+.pet-msg.user {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.pet-msg.bot {
+  align-self: flex-start;
+}
+
+.pet-msg-bubble {
+  padding: 10px 14px;
+  border-radius: 18px;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.pet-msg.user .pet-msg-bubble {
+  background: #ea580c;
+  color: #ffffff;
+  border-bottom-right-radius: 4px;
+}
+
+.pet-msg.bot .pet-msg-bubble {
+  background: var(--ui-soft, #f1f5f9);
+  color: var(--ui-text, #1e293b);
+  border: 1px solid var(--ui-border, #e2e8f0);
+  border-bottom-left-radius: 4px;
+}
+
+/* Drawer Quick Prompts */
+.pet-quick-chips {
+  padding: 10px 16px;
+  border-top: 1px solid var(--ui-border, #e2e8f0);
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  white-space: nowrap;
+  background: var(--ui-soft, #fafafa);
+  scrollbar-width: none;
+}
+
+.pet-quick-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.pet-chip {
+  padding: 5px 10px;
+  border-radius: 9999px;
+  font-size: 11.5px;
+  font-weight: 500;
+  border: 1px solid var(--ui-border, #e2e8f0);
+  background: var(--ui-surface, #ffffff);
+  color: var(--ui-text, #334155);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pet-chip:hover {
+  border-color: #ea580c;
+  color: #ea580c;
+  background: rgba(234, 88, 12, 0.05);
+}
+
+/* Drawer Input Area */
+.pet-input-bar {
+  padding: 14px 16px;
+  border-top: 1px solid var(--ui-border, #e2e8f0);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--ui-surface, #ffffff);
+}
+
+.pet-text-input {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--ui-border, #cbd5e1);
+  background: var(--ui-surface, #ffffff);
+  color: var(--ui-text, #0f172a);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.pet-text-input:focus {
+  border-color: #ea580c;
+}
+
+/* Mic Big Button */
+.pet-mic-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #ffffff;
+  background: #ea580c;
+  flex-shrink: 0;
+}
+
+.pet-mic-btn:hover {
+  background: #c2410c;
+  transform: scale(1.05);
+}
+
+.pet-mic-btn.listening {
+  background: #dc2626;
+  animation: petMicPulse 1.2s infinite;
+}
+
+@keyframes petMicPulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.6); }
+  70% { transform: scale(1.08); box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+}
+
+@media (max-width: 640px) {
+  .pet-sidecar-drawer {
+    width: 100vw;
+    max-width: 100vw;
+  }
+}

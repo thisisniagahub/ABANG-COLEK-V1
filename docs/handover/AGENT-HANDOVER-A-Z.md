@@ -1,12 +1,20 @@
-# ABANGCOLEK — prompt handover A–Z
+# ABANGCOLEK — handover A–Z
 
-**Disediakan:** 3 Oktober 2026; **dikemas kini4Oktober2026**, Asia/Kuala_Lumpur. **Scope:** handover, alignment dan implementation receipts. **Bahasa:** Bahasa Malaysia/English. Dokumen ini ialah prompt kerja yang boleh diberikan kepada agent seterusnya; availability tools, authorization dan keadaan mesin tetap perlu diperiksa semula.
+Diselaraskan: **19 Oktober 2026**. [Master Blueprint v2.3](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md), [Source of Truth](../ABANGCOLEK-SOURCE-OF-TRUTH.md) dan [prompt index](../prompts/README.md) ialah arahan semasa. Snapshot/receipts 3–4 Oktober dikekalkan bertarikh, bukan bukti keadaan host, provider atau production terkini. Tiada test/deploy dijalankan melalui kemas kini ini.
 
+## Current implementation contract
+
+- Stack tetap React/Vite + Bun domain services; CopilotKit TypeScript runtime -> AG-UI -> Google ADK Python service. Founder pilot, fixed-schema A2UI, first-party read-only MCP App; tiada Next.js/monorepo rewrite.
+- Scope wajib: 10 ciri CopilotKit, 10 modul, 32 logical tools dan 7 pendekatan Generative UI. Registry/design/prompt menentukan kontrak, bukan jumlah fungsi live.
+- Local SQLite dan cloud Supabase authoritative snapshot CAS berbeza. Temporary Vercel database bukan durable store. Sahkan environment/data selectors sebelum run; retained OSvar ialah keputusan local bertarikh.
+- Semua inference free-only, exact allowlist/account/data evidence; no paid fallback/overflow. Intelligence Streams/Learning kekal blocked_external jika gate tiada. Native JEV disabled; LOCAL_RULES bukan model probability atau permission kewangan.
+- Agent membaca/mencadang melalui scoped canonical tools. Approval != execution; success memerlukan durable receipt. Reconnect/replay tidak mengulangi mutation; unknown memerlukan reconciliation.
+- Preserve user/agent dirty changes. Source code/custom SSE/provider mock bukan runtime proof. Gunakan prompt induk terkini, bukan arahan AGY legacy di bawah sebagai automatic authority.
 ## A. Arahan utama kepada agent penerima
 
-Untuk arahan implementasi penuh yang diminta pengguna pada 4 Oktober2026, gunakan [AGY Master Implementation Prompt](AGY-MASTER-IMPLEMENTATION-PROMPT.md). Ia memetakan 16 task OPEN, E01 separa dan E05 research kepada acceptance dan swarm ownership. Penyediaan prompt tidak menjalankan task atau memberi approval kandungan/account bagi tindakan luar secara automatik; status semasa tetap dalam backlog dan receipt.
+Untuk task semasa gunakan [prompt implementasi terkini](../prompts/README.md). [AGY Master Implementation Prompt](AGY-MASTER-IMPLEMENTATION-PROMPT.md) ialah rujukan tugasan 4 Oktober 2026, bukan pelan Copilot terkini. Ia memetakan 16 task OPEN, E01 separa dan E05 research kepada acceptance dan swarm ownership. Penyediaan prompt tidak menjalankan task atau memberi approval kandungan/account bagi tindakan luar secara automatik; status semasa tetap dalam backlog dan receipt.
 
-Anda menyambung projek ABANGCOLEK, satu platform operasi founder dengan landing page serta workspace Customer, Staff, Founder dan Developer. Baca dokumen ini penuh, kemudian [Source of Truth](../ABANGCOLEK-SOURCE-OF-TRUTH.md), [backlog](../PROJECT-ALIGNMENT-BACKLOG.md), [capability matrix](CAPABILITY-MATRIX.md), [register Markdown](MARKDOWN-ALIGNMENT-REGISTER.md) dan [runbook](../runbooks/platform-recovery.md).
+Anda menyambung projek ABANGCOLEK, satu platform operasi founder dengan landing page serta workspace Customer, Staff, Founder dan Developer. Baca dokumen ini penuh, kemudian [Source of Truth](../ABANGCOLEK-SOURCE-OF-TRUTH.md), [backlog](../archive/legacy-oct2026/PROJECT-ALIGNMENT-BACKLOG.md), [capability matrix](CAPABILITY-MATRIX.md), [register Markdown](MARKDOWN-ALIGNMENT-REGISTER.md) dan [runbook](../runbooks/platform-recovery.md).
 
 Gunakan repository sedia ada. Jangan clone, recreate, reinstall, reset, delete atau seed business data untuk menghasilkan kejayaan palsu. Lindungi perubahan agent/user lain. Jangan bina aplikasi/router/backend ketiga. Utamakan task dengan ID backlog dan bukti acceptance. Jangan mendakwa hasil verified melalui source sahaja.
 
@@ -28,8 +36,8 @@ Prompt ini menyampaikan konteks; ia **tidak membatalkan arahan hold** atau membe
 | Entiti | Lokasi/keputusan |
 |---|---|
 | Canonical source untuk kerja baharu | `D:\ABANGCOLEK-PLATFORM` |
-| Git remote | `https://github.com/thisidowgnut-source/ABANGCOLEK-PLATFORM.git` |
-| Branch/SHA baseline | `main` / `250bc0e7af33c27a7024c936afadcc9d7b208251` |
+| Git remote | `https://github.com/thisisniagahub/ABANG-COLEK-V1.git` |
+| Branch/SHA | `main`; rekod current HEAD + dirty manifest. SHA `250bc0e7af33c27a7024c936afadcc9d7b208251` ialah snapshot lama |
 | Checkout terdahulu, data dan reference | `D:\ABANGCOLEK-OS` — retained |
 | Data lokal sedia ada | `D:\ABANGCOLEK-OS\var\lib\platform\platform.sqlite` + `evidence` |
 | Keputusan data pengguna | Kekalkan `D:\ABANGCOLEK-OS\var`; source-only local switch4Oktober daripada PLATFORM selepas fresh recovery/identity gates |
@@ -42,13 +50,13 @@ Semak semula root/path pada mesin lain; jangan menganggap drive D wujud. Machine
 
 ## D. Checkpoint semasa dan snapshot sejarah
 
-Checkpoint 4 Oktober (Wave 3 Swarm Completion): Kesemua 18 work item master implementation telah disiapkan dan disahkan secara empirikal. Test suite berkembang kepada 260 tests lulus (1,595 assertions) merentas 59 fail tanpa sebarang kegagalan. `bun run lint` 0 errors, `bun run build` lulus (15.80s). Root repository dibersihkan kepada 14 fail (memenuhi kriteria <= 15 fail). Retained runtimeRoot OSvar terpelihara, sifar perubahan data tanpa autoriti. Status perincian direkodkan dalam [Project Alignment Backlog](../PROJECT-ALIGNMENT-BACKLOG.md) dan [Capability Matrix](CAPABILITY-MATRIX.md). Current artifacts `var/log/implementation-final`.
+Historical checkpoint 4 Oktober (Wave 3 report): laporan ketika itu menyebut 18 work item selesai. Dakwaan ini perlu dibaca mengikut scope local/source; ia bukan bukti credential rotation, native JEV, external provider atau production kini selesai. Test suite berkembang kepada 260 tests lulus (1,595 assertions) merentas 59 fail tanpa sebarang kegagalan. `bun run lint` 0 errors, `bun run build` lulus (15.80s). Root repository dibersihkan kepada 14 fail (memenuhi kriteria <= 15 fail). Retained runtimeRoot OSvar terpelihara, sifar perubahan data tanpa autoriti. Status perincian direkodkan dalam [Project Alignment Backlog](../archive/legacy-oct2026/PROJECT-ALIGNMENT-BACKLOG.md) dan [Capability Matrix](CAPABILITY-MATRIX.md). Current artifacts `var/log/implementation-final`.
 
 Jadual di bawah ialah **snapshot3Oktober sahaja**, disimpan untuk continuity:
 
 | Pemeriksaan | Snapshot verified |
 |---|---|
-| UI3000 / API3010 | **STOPPED**; HTTP connection refused, tiada listener netstat |
+| UI3000 / API3010 (snapshot lama) | **STOPPED pada receipt asal**; HTTP connection refused, tiada listener netstat |
 | PID lama | 13828/29364/15016/25976 tiada proses; OS PID file29364 stale |
 | Source local/remote main | SHA baseline sama melalui `git ls-remote`; tiada fetch diperlukan |
 | Worktree sebelum handover | 15 dirty entries: 9 modified + 6 untracked; handover menambah diff |
@@ -87,7 +95,7 @@ Perubahan alignment lokal yang belum committed: BOM package.json dibuang tanpa m
 +--------------------------------------------------+
 ```
 
-React19/Vite6/Tailwind4 frontend + Bun/SQLite API ialah stack sedia ada. Stack Profile A diadaptasi kepada local Bun/SQLite; pilihan AWS/PostgreSQL/Redis dalam skills bukan arahan migration. Backend menguatkuasakan authority. UI hiding sahaja bukan RBAC. Money dalam sen; ownership berbeza daripada custody; payment berbeza daripada fulfilment; derived commission berbeza daripada paid.
+React/Vite/Tailwind frontend + Bun domain API ialah stack; exact versions diperiksa dari manifest/lockfile, bukan angka dalam snapshot lama. Stack Profile A diadaptasi kepada local Bun/SQLite; pilihan AWS/PostgreSQL/Redis dalam skills bukan arahan migration. Backend menguatkuasakan authority. UI hiding sahaja bukan RBAC. Money dalam sen; ownership berbeza daripada custody; payment berbeza daripada fulfilment; derived commission berbeza daripada paid.
 
 ## F. Source map untuk sambung kerja
 
@@ -131,7 +139,7 @@ Empat auth roles: Customer, Staff, Founder, Developer. Dealer/stokis ialah comme
 | Postiz | Remote publish blocked | Rights/exact revision approval + connected channel + provider outcome |
 | WhatsApp | Guided first-party web flows; native disabled | Approved account/API, availability/cost dan delivery receipt |
 | Grok Bot / Muse / dots / DeepSeek Harness | Research/reference | Adapter dan acceptance sendiri; jangan claim executable connectors |
-| Google/Supabase | Legacy services | Scoped adapter + identity/record mapping + audited import |
+| Google / Supabase | Google bridge source + cloud CAS source, activation/runtime berasingan | Identity/record mapping, scoped grants, private evidence dan actual deployment proof |
 | Gemini legacy | Server helper, founder/flag gated | Server-only credential + connected UI/job + usage/outcome proof |
 | NVIDIA/Groq/OpenRouter/Ollama | Preference resources sedia ada | Verify model ID/access/limits; jangan percaya angka kunci/model dalam chat sahaja |
 
@@ -337,9 +345,9 @@ Independent UI/QA/documentation work may progress when authorized without waitin
 
 Workflow local diff pins Bun1.4.2 and runs install/lint/platform tests/build before deploy. Baseline remote runs37089230469/37089172927 failed build at SHA250bc0e; local encoding fix is unpublished. Do not claim remote CI recovered.
 
-Vercel config serves Vite/dist with SPA fallback. Dev proxy to3010 does not deploy Bun API, SQLite, evidence or interval worker. Receiving agent must validate same-origin API JSON/cookies/CSRF, negative RBAC, public/private cache, persistent storage, worker/restart/redeploy recovery, TLS and actual release SHA/READY URL. A frontend200 is not full platform release.
+Source kini mempunyai Vercel API entry dan cloud Supabase CAS. Dev proxy to3010 sahaja tidak menyediakan production backend; permanent local interval worker berbeza daripada bounded cloud drain/worker endpoint. Receiving agent must validate same-origin API JSON/cookies/CSRF, negative RBAC, public/private cache, persistent storage, worker/restart/redeploy recovery, TLS and actual release SHA/READY URL. A frontend200 is not full platform release.
 
-Choose hosting only after verifying existing resources/limits. Do not introduce paid cloud/model or promise free perpetual24/7. Research official provider docs at execution time; static docs/pricing may have changed. Preserve manual/manual-export fallback when provider disconnected.
+Hosting topology ditetapkan blueprint semasa; verify resources/limits dan laporkan blocker, jangan mereka topology alternatif atau menambah langganan. Do not introduce paid cloud/model or promise free perpetual24/7. Research official provider docs at execution time; static docs/pricing may have changed. Preserve manual/manual-export fallback when provider disconnected.
 
 ## W. Security dan recovery invariants
 
@@ -394,3 +402,11 @@ membaca handover ialah arahan cutover/migration/deploy/remote publishing.
 Verifikasi acceptance dengan bukti source/API/live/data yang sesuai, kemudian
 update current docs/backlog dan checkpoint. Tiada credentials dalam output.
 ```
+
+## Current skills/MCP instructions
+
+Read `.agents/skills/copilotkit/SKILL.md` sebelum sebarang CopilotKit API code; read `copilotkit-cli` untuk verify wiring. TDD, security/code review, verification-before-completion dan Supabase/Postgres skills digunakan apabila task berkaitan. Repository `skills/jev-core/dev-workflow/jev-review/SKILL.md` ialah evidence review, bukan native inference.
+
+MCP/plugin/CLI yang dinamakan dalam konteks pengguna tidak semestinya callable atau authenticated. Inspect metadata tersedia; gunakan official docs/CLI fallback apabila sesuai. Jangan menambah MCP server, membuat paid subscriptions atau menghantar mesej hanya kerana prompt menyebut integrasi. Task outcome mencatat blocked_external dengan capability/auth/cost reason tepat, sambil meneruskan kerja bebas dependency.
+
+Arahan kickoff Z di atas ialah historical template. Untuk implementasi semasa gunakan [prompt induk](../prompts/IMPLEMENT-ABANGCOLEK.md) dan phase order di index; semua keputusan teknikal tetap di situ. Completion memerlukan final-source gates dan actual receipts, bukan ringkasan ini.

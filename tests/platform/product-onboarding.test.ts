@@ -182,12 +182,16 @@ describe('B05 + D07: Product Truth & Safe Onboarding Flow', () => {
           unverifiedFields: [],
         },
       ],
+      expectedSettingsVersion: 0,
       locations: [
         {
           id: 'hq',
           name: 'HQ Abang Colek',
           address: 'No 1, Jalan Colek, Kelantan',
           openingStockQuantity: 100,
+          approved: true,
+          hours: '9-5',
+          verifiedAt: '2026-10-18T00:00:00Z',
           batchId: 'BATCH-2026-001',
         },
       ],

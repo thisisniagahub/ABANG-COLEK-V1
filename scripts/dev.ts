@@ -14,12 +14,14 @@ function cleanup():Promise<void>{
   return cleanupPromise??=(async()=>{
     // Only children started by this launcher are owned; reused listeners remain alive.
     const children=[uiProcess,apiProcess].filter((child):child is NonNullable<typeof child>=>child!==null);
-    for(const child of children)if(child.exitCode===null)child.kill();
-    await Promise.all(children.map(child=>child.exited));
-    if(log!==null){closeSync(log);log=null;}
+    for(const child of children){
+      try{if(child.exitCode===null)child.kill();}catch{}
+    }
+    await Promise.all(children.map(child=>child.exited.catch(()=>0)));
+    if(log!==null){try{closeSync(log);}catch{}log=null;}
     if(apiProcess){
       const pidPath=join(runtimeRoot,'run/platform.pid');
-      if(existsSync(pidPath)&&readFileSync(pidPath,'utf8')===String(apiProcess.pid))unlinkSync(pidPath);
+      try{if(existsSync(pidPath)&&readFileSync(pidPath,'utf8')===String(apiProcess.pid))unlinkSync(pidPath);}catch{}
     }
   })();
 }
@@ -52,7 +54,16 @@ async function run():Promise<number>{
 }
 
 let exitCode=1;
-try{exitCode=await run();}
-catch(error){console.error(error instanceof Error?error.message:'Launcher gagal bermula.');}
-finally{try{await cleanup();}catch{console.error('Pembersihan runtime milik launcher gagal.');exitCode=1;}}
+try{
+  exitCode=await run();
+}catch(error){
+  console.error(error instanceof Error?error.stack||error.message:'Launcher gagal bermula.');
+}finally{
+  try{
+    await cleanup();
+  }catch(err){
+    console.error('Pembersihan runtime milik launcher gagal:', err);
+    exitCode=1;
+  }
+}
 process.exit(exitCode);

@@ -1,8 +1,17 @@
 import type { BusinessSettings, DealerApplication, DealerTerms, RestockRecord, VersionedQuote, InventoryReservation, InventoryMovement, StockLot, StockReceipt, EligiblePaidOrder, CommissionPolicy, EarnedBenefit, OrderRecord } from '../../shared/platform-contracts';
 import { Auth, type Principal } from './auth';
 import { Commerce, type PaymentRecord } from './commerce';
-import { fields, fail, id, integer, now, object, oneOf, PlatformStore, strings, text } from './store';
-import type { DealerBenefit, DealerDispatchAllocation, DealerLedger, DealerLedgerEntry, DealerRestockRecord, DealerReturnAllocation, DealerReturnRecord, DealerSettlement, DealerSettlementPayment, DealerStockLot } from '../../shared/dealer-contracts';
+import { fields, fail, id, integer, now, object, oneOf, PlatformStore, strings, text, date } from './store';
+import type { DealerBenefit, DealerDispatchAllocation, DealerLedger, DealerLedgerEntry, DealerRestockRecord, DealerReturnAllocation, DealerReturnRecord, DealerSettlement, DealerSettlementPayment, DealerStockLot, CommissionLedgerStatus, CommissionTransaction, DealerCommissionSummary } from '../../shared/dealer-contracts';
+
+export const VALID_COMMISSION_TRANSITIONS: Record<CommissionLedgerStatus, readonly CommissionLedgerStatus[]> = {
+  pending: ['eligible', 'reversed', 'disputed'],
+  eligible: ['approved', 'reversed', 'disputed'],
+  approved: ['paid', 'reversed', 'disputed'],
+  paid: ['disputed'],
+  reversed: [],
+  disputed: ['pending', 'eligible', 'approved', 'paid', 'reversed'],
+} as const;
 
 export function calculateEarnedBenefit(order:EligiblePaidOrder,policy:CommissionPolicy):EarnedBenefit {
   const valid=!!order.paymentConfirmedAt&&Number.isSafeInteger(order.paidAmountSen)&&order.paidAmountSen>0&&Number.isSafeInteger(order.refundAmountSen)&&order.refundAmountSen>=0&&order.refundAmountSen<=order.paidAmountSen&&!!policy.approvedAt&&Number.isSafeInteger(policy.rateBasisPoints)&&policy.rateBasisPoints>=0&&policy.rateBasisPoints<=10000&&!!order.productIds?.length&&order.productIds.every(p=>policy.eligibleProductIds.includes(p));
@@ -18,14 +27,18 @@ export class Dealers {
     const organizations = this.organizations(actor), founder = this.auth.has(actor, 'founder');
     if (!founder && !organizations.size) fail('DEALER_SCOPE', 403);
     const payments = this.store.all<PaymentRecord>('payments'), policies = this.store.all<CommissionPolicy>('commission_policies');
-    return this.store.all<OrderRecord>('orders').filter(order => order.dealerOrgId && (founder || organizations.has(order.dealerOrgId))).map(order => {
+    return this.store.all<OrderRecord>('orders').filter(order => {
+      const orgId = order.dealerOrgId ?? order.referralCode;
+      return orgId && (founder || organizations.has(orgId));
+    }).map(order => {
+      const orgId = (order.dealerOrgId ?? order.referralCode)!;
       const payment = payments.find(candidate => candidate.orderId === order.id && candidate.state === 'confirmed' && candidate.amountSen === order.paidAmountSen);
       const policy = policies.filter(candidate => payment && candidate.approvedAt <= payment.createdAt).sort((a, b) => b.version - a.version)[0];
       const benefit: EarnedBenefit = policy && order.fulfilmentStatus === 'received'
         ? calculateEarnedBenefit({ orderId: order.id, paidAmountSen: order.paidAmountSen, refundAmountSen: order.refundAmountSen, paymentConfirmedAt: payment?.createdAt, productIds: order.lines.map(line => line.productId) }, policy)
         : { orderId: order.id, policyVersion: policy?.version ?? 0, amountSen: 0, reasonCode: 'POLICY_PAYMENT_OR_FULFILMENT_UNCONFIRMED' };
       // This is a read-time derivation, never a payout or a write to business history.
-      return { id: `${order.id}:${order.revision}:${benefit.policyVersion}`, dealerOrgId: order.dealerOrgId!, orderRevision: order.revision, paymentId: payment?.id ?? null, policyId: policy?.id ?? null, ...benefit, generatedAt: now(), status: 'derived_not_paid' };
+      return { id: `${order.id}:${order.revision}:${benefit.policyVersion}`, dealerOrgId: orgId, orderRevision: order.revision, paymentId: payment?.id ?? null, policyId: policy?.id ?? null, ...benefit, generatedAt: now(), status: 'derived_not_paid' };
     });
   }
   dealer(actor:Principal,organizationId:string){if(this.auth.has(actor,'founder'))return;if(!this.organizations(actor).has(organizationId))fail('DEALER_SCOPE',403);}
@@ -44,7 +57,251 @@ export class Dealers {
       lots,
       movements: this.store.all<InventoryMovement>('movements').filter(movement => movementSources.has(movement.sourceEntityId)),
       reservations: this.store.all<InventoryReservation & { sourceRestockId: string }>('reservations').filter(reservation => restockIds.has(reservation.sourceRestockId)),
+      commissions: this.store.all<CommissionTransaction>('commission_ledger').filter(allowed),
     };
+  }
+  commissions(actor: Principal, dealerOrgId?: string): CommissionTransaction[] {
+    const founder = this.auth.has(actor, 'founder');
+    const orgs = this.organizations(actor);
+    if (!founder && !orgs.size) fail('DEALER_SCOPE', 403);
+    if (dealerOrgId) {
+      if (!founder && !orgs.has(dealerOrgId)) fail('DEALER_SCOPE', 403);
+      return this.store.all<CommissionTransaction>('commission_ledger').filter(c => c.dealerOrgId === dealerOrgId);
+    }
+    return this.store.all<CommissionTransaction>('commission_ledger').filter(c => founder || orgs.has(c.dealerOrgId));
+  }
+  commission(actor: Principal, commissionId: string): CommissionTransaction {
+    const record = this.store.require<CommissionTransaction>('commission_ledger', commissionId);
+    const founder = this.auth.has(actor, 'founder');
+    const orgs = this.organizations(actor);
+    if (!founder && !orgs.has(record.dealerOrgId)) fail('DEALER_SCOPE', 403);
+    return record;
+  }
+  commissionSummary(actor: Principal, dealerOrgId?: string): DealerCommissionSummary {
+    const founder = this.auth.has(actor, 'founder');
+    const orgs = this.organizations(actor);
+    const targetOrgId = dealerOrgId ?? (orgs.size === 1 ? Array.from(orgs)[0] : undefined);
+    if (!targetOrgId) {
+      if (!founder) fail('DEALER_SCOPE', 403);
+      fail('ORGANIZATION_REQUIRED', 400);
+    }
+    if (!founder && !orgs.has(targetOrgId)) fail('DEALER_SCOPE', 403);
+
+    const comms = this.store.all<CommissionTransaction>('commission_ledger').filter(c => c.dealerOrgId === targetOrgId);
+    const pendingSen = comms.filter(c => c.status === 'pending').reduce((sum, c) => sum + c.amountSen, 0);
+    const eligibleSen = comms.filter(c => c.status === 'eligible').reduce((sum, c) => sum + c.amountSen, 0);
+    const approvedSen = comms.filter(c => c.status === 'approved').reduce((sum, c) => sum + c.amountSen, 0);
+    const paidSen = comms.filter(c => c.status === 'paid').reduce((sum, c) => sum + c.amountSen, 0);
+    const reversedContraSen = comms.filter(c => c.status === 'reversed' && c.amountSen < 0).reduce((sum, c) => sum + c.amountSen, 0);
+    const totalEarnedSen = comms.filter(c => c.amountSen > 0 && ['eligible', 'approved', 'paid'].includes(c.status)).reduce((sum, c) => sum + c.amountSen, 0);
+
+    const unsettledContraSen = comms
+      .filter(c => c.status === 'reversed' && c.amountSen < 0 && !c.settledAt)
+      .reduce((sum, c) => sum + (Math.abs(c.amountSen) - (c.absorbedAmountSen ?? 0)), 0);
+
+    const netBalance = approvedSen - unsettledContraSen;
+    const netPayableSen = Math.max(0, netBalance);
+    const unsettledDeficitSen = netBalance < 0 ? Math.abs(netBalance) : 0;
+
+    return {
+      dealerOrgId: targetOrgId,
+      totalEarnedSen,
+      pendingSen,
+      eligibleSen,
+      approvedSen,
+      paidSen,
+      reversedContraSen,
+      netPayableSen,
+      unsettledDeficitSen,
+    };
+  }
+  recordCommission(actor: Principal, raw: unknown): CommissionTransaction {
+    const input = object(raw);
+    fields(input, ['orderId', 'dealerOrgId', 'agentUserId', 'amountSen', 'policyVersion', 'status', 'eligibleAt']);
+    const dealerOrgId = text(input.dealerOrgId, 'Dealer Org ID', 120);
+    this.dealer(actor, dealerOrgId);
+
+    const orderId = text(input.orderId, 'Order ID', 120);
+    const order = this.store.require<OrderRecord>('orders', orderId);
+    const attributedOrgId = order.dealerOrgId ?? order.referralCode;
+    if (attributedOrgId && attributedOrgId !== dealerOrgId) fail('DEALER_ORG_MISMATCH', 400);
+
+    const amountSen = integer(input.amountSen, 'Amaun komisen', 0, 1_000_000_000);
+    const status = input.status ? oneOf(input.status, ['pending', 'eligible', 'approved', 'paid', 'reversed', 'disputed'] as const) : 'pending';
+    if (['approved', 'paid'].includes(status)) this.auth.founder(actor);
+
+    const agentUserId = text(input.agentUserId, 'Agent User ID', 120);
+    const policyVersion = integer(input.policyVersion, 'Policy version', 0);
+    const eligibleAt = status === 'eligible' ? now() : (input.eligibleAt ? date(input.eligibleAt) : now());
+
+    const record: CommissionTransaction = {
+      id: id(),
+      orderId,
+      dealerOrgId,
+      agentUserId,
+      amountSen,
+      status,
+      eligibleAt,
+      ...(status === 'approved' ? { approvedAt: now() } : {}),
+      ...(status === 'paid' ? { approvedAt: now(), paidAt: now() } : {}),
+      policyVersion,
+      createdAt: now(),
+    };
+
+    this.store.save('commission_ledger', record);
+    this.store.audit(actor.user.id, 'commission.record', record.id, 1);
+    return record;
+  }
+  transitionCommission(actor: Principal, commissionId: string, raw: unknown): CommissionTransaction {
+    const input = object(raw);
+    fields(input, ['next', 'reason']);
+    const next = oneOf(input.next, ['pending', 'eligible', 'approved', 'paid', 'reversed', 'disputed'] as const);
+    const current = this.store.require<CommissionTransaction>('commission_ledger', commissionId);
+
+    const founder = this.auth.has(actor, 'founder');
+    const orgs = this.organizations(actor);
+    if (!founder && !orgs.has(current.dealerOrgId)) fail('DEALER_SCOPE', 403);
+
+    // Dealer can only dispute. Other transitions require founder.
+    if (!founder && next !== 'disputed') fail('FORBIDDEN', 403, 'Hanya founder boleh mengubah status komisen.');
+
+    // Crucial: Post-payout refund / reversal policy check
+    if (current.status === 'paid' && next === 'reversed') {
+      fail('POST_PAYOUT_CONTRA_REQUIRED', 409, 'Komisen yang telah berstatus paid tidak boleh diubah kepada reversed secara terus. Rekod pelarasan kontra negatif wajib dicipta tanpa memadam rekod sejarah lama (PAY-03).');
+    }
+
+    const allowedTransitions = VALID_COMMISSION_TRANSITIONS[current.status];
+    if (!allowedTransitions.includes(next)) {
+      fail('INVALID_TRANSITION', 409, `Peralihan status dari '${current.status}' ke '${next}' tidak sah.`);
+    }
+
+    let reason: string | undefined;
+    if (['reversed', 'disputed'].includes(next)) {
+      reason = text(input.reason, `Sebab ${next}`, 3000);
+    }
+
+    const updated: CommissionTransaction = {
+      ...current,
+      status: next,
+      ...(next === 'eligible' && !current.eligibleAt ? { eligibleAt: now() } : {}),
+      ...(next === 'approved' ? { approvedAt: now() } : {}),
+      ...(next === 'paid' ? { paidAt: now() } : {}),
+      ...(next === 'reversed' ? { reversedAt: now(), contraReason: reason } : {}),
+      ...(next === 'disputed' ? { contraReason: reason } : {}),
+    };
+
+    this.store.save('commission_ledger', updated);
+    this.store.audit(actor.user.id, `commission.${next}`, updated.id, 1);
+    return updated;
+  }
+  applyRefundContra(actor: Principal, targetId: string, raw?: unknown): CommissionTransaction {
+    this.auth.founder(actor);
+    const input = raw ? object(raw) : {};
+    if (raw) fields(input, ['amountSen', 'reason']);
+
+    const all = this.store.all<CommissionTransaction>('commission_ledger');
+    const directMatch = all.find(c => c.id === targetId);
+    const candidates = directMatch ? [directMatch] : all.filter(c => c.orderId === targetId);
+    if (!candidates.length) fail('COMMISSION_NOT_FOUND', 404, 'Tiada transaksi komisen untuk diselaraskan.');
+
+    const paidComm = candidates.find(c => c.status === 'paid');
+    if (paidComm) {
+      // Historical paid record is NOT modified or deleted (Append-only immutability)
+      const existingContras = all.filter(c => c.orderId === paidComm.orderId && c.status === 'reversed' && c.amountSen < 0);
+      const alreadyContradSen = existingContras.reduce((sum, c) => sum + Math.abs(c.amountSen), 0);
+      const remainingPayableSen = paidComm.amountSen - alreadyContradSen;
+      if (remainingPayableSen <= 0) fail('ALREADY_FULLY_CONTRAD', 409, 'Komisen telah diselaraskan sepenuhnya.');
+
+      const contraAmount = input.amountSen !== undefined
+        ? integer(input.amountSen, 'Amaun pelarasan kontra', 1, remainingPayableSen)
+        : remainingPayableSen;
+
+      const reason = input.reason
+        ? text(input.reason, 'Sebab pelarasan kontra', 3000)
+        : 'Pelarasan kontra pemulangan wang selepas bayaran komisen (PAY-03)';
+
+      const contra: CommissionTransaction = {
+        id: id(),
+        orderId: paidComm.orderId,
+        dealerOrgId: paidComm.dealerOrgId,
+        agentUserId: paidComm.agentUserId,
+        amountSen: -contraAmount,
+        status: 'reversed',
+        eligibleAt: paidComm.eligibleAt,
+        reversedAt: now(),
+        contraReason: reason,
+        contraOfId: paidComm.id,
+        policyVersion: paidComm.policyVersion,
+        createdAt: now(),
+      };
+
+      this.store.save('commission_ledger', contra);
+      this.store.audit(actor.user.id, 'commission.contra_adjustment', contra.id, 1);
+      return contra;
+    }
+
+    // If not yet paid (pending, eligible, approved), it transitions directly to reversed
+    const unfinalized = candidates.find(c => ['approved', 'eligible', 'pending'].includes(c.status));
+    if (!unfinalized) fail('NO_ACTIVE_COMMISSION', 409, 'Tiada komisen aktif untuk dibatalkan.');
+
+    const reason = input.reason
+      ? text(input.reason, 'Sebab pembatalan', 3000)
+      : 'Pembatalan komisen sebelum pembayaran';
+
+    const reversed: CommissionTransaction = {
+      ...unfinalized,
+      status: 'reversed',
+      reversedAt: now(),
+      contraReason: reason,
+    };
+
+    this.store.save('commission_ledger', reversed);
+    this.store.audit(actor.user.id, 'commission.reversed', reversed.id, 1);
+    return reversed;
+  }
+  createCommissionFromOrder(actor: Principal, orderId: string): CommissionTransaction {
+    const order = this.store.require<OrderRecord>('orders', orderId);
+    const dealerOrgId = order.dealerOrgId ?? order.referralCode;
+    if (!dealerOrgId) fail('NO_DEALER_ATTRIBUTION', 400, 'Pesanan tidak mempunyai dealer/agent attribution.');
+    this.dealer(actor, dealerOrgId);
+
+    const existing = this.store.all<CommissionTransaction>('commission_ledger').find(c => c.orderId === order.id && c.amountSen > 0 && c.status !== 'reversed');
+    if (existing) return existing;
+
+    const payments = this.store.all<PaymentRecord>('payments');
+    const policies = this.store.all<CommissionPolicy>('commission_policies');
+    const payment = payments.find(p => p.orderId === order.id && p.state === 'confirmed' && p.amountSen === order.paidAmountSen);
+    const policy = policies.filter(p => payment && p.approvedAt <= payment.createdAt).sort((a, b) => b.version - a.version)[0] ?? policies.sort((a, b) => b.version - a.version)[0];
+    if (!policy) fail('COMMISSION_POLICY_UNAVAILABLE', 409, 'Polisi komisen belum diluluskan.');
+
+    const isEligible = order.fulfilmentStatus === 'received' && order.paymentState === 'verified';
+    const benefit = isEligible
+      ? calculateEarnedBenefit({ orderId: order.id, paidAmountSen: order.paidAmountSen, refundAmountSen: order.refundAmountSen, paymentConfirmedAt: payment?.createdAt, productIds: order.lines.map(line => line.productId) }, policy)
+      : null;
+
+    const amountSen = benefit ? benefit.amountSen : Number(BigInt(order.amountSen) * BigInt(policy.rateBasisPoints) / 10000n);
+    const status: CommissionLedgerStatus = isEligible ? 'eligible' : 'pending';
+
+    const members = this.store.all<{ userId: string; dealerOrgId?: string; role?: string; status?: string }>('memberships');
+    const agentMember = members.find(m => m.dealerOrgId === dealerOrgId && (m.role === 'customer' || m.role === 'staff' || m.role === 'agent') && m.status === 'active')
+      ?? members.find(m => m.dealerOrgId === dealerOrgId);
+    const agentUserId = agentMember?.userId ?? order.customerId;
+
+    const record: CommissionTransaction = {
+      id: id(),
+      orderId: order.id,
+      dealerOrgId,
+      agentUserId,
+      amountSen,
+      status,
+      eligibleAt: isEligible ? now() : '',
+      policyVersion: policy.version,
+      createdAt: now(),
+    };
+
+    this.store.save('commission_ledger', record);
+    this.store.audit(actor.user.id, 'commission.create_from_order', record.id, 1);
+    return record;
   }
   private restock(actor: Principal, restockId: string): DealerRestockRecord {
     const record = this.store.require<DealerRestockRecord>('restocks', restockId);

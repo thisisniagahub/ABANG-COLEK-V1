@@ -1,10 +1,12 @@
 # ADR-0002 — Zero-New-Spend Full-Platform Hosting Topology
 
+> **SUPERSEDED — 19 Oktober 2026:** [ADR-0003](0003-blueprint-v23-execution-contract.md) dan [master blueprint v2.3](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) menggantikan local-only topology dan penolakan cloud dalam rekod ini. Kandungan di bawah ialah keputusan/snapshot sejarah, bukan deployment receipt atau arahan mengaktifkan tunnel. Runtime cloud menggunakan authority Supabase CAS seperti source; runtime local/data path mesti disahkan berasingan. Gunakan [prompt semasa](../prompts/IMPLEMENT-ABANGCOLEK.md).
+
 **Tarikh:** 2026-10-04  
-**Status:** ACCEPTED_ARCHITECTURE  
+**Status:** SUPERSEDED_BY_ADR_0003; kandungan sejarah dikekalkan.
 **Task ID:** C02  
 **Canonical Source:** `D:\ABANGCOLEK-PLATFORM`  
-**Rujukan:** [ADR-0001](0001-project-authority-and-continuity.md), [Source of Truth](../ABANGCOLEK-SOURCE-OF-TRUTH.md), [Recovery Runbook](../runbooks/RECOVERY-RUNBOOK.md)
+**Rujukan:** [ADR-0001](0001-project-authority-and-continuity.md), [Source of Truth](../ABANGCOLEK-SOURCE-OF-TRUTH.md), [Recovery Runbook](../runbooks/platform-recovery.md)
 
 ---
 

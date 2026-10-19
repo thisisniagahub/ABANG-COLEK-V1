@@ -1,0 +1,11 @@
+{
+  "captureMethod": "Transcribed from browser dev.logs output observed during this audit; later log export returned an empty array after browser runtime reset.",
+  "observedMessage": "Error: supabaseKey is required.",
+  "observedStack": [
+    "at new SupabaseClient (http://127.0.0.1:3000/node_modules/.vite/deps/@supabase_supabase-js.js?v=0cc026e6:20693:29)",
+    "at createClient (http://127.0.0.1:3000/node_modules/.vite/deps/@supabase_supabase-js.js?v=0cc026e6:20936:10)",
+    "at http://127.0.0.1:3000/src/services/supabaseClient.ts:8:25"
+  ],
+  "observedTimestampUtc": "2026-10-18T05:31:52.314Z",
+  "url": "http://127.0.0.1:3000/"
+}

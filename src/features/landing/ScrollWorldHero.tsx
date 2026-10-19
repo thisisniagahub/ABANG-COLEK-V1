@@ -1,17 +1,19 @@
 import { useEffect, useLayoutEffect, useRef, useState, type MouseEvent } from 'react';
-import { ArrowDown, ArrowRight, ArrowUpRight, Box, CirclePause, CirclePlay, PackageCheck, ShoppingBag, Truck, Users } from 'lucide-react';
+import { ArrowDown, ArrowRight, ArrowUpRight, Box, CirclePause, CirclePlay, ClipboardCheck, Flame, PackageCheck, ShoppingBag, Truck, Users, Warehouse } from 'lucide-react';
 import { storyModeScrollTarget, storyModeSnapshot, type StoryViewportSnapshot } from './story-model';
 import { useSceneController } from './useSceneController';
-import AnimatedColekWorld from './AnimatedColekWorld';
 import WorldHotspot from './WorldHotspot';
 import { BRAND_ASSETS } from '../brand/brand-assets';
 import './scroll-world.css';
 
+const worldScenes = BRAND_ASSETS.worldScenes;
 const chapters = [
-  { id: 'produk', label: 'Produk', icon: ShoppingBag, eyebrow: '01 / The colek connection', title: ['Colek.', 'Connect.', 'Repeat.'], description: 'Dari pilihan pertama hingga pesanan anda. Terokai dunia ABANGCOLEK, satu perjalanan pada satu masa.', action: 'Jom pilih produk', path: '/products', detail: 'Pilih produk daripada katalog yang disahkan.' },
-  { id: 'packing', label: 'Packing', icon: PackageCheck, eyebrow: '02 / Behind your next dip', title: ['Setiap pesanan.', 'Ada perjalanan.'], description: 'Pilih, semak dan ikuti perkembangan pesanan. Status packing dikemas kini dalam timeline pesanan anda.', action: 'Lihat pesanan saya', path: '/customer/orders', detail: 'Status pesanan berada dalam satu timeline.' },
-  { id: 'penghantaran', label: 'Penghantaran', icon: Truck, eyebrow: '03 / From here to you', title: ['Lebih dekat.', 'Lebih connected.'], description: 'Semak update dispatch dalam ruang pelanggan. Pilihan fulfilment mengikut pesanan dan lokasi yang dikonfigurasi.', action: 'Lihat lokasi pickup', path: '/locations', detail: 'Semak lokasi dan pilihan pickup yang disahkan.' },
-  { id: 'rangkaian', label: 'Rangkaian', icon: Users, eyebrow: '04 / Grow the connection', title: ['Satu jenama.', 'Banyak peluang.'], description: 'Pelanggan, ejen dan stokis dalam satu ekosistem. Mohon menjadi rakan bisnes dan sambung kerja dalam ruang anda.', action: 'Jadi ejen / stokis', path: '/become-dealer', detail: 'Permohonan dan terma bisnes melalui semakan founder.' },
+  { id: 'dapur', label: 'Dapur', icon: Flame, eyebrow: '01 / Dari dapur', title: ['Colek buah', 'segar.'], accentLine: 1, description: 'Mangga, jambu, kedondong — dihiris segar setiap hari dan dicampur sambal colek. Pedas manis likat melekat.', action: 'Jom pilih produk', path: '/products', detail: 'Colek disediakan dalam kuantiti kecil, segar setiap hari.' },
+  { id: 'qc', label: 'Kualiti', icon: ClipboardCheck, eyebrow: '02 / Semakan kualiti', title: ['Disahkan.', 'Sebelum dijual.'], accentLine: 1, description: 'Setiap cawan colek melalui semakan sebelum diterima masuk katalog. Tutup disemak, kuantiti disahkan.', action: 'Lihat katalog', path: '/products', detail: 'Semakan kualiti disimpan sebagai evidence dalam platform.' },
+  { id: 'stokis', label: 'Stokis', icon: Warehouse, eyebrow: '03 / Ejen & stokis', title: ['Satu jenama.', 'Banyak peluang.'], accentLine: 1, description: 'Ejen dan stokis beroperasi dalam ruang B2B tersendiri — restock, receiving dan terma komersial yang diluluskan.', action: 'Jadi ejen / stokis', path: '/become-dealer', detail: 'Permohonan disemak founder sebelum akses B2B diaktifkan.' },
+  { id: 'penghantaran', label: 'Penghantaran', icon: Truck, eyebrow: '04 / From here to you', title: ['Lebih dekat.', 'Lebih connected.'], accentLine: 1, description: 'Penghantaran tempatan dan bas ekspres ke luar Pantai Timur. Jejak dispatch dalam timeline pesanan anda.', action: 'Lihat lokasi pickup', path: '/locations', detail: 'Semak lokasi dan pilihan pickup yang disahkan.' },
+  { id: 'komuniti', label: 'Komuniti', icon: Users, eyebrow: '05 / Booth & komuniti', title: ['Colek.', 'Connect.', 'Repeat.'], accentLine: 2, description: 'Dari booth festival sampai ke pelanggan tetap — rasa sekali, jatuh cinta selamanya.', action: 'Lihat lokasi pickup', path: '/locations', detail: 'Bantuan dan aduan berkongsi context order yang sama.' },
+  { id: 'produk', label: 'Produk', icon: ShoppingBag, eyebrow: '06 / The collection', title: ['Pilih colek', 'anda.'], accentLine: 1, description: 'Asam boi klasik, Sambal Kicx, Awesome Shacx — pesan, sertakan bukti bayaran dan jejak dalam satu aliran.', action: 'Pesan sekarang', path: '/products', detail: 'Pilih produk daripada katalog yang disahkan.' },
 ] as const;
 const SHORT_VIEWPORT_QUERY = '(max-height: 560px), (max-width: 750px) and (max-height: 740px)';
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
@@ -23,11 +25,12 @@ export default function ScrollWorldHero({ onNavigate }: { onNavigate: (path: str
   const [motionPaused, setMotionPaused] = useState(false);
   const [shortViewport, setShortViewport] = useState(() => window.matchMedia(SHORT_VIEWPORT_QUERY).matches);
   const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia(REDUCED_MOTION_QUERY).matches);
-  const [worldAsset, setWorldAsset] = useState<'world' | 'mascot' | 'none'>('world');
+  const [failedScenes, setFailedScenes] = useState<ReadonlySet<string>>(() => new Set());
   const [hotspotOpen, setHotspotOpen] = useState(false);
+  const scenesAvailable = failedScenes.size < worldScenes.length;
   const staticMode = Boolean(reducedMotion || motionPaused || shortViewport);
   const { active, phase, direction, visible, selectScene, releaseScene } = useSceneController({ sectionRef, enabled: !staticMode, blocked: hotspotOpen, sceneCount: chapters.length });
-  const productPhotoVisible = !staticMode && active === 0;
+  const productPhotoVisible = !staticMode && active === chapters.length - 1;
   const modeRef = useRef({ staticMode, motionPaused, active });
   modeRef.current = { staticMode, motionPaused, active };
   const modeChangeRef = useRef<ModeChangeSnapshot | null>(null);
@@ -119,14 +122,21 @@ export default function ScrollWorldHero({ onNavigate }: { onNavigate: (path: str
     catalogue.scrollIntoView({ behavior: 'auto', block: 'start' });
     catalogue.focus({ preventScroll: true });
   };
+  const markSceneFailed = (id: string) => {
+    setFailedScenes(current => {
+      if (current.has(id)) return current;
+      const next = new Set(current);
+      next.add(id);
+      return next;
+    });
+  };
 
   return <section ref={sectionRef} className={`ac-world-journey${staticMode ? ' is-static' : ''}`} tabIndex={staticMode ? undefined : 0} aria-label="Terokai dunia ABANGCOLEK" aria-describedby={staticMode ? undefined : 'ac-world-instructions'} data-scene={chapters[active].id} data-motion={staticMode ? 'static' : 'scene'} data-phase={staticMode ? 'idle' : phase} data-direction={direction}>
     <div ref={stageRef} className="ac-world-stage">
-      <div className={`ac-world-visual${worldAsset !== 'world' ? ' asset-fallback' : ''}`} aria-hidden="true">
-        {worldAsset !== 'none' && <img key={worldAsset} className="ac-world-camera" src={worldAsset === 'mascot' ? '/assets/brand/MASKOT-1.PNG' : BRAND_ASSETS.world.src} alt="" width={BRAND_ASSETS.world.width} height={BRAND_ASSETS.world.height} decoding="async" onError={() => setWorldAsset(current => current === 'world' ? 'mascot' : 'none')} />}
+      <div className={`ac-world-visual${scenesAvailable ? ' is-journey' : ' asset-fallback'}`} aria-hidden="true">
+        {scenesAvailable ? worldScenes.map((scene, index) => <img key={scene.id} className={`ac-world-scene${index === active ? ' is-active' : ''}`} data-scene={scene.id} src={scene.src} alt="" width={scene.width} height={scene.height} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" onError={() => markSceneFailed(scene.id)} />) : <img key="fallback" className="ac-world-camera" src={BRAND_ASSETS.world.src} alt="" width={BRAND_ASSETS.world.width} height={BRAND_ASSETS.world.height} decoding="async" />}
       </div>
       <div className="ac-world-shade" aria-hidden="true" />
-      {!staticMode && <div className="ac-world-animation"><AnimatedColekWorld active={active} phase={phase} direction={direction} paused={!visible || hotspotOpen} /></div>}
       {/* A native touch keeps its starting target until touchend; retain this node across scenes. */}
       {!staticMode && <figure className="ac-world-product-photo" aria-hidden={!productPhotoVisible}>
         <div><img src={BRAND_ASSETS.productEditorial.src} alt={BRAND_ASSETS.productEditorial.alt} width={405} height={720} decoding="async" fetchPriority="high" /></div>
@@ -141,14 +151,14 @@ export default function ScrollWorldHero({ onNavigate }: { onNavigate: (path: str
       <div className="ac-world-scenes">
         {chapters.map((chapter, index) => <article key={chapter.id} id={`world-${chapter.id}`} tabIndex={-1} className={`ac-world-copy${index === active ? ' is-active' : ''}`} aria-hidden={!staticMode && index !== active} inert={!staticMode && index !== active}>
           <p className="ac-world-eyebrow"><span />{chapter.eyebrow}</p>
-          {index === 0 ? <h1>{chapter.title.map((line, lineIndex) => <span key={line} className={lineIndex === 2 ? 'ac-world-accent' : ''}>{line}</span>)}</h1> : <h2>{chapter.title.map(line => <span key={line}>{line}</span>)}</h2>}
+          {index === 0 ? <h1>{chapter.title.map((line, lineIndex) => <span key={line} className={lineIndex === chapter.accentLine ? 'ac-world-accent' : ''}>{line}</span>)}</h1> : <h2>{chapter.title.map(line => <span key={line}>{line}</span>)}</h2>}
           <p className="ac-world-description">{chapter.description}</p>
           <div className="ac-world-actions">
             <button className="ac-button" onClick={() => onNavigate(chapter.path)}>{chapter.action}<ArrowUpRight size={18} /></button>
             {index === 0 && <button className="ac-world-secondary" onClick={() => onNavigate('/become-dealer')}>Jadi rakan bisnes <ArrowRight size={16} /></button>}
           </div>
           <p className="ac-world-detail"><chapter.icon size={15} />{chapter.detail}</p>
-          {index === 0 && staticMode && <a className="ac-world-static-product" href={BRAND_ASSETS.productEditorial.source} target="_blank" rel="noopener noreferrer"><img src={BRAND_ASSETS.productEditorial.src} alt={BRAND_ASSETS.productEditorial.alt} width={405} height={720} loading="lazy" /><span>Sambal Colek · Foto TikTok rasmi <ArrowUpRight size={14} /></span></a>}
+          {index === chapters.length - 1 && staticMode && <a className="ac-world-static-product" href={BRAND_ASSETS.productEditorial.source} target="_blank" rel="noopener noreferrer"><img src={BRAND_ASSETS.productEditorial.src} alt={BRAND_ASSETS.productEditorial.alt} width={405} height={720} loading="lazy" /><span>Sambal Colek · Foto TikTok rasmi <ArrowUpRight size={14} /></span></a>}
         </article>)}
       </div>
       {!staticMode && <WorldHotspot active={active} paused={!visible || hotspotOpen} onOpenChange={setHotspotOpen} onNavigate={onNavigate} />}

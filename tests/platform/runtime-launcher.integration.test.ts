@@ -11,6 +11,7 @@ function fixture(uiExit=0){
   mkdirSync(join(checkout,'scripts'),{recursive:true});
   cpSync(join(sourceRoot,'scripts/dev.ts'),join(checkout,'scripts/dev.ts'));
   cpSync(join(sourceRoot,'server'),join(checkout,'server'),{recursive:true});
+  cpSync(join(sourceRoot,'shared'),join(checkout,'shared'),{recursive:true});
   const ui=join(checkout,'node_modules/vite/bin');mkdirSync(ui,{recursive:true});
   writeFileSync(join(ui,'vite.js'),`const fs=require('node:fs');fs.writeFileSync(${JSON.stringify(join(directory,'ui-started.json'))},JSON.stringify({target:process.env.PLATFORM_API_TARGET}));setTimeout(()=>process.exit(${uiExit}),150);`);
   return {directory,checkout,runtime,marker:join(directory,'ui-started.json')};

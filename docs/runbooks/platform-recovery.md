@@ -1,11 +1,8 @@
-# ABANGCOLEK — Runbook operasi dan pemulihan platform
+# ABANGCOLEK — Runbook operasi dan pemulihan
 
-**Dikemas kini:** 4 Oktober 2026 (Asia/Kuala_Lumpur). **Scope:** runtime first-party Bun/SQLite dan React/Vite. [Source of Truth](../ABANGCOLEK-SOURCE-OF-TRUTH.md) membezakan source PLATFORM daripada retained OS data; UI3000/API3010 kini running lokal selepas verified source-only switch. [Handover](../handover/AGENT-HANDOVER-A-Z.md) memegang checkpoint dan gates. Runbook ini tidak mengesahkan cloud deployment, founder sign-off atau sambungan vendor.
+Diselaraskan: **19 Oktober 2026**. [Blueprint v2.3](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md), [Source of Truth](../ABANGCOLEK-SOURCE-OF-TRUTH.md) dan [release](../production-release.md) membezakan local SQLite daripada cloud authoritative Supabase CAS. Runbook bukan current listener/provider/backup receipt; tiada drill dijalankan melalui kemas kini ini.
 
-Rujukan: [implementation ledger](../../reports/PLATFORM_EXPANSION_IMPLEMENTATION_2026-10-02.md) · [17-task plan](../superpowers/plans/2026-10-02-platform-expansion.md).
-
-**Keputusan pengguna:** kekalkan runtime/data di `D:\ABANGCOLEK-OS\var` dahulu dengan canonical source PLATFORM. Local source-only switch4Oktober telah melalui fresh recovery, loopback identity dan reconciliation5business-table row hashes. Restore ke root baharu bukan pilihan semasa; backup drill tetap private isolated. Build menggunakan verified isolated restore dengan data sama, supaya DB asal tidak dibuka oleh readonly SQLite. Current receipts dalam capability matrix §10.
-
+Arahan pengguna 3 Oktober mengekalkan OSvar ialah historical local data decision. Jangan menukar root, overwrite data atau melancarkan writer kedua tanpa preflight. Paths/PIDs/row counts lama bukan live state. Rujuk prompt semasa dalam [index](../prompts/README.md).
 ## 1. Peta runtime dan sumber kebenaran
 
 ```text
@@ -38,13 +35,13 @@ Rujukan: [implementation ledger](../../reports/PLATFORM_EXPANSION_IMPLEMENTATION
 | `var/log/platform-worker.jsonl` | Ralat worker yang sudah diredact |
 | `var/lib/qa/` | Database QA disposable; bukan rekod bisnes |
 
-`PLATFORM_RUNTIME_ROOT` boleh memilih root runtime berasingan. **Build prerender menggunakan PLATFORM_DATABASE**, bukan runtime-root; set kedua-duanya apabila source/data root berbeza. Setiap command mesti menggunakan root yang disengajakan. Tiada dual-write ke Supabase; cloud data dan cloud identities terdahulu tidak dipindahkan secara automatik.
+`PLATFORM_RUNTIME_ROOT` boleh memilih root runtime berasingan. **Build prerender menggunakan PLATFORM_DATABASE**, bukan runtime-root; set kedua-duanya apabila source/data root berbeza. Setiap command mesti menggunakan root yang disengajakan. Local mode tidak dual-write ke Supabase. Hosted mode menggunakan snapshot CAS sebagai authority, bukan local backup. Cloud identities/records tidak diimport automatik.
 
 ## 2. Startup dan pemeriksaan readiness
 
-Preview/API kini menggunakan source `D:\ABANGCOLEK-PLATFORM` dan retained OSvar. Refresh listener sebelum operasi. Jangan lancarkan instance kedua pada port3000/3010 atau menganggap API yang ready ialah API checkout yang betul. Launcher B04 hanya reuse identity configured checkout/runtime/database yang sepadan. Missing/malformed/mismatched/HTTPerror/timeout/redirect abort; hanya structured connection-refused membenarkan spawn. Existing listeners tidak dihentikan.
+Source canonical ialah `D:\ABANGCOLEK-PLATFORM`; retained OSvar ialah keputusan snapshot lama, sahkan selector semasa. Refresh listener sebelum operasi. Jangan lancarkan instance kedua pada port3000/3010 atau menganggap API yang ready ialah API checkout yang betul. Launcher B04 hanya reuse identity configured checkout/runtime/database yang sepadan. Missing/malformed/mismatched/HTTPerror/timeout/redirect abort; hanya structured connection-refused membenarkan spawn. Existing listeners tidak dihentikan.
 
-Contoh di bawah untuk startup akan datang selepas listener/identity diperiksa. Runtime kini sudah running; jangan buka launcher tambahan tanpa keperluan. Ia mengekalkan runtime/data OS dengan source PLATFORM; pilih root yang sama dan jangan ubah root semasa API hidup. Prerender selector berasingan diperlukan apabila build: pilih verified snapshot jika DB asal live.
+Contoh di bawah untuk startup akan datang selepas listener/identity diperiksa. Keadaan listener belum disemak dalam kemas kini ini; jangan buka launcher tambahan tanpa preflight. Ia mengekalkan runtime/data OS dengan source PLATFORM; pilih root yang sama dan jangan ubah root semasa API hidup. Prerender selector berasingan diperlukan apabila build: pilih verified snapshot jika DB asal live.
 
 ```powershell
 Set-Location -LiteralPath 'D:\ABANGCOLEK-PLATFORM'
@@ -207,3 +204,17 @@ bunx playwright test -c tests/playwright.config.ts --output var/log/playwright-r
 Runner QA menulis ignored fixture/credentials ke `var/run/e2e-fixture.json`; jangan sertakan fail ini dalam report. Output directory hendaklah berasingan, tetapi QA3011/3001 dan e2e-fixture.json ialah single-run resources: jangan jalankan fixture runners selari. Screenshot, test artifacts dan reports dikecualikan daripada Vite watch supaya penulisan evidence tidak reload flow yang sedang diuji.
 
 Keputusan terakhir dan limitation disimpan dalam implementation ledger. Coverage hanya merangkumi fail yang dimuatkan suite; ia bukan audit semua legacy files, WCAG certification, SLA, field INP atau founder business acceptance.
+
+## 12. Cloud CAS dan agent recovery
+
+1. Sahkan environment/workspace/project, exact deployed SHA dan snapshot revision; jangan menggunakan DB local kosong untuk mengganti cloud state.
+2. Bekukan mutasi semasa insiden integriti. Simpan snapshot/receipt metadata dan private evidence manifest; redact secrets.
+3. Bezakan confirmed conflict, confirmed failed commit dan uncertain commit. Baca unique receipt untuk uncertainty; jangan autoreplay mutation atau external side effect.
+4. Restore ke target terasing dahulu. Uji integrity, ownership, counts, monetary invariants dan evidence hashes/authorization. Backup DB sahaja tidak memulihkan evidence objects.
+5. Reconcile in-flight external intent/outcome sebelum traffic switch. Kod rollback bukan refund atau commission rollback.
+6. Sahkan bounded cloud worker/cron authorization dan lease recovery berasingan daripada local interval worker. Jangan menukar blocked/unknown kepada completed melalui edit SQL.
+7. Agent session/stream store dipulihkan berasingan daripada ledger. Replaying chat/kad tidak menjalankan mutation semula. Sahkan approval/version/session selepas reconnect.
+
+Current local backup source menggunakan serialization; jangan menambah keperluan sqlite3_backup_step tanpa ADR/migrasi. RPO <=4 jam dan RTO <=30 minit ialah sasaran blueprint, bukan hasil drill terkini. CAS/current snapshot bukan historical offsite recovery. Semak consistency, retention, encryption/key recovery dan evidence sebelum melaporkan DR siap; hash sahaja bukan encryption.
+
+Copilot/provider recovery menggunakan qualified free-only fallback atau local_rules/unavailable. Tiada paid overflow. Native JEV tidak aktif secara automatik; LOCAL_RULES boleh terus menyokong triage dan deterministic business commands tidak bergantung pada inference. Intelligence outage tidak boleh menyekat commerce core.

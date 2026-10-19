@@ -47,5 +47,10 @@ export interface FounderAssistantProposal {
     founderApprovalRequired: boolean;
   };
   status: 'proposed' | 'approved' | 'rejected' | 'executed';
+  executionResult?: {
+    resultRef: string;
+    resultKind: 'case_review' | 'stock_review' | 'campaign_draft';
+    executedAt: string;
+  };
   createdAt: string;
 }

@@ -7,6 +7,7 @@ import { setJevHistoryScope } from '../../services/jevEngine';
 import { api, jsonMutation, resetClientSession, resetPendingOperations } from './client';
 import { canAccessSection, canOpenWorkspace, getNavigation, resolveRoute } from './routes';
 import { purgeUserCache } from './offlineDrafts';
+import { supabase } from '../../services/supabaseClient';
 
 import './platform-shell.css';
 import { WorkspaceNavigation } from './WorkspaceNavigation';
@@ -17,6 +18,7 @@ const LandingPage = lazy(() => import('../landing/LandingPage'));
 const Workspaces = lazy(() => import('../workspaces/WorkspaceContent').then(module => ({ default: module.WorkspaceContent })));
 const FlowRenderer = lazy(() => import('../flows/FlowRenderer'));
 const IntegrationWorkspace = lazy(() => import('./IntegrationWorkspace'));
+const PetCompanion = lazy(() => import('../pet/PetCompanion'));
 const roles: Record<WorkspaceRole, string> = { customer: 'Customer', staff: 'Staff', founder: 'Founder', developer: 'Developer' };
 const roleOrder: WorkspaceRole[] = ['founder', 'staff', 'developer', 'customer'];
 type AuthContextValue = { session: SessionData | null; refreshSession: () => Promise<void> };
@@ -32,6 +34,34 @@ export class PlatformErrorBoundary extends Component<{ children: ReactNode }, { 
 function LoginForm({ setup, onSuccess, onNavigate }: { setup: boolean; onSuccess: () => Promise<void>; onNavigate: (path: string) => void }) {
   const [mode, setMode] = useState<'login' | 'signup'>(setup ? 'signup' : 'login');
   const [busy, setBusy] = useState(false); const [error, setError] = useState('');
+  const [googleAvailable,setGoogleAvailable]=useState(false);
+  const callbackStarted=useRef(false);
+  useEffect(()=>{if(!setup&&supabase)void api<{google:boolean}>('/auth/providers').then(value=>setGoogleAvailable(value.google)).catch(()=>setGoogleAvailable(false));},[setup]);
+  useEffect(()=>{
+    const query=new URLSearchParams(window.location.search);
+    if(setup||!query.has('code')||callbackStarted.current)return;
+    callbackStarted.current=true;
+    let pending=0;try{pending=Number(sessionStorage.getItem('platform-google-pending'));sessionStorage.removeItem('platform-google-pending');}catch{/* Missing tab-bound state is rejected below. */}
+    window.history.replaceState({},'',window.location.pathname);
+    if(!supabase||!pending||Date.now()-pending>10*60_000||pending>Date.now()){setError('Sesi Google tidak sah atau telah tamat. Mulakan semula login Google.');return;}
+    const client=supabase;setBusy(true);
+    void(async()=>{try{
+      const {data,error:exchangeError}=await client.auth.exchangeCodeForSession(query.get('code')!);
+      if(exchangeError||!data.session)throw new Error('Sesi Google tidak dapat disahkan. Cuba semula.');
+      resetClientSession();
+      await api<SessionData>('/auth/google',jsonMutation({accessToken:data.session.access_token}));
+      await onSuccess();
+    }catch(reason){setError(reason instanceof Error?reason.message:'Google login tidak dapat disahkan.');}finally{setBusy(false);}})();
+  },[setup,onSuccess]);
+  async function googleLogin(){
+    if(!supabase||!googleAvailable)return;
+    setBusy(true);setError('');
+    try{
+      sessionStorage.setItem('platform-google-pending',String(Date.now()));
+      const {error:providerError}=await supabase.auth.signInWithOAuth({provider:'google',options:{redirectTo:`${window.location.origin}/login`}});
+      if(providerError)throw providerError;
+    }catch{sessionStorage.removeItem('platform-google-pending');setError('Google login tidak dapat dimulakan. Cuba semula.');setBusy(false);}
+  }
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setBusy(true); setError('');
     const form = new FormData(event.currentTarget);
@@ -52,8 +82,8 @@ function LoginForm({ setup, onSuccess, onNavigate }: { setup: boolean; onSuccess
       {setup && <label>Token founder<input name="token" type="password" autoComplete="off" required maxLength={150} /><span className="platform-field-hint">Fail setempat: var/run/owner-bootstrap.token. Token tidak dihantar ke AI.</span></label>}
       {error && <p role="alert" className="platform-alert">{error}</p>}
       <button type="submit" className="platform-primary" disabled={busy}>{busy ? 'Mengesahkan sesi…' : setup ? 'Provision founder' : mode === 'login' ? 'Masuk workspace' : 'Daftar customer'}<ArrowUpRight size={18} /></button>
-      {!setup && <p className="platform-field-hint">Google login belum tersedia untuk workspace ini. Gunakan email dan password.</p>}
-      {!setup && <button type="button" className="platform-text-button" disabled>Teruskan dengan Google</button>}
+      {!setup && !googleAvailable && <p className="platform-field-hint">Google login belum tersedia untuk workspace ini. Gunakan email dan password.</p>}
+      {!setup && <button type="button" className="platform-text-button" disabled={!googleAvailable||busy} onClick={()=>void googleLogin()}>Teruskan dengan Google</button>}
       {!setup && <button type="button" className="platform-text-button" onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); }}>{mode === 'login' ? 'Belum ada akaun? Daftar customer' : 'Sudah ada akaun? Masuk'}</button>}
     </form>
   </main>;
@@ -145,5 +175,5 @@ export default function AppRouter() {
     }
   }
 
-  return <AuthContext.Provider value={{ session, refreshSession }}><div data-theme={theme} className="app-shell platform-app"><a className="platform-skip" href="#platform-main" inert={mobile && menuOpen}>Langkau ke kandungan</a>{!online && <div role="status" className="platform-network-banner">Offline — perubahan belum diterima server. Sambung semula sebelum mengesahkan tindakan.</div>}{sessionError && route.kind !== 'public' && <div role="status" className="platform-network-banner">{sessionError}</div>}<Suspense fallback={<main className="platform-recovery" aria-busy="true"><p>Membuka workspace…</p></main>}>{content}</Suspense></div></AuthContext.Provider>;
+  return <AuthContext.Provider value={{ session, refreshSession }}><div data-theme={theme} className="app-shell platform-app"><a className="platform-skip" href="#platform-main" inert={mobile && menuOpen}>Langkau ke kandungan</a>{!online && <div role="status" className="platform-network-banner">Offline — perubahan belum diterima server. Sambung semula sebelum mengesahkan tindakan.</div>}{sessionError && route.kind !== 'public' && <div role="status" className="platform-network-banner">{sessionError}</div>}<Suspense fallback={<main className="platform-recovery" aria-busy="true"><p>Membuka workspace…</p></main>}>{content}<PetCompanion onNavigate={navigate} /></Suspense></div></AuthContext.Provider>;
 }

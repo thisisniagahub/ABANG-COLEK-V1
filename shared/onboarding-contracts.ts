@@ -17,6 +17,9 @@ export interface LocationOnboardingDraft {
   name: string;
   address: string;
   openingStockQuantity?: number;
+  approved?: boolean;
+  hours?: string;
+  verifiedAt?: string;
   batchId?: string;
 }
 

@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
 import { ArrowLeft, ArrowRight, Check, CheckCircle2, MessageSquare, Package, ShieldCheck } from 'lucide-react';
 import type { FlowDefinition, FlowSession, PublicProduct, SafeDraft,OrderRecord } from '../../../shared/platform-contracts';
+import { formatWhatsAppUrl } from '../../../shared/growth-contracts';
 import { api, apiPage, pagePath, jsonMutation, PlatformError, useResource } from '../platform/client';
 import { usePlatformSession } from '../platform/AppRouter';
 import { readOfflineDraft, saveOfflineDraft } from '../platform/offlineDrafts';
@@ -20,7 +21,16 @@ function AnswerInput({id,field,value,required,maxLength,onChange}:{id:string;fie
 export default function FlowRenderer({ slug, onNavigate }: { slug: string; onNavigate: (path: string) => void }) {
   const answerId = useId();
   const { session: identity } = usePlatformSession();
-  const [checkout]=useState(()=>{const params=new URLSearchParams(window.location.search);const provided=params.has('cart');return {provided,lines:provided&&slug==='order'?decodeCustomerCart(params.get('cart')):null};});
+  const [checkout]=useState(()=>{
+    const params=new URLSearchParams(window.location.search);
+    const provided=params.has('cart');
+    const rawRef=params.get('ref')||params.get('referralCode')||'';
+    const cleanRef=rawRef.trim();
+    const referralCode=/^[a-zA-Z0-9_-]{3,32}$/.test(cleanRef)?cleanRef:undefined;
+    const rawPhone=params.get('phone')||params.get('agentPhone')||params.get('refPhone')||'';
+    const agentPhone=rawPhone.trim()||undefined;
+    return {provided,lines:provided&&slug==='order'?decodeCustomerCart(params.get('cart')):null,referralCode,agentPhone};
+  });
   const definition = useResource<FlowDefinition>(`/flows/${encodeURIComponent(slug)}`);
   const catalogue = useResource<PublicProduct[]>('/catalogue');
   const orders=useResource<OrderRecord[]>('/orders');
@@ -37,7 +47,7 @@ export default function FlowRenderer({ slug, onNavigate }: { slug: string; onNav
   const formDraft=useRef<Record<string,unknown>>({});
   const current = definition.data?.nodes.find(node => node.id === flow?.currentNode);
   const cartKey=checkout.lines?encodeCustomerCart(checkout.lines):'invalid';
-  const key = `abangcolek-flow-session:${identity?.user.id ?? ''}:${slug}${checkout.provided?`:cart:${cartKey}`:''}`;
+  const key = `abangcolek-flow-session:${identity?.user.id ?? ''}:${slug}${checkout.provided?`:cart:${cartKey}`:''}${checkout.referralCode?`:ref:${checkout.referralCode}`:''}`;
   const submitKey = useRef(crypto.randomUUID());
   const restoredDraft = useRef<SafeDraft | null>(null);
   useEffect(() => {
@@ -107,7 +117,7 @@ export default function FlowRenderer({ slug, onNavigate }: { slug: string; onNav
           if(lines.every(line=>products.some(product=>product.id===line.productId))||result.nextOffset===null)break;
           path=pagePath('/catalogue',result.nextOffset);
         }
-        answers={...flow.answers,...customerCartOrderAnswers(lines,products)};
+        answers={...flow.answers,...customerCartOrderAnswers(lines,products,checkout.referralCode)};
         operation='form';
       }
       const next = await api<FlowSession>(`/flow-sessions/${flow.id}/${operation}`, { ...jsonMutation({ expectedRevision: flow.revision, ...(answers ? { answers } : {}) }), ...(operation === 'submit' ? { headers: { 'Idempotency-Key': submitKey.current } } : {}) });
@@ -132,13 +142,19 @@ export default function FlowRenderer({ slug, onNavigate }: { slug: string; onNav
     if (current.field === 'lines') {
       if(checkout.provided){
         if(!checkout.lines){setError('Format troli tidak sah. Kembali ke kedai dan bina semula troli.');return;}
-        try { void move('advance',customerCartOrderAnswers(checkout.lines,catalogue.data??[])); }
+        try { void move('advance',customerCartOrderAnswers(checkout.lines,catalogue.data??[],checkout.referralCode)); }
         catch(reason) { setError(reason instanceof Error?reason.message:'Troli tidak sah. Semak semula sebelum checkout.'); }
         return;
       }
       const chosen = catalogue.data?.find(product => product.id === value);
       if (!chosen || !Number.isSafeInteger(quantity) || quantity <= 0) { setError('Pilih produk diterbitkan dan kuantiti yang sah.'); return; }
-      try { void move('advance', lineAnswers(definition.data!.intent, chosen, quantity)); }
+      try {
+        const answers = lineAnswers(definition.data!.intent, chosen, quantity);
+        if (checkout.referralCode && definition.data?.intent === 'order') {
+          Object.assign(answers, { referralCode: checkout.referralCode });
+        }
+        void move('advance', answers);
+      }
       catch (reason) { setError(reason instanceof Error ? reason.message : 'Kuantiti tidak sah.'); }
     } else if (current.field === 'expectedRevision') {
       const revision = Number(value); if (!Number.isSafeInteger(revision) || revision < 1) { setError('Versi penghantaran mesti integer positif.'); return; }
@@ -149,6 +165,22 @@ export default function FlowRenderer({ slug, onNavigate }: { slug: string; onNav
   const completed = flow?.status === 'submitted';
   return <main id="platform-main" className="flow-page">
     <div className="flow-heading"><span className="platform-eyebrow"><MessageSquare size={16} />ABANGCOLEK GUIDED FLOW</span><h1>{definition.data?.title ?? 'Sambung urusan anda'}</h1><p>Pilih, semak dan hantar. Setiap permintaan membawa receipt yang boleh dirujuk.</p></div>
+    {checkout.referralCode && (
+      <div className="flow-referral-banner" role="status">
+        <div className="flow-referral-info">
+          <span className="flow-referral-pill">KEDAI MINI EJEN</span>
+          <span>Dirujuk oleh: <strong>{checkout.referralCode}</strong></span>
+        </div>
+        <a
+          href={formatWhatsAppUrl(checkout.agentPhone, `Salam Ejen ${checkout.referralCode}, saya sedang melengkapkan pesanan di kedai ABANGCOLEK.`)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flow-whatsapp-link"
+        >
+          Hubungi Ejen (WhatsApp)
+        </a>
+      </div>
+    )}
     {definition.loading && <p role="status">Memuatkan definisi flow…</p>}
     {definition.error && <p role="alert" className="platform-alert">{definition.error}<button onClick={definition.reload}>Cuba semula</button></p>}
     {checkout.provided&&!checkout.lines&&<p role="alert" className="platform-alert">Format troli tidak sah. <button type="button" onClick={()=>onNavigate('/customer/shop')}>Kembali ke kedai</button></p>}
@@ -159,7 +191,7 @@ export default function FlowRenderer({ slug, onNavigate }: { slug: string; onNav
       <div className="flow-step-info"><span>Langkah {index + 1} · v{flow.version}</span><button className="platform-text-button" onClick={() => {if(formMode&&current?.field){const draft=formDraft.current[current.field];if(current.field==='lines'){const selection=initialLineSelection(draft,{productId:value,quantity},undefined,catalogue.data??[]);setValue(selection.productId);setQuantity(selection.quantity);}else if(typeof draft==='string')setValue(draft);}setFormMode(mode=>!mode);}}>{formMode ? 'Paparan perbualan' : 'Paparan form'}</button></div>
       {catalogue.hasMore&&<button className="platform-text-button" onClick={()=>void catalogue.loadMore()} disabled={catalogue.loadingMore}>Muat lagi produk</button>}
       {orders.hasMore&&definition.data.intent==='complaint'&&<button className="platform-text-button" onClick={()=>void orders.loadMore()} disabled={orders.loadingMore}>Muat lagi pesanan</button>}
-      {formMode?<FlowForm definition={definition.data} flow={{...flow,answers:{...flow.answers,...formDraft.current,...(current?.field?{[current.field]:current.field==='lines'?[{productId:value,quantity}]:value}:{})}}} onDraft={answers=>{formDraft.current=answers;}} products={catalogue.data??[]} orders={orders.data??[]} busy={busy} cartLines={checkout.lines??undefined} onReview={answers=>move('form',answers)}/>:<section className="flow-card"><h2 ref={heading} tabIndex={-1}>{current?.label ?? 'Semak urusan'}</h2>
+      {formMode?<FlowForm definition={definition.data} flow={{...flow,answers:{...flow.answers,...formDraft.current,...(current?.field?{[current.field]:current.field==='lines'?[{productId:value,quantity}]:value}:{})}}} onDraft={answers=>{formDraft.current=answers;}} products={catalogue.data??[]} orders={orders.data??[]} busy={busy} cartLines={checkout.lines??undefined} referralCode={checkout.referralCode} onReview={answers=>move('form',answers)}/>:<section className="flow-card"><h2 ref={heading} tabIndex={-1}>{current?.label ?? 'Semak urusan'}</h2>
         {current?.kind === 'review' ? <><p className="flow-muted">Semak maklumat. Harga dan availability disahkan semula oleh server sebelum receipt dikeluarkan.</p><dl className="flow-review">{Object.entries(flow.answers).map(([field, answer]) => <div key={field}><dt>{labels[field] ?? field}</dt><dd>{field === 'lines' && Array.isArray(answer) ? answer.map((line: {productId:string;quantity:number}) => `${catalogue.data?.find(product => product.id === line.productId)?.name ?? line.productId} × ${line.quantity}`).join(', ') : typeof answer === 'object' ? JSON.stringify(answer) : String(answer)}</dd></div>)}</dl><button className="platform-primary" disabled={busy} onClick={() => void move(reviewOperation(flow.reviewVersion,flow.reviewQuote?.expiresAt,requiresReview))}>{busy ? 'Mengesahkan…' : reviewOperation(flow.reviewVersion,flow.reviewQuote?.expiresAt,requiresReview,clock)==='review' ? (flow.reviewVersion===undefined?'Sahkan semakan server':'Semak harga semula') : 'Hantar permintaan'}{flow.reviewVersion === undefined ? <ShieldCheck size={18}/> : <Check size={18}/>}</button></> : <form onSubmit={answer}>
           {current?.field === 'lines' ? (
             checkout.lines ? (
@@ -188,7 +220,7 @@ export default function FlowRenderer({ slug, onNavigate }: { slug: string; onNav
       {!checkout.provided&&<label className="flow-offline-option"><input type="checkbox" checked={optIn} onChange={event => setOptIn(event.target.checked)}/><span>Simpan draft pada device ini jika offline. Elakkan pada telefon yang dikongsi.</span></label>}
       <p className="flow-muted">Draft bukan receipt. ID sesi: {flow.id}</p>
     </>}
-    {completed && <section className="flow-receipt"><span className="flow-icon"><CheckCircle2 size={38}/></span><p className="platform-eyebrow">SERVER RECEIPT</p><h2>Permintaan telah diterima.</h2><p>Rekod: <strong>{flow.receipt?.entityId}</strong></p><p className="flow-muted">{flow.receipt?.submittedAt ? new Date(flow.receipt.submittedAt).toLocaleString('ms-MY') : ''} · Status pembayaran/fulfilment disemak berasingan.</p><button className="platform-primary" onClick={() => { const role = identity?.memberships.some(membership => membership.role === 'customer' && membership.status === 'active') ? 'customer' : 'founder'; const section = definition.data?.intent === 'complaint' ? 'cases' : definition.data?.intent === 'dealer_application' || definition.data?.intent === 'restock' || definition.data?.intent === 'stock_receipt' ? role === 'founder' ? 'dealers' : 'business' : 'orders'; onNavigate(`/${role}/${section}`); }}>Buka rekod saya<ArrowRight size={18}/></button></section>}
+    {completed && <section className="flow-receipt"><span className="flow-icon"><CheckCircle2 size={38}/></span><p className="platform-eyebrow">SERVER RECEIPT</p><h2>Permintaan telah diterima.</h2><p>Rekod: <strong>{flow.receipt?.entityId}</strong></p>{(checkout.referralCode || (typeof flow.answers.referralCode === 'string' && flow.answers.referralCode)) && <p className="flow-muted">Pesanan dikreditkan kepada Ejen Perujuk: <strong>{String(flow.answers.referralCode || checkout.referralCode)}</strong></p>}<p className="flow-muted">{flow.receipt?.submittedAt ? new Date(flow.receipt.submittedAt).toLocaleString('ms-MY') : ''} · Status pembayaran/fulfilment disemak berasingan.</p><div style={{display:'flex',gap:'10px',flexWrap:'wrap',marginTop:'14px'}}><button className="platform-primary" onClick={() => { const role = identity?.memberships.some(membership => membership.role === 'customer' && membership.status === 'active') ? 'customer' : 'founder'; const section = definition.data?.intent === 'complaint' ? 'cases' : definition.data?.intent === 'dealer_application' || definition.data?.intent === 'restock' || definition.data?.intent === 'stock_receipt' ? role === 'founder' ? 'dealers' : 'business' : 'orders'; onNavigate(`/${role}/${section}`); }}>Buka rekod saya<ArrowRight size={18}/></button>{(checkout.referralCode || (typeof flow.answers.referralCode === 'string' && flow.answers.referralCode)) && <a href={formatWhatsAppUrl(checkout.agentPhone, `Salam Ejen ${checkout.referralCode || flow.answers.referralCode}, saya telah menghantar pesanan ${flow.receipt?.entityId ?? ''} melalui pautan kedai mini anda.`)} target="_blank" rel="noopener noreferrer" className="platform-text-button" style={{textDecoration:'none',display:'inline-flex',alignItems:'center',gap:'6px'}}>Maklumkan Ejen via WhatsApp</a>}</div></section>}
     {error && <p className="platform-alert" role="alert">{error}</p>}{saved && <p role="status" className="flow-muted">Draft tersimpan pada device ini; belum diterima server.</p>}
     <footer className="flow-footer"><Package size={16}/><span>Guided web flow ABANGCOLEK. Penghantaran WhatsApp, jika diperlukan, disemak berasingan.</span></footer>
   </main>;

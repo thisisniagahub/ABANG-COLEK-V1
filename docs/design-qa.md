@@ -1,10 +1,26 @@
-<!-- ABANGCOLEK_DOC_AUTHORITY_V1 -->
-> **HISTORICAL_SNAPSHOT — context diselaraskan 3 Oktober 2026.** Kandungan/metadata asal di bawah ialah bukti atau cadangan pada tarikh asal, bukan current runtime/authorization/release proof. Gunakan [Source of Truth](docs/ABANGCOLEK-SOURCE-OF-TRUTH.md) dan [handover A–Z](docs/handover/AGENT-HANDOVER-A-Z.md) untuk keputusan semasa. Server3000/3010 STOPPED pada snapshot20:25MYT; data kekal OS; Emons goal PAUSED. Native provider/benchmark/cost/complete claims perlu verifikasi sendiri.
+# ABANGCOLEK — Design QA contract dan dated evidence
 
+Diselaraskan: **19 Oktober 2026**, mengikut [Master Blueprint v2.3](ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md). Bahagian Dashboard di bawah ialah **HISTORICAL_SNAPSHOT**; test/browser outcomes tidak dijalankan semula melalui alignment ini. Jangan menggunakan keadaan server atau paused/complete goal lama sebagai live status.
+
+## Acceptance semasa
+
+- Uji storefront/checkout/tracking, role workspaces dan Copilot pada phone/tablet/desktop, light/dark, keyboard/screen reader, focus return, reduced motion serta connection loss.
+- Semak actual served source/SHA, API JSON, provenance, loading/empty/missing-data/error; root 200 atau screenshot sahaja bukan acceptance.
+- Copilot: 10 ciri/10 modul/32 logical capabilities/7 UI approaches mempunyai coverage berasingan. Display-only tidak memberi interactive authority; frontend callbacks melalui fresh server checks.
+- Fixed-schema A2UI dan komponen ABANGCOLEK; first-party read-only MCP App untuk pilot. Render schema ditolak jika unknown component, unsafe URL/HTML/code atau cross-scope reference.
+- Kad margin/JEV/tracking menggunakan tool/state sebenar, timestamp/rule version dan insufficient-data. LOCAL_RULES bukan native confidence; evidence image bukan vision analysis.
+- Approval menunjukkan payload/scope/revision/expiry; approve bukan success. Pending execution, committed receipt, rejected/stale/unknown dipaparkan berbeza.
+- Workspace/Pet berkongsi thread tanpa duplicate run; stop/cancel/mute dan text fallback berfungsi. Voice inference free-only dan explicit microphone permission.
+- Streams replay/reconnect tidak menjalankan action semula. Intelligence belum layak -> blocked_external berlabel. Tiada fake saved-run/learning success.
+- Negative tests untuk role/ownership/revocation, URL/shared state tampering, logout cache dan prompt injection. Tiada secrets/PII tersembunyi dalam DOM, public HTML atau exports.
+
+Evidence wajib: exact commit/dirty manifest, viewport/browser, screenshot/trace, commands/API responses, time, expected/actual dan limitations. Brand assets asli dikekalkan; research images bukan bukti SKU tersedia.
+
+## Historical Dashboard QA
 # Dashboard UI/UX — Design QA
 
-Date: 2026-10-01  
-final result: passed  
+Date: 2026-10-01
+final result: passed
 Scope: dashboard/sidebar/mobile navigation UI and local data interactions. This result does not certify production integrations or pixel-for-pixel reproduction of a selected mockup.
 
 ## Design intent and evidence
@@ -15,9 +31,9 @@ References opened together with the implementation screenshot in a single compar
 
 - Generated action-first concept: `exec-b06e2d61-82cc-48d0-a0a2-6e3fbd1d0f05.png` in the session generated_images folder.
 - Generated executive concept: `exec-6ce01755-35ec-4974-b23d-79c8f09daf5c.png` in the same folder.
-- [Desktop light](reports/dashboard-ui/desktop-light.png), captured at 1440×1024 CSS viewport.
-- [Desktop dark](reports/dashboard-ui/desktop-dark.png), captured at 1440×1024 CSS viewport.
-- [Mobile light](reports/dashboard-ui/mobile-light.png), captured at 390×844 CSS viewport.
+- [Desktop light](../reports/dashboard-ui/desktop-light.png), captured at 1440×1024 CSS viewport.
+- [Desktop dark](../reports/dashboard-ui/desktop-dark.png), captured at 1440×1024 CSS viewport.
+- [Mobile light](../reports/dashboard-ui/mobile-light.png), captured at 390×844 CSS viewport.
 
 Saved screenshots were opened and visually inspected. The current Chrome screenshot capture has a warm appearance; computed dashboard light background was independently read as rgb(246,247,244), and dark background as rgb(19,25,24). Color reproduction of the screenshot alone is not a color-calibration test.
 

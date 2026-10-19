@@ -1,6 +1,17 @@
+# ABANGCOLEK — Markdown Alignment Register, 19 Oktober 2026
+
+Authority semasa: [master blueprint v2.3](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md), [ADR-0003](../decisions/0003-blueprint-v23-execution-contract.md), [prompt utama](../prompts/IMPLEMENT-ABANGCOLEK.md).
+
+Inventori awal sesi ini: **356 Markdown = 120 dokumen projek + 236 skill-library files**. Semua disenaraikan mengikut path/hash/category dalam [register per-file](MARKDOWN-INVENTORY-20261019.md). Kiraan akhir termasuk dokumen/prompt baharu direkod selepas verification; jangan guna kiraan sejarah di bawah sebagai denominator semasa.
+
+Dokumen aktif disemak kandungan; dokumen sejarah mendapat supersession/authority context dan pembetulan pautan yang boleh disahkan. Skill vendor/managed di `skills/` dan `.agents/` dikekalkan dengan hashes; ia bukan business blueprint dan tidak ditulis semula atau didakwa semuanya dijalankan/semantic-audited. Generated/runtime/private/dependency trees dikecualikan daripada project documentation.
+
+Dokumen, 10CPK/10MOD/7GUI/32logical capabilities, topology local/cloud, free-only, JEV LOCAL_RULES dan approval/receipt boundaries kini mempunyai sumber autoriti yang jelas. Ini bukan pengesahan source/runtime/release. Laporan penutupan: [alignment report](../../reports/documentation-alignment-20261019.md).
+
+## Rekod sejarah sehingga 4 Oktober — bukan status semasa
 # ABANGCOLEK — register seluruh Markdown dan alignment
 
-**Asal:** 3 Oktober2026; **dikemas kini4Oktober2026**. **Scope:** canonical repo D:\ABANGCOLEK-PLATFORM. [Handover](AGENT-HANDOVER-A-Z.md), [Source of Truth](../ABANGCOLEK-SOURCE-OF-TRUTH.md), [backlog](../PROJECT-ALIGNMENT-BACKLOG.md).
+**Asal:** 3 Oktober2026; **dikemas kini4Oktober2026**. **Scope:** canonical repo D:\ABANGCOLEK-PLATFORM. [Handover](AGENT-HANDOVER-A-Z.md), [Source of Truth](../ABANGCOLEK-SOURCE-OF-TRUTH.md), [backlog](../archive/legacy-oct2026/PROJECT-ALIGNMENT-BACKLOG.md).
 
 ## Coverage dan kaedah
 
@@ -67,28 +78,28 @@ Receipt lokal: `var/lib/handover/doc-validation.json`, `annotation-manifest.json
 
 | # | Fail | Klasifikasi | Tindakan |
 |---|---|---|---|
-| 1 | [docs/ABANGCOLEK_DISCOVERY_AND_PLAN.md](../ABANGCOLEK_DISCOVERY_AND_PLAN.md) | HISTORICAL_PLAN | Authority banner + explicit errata; dipindahkan dari akar (F02); body preserved |
-| 2 | [docs/ABANGCOLEK_OS_UPGRADE_BLUEPRINT.md](../ABANGCOLEK_OS_UPGRADE_BLUEPRINT.md) | HISTORICAL_PLAN | Authority banner; dipindahkan dari akar (F02); body preserved |
+| 1 | [docs/ABANGCOLEK_DISCOVERY_AND_PLAN.md](../archive/legacy-oct2026/ABANGCOLEK_DISCOVERY_AND_PLAN.md) | HISTORICAL_PLAN | Authority banner + explicit errata; dipindahkan dari akar (F02); body preserved |
+| 2 | [docs/ABANGCOLEK_OS_UPGRADE_BLUEPRINT.md](../archive/legacy-oct2026/ABANGCOLEK_OS_UPGRADE_BLUEPRINT.md) | HISTORICAL_PLAN | Authority banner; dipindahkan dari akar (F02); body preserved |
 | 3 | [docs/design-qa.md](../design-qa.md) | HISTORICAL_SNAPSHOT | Authority banner; dipindahkan dari akar (F02); body preserved |
 | 4 | [docs/ABANGCOLEK-SOURCE-OF-TRUTH.md](../ABANGCOLEK-SOURCE-OF-TRUTH.md) | CURRENT_AUTHORITY | Current entry; refresh receipt sebelum operasi |
-| 5 | [docs/AUDIT_TERPERINCI_KESELURUHAN_PROJEK_ABANGCOLEK_OS.md](../AUDIT_TERPERINCI_KESELURUHAN_PROJEK_ABANGCOLEK_OS.md) | HISTORICAL_SNAPSHOT | Authority banner + explicit errata; body preserved |
-| 6 | [docs/AUDIT_TERPERINCI_REPO_ABANG_COLEK_ECOSYSTEM.md](../AUDIT_TERPERINCI_REPO_ABANG_COLEK_ECOSYSTEM.md) | HISTORICAL_SNAPSHOT | Authority banner; body preserved |
-| 7 | [docs/CADANGAN_PENAMBAHBAIKAN_DAN_TEMA_LOGO_ABANGCOLEK.md](../CADANGAN_PENAMBAHBAIKAN_DAN_TEMA_LOGO_ABANGCOLEK.md) | HISTORICAL_SNAPSHOT | Authority banner; body preserved |
-| 8 | [docs/CARA_PENGOPERASIAN_SEPATUTNYA_ABANGCOLEK_OS.md](../CARA_PENGOPERASIAN_SEPATUTNYA_ABANGCOLEK_OS.md) | LEGACY_GUIDE | Authority banner; body preserved |
+| 5 | [docs/AUDIT_TERPERINCI_KESELURUHAN_PROJEK_ABANGCOLEK_OS.md](../archive/legacy-oct2026/AUDIT_TERPERINCI_KESELURUHAN_PROJEK_ABANGCOLEK_OS.md) | HISTORICAL_SNAPSHOT | Authority banner + explicit errata; body preserved |
+| 6 | [docs/AUDIT_TERPERINCI_REPO_ABANG_COLEK_ECOSYSTEM.md](../archive/legacy-oct2026/AUDIT_TERPERINCI_REPO_ABANG_COLEK_ECOSYSTEM.md) | HISTORICAL_SNAPSHOT | Authority banner; body preserved |
+| 7 | [docs/CADANGAN_PENAMBAHBAIKAN_DAN_TEMA_LOGO_ABANGCOLEK.md](../archive/legacy-oct2026/CADANGAN_PENAMBAHBAIKAN_DAN_TEMA_LOGO_ABANGCOLEK.md) | HISTORICAL_SNAPSHOT | Authority banner; body preserved |
+| 8 | [docs/CARA_PENGOPERASIAN_SEPATUTNYA_ABANGCOLEK_OS.md](../archive/legacy-oct2026/CARA_PENGOPERASIAN_SEPATUTNYA_ABANGCOLEK_OS.md) | LEGACY_GUIDE | Authority banner; body preserved |
 | 9 | [docs/decisions/0001-project-authority-and-continuity.md](../decisions/0001-project-authority-and-continuity.md) | CURRENT_AUTHORITY | Current entry; refresh receipt sebelum operasi |
-| 10 | [docs/FORENSIK_AUDIT_LENGKAP_REPO_ABANG_COLEK.md](../FORENSIK_AUDIT_LENGKAP_REPO_ABANG_COLEK.md) | HISTORICAL_SNAPSHOT | Authority banner; body preserved |
+| 10 | [docs/FORENSIK_AUDIT_LENGKAP_REPO_ABANG_COLEK.md](../archive/legacy-oct2026/FORENSIK_AUDIT_LENGKAP_REPO_ABANG_COLEK.md) | HISTORICAL_SNAPSHOT | Authority banner; body preserved |
 | 11 | [docs/handover/AGENT-HANDOVER-A-Z.md](AGENT-HANDOVER-A-Z.md) | CURRENT_AUTHORITY | Current entry; refresh receipt sebelum operasi |
 | 12 | [docs/handover/CAPABILITY-MATRIX.md](CAPABILITY-MATRIX.md) | CURRENT_AUTHORITY | Current entry; refresh receipt sebelum operasi |
 | 13 | [docs/handover/MARKDOWN-ALIGNMENT-REGISTER.md](MARKDOWN-ALIGNMENT-REGISTER.md) | CURRENT_AUTHORITY | Current entry; refresh receipt sebelum operasi |
-| 14 | [docs/JEV_ARCH.md](../JEV_ARCH.md) | HISTORICAL_SNAPSHOT | Authority banner + explicit errata; body preserved |
-| 15 | [docs/JEV_ECOSYSTEM_AUDIT_REPORT.md](../JEV_ECOSYSTEM_AUDIT_REPORT.md) | HISTORICAL_SNAPSHOT | Authority banner + explicit errata; body preserved |
-| 16 | [docs/KATALOG_DAN_PANDUAN_SKILL_EJEN_AI.md](../KATALOG_DAN_PANDUAN_SKILL_EJEN_AI.md) | LEGACY_GUIDE | Authority banner; body preserved |
-| 17 | [docs/KEDUDUKAN_DAN_ARKITEKTUR_JEV_DALAM_PROJEK.md](../KEDUDUKAN_DAN_ARKITEKTUR_JEV_DALAM_PROJEK.md) | LEGACY_GUIDE | Authority banner; body preserved |
-| 18 | [docs/PANDUAN_COMMAND_PALETTE.md](../PANDUAN_COMMAND_PALETTE.md) | LEGACY_GUIDE | Authority banner; body preserved |
-| 19 | [docs/PANDUAN_DAN_PEMASANGAN_SUPERPOWERS_DAN_JEV_SKILLS.md](../PANDUAN_DAN_PEMASANGAN_SUPERPOWERS_DAN_JEV_SKILLS.md) | LEGACY_GUIDE | Authority banner; body preserved |
-| 20 | [docs/PROJECT-ALIGNMENT-BACKLOG.md](../PROJECT-ALIGNMENT-BACKLOG.md) | CURRENT_AUTHORITY | Current entry; refresh receipt sebelum operasi |
+| 14 | [docs/JEV_ARCH.md](../archive/legacy-oct2026/JEV_ARCH.md) | HISTORICAL_SNAPSHOT | Authority banner + explicit errata; body preserved |
+| 15 | [docs/JEV_ECOSYSTEM_AUDIT_REPORT.md](../archive/legacy-oct2026/JEV_ECOSYSTEM_AUDIT_REPORT.md) | HISTORICAL_SNAPSHOT | Authority banner + explicit errata; body preserved |
+| 16 | [docs/KATALOG_DAN_PANDUAN_SKILL_EJEN_AI.md](../archive/legacy-oct2026/KATALOG_DAN_PANDUAN_SKILL_EJEN_AI.md) | LEGACY_GUIDE | Authority banner; body preserved |
+| 17 | [docs/KEDUDUKAN_DAN_ARKITEKTUR_JEV_DALAM_PROJEK.md](../archive/legacy-oct2026/KEDUDUKAN_DAN_ARKITEKTUR_JEV_DALAM_PROJEK.md) | LEGACY_GUIDE | Authority banner; body preserved |
+| 18 | [docs/PANDUAN_COMMAND_PALETTE.md](../archive/legacy-oct2026/PANDUAN_COMMAND_PALETTE.md) | LEGACY_GUIDE | Authority banner; body preserved |
+| 19 | [docs/PANDUAN_DAN_PEMASANGAN_SUPERPOWERS_DAN_JEV_SKILLS.md](../archive/legacy-oct2026/PANDUAN_DAN_PEMASANGAN_SUPERPOWERS_DAN_JEV_SKILLS.md) | LEGACY_GUIDE | Authority banner; body preserved |
+| 20 | [docs/PROJECT-ALIGNMENT-BACKLOG.md](../archive/legacy-oct2026/PROJECT-ALIGNMENT-BACKLOG.md) | CURRENT_AUTHORITY | Current entry; refresh receipt sebelum operasi |
 | 21 | [docs/README.md](../README.md) | CURRENT_AUTHORITY | Current entry; refresh receipt sebelum operasi |
-| 22 | [docs/REVIEW_HERMES_AGENT_DAN_DEEPSEEK_JEV_MERGE.md](../REVIEW_HERMES_AGENT_DAN_DEEPSEEK_JEV_MERGE.md) | HISTORICAL_SNAPSHOT | Authority banner; body preserved |
+| 22 | [docs/REVIEW_HERMES_AGENT_DAN_DEEPSEEK_JEV_MERGE.md](../archive/legacy-oct2026/REVIEW_HERMES_AGENT_DAN_DEEPSEEK_JEV_MERGE.md) | HISTORICAL_SNAPSHOT | Authority banner; body preserved |
 | 23 | [docs/runbooks/platform-recovery.md](../runbooks/platform-recovery.md) | CURRENT_AUTHORITY | Current entry; refresh receipt sebelum operasi |
 | 24 | [docs/superpowers/plans/2026-10-02-platform-expansion.md](../superpowers/plans/2026-10-02-platform-expansion.md) | HISTORICAL_PLAN | Authority banner; body preserved |
 | 25 | [docs/superpowers/plans/2026-10-03-emons-live-scene-upgrade.md](../superpowers/plans/2026-10-03-emons-live-scene-upgrade.md) | HISTORICAL_PLAN | Authority banner; body preserved |
@@ -361,7 +372,7 @@ Dokumen berikut ditambah selepas baseline 4 Oktober dan menjadi current authorit
 
 | Fail | Klasifikasi | Maksud |
 |---|---|---|
-| [docs/ABANGCOLEK-PLATFORM-STATUS-2026-10-16.md](../ABANGCOLEK-PLATFORM-STATUS-2026-10-16.md) | CURRENT_SNAPSHOT | Status runtime/UI Social, Plugins, Automation, Founder login dan verification terkini |
+| [docs/ABANGCOLEK-PLATFORM-STATUS-2026-10-16.md](../archive/legacy-oct2026/ABANGCOLEK-PLATFORM-STATUS-2026-10-16.md) | CURRENT_SNAPSHOT | Status runtime/UI Social, Plugins, Automation, Founder login dan verification terkini |
 | [docs/AI-AGENT-ARCHITECTURE.md](../AI-AGENT-ARCHITECTURE.md) | CURRENT_DESIGN | Role packs, provider abstraction, tool access, approval dan mobile-first boundary |
 | [docs/AI-AGENT-ROADMAP.md](../AI-AGENT-ROADMAP.md) | CURRENT_PLAN | Phase implementation dan definition of done; bukan receipt |
 | [docs/AI-PROVIDER-FREE-MODELS-REGISTER.md](../AI-PROVIDER-FREE-MODELS-REGISTER.md) | RESEARCH_REGISTER | Catalog schema dan status verification provider/free model |

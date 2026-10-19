@@ -19,6 +19,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { appStore } from '@/services/store';
+import { formatWhatsAppUrl } from '../../shared/growth-contracts';
 
 interface MenuItem {
   id: string;
@@ -40,7 +41,7 @@ const MENU_ITEMS: MenuItem[] = [
     description: 'Mangga susu muda segar dihiris nipis bersama jambu batu rangup tanpa biji, dihidang bersama mangkuk kuah colek pekat.',
     portion: '500g Buah + 100ml Kuah Colek',
     price: 14.0,
-    image: '🥭',
+    image: '/assets/brand/Screenshot 2026-01-16 193536.png',
     isCustomizableSpicy: true,
     popular: true
   },
@@ -51,7 +52,7 @@ const MENU_ITEMS: MenuItem[] = [
     description: 'Pilihan lengkap 4 aneka buah potong segar ranum, ditabur bijan sangai dan cili padi potong.',
     portion: '650g Buah Campur + 150ml Kuah Colek',
     price: 18.0,
-    image: '🍍',
+    image: '/assets/brand/Screenshot 2026-01-16 193536.png',
     isCustomizableSpicy: true,
     popular: true
   },
@@ -72,7 +73,7 @@ const MENU_ITEMS: MenuItem[] = [
     description: 'Kuah colek botol sedia dimakan. Penutup kedap induksi keselamatan (Anti-Bocor) resepi asli warisan Pantai Timur.',
     portion: 'Botol 350ml (Tahan 6 Bulan)',
     price: 12.0,
-    image: '🍶',
+    image: '/assets/brand/tiktok-sambal-colek-launch.webp',
     isCustomizableSpicy: false,
     popular: true
   },
@@ -118,6 +119,19 @@ interface CartItem {
 }
 
 export function KioskStorefrontView({ onAction }: { onAction?: (msg: string) => void }) {
+  const [referralCode] = useState<string>(() => {
+    if (typeof window === 'undefined') return '';
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get('ref') || params.get('referralCode') || '';
+    const clean = ref.trim();
+    return /^[a-zA-Z0-9_-]{3,32}$/.test(clean) ? clean : '';
+  });
+  const [agentPhone] = useState<string>(() => {
+    if (typeof window === 'undefined') return '';
+    const params = new URLSearchParams(window.location.search);
+    const phone = params.get('phone') || params.get('agentPhone') || params.get('refPhone') || '';
+    return phone.trim();
+  });
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'fruits' | 'sauces' | 'combos' | 'snacks'>('all');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -176,11 +190,11 @@ export function KioskStorefrontView({ onAction }: { onAction?: (msg: string) => 
     ).join(', ');
 
     const newOrder = appStore.addOrder({
-      customer_id: name,
+      customer_id: `${name}${referralCode ? ` [Ref: ${referralCode}]` : ''}`,
       status: 'Processing',
       amount: cartTotal,
       city: fulfillmentType === 'pickup' ? 'Ambil di Gerai (Self-Pickup)' : 'Penghantaran Segera',
-      items: itemsDescription,
+      items: `${itemsDescription}${referralCode ? ` | Ejen: ${referralCode}` : ''}`,
       tracking_number: `DUITNOW-AC-${Date.now().toString().slice(-6)}`
     });
 
@@ -190,13 +204,15 @@ export function KioskStorefrontView({ onAction }: { onAction?: (msg: string) => 
       const text = encodeURIComponent(
         `*PESANAN BAHARU ABANG COLEK OS*\n` +
         `No Pesanan: ${newOrder.order_id}\n` +
+        (referralCode ? `*Ejen Perujuk:* ${referralCode} (Kedai Mini Ejen)\n` : '') +
         `Pelanggan: ${name} (${customerPhone || 'Tiada No'})\n` +
         `Jenis: ${fulfillmentType === 'pickup' ? 'Ambil di Gerai' : 'Penghantaran Pantas'}\n\n` +
         `*Pesanan:*\n${itemsDescription.split(', ').map(i => `• ${i}`).join('\n')}\n\n` +
         `*Jumlah Bayaran:* RM ${cartTotal.toFixed(2)}\n\n` +
+        (referralCode ? `Pesanan ini dirujuk melalui pautan referral ejen ${referralCode}.\n` : '') +
         `Sila sahkan pesanan dan sediakan dalam masa 15 minit. Terima kasih!`
       );
-      window.open(`https://wa.me/601112345678?text=${text}`, '_blank');
+      window.open(formatWhatsAppUrl(agentPhone, text), '_blank');
       setCart([]);
       setIsCartOpen(false);
       setCheckoutModal('success');
@@ -209,6 +225,32 @@ export function KioskStorefrontView({ onAction }: { onAction?: (msg: string) => 
     <div className="h-full overflow-y-auto bg-[#FFFDF7] text-[#1A1A1A] p-3 md:p-6 pb-24 md:pb-8">
       <div className="max-w-6xl mx-auto space-y-6">
         
+        {/* Referral Agent Storefront Banner */}
+        {referralCode && (
+          <div className="bg-emerald-600 text-white p-3.5 md:p-4 rounded-3xl border-2 border-[#1A1A1A] shadow-[4px_4px_0px_#1A1A1A] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div className="flex items-center gap-2.5">
+              <span className="bg-[#FFC107] text-[#1A1A1A] font-black text-xs px-2.5 py-1 rounded-xl border border-[#1A1A1A] shrink-0">
+                🏪 KEDAI MINI EJEN
+              </span>
+              <div>
+                <p className="text-xs md:text-sm font-extrabold leading-tight">
+                  Dirujuk oleh Ejen Rasmi: <span className="bg-white/20 px-2 py-0.5 rounded font-mono">{referralCode}</span>
+                </p>
+                <p className="text-[11px] text-emerald-100 font-medium">Pembelian anda direkodkan terus bersama komisen sah ejen perujuk.</p>
+              </div>
+            </div>
+            <a
+              href={formatWhatsAppUrl(agentPhone, `Salam Ejen ${referralCode}, saya sedang melayari kedai mini anda di Abang Colek.`)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-white hover:bg-zinc-100 text-[#1A1A1A] text-xs font-black px-3.5 py-2 rounded-xl border border-[#1A1A1A] flex items-center gap-1.5 transition-all no-underline shrink-0"
+            >
+              <Send size={13} className="text-emerald-600" />
+              <span>WhatsApp Ejen ({referralCode})</span>
+            </a>
+          </div>
+        )}
+
         {/* Top Kiosk Header */}
         <div className="bg-[#1A1A1A] text-white p-5 md:p-6 rounded-3xl border-2 border-[#1A1A1A] shadow-[4px_4px_0px_#FFC107] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="flex items-center gap-4">
@@ -221,6 +263,11 @@ export function KioskStorefrontView({ onAction }: { onAction?: (msg: string) => 
                 <span className="bg-[#E53935] text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border border-white">
                   Kios Rasmi
                 </span>
+                {referralCode && (
+                  <span className="bg-emerald-500 text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border border-white">
+                    Ejen: {referralCode}
+                  </span>
+                )}
               </div>
               <p className="text-zinc-300 text-xs md:text-sm mt-0.5 flex items-center gap-1.5 font-medium">
                 <MapPin size={14} className="text-[#FFC107]" />
@@ -280,8 +327,12 @@ export function KioskStorefrontView({ onAction }: { onAction?: (msg: string) => 
               )}
 
               <div>
-                <div className="w-full h-32 bg-[#FFF8E1] rounded-2xl border-2 border-[#1A1A1A] flex items-center justify-center text-5xl mb-4 shadow-inner">
-                  {item.image}
+                <div className="w-full h-36 bg-[#FFF8E1] rounded-2xl border-2 border-[#1A1A1A] flex items-center justify-center text-5xl mb-4 shadow-inner overflow-hidden">
+                  {item.image.startsWith('/') ? (
+                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                  ) : (
+                    item.image
+                  )}
                 </div>
 
                 <div className="flex justify-between items-start gap-2 mb-1.5">
@@ -394,6 +445,21 @@ export function KioskStorefrontView({ onAction }: { onAction?: (msg: string) => 
                   <X size={16} />
                 </button>
               </div>
+
+              {referralCode && (
+                <div className="mx-5 mt-3 px-3.5 py-2.5 bg-emerald-50 border-2 border-emerald-500 rounded-2xl flex items-center justify-between text-xs shadow-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">🏪</span>
+                    <div>
+                      <span className="font-extrabold text-emerald-900 block leading-tight">Kedai Mini Ejen: <strong>{referralCode}</strong></span>
+                      <span className="text-[10px] text-emerald-700">Komisen pesanan dikreditkan terus ke lejar ejen perujuk.</span>
+                    </div>
+                  </div>
+                  <span className="bg-emerald-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full shrink-0">
+                    Sah
+                  </span>
+                </div>
+              )}
 
               {/* Items List */}
               <div className="flex-1 overflow-y-auto p-5 space-y-4">
@@ -580,6 +646,25 @@ export function KioskStorefrontView({ onAction }: { onAction?: (msg: string) => 
             <div className="bg-[#FFF8E1] p-3 rounded-xl border border-amber-300 text-xs font-bold text-amber-900">
               ⏱️ Anggaran siap: 10 - 15 minit. Sila tunjukkan nombor pesanan ini semasa mengambil buah.
             </div>
+
+            {referralCode && (
+              <div className="bg-emerald-50 border-2 border-emerald-500 rounded-2xl p-3 text-xs text-emerald-900 font-bold space-y-1.5 text-center">
+                <div className="flex items-center justify-center gap-1.5">
+                  <span>🏪</span>
+                  <span>Dirujuk oleh Ejen Rasmi: <span className="font-mono bg-emerald-200 px-1.5 py-0.5 rounded">{referralCode}</span></span>
+                </div>
+                <p className="text-[10px] font-medium text-emerald-700">Komisen pesanan ini telah direkodkan dalam lejar operasi ejen.</p>
+                <a
+                  href={formatWhatsAppUrl(agentPhone, `Salam Ejen ${referralCode}, saya telah membuat pesanan di kedai mini anda. No Pesanan: ${lastPlacedOrderId}.`)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-1.5 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs py-2.5 rounded-xl no-underline shadow-xs"
+                >
+                  <Send size={13} />
+                  <span>Maklumkan Ejen via WhatsApp</span>
+                </a>
+              </div>
+            )}
 
             <button
               onClick={() => setCheckoutModal('none')}

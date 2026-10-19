@@ -1,6 +1,8 @@
 # ADR-0001 — project authority dan continuity
 
-**Tarikh:** 2026-10-03. **Status:** ACCEPTED_DOCUMENTATION; keputusan source/prinsip, bukan runtime cutover/release receipt. **Rujukan:** [Source of Truth](../ABANGCOLEK-SOURCE-OF-TRUTH.md), [handover](../handover/AGENT-HANDOVER-A-Z.md), [backlog](../PROJECT-ALIGNMENT-BACKLOG.md).
+> **Alignment 19 Oktober 2026:** Keputusan source PLATFORM dan pemisahan evidence kekal. Snapshot runtime/data/proses di bawah ialah sejarah 3–4 Oktober. [ADR-0003](0003-blueprint-v23-execution-contract.md) dan [master blueprint v2.3](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) mengatasi pilihan topology/provider yang bercanggah. Tiada data cutover dilakukan melalui dokumentasi ini. Arahan pelaksanaan semasa: [prompt utama](../prompts/IMPLEMENT-ABANGCOLEK.md).
+
+**Tarikh:** 2026-10-03. **Status:** ACCEPTED_DOCUMENTATION_WITH_LATER_AMENDMENTS; bukan runtime cutover/release receipt. **Rujukan:** [Source of Truth](../ABANGCOLEK-SOURCE-OF-TRUTH.md), [handover](../handover/AGENT-HANDOVER-A-Z.md), [historical backlog](../archive/legacy-oct2026/PROJECT-ALIGNMENT-BACKLOG.md).
 
 ## Context
 

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { ArrowRight,ArrowUpRight,MapPin,Package,ShoppingBag,Truck,Users,Moon,Sun } from 'lucide-react';
 import type { PublicProduct } from '../../../shared/platform-contracts';
+import { formatWhatsAppUrl } from '../../../shared/growth-contracts';
 import { useResource } from '../platform/client';
 import { money } from '../workspaces/experience-model';
 import ScrollWorldHero from './ScrollWorldHero';
@@ -14,6 +15,16 @@ export default function LandingPage({ onNavigate,view='home',productId,theme='da
   const catalogue=useResource<PublicProduct[]|PublicProduct>(productId? `/catalogue/${encodeURIComponent(productId)}`:'/catalogue');
   const info=useResource<PublicInfo>('/public-info');
   const visibleProducts=catalogue.data? (Array.isArray(catalogue.data)? catalogue.data:catalogue.data.id===productId? [catalogue.data]:[]):null;
+  const { referralCode, agentPhone } = typeof window !== 'undefined'
+    ? (() => {
+        const params = new URLSearchParams(window.location.search);
+        const ref = params.get('ref') || params.get('referralCode') || '';
+        const clean = ref.trim();
+        const code = /^[a-zA-Z0-9_-]{3,32}$/.test(clean) ? clean : '';
+        const rawPhone = (params.get('phone') || params.get('agentPhone') || params.get('refPhone') || '').trim();
+        return { referralCode: code, agentPhone: rawPhone || undefined };
+      })()
+    : { referralCode: '', agentPhone: undefined };
   useEffect(() => {
     const product=productId? visibleProducts?.find(item => item.id===productId):undefined;
     document.title=product? `${product.name} | ABANGCOLEK`:view==='home'? 'ABANGCOLEK — Colek. Connect. Repeat.':`${view==='products'? 'Produk':view==='locations'? 'Lokasi':view==='help'? 'Bantuan':'Ejen & Stokis'} | ABANGCOLEK`;
@@ -45,6 +56,22 @@ export default function LandingPage({ onNavigate,view='home',productId,theme='da
     };
   },[view,productId,catalogue.data]);
   return <div className={`ac-landing${view==='home' ? ' ac-landing-home' : ''}`}>
+    {referralCode && (
+      <div className="ac-referral-banner" role="status" style={{ background: '#059669', color: '#ffffff', padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', fontSize: '13px', fontWeight: 600 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ background: '#f59e0b', color: '#111827', padding: '2px 8px', borderRadius: '6px', fontWeight: 900, fontSize: '11px' }}>KEDAI MINI EJEN</span>
+          <span>Anda melayari melalui rujukan Ejen Rasmi: <strong style={{ textDecoration: 'underline' }}>{referralCode}</strong></span>
+        </div>
+        <a
+          href={formatWhatsAppUrl(agentPhone || info.data?.contact, `Salam Ejen ${referralCode}, saya sedang melayari laman Abang Colek melalui pautan kedai mini anda.`)}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: '#ffffff', background: 'rgba(0,0,0,0.25)', padding: '4px 10px', borderRadius: '6px', textDecoration: 'none', fontSize: '12px' }}
+        >
+          WhatsApp Ejen ({referralCode})
+        </a>
+      </div>
+    )}
     <nav className="ac-nav" aria-label="Public navigation">
       <button className="ac-wordmark" onClick={() => onNavigate('/')} aria-label="ABANGCOLEK home"><BrandLogo />
       </button>
@@ -94,7 +121,7 @@ export default function LandingPage({ onNavigate,view='home',productId,theme='da
             <strong>{money(product.priceSen)}</strong>
             <span>{product.availableQuantity>0? `${product.availableQuantity} available units`:'Stok belum tersedia'}</span>
           </div>
-          <button className="ac-button ac-button-dark" disabled={product.availableQuantity<1} onClick={() => onNavigate(`/flows/order?product=${encodeURIComponent(product.id)}`)}>Pilih produk <ArrowUpRight size={17} />
+          <button className="ac-button ac-button-dark" disabled={product.availableQuantity<1} onClick={() => onNavigate(`/flows/order?product=${encodeURIComponent(product.id)}${referralCode ? `&ref=${encodeURIComponent(referralCode)}` : ''}${agentPhone ? `&phone=${encodeURIComponent(agentPhone)}` : ''}`)}>Pilih produk <ArrowUpRight size={17} />
           </button>
         </div>
       </article>)}</div>{!productId&&catalogue.hasMore&&<button className="ac-button ac-button-outline" disabled={catalogue.loadingMore} onClick={()=>void catalogue.loadMore()}>{catalogue.loadingMore?'Memuatkan…':'Muat lagi produk'}</button>}{!catalogue.loading&&!catalogue.error&&!visibleProducts?.length&&<div className="ac-catalogue-empty">

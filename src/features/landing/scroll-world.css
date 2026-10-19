@@ -47,6 +47,31 @@
   opacity: .15;
 }
 .ac-world-visual.asset-fallback .ac-world-camera { object-fit: contain; object-position: 82% center; }
+.ac-world-scene {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 58%;
+  opacity: 0;
+  transition: opacity 1.1s ease;
+  will-change: transform, opacity;
+}
+.ac-world-visual.is-journey .ac-world-scene.is-active { opacity: 1; }
+@keyframes ac-scene-glide {
+  from { transform: scale(1.07) translate3d(-1%, .5%, 0); }
+  to { transform: scale(1.13) translate3d(1.2%, -.8%, 0); }
+}
+@keyframes ac-scene-glide-reverse {
+  from { transform: scale(1.07) translate3d(1%, -.5%, 0); }
+  to { transform: scale(1.13) translate3d(-1.2%, .8%, 0); }
+}
+.ac-world-visual.is-journey .ac-world-scene.is-active { animation: ac-scene-glide 18s ease-in-out infinite alternate; }
+.ac-world-visual.is-journey .ac-world-scene.is-active:nth-child(even) { animation-name: ac-scene-glide-reverse; }
+.is-static .ac-world-scene { animation: none; transition: none; }
+.is-static .ac-world-visual.is-journey .ac-world-scene.is-active { opacity: .45; }
 .ac-world-shade {
   position: absolute;
   inset: 0;
@@ -241,6 +266,7 @@
   .ac-world-motion { padding: 9px; min-width: 44px; }
   .ac-world-motion > span { display: none; }
   .ac-world-camera { object-position: 62% 48%; transform-origin: 65% 60%; }
+  .ac-world-scene { object-position: center 52%; }
   .ac-world-shade { background: linear-gradient(180deg, #111115e8 0%, #111115c4 33%, #1111152b 70%, #111115ed 100%); }
   .ac-world-scenes { inset: 80px 22px auto; height: 280px; }
   .ac-world-copy { top: 0; left: 0; transform: none; width: 100%; max-width: 410px; }

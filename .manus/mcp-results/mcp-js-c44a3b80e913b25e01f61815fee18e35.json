@@ -1,7 +1,0 @@
-In-app Browser JS state was reset; rebuild state before continuing.
-ASYNC_NOT_AWAITED: the cell ended while a In-app Browser call was still pending. Pending work was cancelled; earlier actions may already have completed. Do not replay the whole cell.
-findOne(query) returns a Promise, not an element. WRONG: await state.tab.findOne(query).click(); CORRECT: const element = await state.tab.findOne(query); await element.click(); Use the same two steps for setChecked, setValue and other element methods.
-Rebind state.tab with iab.getTab using an observed tabId (list tabs if needed), await state.tab.observe(), then continue only unfinished work with the corrected code. Resetting or reopening the page does not fix this JavaScript mistake.
-Original JavaScript error:
-{"location":"at <anonymous> (in-app-browser.js:2:277)"}
-not a function

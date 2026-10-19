@@ -2,12 +2,12 @@ import { describe, expect, test } from 'bun:test';
 import { canOpenWorkspace, getNavigation, getNavigationGroups as groupsFor, resolveRoute } from '../../src/features/platform/routes';
 
 describe('grouped workspace navigation', () => {
-  test('Founder can find all twenty destinations once across the seven work areas', () => {
+  test('Founder can find all twenty-one destinations once across the seven work areas', () => {
     const groups = groupsFor('founder');
     expect(groups.map(group => group.label)).toEqual(['Hari ini', 'Jualan & rangkaian', 'Operasi & kewangan', 'Pelanggan & kualiti', 'Pertumbuhan', 'Ilmu & laporan', 'Pentadbiran']);
     const items = groups.flatMap(group => group.items);
-    expect(items.map(item => item.id).sort()).toEqual(['overview', 'orders', 'inventory', 'cases', 'jev', 'dealers', 'marketing', 'automations', 'plugins', 'tasks', 'documents', 'knowledge', 'calendar', 'finance', 'qc', 'shifts', 'reports', 'people', 'settings', 'legacy'].sort());
-    expect(new Set(items.map(item => item.path)).size).toBe(20);
+    expect(items.map(item => item.id).sort()).toEqual(['overview', 'orders', 'inventory', 'cases', 'jev', 'dealers', 'copilot', 'marketing', 'automations', 'plugins', 'tasks', 'documents', 'knowledge', 'calendar', 'finance', 'qc', 'shifts', 'reports', 'people', 'settings', 'legacy'].sort());
+    expect(new Set(items.map(item => item.path)).size).toBe(21);
     expect(new Set(groups.map(group => group.id)).size).toBe(7);
     expect(groups.every(group => group.items.length > 0)).toBe(true);
   });

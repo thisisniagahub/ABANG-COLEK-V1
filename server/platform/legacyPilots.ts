@@ -170,7 +170,7 @@ export class LegacyPilotsService {
     }
 
     // Grounded platform context checks
-    const records = this.store.all<{ id: string }>('inventory');
+    const records = this.store.all<{ id: string }>('lots');
     const cases = this.store.all<{ id: string }>('cases');
     const campaigns = this.store.all<{ id: string }>('campaigns');
 
@@ -191,7 +191,7 @@ export class LegacyPilotsService {
     const proposal: FounderAssistantProposal = {
       id: id(),
       query: cleanQuery,
-      contextSummary: `Konteks platform: ${records.length} item inventori, ${cases.length} kes khidmat, ${campaigns.length} kempen pemasaran.`,
+      contextSummary: `Konteks platform: ${records.length} rekod lot inventori, ${cases.length} kes khidmat, ${campaigns.length} kempen pemasaran.`,
       proposedAction: {
         command,
         parameters: params,
@@ -223,19 +223,41 @@ export class LegacyPilotsService {
     return updated;
   }
 
-  executeFounderProposal(actorId: string, proposalId: string): FounderAssistantProposal {
+  executeFounderProposal(
+    actorId: string,
+    proposalId: string,
+    executor?: FounderProposalExecutor
+  ): FounderAssistantProposal {
     const proposal = this.store.get<FounderAssistantProposal>('founder_proposals', proposalId);
     if (!proposal) fail('NOT_FOUND', 404, 'Cadangan tindakan tidak ditemui.');
     if (proposal.status !== 'approved') {
       fail('PROPOSAL_NOT_APPROVED', 400, 'Hanya cadangan yang telah diluluskan pengasas boleh dilaksanakan.');
     }
 
-    const updated: FounderAssistantProposal = {
-      ...proposal,
-      status: 'executed',
-    };
-    this.store.save('founder_proposals', updated);
-    this.store.audit(actorId, 'FOUNDER_PROPOSAL_EXECUTED', proposal.id, 3);
-    return updated;
+    const exec = executor ?? ((p: FounderAssistantProposal) => ({
+      resultRef: `EXEC-${p.id}`,
+      resultKind: (p.proposedAction.command === 'review_cases' ? 'case_review' : p.proposedAction.command === 'review_stock' ? 'stock_review' : 'campaign_draft') as 'case_review' | 'stock_review' | 'campaign_draft',
+    }));
+
+    return this.store.atomic(() => {
+      const result = exec(proposal);
+      const updated: FounderAssistantProposal = {
+        ...proposal,
+        status: 'executed',
+        executionResult: {
+          resultRef: result.resultRef,
+          resultKind: result.resultKind,
+          executedAt: now(),
+        },
+      };
+      this.store.save('founder_proposals', updated);
+      this.store.audit(actorId, 'FOUNDER_PROPOSAL_EXECUTED', proposal.id, 3);
+      return updated;
+    });
   }
 }
+
+export type FounderProposalExecutor = (proposal: FounderAssistantProposal) => {
+  resultRef: string;
+  resultKind: 'case_review' | 'stock_review' | 'campaign_draft';
+};

@@ -12,7 +12,7 @@ export async function withPublicDatabase<T>(
   loadSnapshot?: SnapshotRepository['load'],
 ): Promise<T> {
   const url = environment.SUPABASE_URL?.trim();
-  const key = environment.SUPABASE_SERVICE_ROLE_KEY?.trim();
+  const key = (environment.SUPABASE_SECRET_KEY ?? environment.SUPABASE_SERVICE_ROLE_KEY)?.trim();
   if (Boolean(url) !== Boolean(key)) throw new Error('Incomplete cloud configuration for public catalogue build.');
   let directory: string | undefined;
   let database: Database | undefined;

@@ -5,7 +5,7 @@ export function initializeSupabase(url: string | undefined, key: string | undefi
   const unavailable = { client: null, status: { available: false as const, message: CLOUD_UNAVAILABLE_MESSAGE } };
   if (!url?.trim() || !key?.trim()) return unavailable;
   try {
-    const client = createClient(url.trim(), key.trim(), { auth: { persistSession: true, autoRefreshToken: true } });
+    const client = createClient(url.trim(), key.trim(), { auth: { persistSession: true, autoRefreshToken: true, flowType: 'pkce', detectSessionInUrl: false } });
     return { client, status: { available: true, message: 'Konfigurasi cloud tersedia; sambungan belum disahkan.' } };
   } catch {
     // SDK validation errors can contain configuration values; expose only a safe message.

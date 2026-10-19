@@ -15,9 +15,11 @@ import {
   Building2,
   Clock,
   Sparkles,
-  QrCode
+  QrCode,
+  Send
 } from 'lucide-react';
 import { appStore } from '@/services/store';
+import { formatWhatsAppUrl } from '../../shared/growth-contracts';
 
 interface WholesalePackage {
   id: string;
@@ -74,6 +76,19 @@ const WHOLESALE_PACKAGES: WholesalePackage[] = [
 ];
 
 export function AgentRestockPortalView({ onAction }: { onAction?: (msg: string) => void }) {
+  const [sponsorCode] = useState<string>(() => {
+    if (typeof window === 'undefined') return '';
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get('ref') || params.get('referralCode') || '';
+    const clean = ref.trim();
+    return /^[a-zA-Z0-9_-]{3,32}$/.test(clean) ? clean : '';
+  });
+  const [sponsorPhone] = useState<string>(() => {
+    if (typeof window === 'undefined') return '';
+    const params = new URLSearchParams(window.location.search);
+    const phone = params.get('phone') || params.get('sponsorPhone') || params.get('agentPhone') || params.get('refPhone') || '';
+    return phone.trim();
+  });
   const [quantities, setQuantities] = useState<Record<string, number>>({
     'wp-1': 2,
     'wp-2': 1
@@ -109,11 +124,11 @@ export function AgentRestockPortalView({ onAction }: { onAction?: (msg: string) 
       .join(', ');
 
     const newOrder = appStore.addOrder({
-      customer_id: 'Kak Salmah (Stokis Emas Gombak)',
+      customer_id: `Kak Salmah (Stokis Emas Gombak)${sponsorCode ? ` [Penaja: ${sponsorCode}]` : ''}`,
       status: 'Processing',
       amount: grandTotal,
       city: selectedFreight === 'bus' ? `Kargo Bas: ${selectedDepot}` : 'Kurier Darat',
-      items: `RESTOCK: ${itemsSummary} | Freight: RM ${freightTotal.toFixed(2)}`,
+      items: `RESTOCK: ${itemsSummary} | Freight: RM ${freightTotal.toFixed(2)}${sponsorCode ? ` | Penaja: ${sponsorCode}` : ''}`,
       tracking_number: `FREIGHT-AC-${Date.now().toString().slice(-6)}`
     });
 
@@ -124,6 +139,32 @@ export function AgentRestockPortalView({ onAction }: { onAction?: (msg: string) 
   return (
     <div className="h-full overflow-y-auto bg-zinc-50 text-zinc-900 p-4 md:p-8 pb-24 md:pb-8">
       <div className="max-w-6xl mx-auto space-y-6">
+
+        {/* Sponsor / Referral Attribution Banner */}
+        {sponsorCode && (
+          <div className="bg-emerald-600 text-white p-4 rounded-3xl border-2 border-emerald-800 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div className="flex items-center gap-3">
+              <span className="bg-[#FFC107] text-[#1A1A1A] font-black text-xs px-2.5 py-1 rounded-xl shrink-0">
+                🤝 PENAJA / EJEN INDUK
+              </span>
+              <div>
+                <p className="text-xs md:text-sm font-extrabold leading-tight">
+                  Rujukan Rangkaian Ejen: <span className="bg-white/20 px-2 py-0.5 rounded font-mono">{sponsorCode}</span>
+                </p>
+                <p className="text-[11px] text-emerald-100 font-medium">Pesanan kargo borong ini dikaitkan dengan rangkaian pengedaran ejen {sponsorCode}.</p>
+              </div>
+            </div>
+            <a
+              href={formatWhatsAppUrl(sponsorPhone, `Salam Ejen/Stokis ${sponsorCode}, saya sedang menyediakan pesanan restok kargo borong di Abang Colek.`)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-white hover:bg-zinc-100 text-[#1A1A1A] text-xs font-black px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-all no-underline shrink-0"
+            >
+              <Send size={13} className="text-emerald-700" />
+              <span>WhatsApp Penaja ({sponsorCode})</span>
+            </a>
+          </div>
+        )}
 
         {/* Agent Profile & Quota Card */}
         <div className="bg-white rounded-3xl p-6 border border-zinc-200 shadow-xs flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
@@ -352,6 +393,34 @@ export function AgentRestockPortalView({ onAction }: { onAction?: (msg: string) 
                 <span>→</span>
               </button>
 
+              {/* WhatsApp Cargo Order Button */}
+              {totalBoxes > 0 && (
+                <a
+                  href={formatWhatsAppUrl(
+                    sponsorPhone,
+                    `*PESANAN RESTOK KARGO BORONG ABANG COLEK*\n` +
+                    (sponsorCode ? `*Ejen Penaja/Perujuk:* ${sponsorCode}\n` : '') +
+                    `Ejen: Kak Salmah (AC-STK-088)\n` +
+                    `Kaedah Kargo: ${selectedFreight === 'bus' ? `🚌 Kargo Bas Ekspres (${selectedDepot})` : '📦 Kurier Standard (J&T Cargo)'}\n` +
+                    `Jumlah Karton: ${totalBoxes} Kotak (${totalBottles} Botol)\n\n` +
+                    `*Pakej:*\n` +
+                    WHOLESALE_PACKAGES.filter(p => (quantities[p.id] || 0) > 0)
+                      .map(p => `• ${quantities[p.id]}x ${p.title} (RM ${(p.wholesalePrice * (quantities[p.id] || 0)).toFixed(2)})`)
+                      .join('\n') +
+                    `\n\nSubtotal: RM ${subtotalWholesale.toFixed(2)}\n` +
+                    `Kos Kargo: RM ${freightTotal.toFixed(2)}\n` +
+                    `*Jumlah Bersih: RM ${grandTotal.toFixed(2)}*\n\n` +
+                    `Sila sahkan konsainan kargo ini dari Dapur Kemaman.`
+                  )}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full bg-[#25D366] hover:bg-[#1ebd5a] text-zinc-950 font-black text-xs py-3 rounded-2xl transition-all cursor-pointer shadow-md flex items-center justify-center gap-2 no-underline"
+                >
+                  <Send size={15} />
+                  <span>Hantar Pesanan Kargo ke WhatsApp</span>
+                </a>
+              )}
+
               <div className="flex items-center justify-center gap-2 text-[10px] text-zinc-400">
                 <ShieldCheck size={12} />
                 <span>Invois rasmi Liurleleh House Malaysia Sdn Bhd</span>
@@ -385,6 +454,28 @@ export function AgentRestockPortalView({ onAction }: { onAction?: (msg: string) 
               <div>🚌 Destinasi: <strong>{selectedFreight === 'bus' ? selectedDepot : 'Alamat Ejen'}</strong></div>
               <div>💰 Jumlah: <strong>RM {grandTotal.toFixed(2)}</strong></div>
             </div>
+
+            {sponsorCode && (
+              <div className="bg-emerald-50 border border-emerald-300 rounded-xl p-2.5 text-xs text-emerald-900 font-bold space-y-0.5 text-center">
+                <span>Rujukan Penaja: <span className="font-mono bg-emerald-200 px-1.5 py-0.5 rounded">{sponsorCode}</span></span>
+                <p className="text-[10px] font-normal text-emerald-700">Konsainan direkodkan di bawah rangkaian ejen.</p>
+              </div>
+            )}
+
+            <a
+              href={formatWhatsAppUrl(
+                sponsorPhone,
+                `Salam HQ / Ejen ${sponsorCode || 'Utama'}, pesanan restok kargo ${submittedOrderId} telah didaftarkan dalam sistem.\n` +
+                `Jumlah: RM ${grandTotal.toFixed(2)} (${totalBoxes} Kotak).\n` +
+                `Destinasi: ${selectedFreight === 'bus' ? selectedDepot : 'Kurier Darat'}.`
+              )}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-1.5 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs py-2.5 rounded-xl no-underline shadow-xs"
+            >
+              <Send size={13} />
+              <span>Maklumkan Salinan ke WhatsApp</span>
+            </a>
 
             <button
               onClick={() => setIsSuccessModalOpen(false)}

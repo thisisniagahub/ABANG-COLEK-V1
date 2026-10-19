@@ -7,6 +7,11 @@ maintainer: "Hyper-Sovereign Conductor & Architect (Antigravity PUSPA v7.0)"
 classification: "CONFIDENTIAL / INTERNAL AUDIT"
 lifecycle_status: "ACTIVE"
 ---
+<!-- blueprint-alignment: 2026-10-19 -->
+> **Penyelarasan autoriti — 19 Oktober 2026.** REKOD SEJARAH / RUJUKAN — pemerhatian, metrik ujian, status deployment, harga/model dan cadangan di bawah terikat kepada tarikh serta skop asal. Ia bukan checklist execution semasa atau pengesahan bahawa dapatan masih benar. Kekalkan bukti asal; revalidate sebelum mendakwa fixed, connected atau production-ready.
+>
+> Rujukan semasa: [Master Growth Blueprint](../docs/ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) dan [prompt pelaksanaan canonical](../docs/prompts/IMPLEMENT-ABANGCOLEK.md). Blueprint menetapkan 10 kemampuan CopilotKit, 10 modul bisnes, 32 kemampuan tool dan tujuh pendekatan Generative UI sebagai skop sasaran, bukan status siap. Polisi free-only melarang paid fallback; local rules bukan native model, approval bukan execution dan transaksi cloud memerlukan durable CAS commit. Senarai skill, MCP atau plugin bukan bukti ia tersedia atau aktif. Kemas kini dokumentasi ini tidak menjalankan ujian aplikasi, benchmark model, migrasi atau deployment.
+
 
 <!-- ABANGCOLEK_DOC_AUTHORITY_V1 -->
 > **HISTORICAL_SNAPSHOT — context diselaraskan 3 Oktober 2026.** Kandungan/metadata asal di bawah ialah bukti atau cadangan pada tarikh asal, bukan current runtime/authorization/release proof. Gunakan [Source of Truth](../docs/ABANGCOLEK-SOURCE-OF-TRUTH.md) dan [handover A–Z](../docs/handover/AGENT-HANDOVER-A-Z.md) untuk keputusan semasa. Server3000/3010 STOPPED pada snapshot20:25MYT; data kekal OS; Emons goal PAUSED. Native provider/benchmark/cost/complete claims perlu verifikasi sendiri.
@@ -81,7 +86,7 @@ Walau bagaimanapun, audit forensik menemui **satu penyekat binaan (build breaker
 
 ## 3. Analisis Khusus: Integrasi JEV & TypeSafe AI
 
-Sistem JEV dalam ABANGCOLEK-OS beroperasi atas prinsip **TypeSafe System One** ([`JEV.md`](file:///D:/ABANGCOLEK-OS/JEV.md) & [`docs/JEV_ARCH.md`](file:///D:/ABANGCOLEK-OS/docs/JEV_ARCH.md)).
+Sistem JEV dalam ABANGCOLEK-OS beroperasi atas prinsip **TypeSafe System One** ([`JEV.md`](file:///D:/ABANGCOLEK-OS/JEV.md) & [`docs/JEV_ARCH.md`](../docs/archive/legacy-oct2026/JEV_ARCH.md)).
 
 ### ⚠️ [Wajib Diperbaiki]: `msg.hasJev` Tidak Didaftar dalam Render UI Sembang Utama
 * **Fail Terlibat:** [`src/App.tsx#L565-L570`](file:///D:/ABANGCOLEK-OS/src/App.tsx#L565-L570)
@@ -114,7 +119,7 @@ Sistem JEV dalam ABANGCOLEK-OS beroperasi atas prinsip **TypeSafe System One** (
     probabilities: { 'UNDETERMINED': 0.98 }
   }
   ```
-* **Kelebihan:** Ini adalah contoh **Sovereign System-1 Guardrail** paling ampuh. Walaupun LLM membuat spekulasi menyalahkan pihak kurier atau pembekal botol, logik deterministik kod bertipe ini **mengunci status punca sebagai `UNDETERMINED`** selaras dengan Invarian 1 dalam [`docs/JEV_ARCH.md#L112`](file:///D:/ABANGCOLEK-OS/docs/JEV_ARCH.md#L112).
+* **Kelebihan:** Ini adalah contoh **Sovereign System-1 Guardrail** paling ampuh. Walaupun LLM membuat spekulasi menyalahkan pihak kurier atau pembekal botol, logik deterministik kod bertipe ini **mengunci status punca sebagai `UNDETERMINED`** selaras dengan Invarian 1 dalam [`docs/JEV_ARCH.md#L112`](../docs/archive/legacy-oct2026/JEV_ARCH.md#L112).
 
 ---
 
@@ -150,7 +155,7 @@ Sistem JEV dalam ABANGCOLEK-OS beroperasi atas prinsip **TypeSafe System One** (
    - `"clean": "rm -rf dist"` dalam `package.json` akan gagal pada terminal PowerShell Windows tulen melainkan menggunakan Git Bash atau skrip merentas platform.
 
 ### C. Percanggahan Dokumentasi vs Kod Sebenar
-* **Dokumentasi:** [`docs/JEV_ARCH.md#L183`](file:///D:/ABANGCOLEK-OS/docs/JEV_ARCH.md#L183) menyatakan nama parameter alat adalah:
+* **Dokumentasi:** [`docs/JEV_ARCH.md#L183`](../docs/archive/legacy-oct2026/JEV_ARCH.md#L183) menyatakan nama parameter alat adalah:
   `properties: { text: { type: "STRING" } }`
 * **Kod Sebenar:** [`src/services/gemini.ts#L322`](file:///D:/ABANGCOLEK-OS/src/services/gemini.ts#L322) menyatakan nama parameter adalah:
   `properties: { message: { type: Type.STRING } }`
@@ -177,7 +182,7 @@ Sistem JEV dalam ABANGCOLEK-OS beroperasi atas prinsip **TypeSafe System One** (
 | **CRITICAL** | Bersihkan kunci API Google Maps & Supabase daripada fail `.env.example` | [`.env.example`](file:///D:/ABANGCOLEK-OS/.env.example#L1-L3) | Menghalang kebocoran kuota & ancaman keselamatan |
 | **REQUIRED** | Sambungkan paparan visual kad keputusan JEV ke dalam suapan Chat | [`src/App.tsx`](file:///D:/ABANGCOLEK-OS/src/App.tsx#L565) | Memaparkan kad keputusan 7 dimensi JEV kepada pengguna |
 | **CONSIDER** | Padam fail boilerplate lapuk (`index.tsx`, `index.css`) | [`index.tsx`](file:///D:/ABANGCOLEK-OS/index.tsx), [`index.css`](file:///D:/ABANGCOLEK-OS/index.css) | Membersihkan repositori daripada kekusutan |
-| **NIT** | Selaraskan dokumentasi parameter JEV tool (`text` vs `message`) | [`docs/JEV_ARCH.md`](file:///D:/ABANGCOLEK-OS/docs/JEV_ARCH.md#L183) | Menjamin ketepatan dokumentasi teknikal |
+| **NIT** | Selaraskan dokumentasi parameter JEV tool (`text` vs `message`) | [`docs/JEV_ARCH.md`](../docs/archive/legacy-oct2026/JEV_ARCH.md#L183) | Menjamin ketepatan dokumentasi teknikal |
 
 ---
 

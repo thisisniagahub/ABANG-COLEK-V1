@@ -1,0 +1,28 @@
+/* Load this file alongside EmonsHeroNavigation.tsx for the captured EMONS typeface. */
+@font-face {
+  font-family: "Clash Grotesk";
+  src: url("https://cdn.prod.website-files.com/66c856a2e1e5dc372a191eaa/67040024cd02e0d2536f5ba8_ClashGrotesk-Light.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Clash Grotesk";
+  src: url("https://cdn.prod.website-files.com/66c856a2e1e5dc372a191eaa/67040024f9f32da66ec8952e_ClashGrotesk-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Clash Grotesk";
+  src: url("https://cdn.prod.website-files.com/66c856a2e1e5dc372a191eaa/671a79fb19670e966650540a_ClashGrotesk-Medium.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+.emons-hero-navigation {
+  font-family: "Clash Grotesk", Arial, sans-serif;
+}

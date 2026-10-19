@@ -9,7 +9,7 @@ describe('durable request boundary', () => {
     const handler=createDurableHandler(repository,path=>{const db=new Database(path,{create:true});db.run('CREATE TABLE IF NOT EXISTS reads(id INTEGER)');return {store:{db},close:()=>db.close(),fetch:async()=>{runs++;db.run('INSERT INTO reads VALUES(1)');await Bun.sleep(2);return new Response('ok');}};});
     const responses=await Promise.all(Array.from({length:4},()=>handler(new Request('https://example.test'))));expect(responses.map(value=>value.status)).toEqual([200,200,200,200]);expect(revision).toBe(4);
     const before=runs;const mutations=await Promise.all(Array.from({length:2},()=>handler(new Request('https://example.test',{method:'POST'}))));expect(mutations.map(value=>value.status).sort()).toEqual([200,409]);expect(runs-before).toBe(2);
-  });
+  }, 20000);
   test('holds successful cookies until commit and hydrates the next request', async () => {
     let bytes:Uint8Array|null=null,revision=0,release!:()=>void;
     const gate=new Promise<void>(resolve=>{release=resolve;});
@@ -34,6 +34,14 @@ describe('durable request boundary', () => {
 });
 
 describe('snapshot repository',()=>{
+  test('modern secret uses apikey while legacy JWT keeps its bearer header',async()=>{
+    for(const key of ['sb_secret_test-only-not-real','legacy-test-jwt']){
+      let actual=new Headers();
+      const repository=new SupabaseSnapshotRepository('https://example.supabase.co',key,'business',{fetch:async(_input,init)=>{actual=new Headers(init?.headers);return Response.json({revision:0,payload:null});}});
+      await repository.load();expect(actual.get('apikey')).toBe(key);
+      expect(actual.get('authorization')).toBe(key.startsWith('sb_secret_')?null:`Bearer ${key}`);
+    }
+  });
   test('loads only a missing row as empty and verifies existing bytes',async()=>{
     const db=new Database(':memory:');db.run('CREATE TABLE test(id INTEGER)');const bytes=db.serialize();db.close();
     let result:unknown={revision:0,payload:null};

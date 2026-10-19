@@ -115,7 +115,7 @@ describe('D04: Legacy Data Maps, Dry-Run Tooling & Rollback', () => {
     expect(body.data.validCandidatesCount).toBe(2);
     expect(body.data.rejectedCount).toBe(2);
     expect(body.data.projectedTotalSen).toBe(7500); // 5000 + 2500 sen
-    expect(body.data.projectedVerifiedPaidSen).toBe(5000); // only Delivered is verified
+    expect(body.data.projectedVerifiedPaidSen).toBe(0); // Historical delivery does not prove payment
 
     // Confirm DB still has 0 orders (dry-run does not write)
     const ordersRes = await app.fetch(new Request('http://localhost:3000/api/platform/orders', {

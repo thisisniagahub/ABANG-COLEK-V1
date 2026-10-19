@@ -4,7 +4,7 @@ const publicPaths = new Set(['/', '/products', '/locations', '/become-dealer', '
 const menus = {
   customer: [['overview', 'Ruang saya'], ['shop', 'Beli produk'], ['orders', 'Pesanan saya'], ['cases', 'Bantuan & aduan'], ['business', 'Ejen & stokis']],
   staff: [['overview', 'Hari ini'], ['tasks', 'Tugasan saya'], ['orders', 'Pesanan assigned'], ['cases', 'Khidmat pelanggan'], ['qc', 'Kawalan kualiti'], ['shifts', 'Shift & handoff'], ['documents', 'Dokumen'], ['knowledge', 'Panduan kerja']],
-  founder: [['overview', 'Ringkasan bisnes'], ['orders', 'Pesanan & pembayaran'], ['inventory', 'Stok & batch'], ['cases', 'Quality & JEV'], ['jev', 'JEV review & evaluation'], ['dealers', 'Ejen & stokis'], ['marketing', 'Marketing studio'], ['automations', 'Automations'], ['plugins', 'Plugins / Connectors'], ['tasks', 'Tugasan'], ['documents', 'Dokumen'], ['knowledge', 'SOP & pengetahuan'], ['calendar', 'Kalendar operasi'], ['finance', 'Kewangan'], ['qc', 'Kawalan kualiti'], ['shifts', 'Shift & day-close'], ['reports', 'Laporan'], ['people', 'Pasukan & akses'], ['settings', 'Tetapan'], ['legacy', 'Workspace integrasi']],
+  founder: [['overview', 'Ringkasan bisnes'], ['orders', 'Pesanan & pembayaran'], ['inventory', 'Stok & batch'], ['cases', 'Quality & JEV'], ['jev', 'JEV review & evaluation'], ['dealers', 'Ejen & stokis'], ['copilot', 'AI Copilot'], ['marketing', 'Marketing studio'], ['automations', 'Automations'], ['plugins', 'Plugins / Connectors'], ['tasks', 'Tugasan'], ['documents', 'Dokumen'], ['knowledge', 'SOP & pengetahuan'], ['calendar', 'Kalendar operasi'], ['finance', 'Kewangan'], ['qc', 'Kawalan kualiti'], ['shifts', 'Shift & day-close'], ['reports', 'Laporan'], ['people', 'Pasukan & akses'], ['settings', 'Tetapan'], ['legacy', 'Workspace integrasi']],
   developer: [['overview', 'System overview'], ['health', 'Runtime & integrasi'], ['jobs', 'Automation jobs'], ['jev','JEV evaluation'], ['reports', 'Diagnostics'], ['settings', 'Readiness settings']],
 } as const satisfies Record<WorkspaceRole, readonly (readonly [string, string])[]>;
 
@@ -28,7 +28,7 @@ const navigationGroups: NavigationGroups = {
     { id: 'sales', label: 'Jualan & rangkaian', sections: ['orders', 'dealers'] },
     { id: 'operations', label: 'Operasi & kewangan', sections: ['inventory', 'shifts', 'finance'] },
     { id: 'quality', label: 'Pelanggan & kualiti', sections: ['cases', 'jev', 'qc'] },
-    { id: 'growth', label: 'Pertumbuhan', sections: ['marketing', 'automations', 'plugins'] },
+    { id: 'growth', label: 'Pertumbuhan', sections: ['copilot', 'marketing', 'automations', 'plugins'] },
     { id: 'knowledge', label: 'Ilmu & laporan', sections: ['documents', 'knowledge', 'reports'] },
     { id: 'administration', label: 'Pentadbiran', sections: ['people', 'settings', 'legacy'] },
   ],
@@ -101,6 +101,7 @@ export const sectionCapabilities: Record<WorkspaceRole, Record<string, string>> 
     cases: 'business.read',
     jev: 'business.read',
     dealers: 'business.read',
+    copilot: 'business.read',
     marketing: 'business.read',
     automations: 'business.write',
     plugins: 'business.write',

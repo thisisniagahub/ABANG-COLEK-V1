@@ -21,7 +21,9 @@ class SupabaseTransport {
     if(!key.trim())throw new Error('A server-side Supabase credential is required.');this.url=parsed.origin;
   }
   async request(path:string,init:RequestInit={}):Promise<Response>{
-    try{return await (this.options.fetch??globalThis.fetch)(this.url+path,{...init,headers:{apikey:this.key,Authorization:`Bearer ${this.key}`,...init.headers},signal:AbortSignal.timeout(this.options.timeoutMs??15000)});}catch{throw unavailable();}
+    const authentication:Record<string,string>={apikey:this.key};
+    if(!this.key.startsWith('sb_secret_'))authentication.Authorization=`Bearer ${this.key}`;
+    try{return await (this.options.fetch??globalThis.fetch)(this.url+path,{...init,headers:{...authentication,...init.headers},signal:AbortSignal.timeout(this.options.timeoutMs??15000)});}catch{throw unavailable();}
   }
   async rpc(name:string,body:unknown):Promise<unknown>{
     const response=await this.request('/rest/v1/rpc/'+name,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});

@@ -32,4 +32,9 @@
 .flow-cart-lines li { display:flex; justify-content:space-between; gap:12px; padding:12px 0; border-bottom:1px solid var(--ui-border); font-size:13px; }
 .flow-cart-lines li span { overflow-wrap:anywhere; text-wrap:pretty; }
 .flow-cart-lines small { display:block; color:var(--ui-muted); font-size:11px; line-height:1.6; }
-@media(max-width:480px) { .flow-intro,.flow-card,.flow-receipt { padding:24px 20px; border-radius:22px; }.flow-review>div { grid-template-columns:1fr; gap:5px; }.flow-card h2 { font-size:23px; } }
+.flow-referral-banner { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 18px; border-radius:16px; background:var(--ui-soft); border:1px solid var(--ui-accent); margin:18px 0; font-size:13px; }
+.flow-referral-info { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.flow-referral-pill { display:inline-block; font-size:10px; font-weight:700; padding:3px 8px; border-radius:12px; background:var(--ui-accent); color:var(--ui-accent-ink, #fff); }
+.flow-whatsapp-link { font-size:12px; font-weight:600; color:var(--ui-accent); text-decoration:none; display:inline-flex; align-items:center; gap:4px; }
+.flow-whatsapp-link:hover { text-decoration:underline; }
+@media(max-width:480px) { .flow-intro,.flow-card,.flow-receipt { padding:24px 20px; border-radius:22px; }.flow-review>div { grid-template-columns:1fr; gap:5px; }.flow-card h2 { font-size:23px; } .flow-referral-banner { flex-direction:column; align-items:flex-start; } }

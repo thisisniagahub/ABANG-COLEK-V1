@@ -3,7 +3,7 @@ import type { FlowDefinition,FlowSession,OrderRecord,PublicProduct } from '../..
 import { lineAnswers } from './flow-answers';
 import { customerCartOrderAnswers,type CustomerCartLine } from './customer-cart';
 
-export function FlowForm({definition,flow,products,orders,busy,onReview,cartLines,onDraft}:{definition:FlowDefinition;flow:FlowSession;products:PublicProduct[];orders:OrderRecord[];busy:boolean;onReview:(answers:Record<string,unknown>)=>Promise<void>;cartLines?:CustomerCartLine[];onDraft?:(answers:Record<string,unknown>)=>void}){
+export function FlowForm({definition,flow,products,orders,busy,onReview,cartLines,onDraft,referralCode}:{definition:FlowDefinition;flow:FlowSession;products:PublicProduct[];orders:OrderRecord[];busy:boolean;onReview:(answers:Record<string,unknown>)=>Promise<void>;cartLines?:CustomerCartLine[];onDraft?:(answers:Record<string,unknown>)=>void;referralCode?:string}){
   const formId=useId(),[error,setError]=useState('');
   async function submit(event:FormEvent<HTMLFormElement>){
     event.preventDefault();setError('');
@@ -11,11 +11,12 @@ export function FlowForm({definition,flow,products,orders,busy,onReview,cartLine
     try{
       for(const node of definition.nodes)if(node.field){
         if(node.field==='lines'){
-          if(cartLines?.length)Object.assign(answers,customerCartOrderAnswers(cartLines,products));
+          if(cartLines?.length)Object.assign(answers,customerCartOrderAnswers(cartLines,products,referralCode));
           else {
             const product=products.find(item=>item.id===values.get('productId'));
             if(!product)throw new Error('Pilih produk diterbitkan.');
             Object.assign(answers,lineAnswers(definition.intent,product,Number(values.get('quantity'))));
+            if(referralCode && definition.intent === 'order') Object.assign(answers, { referralCode });
           }
         }else answers[node.field]=node.field==='expectedRevision'?Number(values.get(node.field)):String(values.get(node.field)??'').trim();
       }

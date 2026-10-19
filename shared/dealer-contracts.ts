@@ -1,4 +1,7 @@
 import type { EarnedBenefit, InventoryMovement, InventoryReservation, OrderLine, RestockRecord, StockLot } from './platform-contracts';
+import type { CommissionLedgerStatus, CommissionTransaction, DealerCommissionSummary } from './growth-contracts';
+
+export type { CommissionLedgerStatus, CommissionTransaction, DealerCommissionSummary };
 
 /** Receipt provenance is additive; owner and custody remain the canonical stock fields. */
 export interface DealerDispatchAllocation { sourceLotId: string; productId: string; quantity: number; batchId?: string; expiryAt?: string; status: StockLot['status'] }
@@ -80,4 +83,5 @@ export interface DealerLedger {
   lots: DealerStockLot[];
   movements: InventoryMovement[];
   reservations: (InventoryReservation & { sourceRestockId: string; custodyLotId?: string })[];
+  commissions?: CommissionTransaction[];
 }

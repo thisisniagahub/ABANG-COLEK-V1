@@ -1,8 +1,6 @@
-# ABANGCOLEK — rujukan utama projek
+# ABANGCOLEK — Source of Truth
 
-Semakan baseline: **4 Oktober 2026**, Wave 3 implementation swarm COMPLETED — kesemua 18 baki task backlog AGY siap diimplementasikan dan diverifikasi secara empirikal. [Handover A–Z](handover/AGENT-HANDOVER-A-Z.md) dan [Project Alignment Backlog](PROJECT-ALIGNMENT-BACKLOG.md) merekodkan bukti dan receipt. Baseline Git `250bc0e7af33c27a7024c936afadcc9d7b208251` bersama perubahan lokal yang lengkap diuji. Dokumen ini mengatasi ringkasan status lama; source dan receipt semasa diperiksa untuk keputusan operasi.
-
-> **Current overlay — 16 Oktober 2026:** Untuk perubahan selepas baseline, rujuk [status semasa](ABANGCOLEK-PLATFORM-STATUS-2026-10-16.md), [AI Agent architecture](AI-AGENT-ARCHITECTURE.md), [AI Agent roadmap](AI-AGENT-ROADMAP.md) dan [docs index](README.md). Social connector, Plugins dan Automations mempunyai local implementation/mock state. AI Agent provider adapters dan free-model catalog masih belum verified/implemented; dokumen roadmap bukan runtime receipt.
+Diselaraskan: **19 Oktober 2026**. [Master Blueprint v2.3](ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) menentukan sasaran; source, test dan runtime receipts menentukan implementasi. [Prompt index](prompts/README.md) ialah arahan pelaksanaan terkini. Tiada suite/deploy baharu dibuat melalui alignment ini. Baseline 3–4 Oktober di bawah ialah sejarah, bukan dakwaan semua backlog/production siap.
 
 ## 1. Visi dan prinsip
 
@@ -16,21 +14,16 @@ Satu workspace untuk founder mengurus jualan, pelanggan, operasi, ejen/stokis, m
 
 ## 2. Source, runtime, data dan production
 
-| Entiti | Kedudukan semasa |
+| Entiti | Authority / verification |
 |---|---|
-| Source untuk kerja seterusnya | `D:\ABANGCOLEK-PLATFORM`; `thisidowgnut-source/ABANGCOLEK-PLATFORM`, branch main |
-| Preview/API | RUNNING_LOCAL4Oktober: UI3000/API3010 daripada PLATFORM; direct/proxy identity match dan served main.tsx path verified |
-| Data lokal sedia ada | `D:\ABANGCOLEK-OS\var\lib\platform\platform.sqlite` dan evidence; runtimeRoot sengaja dikekalkan, jobs0 sebelum startup |
-| Production | Dua workflow baseline gagal pada build; local fix belum dipush; tiada production receipt diperoleh |
+| Source kerja | `D:\ABANGCOLEK-PLATFORM`; remote sasaran `thisisniagahub/ABANG-COLEK-V1`, main; recheck git remote/status/SHA sebelum tindakan |
+| Local runtime | UI3000/API3010 ialah default launcher, bukan dakwaan listener hidup sekarang; inspect process/identity sebelum reuse |
+| Local data | Arahan 3 Oktober mengekalkan OSvar; data selectors semasa mesti disahkan, jangan menukar root atau menganggap snapshot itu masih aktif |
+| Cloud runtime | Vercel `niaga-hub-pro/abang-colek-v1`, `api/platform.ts`, Supabase authoritative snapshot CAS; release proof berasingan |
+| Cloud data | Project `yeszjvcnjxumujxinahz`; private evidence + service-only RPC. SQL/config presence bukan migration/business onboarding proof |
+| Agent sasaran | TypeScript CopilotRuntime + Google ADK Python service, founder pilot; conversation store bukan commerce ledger |
 
-Source-only local startup4Oktober menggunakan kod PLATFORM dengan data OS. Fresh recovery verified sebelum startup, kemudian users/memberships/sessions/records/audit rows direconcile melalui snapshot hashes dan sepadan. Original DB tidak dipindahkan atau diganti. Kedua-dua checkout sudah memasang AppRouter; OS bukan legacy SPA semata-mata. Legacy `src/App.tsx` retained dalam kedua-duanya tetapi tidak dimount sebagai shell utama.
-
-**Keputusan pengguna, 3 Oktober 2026:** kekalkan runtime/data di `D:\ABANGCOLEK-OS\var` dahulu. Kod canonical PLATFORM. Startup menggunakan `PLATFORM_RUNTIME_ROOT` tersebut. Prerender mempunyai selector berasingan `PLATFORM_DATABASE`; build4Oktober memilih verified isolated restore yang mengandungi data sama supaya DB asal tidak dibuka oleh SQLite readonly. B02 local recovery dan B03 local source switch direceipt dalam capability matrix; offsite redundancy, onboarding dan production gates masih berasingan.
-
-Bukti runtime terdahulu: UI PID13828 dan API PID29364, launcher15016; served `/src/main.tsx` mengandungi path OS. Refresh handover mendapati semua PID ini tiada proses dan PIDfile29364 stale. Jangan digunakan semula untuk kill. PLATFORM belum mempunyai SQLite bisnes. Bun1.4.2/Nodev24.19.0 verified; PLATFORM node_modules Junction ke OS node_modules.
-
-Audit hash3Oktober sebelum swarm tidak menemui drift dalam landing/platform/server/scripts/tests-platform yang dibandingkan. Selepas swarm, perubahan disengajakan dibuat pada PLATFORM sahaja; seluruh assets/docs/services belum dibandingkan. Jangan reset/delete OS atau edit kedua-dua source secara berterusan.
-
+`PLATFORM_RUNTIME_ROOT` dan `PLATFORM_DATABASE` ialah selectors berasingan. Jangan buka sumber operasi menggunakan root/DB default tanpa preflight. `src/main.tsx` mount AppRouter; `src/App.tsx` legacy tidak dipasang sebagai shell utama. Preserve OS checkout/data dan dirty changes. Jangan mengguna semula PID atau port receipt lama untuk kill/start. Rujuk [release](production-release.md) dan [recovery](runbooks/platform-recovery.md).
 ## 3. Architecture dan boundaries
 
 ```text
@@ -59,13 +52,13 @@ Audit hash3Oktober sebelum swarm tidak menemui drift dalam landing/platform/serv
                          v
 +--------------------------------------------------+
 | SQLite + evidence files + audit + worker lokal    |
-| Cloud persistence/execution masih release gate    |
+| Cloud: Supabase snapshot CAS + private evidence    |
 +--------------------------------------------------+
 ```
 
 Entry [main.tsx](../src/main.tsx) → [AppRouter](../src/features/platform/AppRouter.tsx), [navigation](../src/features/platform/routes.ts), [client](../src/features/platform/client.ts) → [API](../server/platform/app.ts). [WorkspaceContent](../src/features/workspaces/WorkspaceContent.tsx) dispatch domain views. Founder `legacy` route membuka IntegrationWorkspace readiness/shortcuts, bukan memasang seluruh App lama.
 
-Satu ledger authoritative bagi setiap environment. Google/Supabase ialah adapter/sumber migration; email sama tidak automatik menyatukan identity atau authority. Public catalogue berasal daripada produk published, money dalam sen, payment dan fulfilment lifecycle berasingan.
+Satu ledger authoritative bagi setiap environment. Google ialah identity/integration adapter; Supabase ialah cloud snapshot authority atau sumber import mengikut environment; email sama tidak automatik menyatukan identity atau authority. Public catalogue berasal daripada produk published, money dalam sen, payment dan fulfilment lifecycle berasingan.
 
 ## 4. Roles
 
@@ -87,7 +80,7 @@ IMPLEMENTED_LOCAL bermaksud domain source/API tersedia, bukan onboarding/vendor/
 | Domain | Source | Status/baki |
 |---|---|---|
 | Landing/brand | src/features/landing, src/features/brand | Emons DONE_LOCAL4Oktober2026:14core E2E+4layout+25unit; dialog centered, native swipe preserved, hidden attribution inert, product photo/scene label separated |
-| Catalogue/order/payment/refund/stock | workspaces/commerce.tsx, server/platform/commerce.ts | Local wired; catalogue sebenar kosong |
+| Catalogue/order/payment/refund/stock | workspaces/commerce.tsx, server/platform/commerce.ts | Domain source tersedia; catalogue/stock sebenar perlu inventory runtime baharu |
 | Cases/tasks/docs/SOP | workspaces/work.tsx, server/platform/work.ts | Local records; tiada automatic Google sync |
 | QC/batch/shifts/day-close | operations.tsx, operations.ts, operationalAmendments.ts | Local wired; SOP/locations/readings sebenar perlu owner |
 | Finance/reports/people/settings | business.tsx, ReportBuilder.tsx, reports.ts, auth.ts | Local wired; balances/policies perlu onboarding |
@@ -98,13 +91,13 @@ IMPLEMENTED_LOCAL bermaksud domain source/API tersedia, bukan onboarding/vendor/
 | Jobs/research/runtime | AutomationWorkspace.tsx, server/automation, runtimeControls.ts | Local worker/jobs; remote transports absent |
 | Legacy workspace | IntegrationWorkspace.tsx, src/services | Retained source/readiness; parity dan migration belum lengkap |
 
-Founder overview membaca platform API; legacy mock/localStorage bukan ledger authoritative. Developer reports/settings kini generic runtime view, jev dedicated; penamaan/view parity ialah backlog.
+Founder overview membaca platform API; legacy mock/localStorage bukan ledger authoritative. Developer reports/settings mesti dinilai melalui source semasa; parity/navigation snapshot lama bukan current acceptance.
 
 ## 6. Data dan produk snapshot
 
 Snapshot data handover3Oktober: **users1, customer membership aktif1, sessions1 total/0 aktif, founder bootstrapped=false, flow definitions5, audit0**. Records hanya flows; catalogue/orders/lots/dealers/marketing0. Lima definisi ialah order, complaint, dealer application, restock, stock receipt; bukan transaksi bisnes. Source-only startup4Oktober direconcile melalui snapshot hashes seperti §2; runtime running lokal pada receipt itu. Session/activity counts perlu refresh sebelum tindakan dan tidak dianggap live melalui snapshot ini.
 
-PLATFORM tidak mempunyai DB bisnes authoritative sendiri; data dikekalkan di OSvar. Build baseline3Oktober tanpa selector database menghasilkan catalogue version0/products0, bukan snapshot data OS. Build4Oktober menggunakan verified isolated restore OS dan mengesahkan catalogue0/products0 untuk data sebenar ketika itu. Gunakan selector yang disengajakan dan recheck selepas onboarding.
+Pada snapshot 3–4 Oktober, data bisnes dikekalkan di OSvar; ini bukan arahan mengabaikan cloud CAS atau data selector yang kini dikonfigurasi. Build baseline3Oktober tanpa selector database menghasilkan catalogue version0/products0, bukan snapshot data OS. Build4Oktober menggunakan verified isolated restore OS dan mengesahkan catalogue0/products0 untuk data sebenar ketika itu. Gunakan selector yang disengajakan dan recheck selepas onboarding.
 
 Research menyokong visual **colek buah dalam cawan** dan **Sambal Colek dalam balang**. Keseluruhan SKU, harga, gram/ml, variasi dan availability semasa belum terbukti. [Research sosial](../reports/RESEARCH_PRODUK_SOSIAL_ABANGCOLEK_2026-10-03.md) dan [inventori imej](../reports/INVENTORI_IMEJ_PRODUK_ABANGCOLEK_2026-10-03.md) memisahkan foto daripada artwork/mascot.
 
@@ -124,7 +117,7 @@ Migration memerlukan identity/ownership/IDs/SKU/price-version/lifecycle/evidence
 | OpenAI dots | Research/reference | Responsibility/outcome/audit trail |
 | DeepSeek Harness | Research/reference | Harness/tool boundary; acknowledgement bukan outcome |
 | Google Workspace | Legacy source | Selective server adapter, scoped consent, operation receipts |
-| Supabase | Legacy source; SQLite aktif | Cloud RLS dan data migration perlu audit sendiri |
+| Supabase | Cloud snapshot CAS/evidence source tersedia; local SQLite mode berasingan | Service-only access, CAS/receipt dan deployment proof wajib; bukan normalized domain migration |
 | Gemini legacy | Founder/flag-gated server proxy helper | Provider key server-only; helper bukan bukti UI legacy/inference hidup |
 | Antigravity CLI / AGY | Audit + code proposals verified; direct terminal coding batch timeout; parent/native implementation dan tests diterima berasingan | Capability matrix §8–10 memegang usage/limits; CLI delegation bukan business adapter connected |
 | NVIDIA/Groq/OpenRouter/Ollama | Preference pengguna untuk resources sedia ada | Tiada availability/usage baharu disahkan; jangan anggap unlimited/free execution |
@@ -135,7 +128,7 @@ Migration memerlukan identity/ownership/IDs/SKU/price-version/lifecycle/evidence
 
 ## 8. Susunan fungsi/UI
 
-D01 implemented4Oktober: Founder mempunyai18 destinations dalam tujuh groups di bawah, tanpa menukar URLs/labels/authority. Customer/Staff/Developer juga grouped.12unit dan5browser tests lulus termasuk mobile dialog, focus trap/return, active state dan dark/light. Granular requiredCapability D02 masih backlog.
+D01 implemented4Oktober: Founder mempunyai18 destinations dalam tujuh groups di bawah, tanpa menukar URLs/labels/authority. Customer/Staff/Developer juga grouped.12unit dan5browser tests lulus termasuk mobile dialog, focus trap/return, active state dan dark/light. Status granular capability D02 mesti disahkan melalui source/tests semasa; jangan guna label backlog lama sebagai keputusan terkini.
 
 | Kumpulan | Sections |
 |---|---|
@@ -175,16 +168,16 @@ PORT ialah backlog decision, bukan claim implemented. Folder OS retained untuk r
 - Logs ignored: var/log/alignment/lint.log, platform-tests.log, build.log.
 - Baseline remote [run37089230469](https://github.com/thisidowgnut-source/ABANGCOLEK-PLATFORM/actions/runs/37089230469) dan [37089172927](https://github.com/thisidowgnut-source/ABANGCOLEK-PLATFORM/actions/runs/37089172927) failure; local fix belum dipush.
 
-Config Vite/dist/SPA sahaja; client same-origin API, dev proxy bukan production backend. Bun API/SQLite/files/worker perlu deployment topology/persistence. Rujukan rasmi dalam review: [Bun runtime](https://vercel.com/docs/functions/runtimes/bun), [SQLite](https://vercel.com/kb/guide/is-sqlite-supported-in-vercel), [GitHub Actions](https://vercel.com/kb/guide/how-can-i-use-github-actions-with-vercel).
+Pada snapshot 3 Oktober config Vite/dist/SPA sahaja; source sekarang mempunyai hosted API entry dan CAS. Dev proxy sahaja tetap bukan production backend. Bun API/SQLite/files/worker perlu deployment topology/persistence. Rujukan rasmi dalam review: [Bun runtime](https://vercel.com/docs/functions/runtimes/bun), [SQLite](https://vercel.com/kb/guide/is-sqlite-supported-in-vercel), [GitHub Actions](https://vercel.com/kb/guide/how-can-i-use-github-actions-with-vercel).
 
 Snapshot alignment3Oktober tidak mempunyai browser E2E baharu, Linux CI baharu, runtime cutover, founder acceptance atau production receipt. Pada4Oktober pengguna resumes Emons dan meminta AGY implementation swarm; actual completion mesti menggunakan receipt baharu, bukan snapshot ini.
 
-### Receipt semasa — 4 Oktober (Wave 3 Swarm Completion)
+### Historical receipt — 4 Oktober (Wave 3 report; bukan current verification)
 
 - **Platform Test Suite**: **260 passed, 0 failed merentas 59 fail** (1,595 `expect()` assertions).
 - **TypeScript & Lint**: `bun run lint` PASS dengan **0 errors**.
 - **Production Build & Prerender**: `bun run build` PASS (Vite 15.80s + prerender verified).
-- **18 Backlog Work Items**: Kesemua 18 task (B01, B05, C01, C02, C03, C04, C05, D02, D03, D04, D05, D07, E01, E02, E03, E04, E05, F01/F02) selesai diimplementasi dan diverifikasi dengan receipt acceptance lengkap.
+- **Historical 18-item report:** laporan terdahulu menanda 18 task selesai. Label ini tidak mengesahkan credential rotation, native JEV, external providers, production atau baki kerja blueprint semasa. Verifikasi semula setiap task melalui receipt yang boleh dicapai.
 - **Root Housekeeping (F02)**: Bilangan fail di root projek dikurangkan daripada 17 kepada tepat 14 fail teras (memenuhi kriteria $\le 15$ fail).
 - **Zero-New-Spend Topology (C02)**: Monolith tempatan Bun v1.4.2 + SQLite (`platform.sqlite` di `D:\ABANGCOLEK-OS\var\lib\platform\`) dikekalkan 100% tanpa kos SaaS / subscription luaran.
 - **Host Security Suite (C03)**: 6/6 tests lulus mengesahkan Content-Type strict JSON (415), Origin allowlist (403), Cookie security flags (`HttpOnly`, `SameSite=Strict`), `Cache-Control: no-store`, rate limiting, dan negative RBAC.
@@ -198,6 +191,14 @@ Credentials terdedah dalam shared chat; owner revoke/rotate dan audit diperlukan
 
 Statuses dipisahkan: source exists, tested dengan SHA/diff, runtime connected, data onboarded/migrated, production verified, business accepted. Release memerlukan SHA matching, CI pass, READY URL, API JSON sebenar, negative RBAC, persistence/files/worker recovery, real catalogue/policies dan role journeys.
 
-Gunakan [backlog](PROJECT-ALIGNMENT-BACKLOG.md) untuk owner/dependency/acceptance, [runbook](runbooks/platform-recovery.md) untuk operasi, [docs index](README.md) untuk research/history. Reports berdate ialah snapshots; refresh current registry apabila receipt baharu diperoleh.
+Gunakan [backlog](archive/legacy-oct2026/PROJECT-ALIGNMENT-BACKLOG.md) untuk owner/dependency/acceptance, [runbook](runbooks/platform-recovery.md) untuk operasi, [docs index](README.md) untuk research/history. Reports berdate ialah snapshots; refresh current registry apabila receipt baharu diperoleh.
 
 [ADR-0001](decisions/0001-project-authority-and-continuity.md) merekod keputusan; [capability matrix](handover/CAPABILITY-MATRIX.md) membezakan tools exposed daripada connected; [register Markdown](handover/MARKDOWN-ALIGNMENT-REGISTER.md) merekod coverage, klasifikasi dan errata.
+
+## 12. Kontrak Copilot semasa
+
+Sasaran wajib: 10 ciri CopilotKit, 10 modul aplikasi, 32 logical capabilities ADV-01..32 dan 7 pendekatan Generative UI. Rujuk [architecture](AI-AGENT-ARCHITECTURE.md), [10 ciri](design/copilotkit-ten-features.md), [registry](design/copilot-advanced-tools.md) dan [free-only policy](research/2026-10-19-free-model-policy.md). Ini skop pembangunan, bukan count fungsi aktif.
+
+Stack tetap: React/Vite + TypeScript CopilotRuntime/Bun -> Google ADK Python/AG-UI bridge -> canonical tools. Fixed-schema A2UI, first-party read-only MCP App dan founder pilot. Streams/Automatic Learning memerlukan Intelligence cost/data/entitlement gate dan kekal blocked_external jika tiada. Tiada paid inference fallback termasuk hidden title/eval/voice/model calls.
+
+JEV semasa LOCAL_RULES. Tiada classification/confidence yang meluluskan wang/stok; financial commands deterministic dengan authorization, policy, revision, idempotency dan committed receipt. Approval bukan execution. Semua worktrees/provider/source/custom SSE perlu disemak sebelum menamakan integrasi rasmi siap. Folder sasaran belum bermaksud migration dilaksanakan. Keputusan topology semasa mengatasi cadangan local-only lama; rekod supersession ADR bersama release.

@@ -1,8 +1,11 @@
 import { randomUUID } from 'node:crypto';
+import { tmpdir } from 'node:os';
+import { dirname, join, resolve } from 'node:path';
+import { BackupScheduler, type BackupSchedulerOptions } from './backupScheduler';
 import type { BusinessSettings, CatalogueProduct, PlatformOverview, CaseRecord, EvidenceRecord, JobRecord } from '../../shared/platform-contracts';
 import { Auth, type Principal } from './auth';
 import { Commerce } from './commerce';
-import { DomainError, fail, now, object, PlatformStore, text, fields, oneOf, strings, list } from './store';
+import { DomainError, fail, now, object, PlatformStore, text, fields, oneOf, strings, list, integer } from './store';
 import { Work } from './work';
 import { Dealers } from './dealers';
 import { Marketing } from './marketing';
@@ -22,17 +25,31 @@ import { OperationalAmendments } from './operationalAmendments';
 import { BusinessOnboarding } from './onboarding';
 import { LegacyMigrationReconciler } from './migration/migrationReconciler';
 import { WhatsAppService, type WhatsAppTransport } from './whatsapp';
-import { LegacyPilotsService, VERIFIED_BUS_ROUTES } from './legacyPilots';
+import { LegacyPilotsService, VERIFIED_BUS_ROUTES, type FounderProposalExecutor } from './legacyPilots';
 import { FounderIntelligence } from './founder-intelligence';
+import type { GoogleIdentityVerifier } from './googleIdentity';
 import { SocialConnections } from './social';
 
 import { HermesAdapter, type AutomationOptions } from '../automation/adapters';
 
-export interface PlatformAppOptions { persistenceMode?:'local'|'supabase'; evidenceStorage?:EvidenceStorage; databasePath?:string; bootstrapToken?:string; origin?:string; allowedOrigins?:string[]; rateLimits?:{identityGlobal:number;identityAccount:number;actor:number}; automationOptions?:AutomationOptions; whatsappTransport?:WhatsAppTransport; log?:(entry:{requestId:string;code:string;status:number})=>void }
+import { Loyalty } from './loyalty';
+import { GoogleAdkAgent } from './adkAgent';
+import { FreeModelRouter } from './freeModelRouter';
+
+export interface PlatformAppOptions { googleIdentityVerifier?:GoogleIdentityVerifier; persistenceMode?:'local'|'supabase'; evidenceStorage?:EvidenceStorage; databasePath?:string; bootstrapToken?:string; origin?:string; allowedOrigins?:string[]; rateLimits?:{identityGlobal:number;identityAccount:number;actor:number}; automationOptions?:AutomationOptions; whatsappTransport?:WhatsAppTransport; adkAgent?:GoogleAdkAgent; freeModelRouter?:FreeModelRouter; backupScheduler?:BackupSchedulerOptions|boolean; log?:(entry:{requestId:string;code:string;status:number})=>void }
 const cookieClear='platform_session=; HttpOnly; SameSite=Strict; Path=/api/platform; Max-Age=0';
 export function createPlatformApp(options:PlatformAppOptions={}) {
   const store=new PlatformStore(options.databasePath??'var/lib/platform/platform.sqlite');
-  const auth=new Auth(store,options.bootstrapToken),commerce=new Commerce(store,auth),work=new Work(store,auth,commerce);
+  const dbPath=options.databasePath??'var/lib/platform/platform.sqlite';
+  const dbDir=dbPath===':memory:'?tmpdir():dirname(resolve(dbPath));
+  const backupScheduler=new BackupScheduler(store,{
+    evidenceDirectory:join(dbDir,'evidence'),
+    snapshotsDirectory:join(dbDir,'backups'),
+    intervalMs:4*60*60*1000,
+    autoStart:options.backupScheduler!==false,
+    ...(typeof options.backupScheduler==='object'?options.backupScheduler:{}),
+  });
+  const auth=new Auth(store,options.bootstrapToken),loyalty=new Loyalty(store,auth),commerce=new Commerce(store,auth,loyalty),work=new Work(store,auth,commerce);
   const dealers=new Dealers(store,auth,commerce),marketing=new Marketing(store,auth,commerce,work),operations=new Operations(store,auth,commerce,work);
   const flows=new Flows(store,auth,commerce,work,dealers),jobs=new Jobs(store,auth,commerce,work),automationDefinitions=new AutomationDefinitions(store,auth),evidenceFiles=new EvidenceFiles(store,work,options.databasePath??'var/lib/platform/platform.sqlite',options.evidenceStorage);
   const runtimeControls=new RuntimeControlCommands(store,auth);
@@ -45,6 +62,8 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
   const legacyPilots=new LegacyPilotsService(store);
   const founderIntelligence=new FounderIntelligence(store,auth);
   const social=new SocialConnections(auth);
+  const freeModelRouter=options.freeModelRouter??new FreeModelRouter();
+  const adkAgent=options.adkAgent??new GoogleAdkAgent(store,auth,commerce,dealers,loyalty,{router:freeModelRouter});
   const origin=options.origin??'http://localhost:3000';
   const allowedOrigins=options.allowedOrigins??[origin];
   function json(data:unknown,status=200,extra:Record<string,string>={}) {return new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer',...extra}});}
@@ -77,7 +96,8 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
       if(path==='/session')return auth.refreshCsrf(actor);
       if(path==='/catalogue/admin'){auth.founder(actor);return store.all<CatalogueProduct>('catalogue').map(p=>({...p,availableQuantity:commerce.available(p.id)}));}
       if(path==='/orders')return commerce.orders(actor);
-      if(segments[0]==='orders'&&recordId)return commerce.order(actor,recordId);
+      if(path==='/orders/track'){const token=url.searchParams.get('token');if(!token)fail('INVALID_TOKEN',400,'Token penjejakan diperlukan.');return commerce.trackOrder(token);}
+      if(segments[0]==='orders'&&recordId&&!command)return commerce.order(actor,recordId);
       if(path==='/cases')return work.cases(actor);
       if(segments[0]==='cases'&&recordId){if(command==='messages')return work.messages(actor,recordId);return work.case(actor,recordId);}
       if(path==='/evidence')return evidenceFiles.list(actor,url.searchParams.get('entityId')??'');
@@ -106,6 +126,11 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
       if(path==='/dealer/benefits')return dealers.benefits(actor);
       if(path==='/dealer/ledger')return dealers.ledger(actor);
       if(path==='/dealer/commission-policies'){auth.founder(actor);return store.all('commission_policies');}
+      if(path==='/dealer/commissions')return dealers.commissions(actor,url.searchParams.get('dealerOrgId')??undefined);
+      if(path==='/dealer/commissions/summary')return dealers.commissionSummary(actor,url.searchParams.get('dealerOrgId')??undefined);
+      if(path==='/loyalty/balance'||path==='/loyalty/summary')return loyalty.getSummary(actor.user.id);
+      if(path==='/loyalty/entries')return loyalty.getEntries(actor.user.id);
+      if(path==='/loyalty/account'&&url.searchParams.get('userId')){auth.founder(actor);return loyalty.getSummary(url.searchParams.get('userId')!);}
       if(path==='/expenses')return operations.expenses(actor);
       if(path==='/dayclose/amendments')return amendments.dayCloseHistory(actor);
       if(path==='/expense-postings')return amendments.postings(actor);
@@ -149,13 +174,18 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
       if(path==='/overview')return overview(actor);
       if(path==='/people'){auth.founder(actor);return store.db.query<{id:string;email:string;name:string},[]>('SELECT id,email,name FROM users ORDER BY created_at').all().map(u=>({...u,memberships:auth.memberships(u.id)}));}
       if(path==='/settings'){if(auth.has(actor,'founder'))return operations.settings();const s=operations.settings();return {...s,approvedPolicies:{paymentInstructions:s.approvedPolicies.paymentInstructions,contact:s.approvedPolicies.contact,locations:s.approvedPolicies.locations,...(actor.memberships.some(m=>m.dealerOrgId)?{dealer:s.approvedPolicies.dealer}:{})}};}
-      if(path==='/health'){if(!auth.has(actor,'founder')&&!auth.has(actor,'developer'))fail('FORBIDDEN',403);return [{component:'platform_database',status:'ready',observedAt:now(),reasonCode:options.persistenceMode==='supabase'?'SUPABASE_SNAPSHOT':'LOCAL_SQLITE'},{component:'hermes',status:options.automationOptions?.hermes?'ready':'unavailable',observedAt:now(),reasonCode:options.automationOptions?.hermes?'LOCAL_HERMES_TRANSPORT_ACTIVE':'ADAPTER_NOT_VERIFIED'},{component:'native_whatsapp',status:options.whatsappTransport?'ready':'unavailable',observedAt:now(),reasonCode:options.whatsappTransport?'WHATSAPP_TRANSPORT_ACTIVE':'FEATURE_DISABLED'},{component:'postiz',status:options.automationOptions?.postiz?'ready':'unavailable',observedAt:now(),reasonCode:options.automationOptions?.postiz?'LOCAL_POSTIZ_TRANSPORT_ACTIVE':'ADAPTER_NOT_VERIFIED'},{component:'agent_reach',status:options.automationOptions?.agentReach?'ready':'unavailable',observedAt:now(),reasonCode:options.automationOptions?.agentReach?'LOCAL_AGENT_REACH_TRANSPORT_ACTIVE':'ADAPTER_NOT_VERIFIED'}];}
+      if(path==='/health'){if(!auth.has(actor,'founder')&&!auth.has(actor,'developer'))fail('FORBIDDEN',403);const rpo=backupScheduler.checkRpoStatus();return [{component:'platform_database',status:'ready',observedAt:now(),reasonCode:options.persistenceMode==='supabase'?'SUPABASE_SNAPSHOT':'LOCAL_SQLITE'},{component:'disaster_recovery_rpo',status:rpo.compliant?'ready':(rpo.status==='no_snapshot'?'ready':'degraded'),observedAt:now(),reasonCode:rpo.reasonCode},{component:'hermes',status:options.automationOptions?.hermes?'ready':'unavailable',observedAt:now(),reasonCode:options.automationOptions?.hermes?'LOCAL_HERMES_TRANSPORT_ACTIVE':'ADAPTER_NOT_VERIFIED'},{component:'native_whatsapp',status:options.whatsappTransport?'ready':'unavailable',observedAt:now(),reasonCode:options.whatsappTransport?'WHATSAPP_TRANSPORT_ACTIVE':'FEATURE_DISABLED'},{component:'postiz',status:options.automationOptions?.postiz?'ready':'unavailable',observedAt:now(),reasonCode:options.automationOptions?.postiz?'LOCAL_POSTIZ_TRANSPORT_ACTIVE':'ADAPTER_NOT_VERIFIED'},{component:'agent_reach',status:options.automationOptions?.agentReach?'ready':'unavailable',observedAt:now(),reasonCode:options.automationOptions?.agentReach?'LOCAL_AGENT_REACH_TRANSPORT_ACTIVE':'ADAPTER_NOT_VERIFIED'}];}
+      if(path==='/backup/status'){auth.founder(actor);return backupScheduler.status();}
+      if(path==='/backup/snapshots'){auth.founder(actor);return backupScheduler.listSnapshots();}
+      if(path==='/backup/rpo'){auth.founder(actor);return backupScheduler.checkRpoStatus();}
       if(path==='/onboarding/template'){auth.founder(actor);return {products:[],locations:[{id:'hq',name:'HQ / Pusat Operasi',address:''}],dealerTerms:{minimumQuantity:50,packMultiple:10,priceBasisPoints:7000,ownership:'owned',returnRules:'Tiada return bagi balang dibuka.',approved:false}};}
       if(path==='/migration/receipts'){auth.founder(actor);return store.all('migration_receipts');}
       if(path==='/pilots/workspace/grants')return store.all('workspace_grants').filter((g:any)=>g.userId===actor.user.id);
       if(path==='/pilots/bus-freight/routes')return VERIFIED_BUS_ROUTES;
       if(path==='/pilots/bus-freight/shipments'){auth.founder(actor);return store.all('bus_shipments');}
       if(path==='/pilots/founder-assistant/proposals'){auth.founder(actor);return store.all('founder_proposals');}
+      if(path==='/copilot/providers'){auth.operational(actor);return freeModelRouter.listProviders();}
+      if(path==='/copilot/hitl'){auth.founder(actor);return adkAgent.listHitlActions();}
     }
     if(method==='POST') {
       if(path==='/auth/logout'){auth.logout(actor);return {loggedOut:true};}
@@ -199,13 +229,34 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
       if(segments[0]==='campaigns'&&recordId){if(command==='update')return marketing.save(actor,input,recordId);if(command==='approve')return marketing.approve(actor,recordId,input);if(command==='export'){const artifact=marketing.export(actor,recordId,input,key);return evidenceFiles.export(actor,artifact,marketing.get(actor,recordId));}if(command==='publish')fail('PUBLISHER_UNAVAILABLE',409,'Saluran penerbit belum disahkan. Eksport manual tersedia.');}
       if(path==='/dealer/applications')return dealers.apply(actor,input);
       if(path==='/dealer/commission-policies')return dealers.saveCommissionPolicy(actor,input);
+      if(path==='/dealer/commissions')return dealers.recordCommission(actor,input);
+      if(segments[0]==='dealer'&&segments[1]==='commissions'&&segments[2]){
+        if(segments[3]==='transition')return dealers.transitionCommission(actor,segments[2],input);
+        if(segments[3]==='contra')return dealers.applyRefundContra(actor,segments[2],input);
+      }
+      if(segments[0]==='dealer'&&segments[1]==='orders'&&segments[2]&&segments[3]==='commission')return dealers.createCommissionFromOrder(actor,segments[2]);
       if(segments[0]==='dealer'&&segments[1]==='applications'&&segments[2]){if(segments[3]==='approve')return dealers.decide(actor,segments[2],input,true);if(segments[3]==='reject')return dealers.decide(actor,segments[2],input,false);}
       if(path==='/dealer/quotes')return dealers.quote(actor,input);
       if(path==='/dealer/restocks')return dealers.request(actor,input,key);
       if(segments[0]==='dealer'&&segments[1]==='restocks'&&segments[2]){if(segments[3]==='transition')return dealers.transition(actor,segments[2],input);if(segments[3]==='receive')return dealers.receive(actor,segments[2],input,key);}
       if(segments[0]==='dealer'&&segments[1]==='restocks'&&segments[2]){if(segments[3]==='sell-through')return dealers.sellThrough(actor,segments[2],input,key);if(segments[3]==='returns')return dealers.requestReturn(actor,segments[2],input,key);if(segments[3]==='settlements')return dealers.createSettlement(actor,segments[2],input,key);}
       if(segments[0]==='dealer'&&segments[1]==='returns'&&segments[2]&&['receive','reject'].includes(segments[3]))return dealers.decideReturn(actor,segments[2],input,key,segments[3]==='receive');
-      if(segments[0]==='dealer'&&segments[1]==='settlements'&&segments[2]&&segments[3]==='payments')return dealers.recordSettlementPayment(actor,segments[2],input,key);
+      if(path==='/loyalty/adjust'){
+        const body=object(input);
+        fields(body,['userId','pointsDelta','reason']);
+        return loyalty.adjustPoints(
+          actor,
+          text(body.userId,'ID Pengguna',120),
+          integer(body.pointsDelta,'Perubahan mata',-10_000_000,10_000_000),
+          text(body.reason,'Sebab pelarasan',1000)
+        );
+      }
+      if(path==='/loyalty/expire'){
+        auth.founder(actor);
+        const body=object(input);
+        fields(body,['userId']);
+        return loyalty.expirePoints(text(body.userId,'ID Pengguna',120));
+      }
       if(path==='/expenses')return operations.createExpense(actor,input,key);
       if(segments[0]==='dayclose'&&recordId&&command==='reopen')return amendments.reopenDayClose(actor,recordId,input);
       if(segments[0]==='expenses'&&recordId&&command==='post')return amendments.postExpense(actor,recordId,input,key);
@@ -245,12 +296,36 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
       if(segments[0]==='pilots'&&segments[1]==='bus-freight'&&segments[2]==='shipments'&&segments[3]&&segments[4]==='status'){auth.founder(actor);return legacyPilots.updateBusFreightStatus(actor.user.id,segments[3],oneOf(object(input).status,['booked','departed','received'] as const));}
       if(path==='/pilots/founder-assistant/propose'){auth.founder(actor);return legacyPilots.proposeFounderAction(actor.user.id,text(object(input).query));}
       if(path==='/pilots/founder-assistant/review'){auth.founder(actor);const b=object(input);return legacyPilots.reviewFounderProposal(actor.user.id,text(b.proposalId),oneOf(b.decision,['approved','rejected'] as const));}
-      if(path==='/pilots/founder-assistant/execute'){auth.founder(actor);return legacyPilots.executeFounderProposal(actor.user.id,text(object(input).proposalId));}
+      if(path==='/pilots/founder-assistant/execute'){
+        auth.founder(actor);const b=object(input);const proposalId=text(b.proposalId);
+        const executor:FounderProposalExecutor=(p)=>{
+          if(p.proposedAction.command==='review_cases'){const openCases=work.cases(actor).filter(c=>c.status!=='resolved');return {resultRef:`cases:open:${openCases.length}`,resultKind:'case_review'};}
+          if(p.proposedAction.command==='review_stock'){const lots=store.all('lots');return {resultRef:`lots:tracked:${lots.length}`,resultKind:'stock_review'};}
+          if(p.proposedAction.command==='draft_campaign'){const draft=marketing.save(actor,{title:text((p.proposedAction.parameters.title as string)||`Draf Kempen Abang Colek ${now().slice(0,10)}`,'Tajuk kempen',200),objective:'Kempen pemasaran pembantu pengasas',copy:'Promosi Colek Buah Segar & Sambal Box Abang Colek. Segar, pedas, manis dan padu!',catalogueVersion:commerce.version(),assets:[],productIds:[]});return {resultRef:draft.id,resultKind:'campaign_draft'};}
+          fail('UNSUPPORTED_PROPOSAL_COMMAND',400,'Perintah tindakan cadangan tidak disokong.');
+        };
+        return legacyPilots.executeFounderProposal(actor.user.id,proposalId,executor);
+      }
+      if(path==='/copilot/provider'){
+        auth.operational(actor);
+        const b=object(input);
+        fields(b,['providerId']);
+        const ok=freeModelRouter.setActiveProvider(text(b.providerId,'ID Penyedia',64));
+        if(!ok)fail('INVALID_PROVIDER',400,'Penyedia model percuma tidak sah.');
+        return {activeProvider:freeModelRouter.getActiveProvider()};
+      }
+      if(segments[0]==='copilot'&&segments[1]==='hitl'&&segments[2]&&segments[3]==='decide'){
+        auth.founder(actor);
+        const b=object(input);
+        const approve=b.approve!==undefined?Boolean(b.approve):b.decision==='approved';
+        return adkAgent.decideHitlAction(actor,segments[2],approve);
+      }
     }
     fail('NOT_FOUND',404,'Laluan tidak ditemui.');
   }
   return {
-    store, auth, commerce, work, jobs, automationDefinitions, legacyPilots, founderIntelligence,
+    store, auth, commerce, loyalty, work, jobs, automationDefinitions, legacyPilots, founderIntelligence,
+    adkAgent, freeModelRouter, backupScheduler,
     async fetch(request:Request):Promise<Response> {
       const requestId=randomUUID();
       try {
@@ -272,10 +347,16 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
         if(request.method==='GET'&&path==='/catalogue')return collection(commerce.catalogue(),url);
         if(request.method==='GET'&&path==='/catalogue/version')return json({ok:true,data:{version:commerce.version()}});
         if(request.method==='GET'&&/^\/catalogue\/[^/]+$/.test(path)&&path!=='/catalogue/admin')return json({ok:true,data:reports.publishedProduct(path.split('/')[2])});
-        if(request.method==='GET'&&path==='/bootstrap-status')return json({ok:true,data:{required:!store.metadata('owner_bootstrapped'),localOnly:true}});
+        if(request.method==='GET'&&path==='/bootstrap-status')return json({ok:true,data:{required:!store.metadata('owner_bootstrapped'),localOnly:options.persistenceMode!=='supabase'}});
+        if(request.method==='GET'&&path==='/auth/providers')return json({ok:true,data:{google:!!options.googleIdentityVerifier}});
         if(request.method==='GET'&&path==='/public-info'){const p=operations.settings().approvedPolicies;return json({ok:true,data:{contact:p.contact??null,paymentInstructions:p.paymentInstructions??null,locations:p.locations??[],version:operations.settings().version}});}
         if(request.method==='GET'&&path==='/flows')return json({ok:true,data:flows.all()});
         if(request.method==='GET'&&path.startsWith('/flows/'))return json({ok:true,data:flows.definition(path.slice(7))});
+        if(request.method==='GET'&&path==='/orders/track'){
+          const token=url.searchParams.get('token');
+          if(!token)fail('INVALID_TOKEN',400,'Token penjejakan diperlukan.');
+          return json({ok:true,data:commerce.trackOrder(token)});
+        }
         if(request.method==='GET'&&path==='/whatsapp/webhook'){
           const mode = url.searchParams.get('hub.mode');
           const token = url.searchParams.get('hub.verify_token');
@@ -284,6 +365,17 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
           const expectedToken = options.whatsappTransport.webhookSecret;
           const verified = whatsapp.verifyWebhook(mode, token, challenge, expectedToken);
           return new Response(verified, { status: 200, headers: { 'Content-Type': 'text/plain' } });
+        }
+        if(request.method==='POST'&&path==='/auth/google'){
+          store.rate('identity-global',options.rateLimits?.identityGlobal??30);
+          const body=object(input);fields(body,['accessToken']);
+          if(!options.googleIdentityVerifier)fail('GOOGLE_IDENTITY_UNAVAILABLE',503,'Google login belum tersedia. Gunakan email dan password.');
+          let authenticated=false;
+          try{auth.resolve(request);authenticated=true;}catch(error){if(!(error instanceof DomainError&&error.status===401))throw error;}
+          if(authenticated)fail('AUTHENTICATED_LOGIN_REQUIRES_LOGOUT',409,'Log keluar dahulu sebelum menukar akaun.');
+          const identity=await options.googleIdentityVerifier(text(body.accessToken,'Token identiti',16000));
+          const result=await auth.authenticateGoogle(identity);
+          return json({ok:true,data:result.data},200,{'Set-Cookie':result.cookie+(url.protocol==='https:'?'; Secure':'')});
         }
         if(request.method==='POST'&&['/auth/signup','/auth/login','/auth/bootstrap'].includes(path)) {
           store.rate('identity-global',options.rateLimits?.identityGlobal??30);const authInput=object(input);if(typeof authInput.email==='string')store.rate(`identity:${authInput.email.toLowerCase()}`,options.rateLimits?.identityAccount??6);
@@ -334,6 +426,58 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
           const idemKey = request.headers.get('idempotency-key') ?? request.headers.get('x-idempotency-key');
           return json({ok:true,data:await whatsapp.sendTemplateMessage(actor,input,idemKey)});
         }
+        if(request.method==='POST'&&path==='/backup/trigger'){
+          auth.founder(actor);
+          return json({ok:true,data:await backupScheduler.runBackup('founder_manual')});
+        }
+        if(request.method==='POST'&&path==='/copilot/chat'){
+          auth.operational(actor);
+          const b=object(input);
+          const messageText=text(b.message,'Mesej copilot',10000);
+          const conversationHistory=(Array.isArray(b.history)?b.history:[]) as any[];
+          const streamRequested=request.headers.get('accept')?.includes('text/event-stream')||b.stream===true;
+
+          if(streamRequested){
+            const encoder=new TextEncoder();
+            const stream=new ReadableStream({
+              async start(controller){
+                try{
+                  controller.enqueue(encoder.encode(`event: start\ndata: ${JSON.stringify({activeProvider:freeModelRouter.getActiveProvider().id,model:freeModelRouter.getActiveProvider().defaultModel})}\n\n`));
+                  const result=await adkAgent.processMessage(actor,messageText,conversationHistory);
+                  if(result.generativeUi){
+                    controller.enqueue(encoder.encode(`event: gen_ui\ndata: ${JSON.stringify(result.generativeUi)}\n\n`));
+                  }
+                  if(result.hitlAction){
+                    controller.enqueue(encoder.encode(`event: hitl_prompt\ndata: ${JSON.stringify(result.hitlAction)}\n\n`));
+                  }
+                  const words=result.reply.split(/(\s+)/);
+                  for(const word of words){
+                    if(word){
+                      controller.enqueue(encoder.encode(`event: text_delta\ndata: ${JSON.stringify({content:word})}\n\n`));
+                    }
+                  }
+                  controller.enqueue(encoder.encode(`event: done\ndata: ${JSON.stringify(result)}\n\n`));
+                  controller.close();
+                }catch(err:any){
+                  controller.enqueue(encoder.encode(`event: error\ndata: ${JSON.stringify({message:err?.message||'Ralat Copilot'})}\n\n`));
+                  controller.close();
+                }
+              }
+            });
+            return new Response(stream,{
+              status:200,
+              headers:{
+                'Content-Type':'text/event-stream; charset=utf-8',
+                'Cache-Control':'no-cache, no-transform',
+                'Connection':'keep-alive',
+                'X-Accel-Buffering':'no',
+              }
+            });
+          }
+
+          const result=await adkAgent.processMessage(actor,messageText,conversationHistory);
+          return json({ok:true,data:result});
+        }
         const data=request.method==='POST'?store.atomic(()=>postRoute(actor,path,input,request.headers.get('idempotency-key'),url)):route(actor,request.method,path,input,null,url);
         if(Array.isArray(data))return collection(data,url);
         return json({ok:true,data},200,path==='/auth/logout'?{'Set-Cookie':cookieClear}:{});
@@ -343,6 +487,6 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
         return json({ok:false,code:domain.code,requestId,message:domain.message},domain.status,domain.status===429?{'Retry-After':'60'}:{});
       }
     },
-    close(){store.close();},
+    close(){backupScheduler.stop();store.close();},
   };
 }

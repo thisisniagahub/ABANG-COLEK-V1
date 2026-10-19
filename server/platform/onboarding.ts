@@ -5,10 +5,10 @@ import type {
   OnboardingValidationResult,
   OnboardingCommitResult,
 } from '../../shared/onboarding-contracts';
-import type { CatalogueProduct, StockLot, InventoryMovement } from '../../shared/platform-contracts';
+import type { BusinessSettings, CatalogueProduct, StockLot, InventoryMovement } from '../../shared/platform-contracts';
 import { Auth, hash, type Principal } from './auth';
 import { Commerce } from './commerce';
-import { fail, fields, integer, list, object, oneOf, strings, text, id, now, PlatformStore } from './store';
+import { fail, fields, integer, list, object, oneOf, date, strings, text, id, now, PlatformStore } from './store';
 
 /** Object property ordering is not a distinct onboarding command. */
 function canonicalPacket(value:unknown):unknown {
@@ -24,7 +24,7 @@ export class BusinessOnboarding {
   ) {}
 
   private assertPacket(raw: unknown): void {
-    const packet=object(raw);fields(packet,['products','locations','dealerTerms']);
+    const packet=object(raw);fields(packet,['products','locations','dealerTerms','expectedSettingsVersion']);
     const skus=new Set<string>();
     for(const value of list(packet.products??[],500)){
       const product=object(value);fields(product,['sku','name','packSize','unitName','priceSen','description','lifecycle','provenanceRights','ownerApproved','unverifiedFields','isArtworkOrMascot']);
@@ -40,7 +40,9 @@ export class BusinessOnboarding {
     }
     const locations=new Set<string>();
     for(const value of list(packet.locations??[],100)){
-      const location=object(value);fields(location,['id','name','address','openingStockQuantity','batchId']);
+      const location=object(value);fields(location,['id','name','address','openingStockQuantity','batchId','approved','hours','verifiedAt']);
+      if(location.approved!==undefined&&typeof location.approved!=='boolean')fail('INVALID_INPUT');
+      if(location.approved===true){text(location.address,'Alamat',2000);text(location.hours,'Waktu operasi',1000);date(location.verifiedAt);}
       const locationId=text(location.id,'ID lokasi',120);if(locations.has(locationId))fail('DUPLICATE_LOCATION');locations.add(locationId);
       text(location.name,'Lokasi',200);text(location.address,'Alamat',2000,0);
       if(location.openingStockQuantity!==undefined)integer(location.openingStockQuantity,'Stok awal',0,1_000_000);
@@ -53,6 +55,7 @@ export class BusinessOnboarding {
     products?: ProductOnboardingDraft[];
     locations?: LocationOnboardingDraft[];
     dealerTerms?: DealerTermsDraft;
+    expectedSettingsVersion?: number;
   }): OnboardingValidationResult {
     this.assertPacket(packet);
     const missingFields: string[] = [];
@@ -61,8 +64,9 @@ export class BusinessOnboarding {
     const rejectedItems: { name: string; reason: string }[] = [];
 
     const products = packet.products ?? [];
+    const hasApprovedSettings = packet.locations?.some(location => location.approved === true) === true || packet.dealerTerms?.approved === true;
 
-    if (!products.length) {
+    if (!products.length && !hasApprovedSettings) {
       missingFields.push('products');
       unknowns.push('Katalog produk belum dimuatkan.');
     }
@@ -145,7 +149,7 @@ export class BusinessOnboarding {
     }
 
     const isValid = rejectedItems.length === 0 && missingFields.length === 0;
-    const canCommit = rejectedItems.length === 0 && products.some(p => p.ownerApproved && (p.priceSen ?? 0) > 0);
+    const canCommit = rejectedItems.length === 0 && (products.some(p => p.ownerApproved && (p.priceSen ?? 0) > 0) || (products.length === 0 && hasApprovedSettings));
 
     return {
       isValid,
@@ -163,6 +167,7 @@ export class BusinessOnboarding {
       products: ProductOnboardingDraft[];
       locations?: LocationOnboardingDraft[];
       dealerTerms?: DealerTermsDraft;
+      expectedSettingsVersion?: number;
     },
   ): OnboardingCommitResult {
     this.auth.founder(actor);
@@ -180,11 +185,32 @@ export class BusinessOnboarding {
       fail('ONBOARDING_VALIDATION_FAILED', 400, 'Data onboarding tidak memenuhi syarat kelulusan.');
     }
 
+    // Inventory must reference an explicitly approved location, never a draft label.
+    const approvedLocationIds = new Set((this.store.get<BusinessSettings>('settings', 'business')?.approvedPolicies.locations ?? []).map(location => location.id));
+    for (const location of packet.locations ?? []) if (location.approved === true) approvedLocationIds.add(location.id);
+    if (packet.locations?.some(location => (location.openingStockQuantity ?? 0) > 0 && !approvedLocationIds.has(location.id))) {
+      fail('OPENING_STOCK_LOCATION_UNAPPROVED', 400, 'Lokasi stok awal memerlukan kelulusan pemilik atau lokasi diluluskan yang sedia ada.');
+    }
+
     let committedProductsCount = 0;
     let publishedProductsCount = 0;
-    const locationsCount = packet.locations?.length ?? 0;
+    const approvedLocations=(packet.locations??[]).filter(location=>location.approved===true);
+    const locationsCount=approvedLocations.length;
     const commitTime = now();
 
+    if(approvedLocations.length||packet.dealerTerms?.approved){
+      const previous=this.store.get<BusinessSettings>('settings','business')??{id:'business',version:0,approvedPolicies:{},locale:'ms-MY' as const,timezone:'Asia/Kuala_Lumpur' as const};
+      this.store.revision(previous.version,packet.expectedSettingsVersion);
+      const policies={...previous.approvedPolicies};
+      if(approvedLocations.length){
+        const locations=new Map((policies.locations??[]).map(location=>[location.id,location]));
+        for(const draft of approvedLocations){const location={id:draft.id,name:draft.name.trim(),address:draft.address.trim(),hours:draft.hours!.trim(),verifiedAt:date(draft.verifiedAt)};locations.set(location.id,location);this.store.save('locations',location);}
+        policies.locations=[...locations.values()];
+      }
+      if(packet.dealerTerms?.approved){const {approved:_approved,...terms}=packet.dealerTerms;policies.dealer={...terms,version:(policies.dealer?.version??0)+1,approvedAt:commitTime};}
+      const settings:BusinessSettings={...previous,version:previous.version+1,approvedPolicies:policies};
+      this.store.save('settings',settings);this.store.audit(actor.user.id,'settings.approve','business',settings.version);
+    }
     let openingProductId:string|undefined;
     for (const p of packet.products) {
       if (!p.ownerApproved) continue;

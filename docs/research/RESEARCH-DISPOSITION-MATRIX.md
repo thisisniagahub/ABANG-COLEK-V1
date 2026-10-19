@@ -1,3 +1,8 @@
+<!-- blueprint-alignment: 2026-10-19 -->
+> **Penyelarasan autoriti — 19 Oktober 2026.** MATRIKS KEPUTUSAN SEJARAH — label APPROVED/ADOPTED dan topologi local-only di bawah ialah keputusan asal 4 Oktober, bukan authority deployment semasa atau bukti provider aktif. Blueprint mengatasi andaian local-only; runtime tempatan dan cloud CAS dibezakan. Hermes/Postiz/native JEV memerlukan bukti integrasi tersendiri.
+>
+> Rujukan semasa: [Master Growth Blueprint](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) dan [prompt pelaksanaan canonical](../prompts/IMPLEMENT-ABANGCOLEK.md). Blueprint menetapkan 10 kemampuan CopilotKit, 10 modul bisnes, 32 kemampuan tool dan tujuh pendekatan Generative UI sebagai skop sasaran, bukan status siap. Polisi free-only melarang paid fallback; local rules bukan native model, approval bukan execution dan transaksi cloud memerlukan durable CAS commit. Senarai skill, MCP atau plugin bukan bukti ia tersedia atau aktif. Kemas kini dokumentasi ini tidak menjalankan ujian aplikasi, benchmark model, migrasi atau deployment.
+
 # ABANGCOLEK PLATFORM — RESEARCH DISPOSITION MATRIX (E05)
 
 **Document ID**: `AC-RES-DISPOSITION-001`  

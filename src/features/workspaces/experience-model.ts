@@ -30,10 +30,22 @@ export function nextFulfilment(status: FulfilmentStatus,payment: PaymentState,ro
   if(status==='review') return payment==='verified'? 'accepted':null;
   return ({ accepted: 'packing',packing: 'packed',packed: 'dispatched' } as Partial<Record<FulfilmentStatus,FulfilmentStatus>>)[status]??null;
 }
-export function campaignApprovalIssues(campaign: { copy: string; assets: { rights: string; consent: string; }[]; }): string[] {
+export function campaignApprovalIssues(campaign: {
+  copy: string;
+  assets: { rights: string; consent: string; }[];
+  marginResult?: { isContributionPass: boolean; isMarginPctPass: boolean; allowed: boolean; };
+  founderOverride?: { approved: boolean; };
+}): string[] {
   const issues: string[]=[];
   if(!campaign.copy.trim()) issues.push('Copy kempen diperlukan.');
   if(campaign.assets.some(asset => !asset.rights.trim()||!asset.consent.trim())) issues.push('Sahkan hak penggunaan dan consent bagi setiap aset.');
+  if(campaign.marginResult){
+    if(!campaign.marginResult.isContributionPass){
+      issues.push('Sumbangan margin tunai gagal melepasi paras minimum.');
+    } else if(!campaign.marginResult.isMarginPctPass && !campaign.founderOverride?.approved){
+      issues.push('Penerbitan disekat (FIN-01): Peratusan margin gagal, memerlukan Founder Override.');
+    }
+  }
   return issues;
 }
 export const money=(sen: number) => new Intl.NumberFormat('ms-MY',{ style: 'currency',currency: 'MYR' }).format(sen/100);

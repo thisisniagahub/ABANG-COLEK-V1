@@ -1,5 +1,6 @@
 import { createHash, randomBytes, scrypt, timingSafeEqual } from 'node:crypto';
 import { promisify } from 'node:util';
+import type { GoogleIdentity } from './googleIdentity';
 import type { Membership, SessionData, WorkspaceRole } from '../../shared/platform-contracts';
 import { fields, fail, id, now, object, PlatformStore, strings, text, oneOf } from './store';
 
@@ -87,6 +88,31 @@ export class Auth {
     this.store.db.query('INSERT INTO sessions(token_hash,user_id,csrf_hash,expires_at,revoked,csrf_token) VALUES(?,?,?,?,0,?)').run(hash(token),user.id,hash(csrf),new Date(Date.now()+12*3600_000).toISOString(),csrf);
     const actor: Principal = {user:{id:user.id,email:user.email,name:user.name},memberships:this.memberships(user.id),sessionHash:hash(token),csrfHash:hash(csrf)};
     return {data:this.sessionData(actor,csrf),cookie:`platform_session=${token}; HttpOnly; SameSite=Strict; Path=/api/platform; Max-Age=43200`};
+  }
+  async authenticateGoogle(identity: GoogleIdentity): Promise<{data:SessionData;cookie:string}> {
+    // Stable verified identity, never email matching, determines the account binding.
+    const binding=`google_identity:${hash(`${identity.issuer}\n${identity.subject}`)}`;
+    const token=opaque(),csrf=opaque();
+    return this.store.atomic(() => {
+      const userId=this.store.metadata(binding);
+      let user=userId?this.store.db.query<UserRow,[string]>('SELECT * FROM users WHERE id=?').get(userId):null;
+      if(userId&&!user)return fail('GOOGLE_IDENTITY_INVALID',401);
+      if(!user){
+        if(this.store.db.query('SELECT id FROM users WHERE email=?').get(identity.email))return fail('ACCOUNT_LINK_REQUIRED',409,'Email ini sudah mempunyai akaun. Sila masuk menggunakan password akaun tersebut.');
+        const salt=randomBytes(16).toString('hex');
+        const digest=createHash('sha512').update(opaque()).digest('hex');
+        user={id:id(),email:identity.email,name:identity.name,password_hash:`scrypt:${salt}:${digest}`};
+        this.store.db.query('INSERT INTO users VALUES(?,?,?,?,?)').run(user.id,user.email,user.name,user.password_hash,now());
+        this.store.db.query('INSERT INTO memberships VALUES(?,?,?,?,?,?,?)').run(id(),user.id,'customer','[]',null,'active',1);
+        this.store.setMetadata(binding,user.id);
+        this.store.audit(user.id,'identity.google.register',user.id);
+      }
+      const memberships=this.memberships(user.id);
+      if(!memberships.length)return fail('MEMBERSHIP_REVOKED',403);
+      this.store.db.query('INSERT INTO sessions(token_hash,user_id,csrf_hash,expires_at,revoked,csrf_token) VALUES(?,?,?,?,0,?)').run(hash(token),user.id,hash(csrf),new Date(Date.now()+12*3600_000).toISOString(),csrf);
+      const actor:Principal={user:{id:user.id,email:user.email,name:user.name},memberships,sessionHash:hash(token),csrfHash:hash(csrf)};
+      return {data:this.sessionData(actor,csrf),cookie:`platform_session=${token}; HttpOnly; SameSite=Strict; Path=/api/platform; Max-Age=43200`};
+    });
   }
   refreshCsrf(actor: Principal): SessionData { if(actor.csrfToken)return this.sessionData(actor,actor.csrfToken);const token=opaque();this.store.db.query('UPDATE sessions SET csrf_hash=?,csrf_token=? WHERE token_hash=?').run(hash(token),token,actor.sessionHash);return this.sessionData(actor,token); }
   logout(actor: Principal) { this.store.db.query('UPDATE sessions SET revoked=1 WHERE token_hash=?').run(actor.sessionHash); }

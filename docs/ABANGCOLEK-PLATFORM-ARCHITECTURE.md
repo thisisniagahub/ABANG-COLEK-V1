@@ -1,52 +1,54 @@
-# ABANGCOLEK-PLATFORM — Architecture v0.1
+# ABANGCOLEK — Platform Architecture
 
-## Arah sistem
+Diselaraskan: **19 Oktober 2026**, mengikut [Master Blueprint v2.3](ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md). Ini kontrak architecture dan source mapping, bukan pengesahan deploy. [Struktur repo](design/repository-structure.md) menentukan destinasi modular monolith; path semasa kekal sehingga migration dilaksanakan dan diuji.
 
-ABANGCOLEK-PLATFORM kekal sebagai **modular monolith React/Vite + Bun + SQLite**. Social/content intelligence menjadi domain first-class yang menghubungkan founder identity kepada operasi, bukan saluran publish automatik.
+## Domain dan dependency
+
+React/Vite shell -> typed HTTP contracts -> application workflows -> deterministic domain services -> infrastructure interfaces. Frontend tidak import backend; shared contracts tidak import SDK/storage/UI; modules tidak bergantung pada HTTP handlers; provider/persistence dipasang pada composition root. Transactions rentas order/payment/inventory/commission/loyalty kekal atomic.
+
+Domain: Operations Core; Commerce & Dealer Network; Orbit loyalty/referral; Operations Copilot. Folder sasaran `src/app`, `src/features`, `server/bootstrap`, `server/http`, `server/application`, `server/modules`, `server/agents`, `server/infrastructure` tidak boleh dianggap semua sudah wujud. Jangan migrasi kepada monorepo/Next.js tanpa requirement.
+
+ADR semasa: [ADR-0003](decisions/0003-blueprint-v23-execution-contract.md) menetapkan execution contract dan supersession local-only topology.
+
+## Runtime authority
+
+| Environment | Data authority dan lifecycle |
+|---|---|
+| Local Bun | Satu writer SQLite WAL + private evidence pada root yang disahkan; local worker |
+| Hosted Vercel | `api/platform.ts` -> durable handler -> fresh temporary SQLite snapshot -> authoritative Supabase CAS commit sebelum response/cookie |
+| Agent service sasaran | Google ADK Python + AG-UI bridge; authenticated tools ke Bun; session/run store berasingan daripada ledger |
+
+CAS whole-snapshot ialah bounded compatibility, bukan normalized Postgres domain migration atau backup history. Mutations tidak autoreplay; safe reads sahaja bounded retry. Jangan buka local timer pada setiap cloud request. External effect memerlukan durable intent/idempotency/reconciliation merentas instances. Receipt unknown tidak ditukar kepada failed atau success tanpa bukti.
+
+Production configuration, snapshot/payload limits dan exact topology berada dalam [release runbook](production-release.md); [recovery](runbooks/platform-recovery.md) membezakan local backup dan cloud restore. Jangan jadikan SQLite temp Vercel sebagai durable database atau bergantung pada localhost pengguna dari cloud.
+
+## Founder intelligence vertical slice
 
 ```text
-Founder identity graph
-        |
-        v
-Content registry -----> Event / location context
-        |                         |
-        v                         v
-  Outcomes (enquiry/order/lead) -> Order / fulfilment ledger
-        |
-        v
-Analytics: reach | trust | conversion | retention
+Founder identity -> Content registry <-> Event/location context
+                           |
+                           v
+                 Explicit outcomes -> order/fulfilment ledger
+                           |
+                           v
+             Derived reach/trust/conversion/retention read models
 ```
 
-## Vertical slice awal
-
-| Lapisan | Artefak | Peranan |
+| Layer | Source semasa | Boundary |
 |---|---|---|
-| Contract | `shared/founder-intelligence-contracts.ts` | Status/entity typed untuk identity, content, event, outcome dan summary |
-| Domain | `server/platform/founder-intelligence.ts` | Validasi, revision, founder authority, audit dan derived analytics |
-| API | `/api/platform/founder-intelligence/*` | Read/write lokal untuk onboarding manual dan metric capture |
-| Storage | `records` SQLite table melalui `PlatformStore` | Tiada schema vendor baharu; semua writes typed melalui domain |
-| UI | Founder growth workspace | Akan menggunakan read model analytics/content selepas API stabil |
+| Contract | `shared/founder-intelligence-contracts.ts` | Identity/content/event/outcome/summary types |
+| Domain | `server/platform/founder-intelligence.ts` | Validation, founder scope, revision/audit, derived analytics |
+| HTTP | `/api/platform/founder-intelligence/*` | First-party capture; bukan external social sync |
+| Storage | `PlatformStore` records | Local SQLite atau cloud snapshot durability mengikut environment |
 
-## Entity boundaries
+Social related/unverified identity tidak automerge; content mempunyai rights/source/capturedAt; order mesti wujud sebelum outcome order dipautkan. Views tidak membuktikan revenue attribution. Founder mutation, revision, audit dan exact-revision approval diperlukan. External publish/read-metrics memerlukan activated provider, quota, consent dan actual outcome receipt. Manual export ialah fallback berlabel.
 
-- **Social identity**: akaun awam dan hubungan entity; `RELATED_ENTITY`/`UNVERIFIED` tidak boleh auto-merge kepada ABANGCOLEK.
-- **Content**: URL, media, pillar, funnel, rights, approval dan snapshot metrik; caption lama bukan bukti harga, stok atau ownership.
-- **Event**: lokasi, tempoh, content yang berkaitan, lead dan order IDs.
-- **Outcome**: hubungan eksplisit content → enquiry/order/lead/event; tiada atribusi automatik berdasarkan views.
-- **Analytics**: read model derived daripada content/outcome records; pisahkan reach, engagement dan outcome.
+## Copilot dan security
 
-## Guardrails
+[AI architecture](AI-AGENT-ARCHITECTURE.md) memetakan 10 ciri/10 modul/32 logical tools/7 rendering approaches. UI React -> TypeScript CopilotRuntime -> ADK Python -> scoped Bun tools. Founder pilot; read-only first-party MCP App dan fixed-schema A2UI. Model free-only di semua inference; Intelligence optional gated. JEV LOCAL_RULES tidak memberi permission atau calibrated model confidence.
 
-1. Founder authority diperlukan untuk mutation vertical slice.
-2. Rights/approval direkodkan berasingan daripada status publish.
-3. Semua mutation menggunakan revision/audit; external provider belum diaktifkan.
-4. Order ID mesti wujud dalam ledger sebelum outcome order boleh dipautkan.
-5. Metrik hanyalah snapshot dengan `capturedAt`, bukan sejarah lengkap platform sosial.
+Server sentiasa mengesahkan principal, ownership, capability, schema, revision, policy dan idempotency. Approval bukan execution; success hanya selepas durable commit. Redact records sebelum model export. Shared state, SOP, external pages dan model output tidak trusted untuk authority.
 
-## Urutan seterusnya
+## Acceptance
 
-1. Tambah UI capture untuk identity/content/event dan analytics cards.
-2. Tambah test route penuh dan fixture onboarding founder.
-3. Tambah content-to-calendar linkage kepada `CalendarEventRecord` selepas definisi event operasi founder dipersetujui.
-4. Tambah approval workflow terperinci (`idea → draft → rights → entity/product check → founder approval → export`).
-5. Hanya selepas capability, rights, quota dan receipt vendor disahkan: bina adapter publish/read metrics.
+Setiap migration batch merekod file map/hash, import/link checks, lint, relevant domain tests dan browser/runtime evidence. Release menguji negative RBAC, CAS conflict, payment/refund/reversal, cross-request evidence, worker recovery, no-paid-route dan rollback. Source, tests present, verified local, verified production dan business acceptance direkod berasingan. Tiada test suite atau deploy dijalankan untuk kemas kini ini.

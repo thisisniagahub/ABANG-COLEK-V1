@@ -22,5 +22,6 @@ export interface AutomationDefinition {
   scheduleKind?: 'one_time' | 'recurring' | 'interval' | 'cron'; scheduleExpression?: string; timezone: 'Asia/Kuala_Lumpur';
   triggerProvider?: string; triggerEvent?: string; filters: string[]; connectors: string[]; destination: AutomationDestination;
   approvalRequired: true; status: AutomationStatus; revision: number; nextRunAt?: string; lastRunAt?: string; createdAt: string;
+  readinessReason?: 'AUTOMATION_EXECUTOR_UNAVAILABLE';
 }
 export interface AutomationRun { id: string; automationId: string; status: 'success' | 'failed' | 'needs_attention' | 'no_match' | 'running'; reasonCode: string; triggerReason: string; outputSummary: string; createdAt: string; }
