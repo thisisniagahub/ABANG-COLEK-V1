@@ -22,12 +22,12 @@
 
 | Fasa | Nama Fasa | Status | Bukti Verification | Nota / Pemilikan |
 | :--- | :--- | :--- | :--- | :--- |
-| **00** | Baseline & Isolation | **LENGKAP** | `bun run lint` (0 error), `bun run build` (19.1s), `bun test tests/platform` (365/365 pass), Receipt: `6e937b9c.../receipt.json` | Baseline commit `e43d258` & 2 worktrees siap |
-| **03A** | Integriti Kewangan, Lejar, Token & CAS | **SEDANG BERJALAN** | Subagent `eb7ecbf2` sedang mengesahkan margin guardian, dealer ledger, loyalty reversal, CAS durability | AGY Backend Lead |
-| **01** | Modular Monolith Restructure | **BERATUR** | Mengikut `docs/design/repository-structure.md` | Dijalankan selepas Fasa 03A stabil |
-| **02** | CopilotKit Foundation & Runtime (/v2) | **SEDANG BERJALAN** | Subagent `3cb5dfd1` sedang mengesahkan free model router (`gemini-3.6-flash`, `gemini-3.5-flash-lite`, `nemotron:free`), ADK Python bridge, runtime /v2 | AGY CopilotKit Lead |
-| **03B** | Domain Tools & Business Logic | **BERATUR** | Domain Bun authority (harga, stok, commission, loyalty) | AGY Backend Lead |
-| **04** | UI / Generative UI & Agents Integration | **SEDANG BERJALAN** | Subagent `68f749c5` sedang menyediakan serahan mandiri `COPILOT-FRONTEND-HANDOFF.md` | AGY + Copilot Frontend |
+| **00** | Baseline & Isolation | **LENGKAP** | Baseline `e43d258`, Handoff `ff2ef4e`, `bun run lint` (0 error), `bun run build` (19.1s), `bun test tests/platform` (365/365 pass) | 2 Worktrees aktif di `D:\ABANGCOLEK-WORKTREES` |
+| **03A** | Integriti Kewangan, Lejar, Token & CAS | **LENGKAP_TERVERIFIKASI** | `bun test tests/platform/growth-margin.test.ts tests/platform/dealer-commission-ledger.test.ts tests/platform/loyalty-redemption.test.ts tests/platform/supabase-persistence.test.ts` (46/46 pass, 331 expect, 0 fail) | AGY Backend Lead (`eb7ecbf2`) |
+| **01** | Modular Monolith Restructure | **SEDANG BERJALAN** | Menyelaraskan struktur folder mengikut `docs/design/repository-structure.md` | AGY Integrator |
+| **02** | CopilotKit Foundation & Runtime (/v2) | **LENGKAP_TERVERIFIKASI** | `bun test tests/platform/copilot.test.ts tests/platform/copilot-adk.test.ts tests/platform/hosted-response.test.ts` (11/11 pass, 87 expect, 0 fail) | AGY CopilotKit Lead (`3cb5dfd1`) |
+| **03B** | Domain Tools & Business Logic | **SEDANG BERJALAN** | Domain Bun authority (harga, stok, commission, loyalty, contra) | AGY Backend Lead |
+| **04** | UI / Generative UI & Agents Integration | **HANDOFF_PUBLISHED** | Dokumen `docs/handover/COPILOT-FRONTEND-HANDOFF.md` terbit pada commit `ff2ef4e` | AGY + Copilot Frontend (`68f749c5`) |
 | **05** | CopilotKit Intelligence Evaluation | **BLOCKED_EXTERNAL** | Peringatan: Free-only policy. Tiada paid offering tanpa kelulusan percuma | AGY Evaluator |
 | **06** | Release Verification & Acceptance Audit | **BERATUR** | 19 Acceptance IDs Master Blueprint, GUI-01..07, CPK-01..10, MOD-01..10, ADV-01..32 | AGY Integrator |
 
