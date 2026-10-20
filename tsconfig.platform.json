@@ -14,11 +14,13 @@
     "scripts/**/*.ts",
     "tests/platform/**/*.ts",
     "tests/jev/**/*.ts",
-    "api/**/*.ts"
+    "api/**/*.ts",
+    "tests/architecture/**/*.ts"
   ],
   "exclude": [
     "node_modules",
     "dist",
-    "skills"
+    "skills",
+    "tests/architecture/fixtures"
   ]
 }
