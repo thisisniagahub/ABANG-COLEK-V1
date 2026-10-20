@@ -40,14 +40,16 @@ test.describe('Emons native mobile touch experience', () => {
     await page.goto('/');
     await expect(page.locator('.ac-world-journey')).toHaveAttribute('data-motion', 'scene');
     expect(await page.evaluate(() => ({ width: window.innerWidth, height: window.innerHeight }))).toEqual({ width: 390, height: 844 });
+    await page.getByRole('button', { name: 'Bab 6: Pesanan', exact: true }).tap();
+    await idle(page);
     await observeTouches(page);
     const photo = await page.locator('.ac-world-product-photo img').elementHandle();
     expect(photo).not.toBeNull();
     expect(await photo!.evaluate(image => image === document.elementFromPoint(312, 500))).toBe(true);
     const cdp = await context.newCDPSession(page);
     try {
-      await swipe(page, cdp, 312, 500, 0, -180);
-      await expect(page.locator('.ac-world-journey')).toHaveAttribute('data-scene', 'packing');
+      await swipe(page, cdp, 312, 500, 0, 180);
+      await expect(page.locator('.ac-world-journey')).toHaveAttribute('data-scene', 'jerux');
       await idle(page);
       const forward = await page.evaluate(() => ({ scrollY: window.scrollY, touches: (window as unknown as { emonsTouches: TouchReceipt[] }).emonsTouches }));
       const originalTargetConnected = await photo!.evaluate(image => image.isConnected);
@@ -63,8 +65,8 @@ test.describe('Emons native mobile touch experience', () => {
       await expect(page.locator('.ac-world-product-photo')).toHaveCSS('opacity', '0');
       await expect(page.locator('.ac-world-product-photo')).toHaveCSS('pointer-events', 'none');
       await expect(page.locator('.ac-world-product-photo a')).toHaveAttribute('tabindex', '-1');
-      await swipe(page, cdp, 312, 400, 0, 180);
-      await expect(page.locator('.ac-world-journey')).toHaveAttribute('data-scene', 'produk');
+      await swipe(page, cdp, 312, 400, 0, -180);
+      await expect(page.locator('.ac-world-journey')).toHaveAttribute('data-scene', 'pesanan');
       await idle(page);
       await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
       expect(await page.locator('.ac-world-product-photo img').evaluate((image, original) => image === original, photo)).toBe(true);
@@ -87,13 +89,13 @@ test.describe('Emons native mobile touch experience', () => {
     const cdp = await context.newCDPSession(page);
     try {
       await swipe(page, cdp, 100, 500, 120, -20);
-      await expect(page.locator('.ac-world-journey')).toHaveAttribute('data-scene', 'produk');
+      await expect(page.locator('.ac-world-journey')).toHaveAttribute('data-scene', 'dunia');
       await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
-      await page.getByRole('button', { name: 'Bab 4: Rangkaian', exact: true }).tap();
+      await page.getByRole('button', { name: 'Bab 6: Pesanan', exact: true }).tap();
       await idle(page);
       await swipe(page, cdp, 312, 500, 0, -180);
       await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(50);
-      await expect(page.locator('.ac-world-journey')).toHaveAttribute('data-scene', 'rangkaian');
+      await expect(page.locator('.ac-world-journey')).toHaveAttribute('data-scene', 'pesanan');
       expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
       const touches = await page.evaluate(() => (window as unknown as { emonsTouches: TouchReceipt[] }).emonsTouches);
       expect(touches.some(event => event.kind === 'touchmove' && event.trusted)).toBe(true);
@@ -113,6 +115,8 @@ test.describe('Emons native mobile touch experience', () => {
       expect(bounds!.width).toBeGreaterThanOrEqual(44);
       expect(bounds!.height).toBeGreaterThanOrEqual(44);
     }
+    await page.getByRole('button', { name: 'Bab 6: Pesanan', exact: true }).tap();
+    await idle(page);
     const attribution = await page.locator('.ac-world-product-photo a').boundingBox();
     expect(attribution).not.toBeNull();
     expect(attribution!.height).toBeGreaterThanOrEqual(44);

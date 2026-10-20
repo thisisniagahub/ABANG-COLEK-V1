@@ -4,7 +4,6 @@ import { storyModeScrollTarget, storyModeSnapshot, type StoryViewportSnapshot } 
 import { useSceneController } from './useSceneController';
 import AnimatedColekWorld from './AnimatedColekWorld';
 import WorldHotspot from './WorldHotspot';
-import { EMONS_SCENE_IDS, isEmonsProductPhotoScene } from './emons-scene';
 import { BRAND_ASSETS } from '../brand/brand-assets';
 import './scroll-world.css';
 
