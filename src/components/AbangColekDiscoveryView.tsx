@@ -81,6 +81,14 @@ import {
 } from '@/services/abangColekRepoData';
 import { SOCIAL_ACCOUNTS, OBSERVED_PRODUCT_SIGNALS, OBSERVED_CONTENT_PILLARS } from '@/data/abangcolekSocialSourceOfTruth';
 
+const jevConfidenceLabel = (confidence: number | null) =>
+  confidence === null ? 'Tiada keyakinan berkalibrasi' : `${Math.round(confidence * 100)}% Keyakinan`;
+
+const jevNoulLabel = (isAffirmative: boolean | null, probability: number | null, affirmative: string, negative: string) =>
+  isAffirmative === null || probability === null
+    ? 'Belum dinilai · tiada probability model'
+    : `${isAffirmative ? affirmative : negative} (${Math.round(probability * 100)}%)`;
+
 interface AbangColekDiscoveryViewProps {
   onAction?: (msg?: string) => void;
 }
@@ -1484,11 +1492,14 @@ Boundary: social ≠ price ledger ≠ stock ledger ≠ payment authority`}
                     <span className="text-xs text-[var(--ui-muted)] font-medium">Urgensi:</span>
                     <span className={cn(
                       "px-2.5 py-1 rounded-full text-xs font-bold",
+                      jevResult.primitives.urgencyScore.score === null ? "bg-[var(--ui-soft)] text-[var(--ui-muted)]" :
                       jevResult.primitives.urgencyScore.score >= 4 ? "bg-red-100 text-red-700" :
                       jevResult.primitives.urgencyScore.score >= 3 ? "bg-amber-100 text-amber-800" :
                       "bg-emerald-100 text-emerald-800"
                     )}>
-                      {jevResult.primitives.urgencyScore.score}/5.0 ({jevResult.primitives.urgencyScore.label})
+                      {jevResult.primitives.urgencyScore.score === null
+                        ? jevResult.primitives.urgencyScore.label
+                        : `${jevResult.primitives.urgencyScore.score}/5.0 (${jevResult.primitives.urgencyScore.label})`}
                     </span>
                   </div>
                 </div>
@@ -1498,25 +1509,25 @@ Boundary: social ≠ price ledger ≠ stock ledger ≠ payment authority`}
                   <div className="p-3.5 rounded-2xl bg-[var(--ui-soft)] border border-[var(--ui-border)]">
                     <span className="text-[10px] font-bold text-[var(--ui-muted)] uppercase tracking-wider block mb-1">1. Brand</span>
                     <span className="font-bold text-sm text-[var(--ui-text)] block">{jevResult.dimensions.brand.value}</span>
-                    <span className="text-[10px] text-[var(--ui-success-text)] font-mono font-semibold">{(jevResult.dimensions.brand.confidence * 100).toFixed(0)}% Keyakinan</span>
+                    <span className="text-[10px] text-[var(--ui-success-text)] font-mono font-semibold">{jevConfidenceLabel(jevResult.dimensions.brand.confidence)}</span>
                   </div>
 
                   <div className="p-3.5 rounded-2xl bg-[var(--ui-soft)] border border-[var(--ui-border)]">
                     <span className="text-[10px] font-bold text-[var(--ui-muted)] uppercase tracking-wider block mb-1">2. Business Function</span>
                     <span className="font-bold text-sm text-[var(--ui-text)] block">{jevResult.dimensions.businessFunction.value}</span>
-                    <span className="text-[10px] text-[var(--ui-success-text)] font-mono font-semibold">{(jevResult.dimensions.businessFunction.confidence * 100).toFixed(0)}% Keyakinan</span>
+                    <span className="text-[10px] text-[var(--ui-success-text)] font-mono font-semibold">{jevConfidenceLabel(jevResult.dimensions.businessFunction.confidence)}</span>
                   </div>
 
                   <div className="p-3.5 rounded-2xl bg-[var(--ui-soft)] border border-[var(--ui-border)]">
                     <span className="text-[10px] font-bold text-[var(--ui-muted)] uppercase tracking-wider block mb-1">3. Sales Channel</span>
                     <span className="font-bold text-sm text-[var(--ui-text)] block">{jevResult.dimensions.salesChannel.value}</span>
-                    <span className="text-[10px] text-[var(--ui-success-text)] font-mono font-semibold">{(jevResult.dimensions.salesChannel.confidence * 100).toFixed(0)}% Keyakinan</span>
+                    <span className="text-[10px] text-[var(--ui-success-text)] font-mono font-semibold">{jevConfidenceLabel(jevResult.dimensions.salesChannel.confidence)}</span>
                   </div>
 
                   <div className="p-3.5 rounded-2xl bg-[var(--ui-soft)] border border-[var(--ui-border)]">
                     <span className="text-[10px] font-bold text-[var(--ui-muted)] uppercase tracking-wider block mb-1">4. Customer Intent</span>
                     <span className="font-bold text-sm text-[var(--ui-text)] block">{jevResult.dimensions.customerIntent.value}</span>
-                    <span className="text-[10px] text-[var(--ui-success-text)] font-mono font-semibold">{(jevResult.dimensions.customerIntent.confidence * 100).toFixed(0)}% Keyakinan</span>
+                    <span className="text-[10px] text-[var(--ui-success-text)] font-mono font-semibold">{jevConfidenceLabel(jevResult.dimensions.customerIntent.confidence)}</span>
                   </div>
 
                   <div className="p-3.5 rounded-2xl bg-[var(--ui-soft)] border border-[var(--ui-border)]">
@@ -1527,13 +1538,13 @@ Boundary: social ≠ price ledger ≠ stock ledger ≠ payment authority`}
                     )}>
                       {jevResult.dimensions.issueClass.value}
                     </span>
-                    <span className="text-[10px] text-[var(--ui-success-text)] font-mono font-semibold">{(jevResult.dimensions.issueClass.confidence * 100).toFixed(0)}% Keyakinan</span>
+                    <span className="text-[10px] text-[var(--ui-success-text)] font-mono font-semibold">{jevConfidenceLabel(jevResult.dimensions.issueClass.confidence)}</span>
                   </div>
 
                   <div className="p-3.5 rounded-2xl bg-[var(--ui-soft)] border border-[var(--ui-border)]">
                     <span className="text-[10px] font-bold text-[var(--ui-muted)] uppercase tracking-wider block mb-1">6. Process Stage</span>
                     <span className="font-bold text-sm text-[var(--ui-text)] block">{jevResult.dimensions.processStage.value}</span>
-                    <span className="text-[10px] text-[var(--ui-success-text)] font-mono font-semibold">{(jevResult.dimensions.processStage.confidence * 100).toFixed(0)}% Keyakinan</span>
+                    <span className="text-[10px] text-[var(--ui-success-text)] font-mono font-semibold">{jevConfidenceLabel(jevResult.dimensions.processStage.confidence)}</span>
                   </div>
 
                   <div className="p-3.5 rounded-2xl bg-[var(--ui-soft)] border border-[var(--ui-border)] col-span-2">
@@ -1548,19 +1559,19 @@ Boundary: social ≠ price ledger ≠ stock ledger ≠ payment authority`}
                   <div className="text-xs">
                     <span className="font-semibold text-[var(--ui-muted)] block">Perlu Campur Tangan Segera (Noul):</span>
                     <span className="font-bold text-[var(--ui-text)] text-sm">
-                      {jevResult.primitives.requiresImmediateIntervention.isAffirmative ? 'YA' : 'TIDAK'} ({(jevResult.primitives.requiresImmediateIntervention.probability * 100).toFixed(0)}%)
+                      {jevNoulLabel(jevResult.primitives.requiresImmediateIntervention.isAffirmative, jevResult.primitives.requiresImmediateIntervention.probability, 'YA', 'TIDAK')}
                     </span>
                   </div>
                   <div className="text-xs">
                     <span className="font-semibold text-[var(--ui-muted)] block">Layak Gantian / Bayaran Balik (Noul):</span>
                     <span className="font-bold text-[var(--ui-text)] text-sm">
-                      {jevResult.primitives.isRefundEligible.isAffirmative ? 'LAYAK' : 'TIDAK'} ({(jevResult.primitives.isRefundEligible.probability * 100).toFixed(0)}%)
+                      {jevNoulLabel(jevResult.primitives.isRefundEligible.isAffirmative, jevResult.primitives.isRefundEligible.probability, 'LAYAK', 'TIDAK')}
                     </span>
                   </div>
                   <div className="text-xs">
                     <span className="font-semibold text-[var(--ui-muted)] block">Peluang Ejen Bernilai Tinggi:</span>
                     <span className="font-bold text-[var(--ui-text)] text-sm">
-                      {jevResult.primitives.isHighValueAgentOpportunity.isAffirmative ? 'POTENSI TINGGI' : 'STANDARD'} ({(jevResult.primitives.isHighValueAgentOpportunity.probability * 100).toFixed(0)}%)
+                      {jevNoulLabel(jevResult.primitives.isHighValueAgentOpportunity.isAffirmative, jevResult.primitives.isHighValueAgentOpportunity.probability, 'POTENSI TINGGI', 'STANDARD')}
                     </span>
                   </div>
                 </div>

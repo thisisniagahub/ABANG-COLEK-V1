@@ -1,4 +1,5 @@
 import { useId, type CSSProperties } from 'react';
+import { EMONS_SCENE_COUNT, EMONS_SCENE_IDS } from './emons-scene';
 import './animated-colek-world.css';
 
 export interface AnimatedColekWorldProps {
@@ -196,12 +197,13 @@ function Network() {
 }
 
 const SCENES = [Selection, Packing, Delivery, Network] as const;
-const SCENE_NAMES = ['produk', 'packing', 'penghantaran', 'rangkaian'] as const;
+/** Scene names are shared with the hero so chapter ids and artwork never drift. */
+const SCENE_NAMES = EMONS_SCENE_IDS;
 
 /** An explanatory illustration, independent of live orders, inventory or network data. */
 export default function AnimatedColekWorld({ active, phase, direction, paused }: AnimatedColekWorldProps) {
   const id = `ac-aw-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
-  const scene = Number.isFinite(active) ? Math.max(0, Math.min(3, Math.trunc(active))) : 0;
+  const scene = Number.isFinite(active) ? Math.max(0, Math.min(EMONS_SCENE_COUNT - 1, Math.trunc(active))) : 0;
   return <div className="ac-animated-world" data-active-scene={SCENE_NAMES[scene]} data-animation={paused ? 'paused' : 'running'} data-phase={phase} data-direction={direction} aria-hidden="true" style={{ '--ac-aw-direction': direction } as CSSProperties}>
     <svg className="ac-aw-canvas" viewBox="0 0 800 600" fill="none" focusable="false" aria-hidden="true">
       <defs>

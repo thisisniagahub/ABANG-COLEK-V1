@@ -1,6 +1,10 @@
 # ABANGCOLEK — handover A–Z
 
-Diselaraskan: **19 Oktober 2026**. [Master Blueprint v2.3](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md), [Source of Truth](../ABANGCOLEK-SOURCE-OF-TRUTH.md) dan [prompt index](../prompts/README.md) ialah arahan semasa. Snapshot/receipts 3–4 Oktober dikekalkan bertarikh, bukan bukti keadaan host, provider atau production terkini. Tiada test/deploy dijalankan melalui kemas kini ini.
+<!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
+> **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Rekod historical; pemerhatian, angka ujian, tick dan executor dalam badan asal merujuk sesi asal sahaja. Arahan launch/delegation lama tidak aktif. Status semasa dan bukti release ditentukan oleh rujukan di atas; kandungan asal dipelihara untuk provenance.
+<!-- ABANGCOLEK-CURRENT-STATUS:END -->
+
+Diselaraskan: **19 Oktober 2026**. [Master Blueprint v2.4](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md), [Source of Truth](../ABANGCOLEK-SOURCE-OF-TRUTH.md) dan [prompt index](../prompts/README.md) ialah arahan semasa. Snapshot/receipts 3–4 Oktober dikekalkan bertarikh, bukan bukti keadaan host, provider atau production terkini. Tiada test/deploy dijalankan melalui kemas kini ini.
 
 ## Current implementation contract
 

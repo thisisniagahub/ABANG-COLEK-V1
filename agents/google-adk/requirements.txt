@@ -1,5 +1,24 @@
-fastapi==0.115.6
-uvicorn==0.34.0
-pydantic==2.10.4
+# ABANGCOLEK-PLATFORM — Google ADK Agent Service (Python 3.12)
+# Authority: ADR-0003 / Blueprint v2.3 execution contract pins.
+#
+# Install into a workspace-private venv only (never system Python, never repo-root install):
+#   uv venv --python 3.12 agents/google-adk/.venv
+#   uv pip install -r agents/google-adk/requirements.txt
+#
+# PIN DEVIATION (verified, not assumed):
+#   The ADR-0003 pin set fastapi==0.146.0 is NOT satisfiable together with google-adk==2.12.0.
+#   google-adk 2.12.0 requires opentelemetry-api>=1.39,<=1.42.1
+#   fastapi  0.146.0 requires opentelemetry-api>=1.44.0
+#   -> uv resolver: "fastapi==0.146.0 and google-adk==2.12.0 are incompatible"
+#   The ADK pins are the load-bearing ones for this service (genuine Google ADK runtime),
+#   so fastapi is pinned to 0.141.1 - the newest release with NO hard opentelemetry-api
+#   floor - which satisfies google-adk's fastapi>=0.133 and opentelemetry-api<=1.42.1.
+#   See agents/google-adk/DEPENDENCY-NOTES.md for the full resolver transcript.
+
+google-adk==2.12.0
+ag-ui-adk==0.10.0
+fastapi==0.141.1
+uvicorn==0.54.0
+pydantic==2.14.1
 httpx==0.28.1
-pytest==8.3.4
+pytest==9.1.1

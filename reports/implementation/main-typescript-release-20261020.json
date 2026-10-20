@@ -1,0 +1,63 @@
+{
+  "observedAt": "2026-10-20T23:21:56+08:00",
+  "commit": "18c69b32deb7acbd5134da6dea548823a041a614",
+  "branch": "main",
+  "scope": "11-file TypeScript editor configuration and regression test patch",
+  "files": [
+    ".gitignore",
+    ".vscode/settings.json",
+    "api/tsconfig.json",
+    "package.json",
+    "scripts/tsconfig.json",
+    "server/tsconfig.json",
+    "shared/tsconfig.json",
+    "tests/architecture/typescript-projects.test.ts",
+    "tests/tsconfig.json",
+    "tsconfig.json",
+    "tsconfig.platform.json"
+  ],
+  "releaseCheckout": "D:/ABANGCOLEK-WORKTREES/release-main-20261020",
+  "remoteMainMatches": true,
+  "releaseCheckoutClean": true,
+  "verification": {
+    "lint": { "exitCode": 0 },
+    "platform": { "passed": 305, "failed": 0, "assertions": 1778 },
+    "build": { "exitCode": 0 },
+    "localBrowser": { "passed": 16, "failed": 0 },
+    "productionBrowser": { "passed": 8, "failed": 0 },
+    "productionHttp": {
+      "/": 200,
+      "/login": 200,
+      "/api/platform/catalogue": 200,
+      "/api/platform/session": 401
+    },
+    "logsRoot": "D:/ABANGCOLEK-WORKTREES/release-main-20261020/var/log"
+  },
+  "review": {
+    "agent": "takeover_batch_review",
+    "result": "Approved scoped staged patch; no actionable findings"
+  },
+  "deployment": {
+    "id": "dpl_PYt7aW43nmPKT5Q6rkpqMaxG1KcC",
+    "url": "https://abang-colek-v1-buojqpm4c-niaga-hub-pro.vercel.app",
+    "domain": "https://abangcolek.gangniaga.my",
+    "state": "READY",
+    "target": "production",
+    "githubCommitSha": "18c69b32deb7acbd5134da6dea548823a041a614",
+    "trigger": "Vercel native Git integration",
+    "identityEvidence": "Exact SHA metadata from Vercel list joined by deployment URL to custom-domain inspection"
+  },
+  "githubActions": {
+    "status": "blocked_external",
+    "reason": "Both jobs did not start because the GitHub account is locked due to a billing issue.",
+    "runs": [
+      "https://github.com/thisisniagahub/ABANG-COLEK-V1/actions/runs/39447210722",
+      "https://github.com/thisisniagahub/ABANG-COLEK-V1/actions/runs/39447210656"
+    ]
+  },
+  "limits": [
+    "Unreleased Copilot implementations and their fixture corrections remain in development worktrees.",
+    "Production browser checks cover public landing, login, access denial and route recovery; authenticated production business transactions are not certified.",
+    "GitHub cloud checks are not green; local verification and Vercel deployment were measured separately."
+  ]
+}

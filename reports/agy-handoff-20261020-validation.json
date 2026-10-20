@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-10-20T04:15:27.753Z",
+  "timezone": "Asia/Kuala_Lumpur",
+  "scope": "AGY replaces Copilot CLI execution ownership",
+  "environment": "documentation",
+  "status": "verified_local",
+  "executor": "AGY CLI",
+  "parked": {
+    "copilot": "usage limit reported by user",
+    "hermes": "user instruction",
+    "kilo": "not required for AGY-only continuation"
+  },
+  "documents": 7,
+  "localFileLinksChecked": 68,
+  "integrationCopiesIdentical": true,
+  "coreRequirements": 78,
+  "coreClosed": 0,
+  "extensionRequirements": 7,
+  "extensionsClosed": 0,
+  "errors": [],
+  "newAgentJobsLaunched": 0,
+  "applicationCodeChanged": false,
+  "applicationTestsRerun": false,
+  "commitOrPushPerformed": false
+}

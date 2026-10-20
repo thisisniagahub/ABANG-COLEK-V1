@@ -1,0 +1,161 @@
+{
+  "generatedAt": "2026-10-20T15:01:37.158Z",
+  "scope": "User-listed Problems files; TypeScript/editor configuration and canonical fixtures",
+  "preimagesVerified": true,
+  "preimagesDirectory": "D:/ABANGCOLEK-WORKTREES/codex-takeover-control-20261020/typescript-problems-preimages",
+  "review": {
+    "agent": "typescript_problems_review",
+    "result": "No introduced defect found; bounded read-only source/config review"
+  },
+  "lanes": [
+    {
+      "lane": "original",
+      "root": "D:/ABANGCOLEK-PLATFORM",
+      "files": [
+        {
+          "file": "tsconfig.json",
+          "sha256": "750365940db0d7a009cac370d0847845f38674a673f7fb3159137fa7bb336786"
+        },
+        {
+          "file": "tsconfig.platform.json",
+          "sha256": "3f1336d9a7df553ca1a1cdcd6d9faad4ccf8864fe6584e28273ef820fa52d520"
+        },
+        {
+          "file": ".vscode/settings.json",
+          "sha256": "b9e1a3faf14f3f13cc240982ad36c7b48c5838e458664e1ffa4934dc9cdb9401"
+        },
+        {
+          "file": "tests/copilot/mod-05-dealers.test.ts",
+          "sha256": "146b051e9b2f807d1451866a7ae6eb2595a156edbdb5d974994ce399bbaecbc3"
+        },
+        {
+          "file": "tests/copilot/mod-08-finance.test.ts",
+          "sha256": "e88b0e81b28c2d14b0e0619fdaa3f63cbbdffa639cec5493c7d3dc4a23239f08"
+        },
+        {
+          "file": "tests/copilot/mod-09-tasks-sop.test.ts",
+          "sha256": "29df81c1efb46bb94b1238b9937478a76d52ec2c6942863a852e22bdc6c59ece"
+        },
+        {
+          "file": "tests/copilot/mod-10-automations.test.ts",
+          "sha256": "f5a528208794c0dfd3200713111641e559d908b8f00dc2dba635f263e5b3758b"
+        },
+        {
+          "file": "server/tsconfig.json",
+          "sha256": "7d099cb4583400b38872fd8f4a43e11fe8fcfe906997b672777262116560577b"
+        },
+        {
+          "file": "shared/tsconfig.json",
+          "sha256": "7d099cb4583400b38872fd8f4a43e11fe8fcfe906997b672777262116560577b"
+        },
+        {
+          "file": "scripts/tsconfig.json",
+          "sha256": "7d099cb4583400b38872fd8f4a43e11fe8fcfe906997b672777262116560577b"
+        },
+        {
+          "file": "api/tsconfig.json",
+          "sha256": "7d099cb4583400b38872fd8f4a43e11fe8fcfe906997b672777262116560577b"
+        },
+        {
+          "file": "tests/tsconfig.json",
+          "sha256": "1ca61e05c7aae8b523c4451171ce47d7b31cd77e719f7c863e7d90ab373af7a8"
+        },
+        {
+          "file": "tests/architecture/typescript-projects.test.ts",
+          "sha256": "550a345453a918768c30aaff63b0e5d071ae164d917f227558e6523ad34328f8"
+        }
+      ],
+      "typescriptVersion": "5.8.3",
+      "lint": {
+        "command": "bun run lint",
+        "exitCode": 0,
+        "diagnostics": 0,
+        "log": "var/codex-problems-fixed.log"
+      },
+      "tests": {
+        "command": "bun test ./tests/architecture/typescript-projects.test.ts ./tests/copilot/mod-05-dealers.test.ts ./tests/copilot/mod-08-finance.test.ts ./tests/copilot/mod-09-tasks-sop.test.ts ./tests/copilot/mod-10-automations.test.ts",
+        "exitCode": 0,
+        "pass": 60,
+        "fail": 0,
+        "log": "var/codex-problems-tests.log"
+      }
+    },
+    {
+      "lane": "integration",
+      "root": "D:/ABANGCOLEK-WORKTREES/multi-cli-integration-20261020",
+      "files": [
+        {
+          "file": "tsconfig.json",
+          "sha256": "750365940db0d7a009cac370d0847845f38674a673f7fb3159137fa7bb336786"
+        },
+        {
+          "file": "tsconfig.platform.json",
+          "sha256": "1442426cdc58d3e5b61e0da8dd383e54f19a78c08d6b410c9a410982d9f2614f"
+        },
+        {
+          "file": ".vscode/settings.json",
+          "sha256": "971a8b30b05a95f1f45e414b4513c120d339067fefb86519aca9edbb00435377"
+        },
+        {
+          "file": "tests/copilot/mod-05-dealers.test.ts",
+          "sha256": "9787a11a1d65ab70eac830c0fa001439fcce45c0073193236f64f6abb8538ba5"
+        },
+        {
+          "file": "tests/copilot/mod-08-finance.test.ts",
+          "sha256": "e88b0e81b28c2d14b0e0619fdaa3f63cbbdffa639cec5493c7d3dc4a23239f08"
+        },
+        {
+          "file": "tests/copilot/mod-09-tasks-sop.test.ts",
+          "sha256": "29df81c1efb46bb94b1238b9937478a76d52ec2c6942863a852e22bdc6c59ece"
+        },
+        {
+          "file": "tests/copilot/mod-10-automations.test.ts",
+          "sha256": "f5a528208794c0dfd3200713111641e559d908b8f00dc2dba635f263e5b3758b"
+        },
+        {
+          "file": "server/tsconfig.json",
+          "sha256": "7d099cb4583400b38872fd8f4a43e11fe8fcfe906997b672777262116560577b"
+        },
+        {
+          "file": "shared/tsconfig.json",
+          "sha256": "7d099cb4583400b38872fd8f4a43e11fe8fcfe906997b672777262116560577b"
+        },
+        {
+          "file": "scripts/tsconfig.json",
+          "sha256": "7d099cb4583400b38872fd8f4a43e11fe8fcfe906997b672777262116560577b"
+        },
+        {
+          "file": "api/tsconfig.json",
+          "sha256": "7d099cb4583400b38872fd8f4a43e11fe8fcfe906997b672777262116560577b"
+        },
+        {
+          "file": "tests/tsconfig.json",
+          "sha256": "1ca61e05c7aae8b523c4451171ce47d7b31cd77e719f7c863e7d90ab373af7a8"
+        },
+        {
+          "file": "tests/architecture/typescript-projects.test.ts",
+          "sha256": "550a345453a918768c30aaff63b0e5d071ae164d917f227558e6523ad34328f8"
+        }
+      ],
+      "typescriptVersion": "5.8.3",
+      "lint": {
+        "command": "bun run lint",
+        "exitCode": 0,
+        "diagnostics": 0,
+        "log": "var/codex-problems-fixed.log"
+      },
+      "tests": {
+        "command": "bun test ./tests/architecture/typescript-projects.test.ts ./tests/copilot/mod-05-dealers.test.ts ./tests/copilot/mod-08-finance.test.ts ./tests/copilot/mod-09-tasks-sop.test.ts ./tests/copilot/mod-10-automations.test.ts",
+        "exitCode": 0,
+        "pass": 59,
+        "fail": 0,
+        "log": "var/codex-problems-tests.log"
+      }
+    }
+  ],
+  "limitations": [
+    "Live VS Code Problems panel was not inspected; stale diagnostics may need TypeScript server restart or workspace SDK selection.",
+    "Frontend/ext/top-level test editor coverage is outside the new backend tests config.",
+    "No Copilot feature acceptance, release, commit or deployment is closed by this repair."
+  ]
+}

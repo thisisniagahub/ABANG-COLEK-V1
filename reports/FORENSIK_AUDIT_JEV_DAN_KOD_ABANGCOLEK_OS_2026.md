@@ -7,6 +7,11 @@ maintainer: "Hyper-Sovereign Conductor & Architect (Antigravity PUSPA v7.0)"
 classification: "CONFIDENTIAL / INTERNAL AUDIT"
 lifecycle_status: "ACTIVE"
 ---
+
+<!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
+> **Alignment20Oktober2026:** [Status semasa](../docs/CURRENT-STATUS.md) · [Checklist](../PROJECT-CHECKLIST.md). Rekod historical; pemerhatian, angka ujian, tick dan executor dalam badan asal merujuk sesi asal sahaja. Arahan launch/delegation lama tidak aktif. Status semasa dan bukti release ditentukan oleh rujukan di atas; kandungan asal dipelihara untuk provenance.
+<!-- ABANGCOLEK-CURRENT-STATUS:END -->
+
 <!-- blueprint-alignment: 2026-10-19 -->
 > **Penyelarasan autoriti — 19 Oktober 2026.** REKOD SEJARAH / RUJUKAN — pemerhatian, metrik ujian, status deployment, harga/model dan cadangan di bawah terikat kepada tarikh serta skop asal. Ia bukan checklist execution semasa atau pengesahan bahawa dapatan masih benar. Kekalkan bukti asal; revalidate sebelum mendakwa fixed, connected atau production-ready.
 >
@@ -63,7 +68,7 @@ Walau bagaimanapun, audit forensik menemui **satu penyekat binaan (build breaker
   import firebaseConfig from '../../firebase-applet-config.json';
   ```
 * **Bukti Empirikal:** 
-  Laluan `../../firebase-applet-config.json` merujuk ke luar direktori projek iaitu [`D:/firebase-applet-config.json`](file:///D:/firebase-applet-config.json). Ujian fail fizikal membuktikan fail ini **TIDAK WUJUD** di `D:/` mahupun di dalam [`D:/ABANGCOLEK-OS/`](file:///D:/ABANGCOLEK-OS).
+  Laluan `../../firebase-applet-config.json` merujuk ke luar direktori projek iaitu `D:/firebase-applet-config.json` (rujukan historical; fail tidak tersedia pada semakan alignment20Oktober2026). Ujian fail fizikal membuktikan fail ini **TIDAK WUJUD** di `D:/` mahupun di dalam [`D:/ABANGCOLEK-OS/`](file:///D:/ABANGCOLEK-OS).
 * **Impak:** Sebarang arahan binaan (`bun run build` / `vite build`) akan serta-merta gagal dengan ralat: `Cannot find module '../../firebase-applet-config.json'`.
 * **Penyelesaian (Remedy):**
   Cipta fail konfigurasi sandaran tempatan atau guna pembolehubah persekitaran (`import.meta.env.VITE_FIREBASE_CONFIG`) dengan fallback objek selamat jika fail konfigurasi tiada di persekitaran pembangunan.

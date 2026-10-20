@@ -1,5 +1,9 @@
 # CopilotKit Ten Features Implementation Plan
 
+<!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
+> **Alignment20Oktober2026:** [Status semasa](../../CURRENT-STATUS.md) · [Checklist](../../../PROJECT-CHECKLIST.md). Rekod historical; pemerhatian, angka ujian, tick dan executor dalam badan asal merujuk sesi asal sahaja. Arahan launch/delegation lama tidak aktif. Status semasa dan bukti release ditentukan oleh rujukan di atas; kandungan asal dipelihara untuk provenance.
+<!-- ABANGCOLEK-CURRENT-STATUS:END -->
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development or superpowers:executing-plans to implement this plan task-by-task. This document is a plan, not authorization to install, deploy or spend.
 
 **Goal:** Integrate and verify all ten named CopilotKit capabilities for real ABANGCOLEK workflows, with explicit Intelligence activation gates.

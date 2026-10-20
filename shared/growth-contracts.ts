@@ -104,31 +104,84 @@ export interface MarginSimulationResult {
   reasonCode: 'PASS' | 'INSUFFICIENT_CASH_MARGIN' | 'INSUFFICIENT_PERCENT_MARGIN' | 'EXCEPTION_OVERRIDE_REQUIRED';
 }
 
+function assertSafeSen(val: unknown, name: string, allowNegative = false): asserts val is number {
+  if (typeof val !== 'number' || !Number.isSafeInteger(val)) {
+    throw new TypeError(`${name} mesti integer sen yang sah (bukan NaN, infiniti atau pecahan).`);
+  }
+  if (!allowNegative && val < 0) {
+    throw new RangeError(`${name} tidak boleh bernilai negatif.`);
+  }
+}
+
+function assertValidMarginPct(val: unknown): asserts val is number {
+  if (typeof val !== 'number' || !Number.isFinite(val) || Number.isNaN(val)) {
+    throw new TypeError('minimumContributionMarginPct mesti nombor finite yang sah.');
+  }
+  if (val < 0 || val > 100) {
+    throw new RangeError('minimumContributionMarginPct mesti antara 0 dan 100.');
+  }
+}
+
 /**
- * Margin Guardian Engine (v2.1)
+ * Margin Guardian Engine (v2.4 - Rules Own The Money)
  * Menentukan kelayakan kempen atau diskaun berlandaskan Sumbangan Margin Sebenar.
- * P0 FIX: Memisahkan secara ketat sumbangan tunai (Sen/RM) dan peratusan margin (%).
+ * FIN-01: Perbandingan nisbah menggunakan aritmetik integer tepat (BigInt) sebelum rounding paparan.
+ * Net sales <= 0 tidak menghasilkan kelayakan nisbah margin.
  */
 export function evaluateMarginContribution(input: MarginSimulationInput): MarginSimulationResult {
-  const totalVariableCostsSen =
-    input.cogsSen +
-    input.packagingSen +
-    input.paymentFeesSen +
-    input.fulfilmentVariableCostSen +
-    input.deliverySubsidySen +
-    input.agentCommissionSen +
-    input.rewardCostSen +
-    input.expectedReturnLossSen;
+  assertSafeSen(input.netSalesExTaxSen, 'netSalesExTaxSen', false);
+  assertSafeSen(input.cogsSen, 'cogsSen', false);
+  assertSafeSen(input.packagingSen, 'packagingSen', false);
+  assertSafeSen(input.paymentFeesSen, 'paymentFeesSen', false);
+  assertSafeSen(input.fulfilmentVariableCostSen, 'fulfilmentVariableCostSen', false);
+  assertSafeSen(input.deliverySubsidySen, 'deliverySubsidySen', false);
+  assertSafeSen(input.agentCommissionSen, 'agentCommissionSen', false);
+  assertSafeSen(input.rewardCostSen, 'rewardCostSen', false);
+  assertSafeSen(input.expectedReturnLossSen, 'expectedReturnLossSen', false);
+  assertSafeSen(input.minimumContributionSen, 'minimumContributionSen', true);
+  assertValidMarginPct(input.minimumContributionMarginPct);
 
-  const contributionSen = input.netSalesExTaxSen - totalVariableCostsSen;
+  const minimumMarginBps = BigInt(Math.round(input.minimumContributionMarginPct * 100));
+
+  const totalVariableCostsSenBig =
+    BigInt(input.cogsSen) +
+    BigInt(input.packagingSen) +
+    BigInt(input.paymentFeesSen) +
+    BigInt(input.fulfilmentVariableCostSen) +
+    BigInt(input.deliverySubsidySen) +
+    BigInt(input.agentCommissionSen) +
+    BigInt(input.rewardCostSen) +
+    BigInt(input.expectedReturnLossSen);
+
+  if (totalVariableCostsSenBig > BigInt(Number.MAX_SAFE_INTEGER)) {
+    throw new RangeError('Jumlah kos pembolehubah melebihi julat integer selamat.');
+  }
+
+  const netSalesSenBig = BigInt(input.netSalesExTaxSen);
+  const contributionSenBig = netSalesSenBig - totalVariableCostsSenBig;
+
+  if (
+    contributionSenBig < BigInt(Number.MIN_SAFE_INTEGER) ||
+    contributionSenBig > BigInt(Number.MAX_SAFE_INTEGER)
+  ) {
+    throw new RangeError('Sumbangan margin melebihi julat integer selamat.');
+  }
+
+  const contributionSen = Number(contributionSenBig);
+
   const rawMarginPct =
     input.netSalesExTaxSen > 0
       ? (contributionSen / input.netSalesExTaxSen) * 100
       : 0;
   const contributionMarginPct = Math.round(rawMarginPct * 100) / 100;
 
-  const isContributionPass = contributionSen >= input.minimumContributionSen;
-  const isMarginPctPass = contributionMarginPct >= input.minimumContributionMarginPct;
+  const isContributionPass = contributionSenBig >= BigInt(input.minimumContributionSen);
+
+  // Exact BigInt comparison: contributionSen * 10000 >= netSalesSen * minimumMarginBps
+  // Net sales <= 0 must never create ratio eligibility.
+  const isMarginPctPass =
+    input.netSalesExTaxSen > 0 &&
+    contributionSenBig * 10000n >= netSalesSenBig * minimumMarginBps;
 
   if (!isContributionPass) {
     return {

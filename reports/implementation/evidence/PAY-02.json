@@ -1,0 +1,20 @@
+{
+  "requirementId": "PAY-02",
+  "status": "verified_local",
+  "environment": "local_test",
+  "timestamp": "2026-10-20T05:25:00Z",
+  "sourceCommit": "HEAD",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "testName": "Late payment handling & exception review",
+  "testPath": "tests/platform/payment-reconciliation-v24.test.ts",
+  "command": "bun test ./tests/platform/payment-reconciliation-v24.test.ts",
+  "exitCode": 0,
+  "result": "2 pass, 0 fail, 8 expect() calls",
+  "artifactRefs": [
+    "server/platform/paymentReconciliation.ts"
+  ],
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "integrator",
+  "limitations": "Holds late payment under payment_exception_review without reviving cancelled order."
+}
+

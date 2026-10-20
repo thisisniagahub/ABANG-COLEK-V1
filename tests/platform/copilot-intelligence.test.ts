@@ -24,7 +24,7 @@ describe('Fasa 05: CopilotKit Intelligence Policy & Evaluation (CPK-02 / CPK-03)
     expect(candidates.length).toBe(3);
     expect(candidates[0].model).toBe('gemini-3.6-flash');
     expect(candidates[1].model).toBe('gemini-3.5-flash-lite');
-    expect(candidates[2].model).toBe('nvidia/nemotron-3-super-120b-a12b:free');
+    expect(candidates[2].model).toBe('nvidia/nemotron-3-ultra-550b-a55b:free');
 
     // Deterministic fallback response generation
     const fallbackText = router.generateFallbackResponse('Semak botol sos bocor');

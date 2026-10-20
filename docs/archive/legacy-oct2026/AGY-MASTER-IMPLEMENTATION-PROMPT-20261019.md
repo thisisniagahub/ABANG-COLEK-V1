@@ -1,3 +1,8 @@
+
+<!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
+> **Alignment20Oktober2026:** [Status semasa](../../CURRENT-STATUS.md) · [Checklist](../../../PROJECT-CHECKLIST.md). Rekod historical; pemerhatian, angka ujian, tick dan executor dalam badan asal merujuk sesi asal sahaja. Arahan launch/delegation lama tidak aktif. Status semasa dan bukti release ditentukan oleh rujukan di atas; kandungan asal dipelihara untuk provenance.
+<!-- ABANGCOLEK-CURRENT-STATUS:END -->
+
 > **HISTORICAL / SUPERSEDED — 19 Oktober 2026.** Original AGY prompt retained as evidence. Do not execute this version. Current authority: [master blueprint v2.3](../../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) and [canonical implementation prompt](../../prompts/IMPLEMENT-ABANGCOLEK.md). Historical paths/versions/metrics below are not current runtime proof.
 # ABANGCOLEK — MASTER PROMPT UNTUK AGY: IMPLEMENT SEMUA TASK
 
@@ -658,5 +663,3 @@ Final report mesti menyertakan:
 Keseluruhan projek boleh disebut COMPLETE hanya apabila required onboarding, integrations yang dipilih, production gates dan business acceptance selesai dengan bukti. Research disposition/deferred unavailable vendor tidak bermaksud connector live. Jika external input tidak tersedia, siapkan semua yang boleh disiapkan dan serahkan remaining dependency dengan jelas; jangan fabricate kejayaan.
 
 **Mulakan sekarang apabila prompt ini diberikan sebagai arahan pelaksanaan: preflight → task plan/ownership → independent work waves → implementation/tests/review → actual approved pilots/onboarding → release/business acceptance → aligned documentation.**
-
-

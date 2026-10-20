@@ -1,0 +1,10 @@
+{
+  "extends": "../tsconfig.platform.json",
+  "include": [
+    "platform/**/*.ts",
+    "copilot/**/*.ts",
+    "jev/**/*.ts",
+    "architecture/**/*.ts"
+  ],
+  "exclude": ["architecture/fixtures"]
+}

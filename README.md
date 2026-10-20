@@ -1,3 +1,8 @@
+
+<!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
+> **Alignment20Oktober2026:** [Status semasa](docs/CURRENT-STATUS.md) · [Checklist](PROJECT-CHECKLIST.md). Panduan aktif mengikut skop fail ini. Fakta source/runtime dan ownership semasa dirujuk di atas; arahan atau baseline bertarikh lama memerlukan revalidation. Tiada acceptance aplikasi ditutup oleh alignment dokumentasi.
+<!-- ABANGCOLEK-CURRENT-STATUS:END -->
+
 <p align="center">
   <img src="public/assets/brand/ABANG-COLEX-LOGO-2.png" alt="ABANGCOLEK logo" width="180" />
 </p>
@@ -24,9 +29,11 @@
 
 ![ABANGCOLEK Platform visual](public/assets/brand/abangcolek-world-v2.webp)
 
-> **Status:** active development. UI, typed platform contracts, local API/domain modules, role workspaces, evidence flows and CI checks are implemented. External provider integrations, production persistence and real credentials remain deployment-specific and must be verified separately.
+> **Status20Oktober2026:** main `18c69b3` sudah dipush; Vercel production READY bagi patch11 fail TypeScript/config/regression sahaja. Main lint/build lulus;305 platform tests,16 local browser tests dan8 public production browser tests lulus. GitHub Actions tidak bermula kerana account billing. Implementasi Copilot baharu masih dalam lane development. Baca [CURRENT-STATUS](docs/CURRENT-STATUS.md) dan [checklist](PROJECT-CHECKLIST.md) untuk85 requirement, jurang sebenar dan scope bukti.
 
 ## Apa yang dibina
+
+**Kemajuan dan task semasa:** buka [PROJECT-CHECKLIST.md](PROJECT-CHECKLIST.md). Checklist memisahkan dokumentasi, release landing dan implementasi Copilot; ticks memerlukan evidence, bukan source presence atau laporan agent sahaja.
 
 ABANGCOLEK Platform menyatukan operasi harian dalam satu workspace yang boleh diaudit:
 
@@ -169,7 +176,7 @@ Workflow tidak menyimpan token dalam source code. Jika token pernah terdedah, re
 
 - [Documentation index](docs/README.md)
 - [Source of truth](docs/ABANGCOLEK-SOURCE-OF-TRUTH.md)
-- [Master Blueprint v2.3](docs/ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md)
+- [Master Blueprint v2.4](docs/ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md)
 - [Implementation prompts](docs/prompts/README.md)
 - [Status snapshot 16 Oktober](docs/archive/legacy-oct2026/ABANGCOLEK-PLATFORM-STATUS-2026-10-16.md)
 - [AI agent architecture](docs/AI-AGENT-ARCHITECTURE.md)
@@ -193,7 +200,7 @@ Status license dan hak penggunaan assets perlu disahkan oleh pemilik projek sebe
 
 ## Blueprint alignment — 19 Oktober 2026
 
-[Blueprint v2.3](docs/ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) ialah target contract. Scope Copilot: **10 ciri**, **10 modul**, **32 logical capabilities** dan **7 Generative UI approaches**. Rujuk [AI architecture](docs/AI-AGENT-ARCHITECTURE.md), [tool registry](docs/design/copilot-advanced-tools.md) dan [free-only policy](docs/research/2026-10-19-free-model-policy.md). Custom chat/SSE/kad dan class bernama ADK bukan bukti integrasi framework rasmi. Jangan lapor kesemua ciri aktif melalui documentation update.
+[Blueprint v2.4](docs/ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) ialah target contract. Scope Copilot: **10 ciri**, **10 modul**, **32 logical capabilities** dan **7 Generative UI approaches**. Rujuk [AI architecture](docs/AI-AGENT-ARCHITECTURE.md), [tool registry](docs/design/copilot-advanced-tools.md) dan [free-only policy](docs/research/2026-10-19-free-model-policy.md). Custom chat/SSE/kad dan class bernama ADK bukan bukti integrasi framework rasmi. Jangan lapor kesemua ciri aktif melalui documentation update.
 
 Sasaran: React/Vite + TypeScript CopilotRuntime pada Bun -> Google ADK Python/AG-UI -> canonical scoped domain tools. Founder pilot, fixed-schema A2UI dan first-party read-only MCP App. Model/evaluator/voice/title/summary free-only; tiada paid fallback. Intelligence Streams/Learning mempunyai gate kos/data/entitlement berasingan. LOCAL_RULES JEV tidak memberi calibrated model probability atau financial authority.
 

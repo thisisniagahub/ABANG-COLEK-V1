@@ -1,0 +1,695 @@
+{
+  "timestamp": "2026-10-20T03:37:24.888Z",
+  "worktree": "D:/ABANGCOLEK-WORKTREES/multi-cli-integration-20261020",
+  "sourceCommit": "60311aad5a1695eb2804e830488a3133e182397f",
+  "scope": "phase03A candidate source/test files; no secrets or data; state from actual git inventory, not all original dirty content",
+  "files": [
+    {
+      "path": "server/platform/adkAgent.ts",
+      "sha256": "c06ac5f3c05000696e7f662a4138149612b9dab0f3e06782cc9f64fa7f16e7a7",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/app.ts",
+      "sha256": "3aed25eec9197244b2a298b25c767d982f1025c57b6bf635b8e59d3202e23175",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/assetBundle.ts",
+      "sha256": "02516ec462c8bc113720862894a6fcd138343186dd0e525fb751cfb07d6fb530",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/auth.ts",
+      "sha256": "b50bd5d60570c8304080a95e923a8b9c923cf404b18407b8add66326c3ed3d03",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/backup.ts",
+      "sha256": "2b02328b24544a2c1898d5f379fa868830f1f87775969b96151b9fcc8fd90cf8",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/backupScheduler.ts",
+      "sha256": "856c477ca23687e287ec25c1f919e9179f6b574bbbfad8556d6f176339651078",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/commerce.ts",
+      "sha256": "0256c29ab92bbab7a1da94d255a5052a90512b65daff82f8909e69c188dacd49",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/dealers.ts",
+      "sha256": "e8c8dc3afb6a84306b1b6d22a73a6a6e22d3213843cf5447b6b003f49f02f883",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/domainTools.ts",
+      "sha256": "c4be51e74c41fea173191b488809b08fc2e91259a080e3e7f5f5e39bf0475ab0",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/evidenceFiles.ts",
+      "sha256": "daf008032ef511295c8ca075b5c8e2a0200a65efb090479e3d4f70fd1035a71d",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/flows.ts",
+      "sha256": "b73932f08138ce3b1d1dc35968165882ac84a2f845e4cb24a1132e25d51ff405",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/founder-intelligence.ts",
+      "sha256": "77c2eac2bcb6a56f831aa76f00c205c0419db7056b6c2a6443d06a1aa522eb1f",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/freeModelRouter.ts",
+      "sha256": "91fad881097b64fc9b38a77fbd59880b093169145815dd01caa2cac0c8625a80",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/googleIdentity.ts",
+      "sha256": "5c09a6ee298d55f048b09ec50ef696bc9449a43d0eeb0616629975b6d4a59f60",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/hostedResponse.ts",
+      "sha256": "5c7db2335d15759f7e8b8f53401675c582edcdbf3b152752eb75e404ac9f70f0",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/jev/assessment.ts",
+      "sha256": "01a9dddcb47c7f3a062539a7ed1626f29331bb934ae4afd440e501affeb6a486",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/jev/evaluations.ts",
+      "sha256": "1c11d678c6b94fcd30a4d452e7c2409b1b986aeefec9868102d5760b62d90cbc",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/jev/policyEngine.ts",
+      "sha256": "1a77b426a3b523f4100ccf053bd954cb5d81f1e8278ae8705e2ce095b2d3cfb9",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/jev/questionRegistry.ts",
+      "sha256": "aacef6ff8b3f28b6241d523210113b66491d4abe361fb2e9ec2f2d9825f97cb1",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/legacyAi.ts",
+      "sha256": "ba4d62679391d8be185230a8ef590f8a11f487d50eaca49c0c9489a314ccf489",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/legacyPilots.ts",
+      "sha256": "84731399af5fd811e24b6d4b75e3a40407563c40b75aa29bccd5bf4188891918",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/loyalty.ts",
+      "sha256": "663319e314c7f64bde362141ee303c76d7a30735f3e1337c5507102936dc23d5",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/marginGuardian.ts",
+      "sha256": "55ecb60f2120a5c6d7e699f3bd0b530a08ae6367bdfef805d278a2659a151792",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/marketing.ts",
+      "sha256": "37e50b60123c998b951037564f32e606b3d55b3ee25d7ef2da06db7637619f6b",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/mcp/operationsBrief.ts",
+      "sha256": "542d06bb9f037bc0f089bb3e58af119c3cfc6647e2c69d8224b6ac1b1cca2c4c",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/migration/legacyMaps.ts",
+      "sha256": "ab92de3f85fef2b496083248532280ed7f718d5286aac140b14f5707310f7d01",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/migration/migrationReconciler.ts",
+      "sha256": "c97c94f2856d4d3cc631ca904bd39c63cf0e764d9ef1eab19d5453ffbd7613dc",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/onboarding.ts",
+      "sha256": "afb4bf7d1a1bdaa9d13da8b91760fe016eedc68d6c9f8e1981f067f4e9686372",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/operationalAmendments.ts",
+      "sha256": "68310c14932bddbae60c2e4e743cbb7b2ff14df8e8536a645a3771a78b9a0506",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/operations.ts",
+      "sha256": "2d821af7807d717be568c0230260f86171db617ac5af8b04648a6772d73f46b6",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/reports.ts",
+      "sha256": "970a6d2740b9b43199e04628169319179fb3ea35949988ce9debcc37617194b0",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/runtimeControls.ts",
+      "sha256": "f7aec305c9b3ca9c07f487efa6116fedd29a26afaf56342e10ea632f9d73c56d",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/social.ts",
+      "sha256": "5da23ffc673bfacf2543a8a6fe304ad3b0f6e61a1617a3f302aeffeff23e167e",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/store.ts",
+      "sha256": "c760d3e9f083ecd92f6a63e17cdd8f352e8a4b6a3055e94435d968aba75ece2a",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/supabasePersistence.ts",
+      "sha256": "110bbc8b48cec302db77ac7711914815c90760dd8b9fddf0ae1091f9e0ede6ed",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/whatsapp.ts",
+      "sha256": "2b0b374380ae7c61456fa18faa537c194915b57575c8e89e8684fb2dd0a51b9e",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "server/platform/work.ts",
+      "sha256": "55011a745cc8ab72241c5e1e3e561af238c3794f67dc10a9c6cc2a398c6e04b2",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "shared/automation-contracts.ts",
+      "sha256": "e7c130a2e84e049951f1b39e6fc9e5ca8fc35d0fb7e7aeb839db2eb2f4d709cb",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "shared/copilot-contracts.ts",
+      "sha256": "aa8cb3256ff3cd940579738f9d7c6f61ee0555610e44bd1a510e37a4aa2dc647",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "shared/dealer-contracts.ts",
+      "sha256": "97d5ba93037a7f5824f0caf84fa10df9fff1e24a23766ed6f5df61e19278627d",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "shared/founder-intelligence-contracts.ts",
+      "sha256": "72d0551a9e802b09ff8763101fabd874f9b1006831deb5ecc5cfda0fb70eff82",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "shared/growth-contracts.ts",
+      "sha256": "d8240f793ee75627e40cb9cc06b772c968c4c8e0020bd43540f5b920aed6a475",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "shared/jev-contracts.ts",
+      "sha256": "a24d0fbc3c3c7d45e3cb05ea7f6021812ca4ba71636e4deb6b75ce78f7a5928d",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "shared/onboarding-contracts.ts",
+      "sha256": "33b22ae248be0841ea4c4538f5d305ac648e24549aac4b0b76f8559ff555ed8b",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "shared/operation-amendment-contracts.ts",
+      "sha256": "31ac31b947362df051df15c3aafe3d1fac3a57aadae27123a149bbccf9d5c4e6",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "shared/pilot-contracts.ts",
+      "sha256": "048097e1070058e694ef4b7fde7a716dc810266f7eb806f2a2c2e11014d05a9c",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "shared/platform-contracts.ts",
+      "sha256": "d8db3652515883d67682624bce23dd866933acd1e70b3ac38523a3045cdadd01",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "shared/report-contracts.ts",
+      "sha256": "1ac0835153e000d7d7399a98ac6be03a24652e17a8bb39955e27920eab4eb4fe",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "shared/social-contracts.ts",
+      "sha256": "27dc4149d9c6d8f31ade1c418fdf4c0a77ccc558463a223797e965144fa70cb1",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "shared/upload-limits.ts",
+      "sha256": "51c77328b004ec79318e19942178b4a6ab14b55b879796907982648b25938d7f",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "shared/work-collaboration-contracts.ts",
+      "sha256": "67b2a1daf15e5b7e8ecb153eba34bf8dfbf491399a1d1eb005e793b276cc9d6a",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "agents/google-adk/app.py",
+      "sha256": "36ed02606422d0f5250610aa23a675772387ab0bda54a99d806078a7a313121e",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "agents/google-adk/requirements.txt",
+      "sha256": "2074ce3b638a9b1c3eab89607c642b3a8c82243127e9397703fec9c230c86aaa",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "agents/google-adk/specialists/commerce_reader.py",
+      "sha256": "a39f6dfa972f95b9dab3ed5e3a198548fc1d12d87b5d817908c83a0f06e3e055",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "agents/google-adk/specialists/marketing_drafter.py",
+      "sha256": "1fcdfc9a7948a5501b7146c8fb1afc6ddc439dab19c8796334468634abbd47ca",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "agents/google-adk/specialists/qc_jev_reviewer.py",
+      "sha256": "6e043dc8cba7d69e22953dde8d33ca0cdbb5e629d4454e6c07eca9fe30973972",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "agents/google-adk/tests/test_agents.py",
+      "sha256": "7235cd3a9e393a166d142c32882420a6a8dbae20a840113760a4317fafbdb947",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/adk-specialists.test.ts",
+      "sha256": "2a64b5f8d3f3cc5b160c8c0759cb615b7d3659f3e4023519e479a4f3b157c105",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/agent-runtime.test.ts",
+      "sha256": "2c9331617092d159a98a529394dbbe5cfb933b5907cb2dbeb90948576ce53640",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/agent-storefront-referral.test.ts",
+      "sha256": "173b74f7117c2de731d41b3d77b90245ddc856cf8cbceca894efdebbfa164cd2",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/automation-completion-api.test.ts",
+      "sha256": "a67df0a5bca7e3473b9160e77d1deddb0284faed6754b0173086b9d8e65dd58e",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/automation-completion.test.ts",
+      "sha256": "923331efb88acd807d5f689f765cb0684248b31655b6d3f898922d74206c9383",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/backend-benefits.test.ts",
+      "sha256": "38a5808907bda23fd90d6e62059a69601ac7c02372ffcbf5ae7a0d2699aa40ee",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/backend-boundaries.test.ts",
+      "sha256": "cd29116d2aab847ce15356d395e89f8a1954c1c9d625396350a82cf13c347f9e",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/backend-domains.test.ts",
+      "sha256": "d8eb39b6702bd7e99d83cadefedf330dd5b2d3458104796991efe5b9a7a386d5",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/backend-evidence.test.ts",
+      "sha256": "4e32f63c6fdde6a9c716385d7686eb1fb403b3aedb49f1a4a40950070e664833",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/backend-flows-jobs.test.ts",
+      "sha256": "f293e56dcb89befcfedaf28192562ea9fc91bea2e8f5b2a3f852ed3de41d7776",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/backend-lifecycle.test.ts",
+      "sha256": "041744271ce127044409ec1903001e914fa82b10f9d76823188c1bfe55ba2f71",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/backend-review-regressions.test.ts",
+      "sha256": "e2e89056c9b8bba87fbc03f58eb0d22c92dba8b61f474d25cb5c6850a7c1595b",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/backend-security.test.ts",
+      "sha256": "a20e152d0ebab74c1ca540d194a47c62e8c108d1487a8e274f01438572480acc",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/backend-workspaces.test.ts",
+      "sha256": "0da7692f1029f7b296b36eb4cbec06e320bd483645912a884e8d9d87065cafdf",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/backup-restore.test.ts",
+      "sha256": "3fa483c26967ada8c5be26274041e335de546b03fb2db5ceb1c6dcf20d2d2811",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/business-journeys.test.ts",
+      "sha256": "0185c195aca81ba08c94fed841f346788ec75da9e8a03fa60b2527c9316220e3",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/capability-navigation.test.ts",
+      "sha256": "9c8c42469f255c5b08e1f8eac1a478198b96064abc1727988d196c26d5c04e83",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/client-pagination.test.ts",
+      "sha256": "c9bf946904a013ec798184ce73915e1b6787995d57c110d33fb1c68f09d28b55",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/client-retry.test.ts",
+      "sha256": "02d1be53f1264bc60f33fbf8ac429a7c6e561408b20a9eec543b7d33de2424db",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/client-session-race.test.ts",
+      "sha256": "c06c5ea319e9f9c9b14ae4ccd0373cfa27866877d5f1a984ef108ad2f5e27002",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/cloud-worker.test.ts",
+      "sha256": "bac6e3c3aaea5e471427e4dee86a810bdf8c78cb7d056dbb7c85da16fd198464",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/copilot-adk.test.ts",
+      "sha256": "804bb2efa3dfccf5159d2d856b609035fd2242ff86c3d214feb5ab02452bb04c",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/copilot-intelligence.test.ts",
+      "sha256": "eb8580e4da8db948e674709510e3ae5428b3d13c0801f0cd11015a243cd8f45c",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/copilot.test.ts",
+      "sha256": "c76e7a89bc1643e43677b0d6fa4317804824238008479e6df3e8fc0bbc0f671b",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/create-retry.test.ts",
+      "sha256": "69008efe32fd856a6863b73ec6d935e35280e7ad32ab93fad513e71b0e874999",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/customer-cart.test.ts",
+      "sha256": "9f0a834fcaad1ee31aae3640cbfeec7f2f0b6894b77142f91468de79fa6466c3",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/dealer-approval.test.ts",
+      "sha256": "2029d914a24091299d89f6a05ebec83194abd6a4aef9045287f82a3d3bbd919c",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/dealer-commission-ledger.test.ts",
+      "sha256": "b77c8ce5cca1bb0964d3732900cba5872fb554d0229bda89446c22d7cf9cc1ab",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/dealer-completion.test.ts",
+      "sha256": "fc7f59b311be786598159c953d26723df42bc3928f3d3f40a08208540b4580ba",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/developer-workspaces.test.ts",
+      "sha256": "c6f8b011e589636a8b24cdc9b8d4dc12e5d38e8804321ddac8655e445dba9cbc",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/domain-tools.test.ts",
+      "sha256": "51618bd68739d7c9aafb8cdba8b27e0c5ebbc160052483f187ba48f4a6e79a39",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/experience-model.test.ts",
+      "sha256": "bfb8c845aff7985119449d7478fe1a7ed7bbbcac9ce10b73f323111754b0f356",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/finance-review.test.ts",
+      "sha256": "fb18658d5a63a39a48b22e43de6889d4ab17e9071da02084ec3307a9e5465c0d",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/fixtures/lifecycle-worker.ts",
+      "sha256": "5226f97ad6d745d43d6726eebd82ee376a4dec2e96103bd046fb80ff7d1ba96d",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/flow-answers.test.ts",
+      "sha256": "27a78f2150fe826c001679fe3260377eb97c06c4701ba2561d9808dfd9b65d5d",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/flow-review-pagination.test.ts",
+      "sha256": "3d8245a59372dfd647e2b3efe60e4e389d9394ffa01dd2fb9b62cdf2996c484f",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/founder-intelligence.test.ts",
+      "sha256": "b71eb09cb19eba52986bfd8e8610e453a3c3ac33716e310babcb65f6d7ce7dbc",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/founder-proposals.test.ts",
+      "sha256": "ea880de9a71a18f69f4176aa4ae68fb36da1c33a5a605f286fff980ae54cf497",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/full-collection-summaries.test.ts",
+      "sha256": "6da3493754520f93e856a589ef8188a7f674e2548989e4ba49bf68f99af59ca5",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/google-identity.test.ts",
+      "sha256": "238937953d1c962ac8515e5a66b52558fb4d2961c210bf25420eb4c6839c83bc",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/google-platform.test.ts",
+      "sha256": "43d714b2939dbae799f5e7476154c59118d2fca2991e622e2c567a58a5c6fa20",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/growth-margin.test.ts",
+      "sha256": "dddc91961a0f1bd8700f2764dae9f06d175570de359151dbe283d3c8b2690c6b",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/host-security.test.ts",
+      "sha256": "af5091d41524660c3b7ee98ca56dec4dde7c09834446f5b2be9485a339679464",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/hosted-response.test.ts",
+      "sha256": "3521d539dcdb88f6699ba035dd6d503e3fb1a490649a19c0fff372e01ecc7002",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/import-integrity.test.ts",
+      "sha256": "0d178fdf02138687a6f9aab9a13678082dae9bc09b35a501bdaf2c3b64b3783f",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/landing-scene-controller.test.ts",
+      "sha256": "ca500108b05e7462d6f9ef7664b2f2438a2cc1dc2b9180bc31aa6b36b1660770",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/landing-story.test.ts",
+      "sha256": "480efe82df61259a1193be6ab3967bad92e71e4cf5bfc4d8fb6ab718fe95b5d8",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/legacy-migration.test.ts",
+      "sha256": "5c1a60742ac65051187606bf774290453a3631b132467fe1c3529887619e6920",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/legacy-pilots.test.ts",
+      "sha256": "feb02baf3a98d8c3a1696b37e952a478c3cd74935ce35b3735fd9403edf0f120",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/loyalty-redemption.test.ts",
+      "sha256": "af35c771537a0aafe0a76d05c27108170a3e0707227e8da5dc2c040767de593a",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/marketing-publish.test.ts",
+      "sha256": "9c8b66321bc557f96f6627735c1930fb5e3686179554312ab0df9262f3417d90",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/mcp-brief.test.ts",
+      "sha256": "657b1881079893ae892ae06fdf9e4765120e2365382015efbf8bc855592c6a78",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/no-seeded-business.test.ts",
+      "sha256": "5290176d6bad9fd084c64a76479148880814cd947dc938f2701805d0980f6cbb",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/offline-cache.test.ts",
+      "sha256": "3c1b1589bfe1f79c8b32da84d86fc19588246a8bd609a86e6880d987ede07a0f",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/onboarding-settings-integrity.test.ts",
+      "sha256": "6d03893baa05dc74a5cb059c7a90eafed2084a7667a685eadef6a9d20427c048",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/operational-amendments-api.test.ts",
+      "sha256": "6b2b42cb3492244130423acb7afbeac32e785abee6764dd65e5d4834756acdaa",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/operational-amendments.test.ts",
+      "sha256": "a919a8b7f8e50394841aa4431048c89a466fc09db98f555683c0f83f273537f8",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/outbound-safety.test.ts",
+      "sha256": "6927aac102f9b5832d793f2411fe7070ba83d69c6a9254f4a0e9cf08f7a38321",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/product-onboarding.test.ts",
+      "sha256": "d60f7fcc6f6c8c3b94dd1a000754392d945dfdb6d983a96e7ec6b03fe390341e",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/production-persistence.test.ts",
+      "sha256": "bf1028184895012d671a3552d90a13097627ee513978adc23cc287bdd45b6896",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/public-database.test.ts",
+      "sha256": "af8fd11b8666725c864d9e0526d17913a3f59614a0a85d0d1d1d044f4ff1fdf4",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/public-html.test.ts",
+      "sha256": "33b6385e671577b97dc18ec724d6fdf33c8d0cf615a91586151ebb78a48c89e0",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/remote-evidence.test.ts",
+      "sha256": "e426f2cce5ebc54302b85cd5080e67965a62466de4592a2b8ca3f59ca4502700",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/report-builder.test.ts",
+      "sha256": "32ad49dd42fd03f51f72ffbdf1490f4282973e146cde039664d7efd0916fff0b",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/reviewer-boundaries.test.ts",
+      "sha256": "e9fd8391185f930f92c6fa4e10ecb16ec14b231e68be07816d144eee1355b2c7",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/routes.test.ts",
+      "sha256": "e78dab95f0f1d48353faa3fadf321daa5b5a9a112c89b6fdd49191d9b086356f",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/runtime-config.test.ts",
+      "sha256": "2b59a8dfa917b8c01ee2ed8a65d3b86ab2acd5887fd4e6534fcc3137967a079d",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/runtime-identity.test.ts",
+      "sha256": "19048dc3ba4185bcf50468852be4a1835b10a955564272af3870f89f48bc75c1",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/runtime-launcher.integration.test.ts",
+      "sha256": "c7a06230e1061cd3792d03da3ede7a1bf35c03bc9f5493be4a1db5833d4f0ce1",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/supabase-configuration.test.ts",
+      "sha256": "f3eac1ec04c88aea9c1721ee40eeac34cc3167dfe49bd2c2751779c62baf4e6b",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/supabase-persistence.test.ts",
+      "sha256": "9d36215feb04aa5367a4b5aeab802bf5d8c5f4230f6e0a847b6485369c998406",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/supabase-query.test.ts",
+      "sha256": "29d04fad1e3a018b7263fd0e997f1a80962f059c13c919dd02106f3731913c17",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/supabase-unavailable.test.ts",
+      "sha256": "69668acb0748a05f225a4c4b6e99065d725835bfce5a07a30dc8f1a30a7dc3ce",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/upload-limits.test.ts",
+      "sha256": "1b63b119717b4c5a48b3bd5a06b7123bd9f564018d4b8abbdf7e554b36b37ed0",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/upload-revocation.test.ts",
+      "sha256": "82bdb5df48d4dd44b5852d171e7dd9a92efc70b0222c505d7f47e45c7d89db54",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/vercel-entry.test.ts",
+      "sha256": "b0c1ec0bafcc08595405919c10c66dc358b88ed99e2c14920ce2fa9d9ee28b6c",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/whatsapp-flows.test.ts",
+      "sha256": "77bf1517faa8811110c07ce2ffad6c2b393424c800872ed0ba99859e94165cd2",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/work-collaboration-api.test.ts",
+      "sha256": "94d2fa8784a76376ce23673a5782b934a83c8dcf3614455d4fba070e9c34572d",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/work-collaboration.test.ts",
+      "sha256": "3766b07a80801c424172473f57043b70a20c92dc3b167089686804e604b04b1e",
+      "sourceControlState": "tracked_clean_at_inventory"
+    },
+    {
+      "path": "tests/platform/worker-process-recovery.test.ts",
+      "sha256": "4ea3a113b564266bc47f3b4682aae22e2d5b244360a7b352dff1a3704b4e6675",
+      "sourceControlState": "tracked_clean_at_inventory"
+    }
+  ],
+  "sourceStateReceipt": "00-source-state.json",
+  "dependencyPresenceReceipt": "00-dependency-tool-preflight.json"
+}

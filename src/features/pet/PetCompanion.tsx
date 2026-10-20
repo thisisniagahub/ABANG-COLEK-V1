@@ -25,11 +25,55 @@ import ReactMarkdown from 'react-markdown';
 import { PetAvatar, type ExtendedPetMood } from './PetAvatar';
 import { speechService, sfx } from './speechService';
 import { PETDEX_CATALOG, type PetdexEntry } from './petdex';
+import { MicPermissionIndicator } from './MicPermissionIndicator';
+import { microphoneMonitor, type MicrophoneIndicatorState } from './microphonePermission';
+import { processingLocationDisclosure } from './processingLocation';
+import { copilotRunController, type CopilotRunController } from '../intelligence/copilotRunController';
+import { attachCopilotRunIdentity } from '../copilot/runIdentity';
 import { currentCsrfToken } from '../platform/client';
 import './pet-companion.css';
 
 interface PetCompanionProps {
   onNavigate?: (path: string) => void;
+}
+
+export interface PetCopilotRequestBodyOptions {
+  message: string;
+  history: Array<{ role: string; content: string }>;
+  /** `voice` is a speech transcript and therefore untrusted input. */
+  origin: 'voice' | 'text';
+  /**
+   * Identity scope of the request. Defaults to the shared controller, so the
+   * Pet and the Copilot workspace stay ONE run.
+   */
+  controller?: CopilotRunController;
+}
+
+/**
+ * Builds the body the Pet sends to the Copilot chat endpoint.
+ *
+ * The body carries the SHARED run identity — the same `threadId` / `runId`
+ * the Copilot workspace is running — and never an identifier the controller
+ * did not issue.
+ *
+ * The trust of the input is declared to the controller BEFORE the identity is
+ * resolved, so a voice transcript downgrades the open run for good (the
+ * strictest trust wins and a downgrade is never reversed). The controller's
+ * own state therefore stays the authority on how much the run may be trusted.
+ */
+export function buildPetCopilotRequestBody(options: PetCopilotRequestBodyOptions): string {
+  const controller = options.controller ?? copilotRunController;
+  const inputTrust = options.origin === 'voice' ? 'untrusted' : 'trusted';
+  controller.applyInputTrust(inputTrust);
+  return JSON.stringify(attachCopilotRunIdentity(
+    controller,
+    {
+      message: options.message,
+      history: options.history,
+      stream: true
+    },
+    { surface: 'pet', inputTrust },
+  ));
 }
 
 export const PetCompanion: React.FC<PetCompanionProps> = ({ onNavigate }) => {
@@ -43,6 +87,7 @@ export const PetCompanion: React.FC<PetCompanionProps> = ({ onNavigate }) => {
   const [isMuted, setIsMuted] = useState(speechService.isMuted());
   const [lang, setLang] = useState<'ms-MY' | 'en-US'>('ms-MY');
   const [ambientText, setAmbientText] = useState<string | null>(null);
+  const [micState, setMicState] = useState<MicrophoneIndicatorState>(microphoneMonitor.getState());
 
   // Position for draggable pet widget (default bottom-right)
   const [position, setPosition] = useState<{ x: number; y: number }>({
@@ -76,6 +121,20 @@ export const PetCompanion: React.FC<PetCompanionProps> = ({ onNavigate }) => {
     }, 28000);
     return () => clearInterval(timer);
   }, [activePet, mood, drawerOpen, radialOpen]);
+
+  // Microphone permission + live capture indicator (EXT-06)
+  useEffect(() => {
+    const unsubscribe = microphoneMonitor.subscribe((state) => setMicState(state));
+    void microphoneMonitor.probe();
+    return unsubscribe;
+  }, []);
+
+  const revokeMicrophone = () => {
+    speechService.stopListening();
+    speechService.stopSpeaking();
+    setIsListening(false);
+    microphoneMonitor.revoke();
+  };
 
   // Global Keyboard Shortcut: Ctrl+J or Alt+C toggles Pet Drawer
   useEffect(() => {
@@ -195,33 +254,41 @@ export const PetCompanion: React.FC<PetCompanionProps> = ({ onNavigate }) => {
     if (isListening) {
       speechService.stopListening();
       setIsListening(false);
+      microphoneMonitor.markInactive();
     } else {
       setIsListening(true);
+      microphoneMonitor.markActive();
       const ok = speechService.startListening(
         payload => {
           setInputText(payload.transcript);
           if (payload.isFinal) {
             setIsListening(false);
+            microphoneMonitor.markInactive();
             if (payload.transcript.trim()) {
-              void handleSendMessage(payload.transcript);
+              void handleSendMessage(payload.transcript, 'voice');
             }
           }
         },
         err => {
           setIsListening(false);
+          microphoneMonitor.markInactive();
           setAmbientText(err);
           setTimeout(() => setAmbientText(null), 3000);
         },
         () => {
           setIsListening(false);
+          microphoneMonitor.markInactive();
         }
       );
-      if (!ok) setIsListening(false);
+      if (!ok) {
+        setIsListening(false);
+        microphoneMonitor.markInactive();
+      }
     }
   };
 
   // Send message to Google ADK Copilot Agent (/api/platform/copilot/chat)
-  const handleSendMessage = async (textToSend: string) => {
+  const handleSendMessage = async (textToSend: string, origin: 'voice' | 'text' = 'text') => {
     const query = textToSend.trim();
     if (!query || isProcessing) return;
 
@@ -245,10 +312,10 @@ export const PetCompanion: React.FC<PetCompanionProps> = ({ onNavigate }) => {
           ...(currentCsrfToken() ? { 'X-CSRF-Token': currentCsrfToken() } : {})
         },
         credentials: 'same-origin',
-        body: JSON.stringify({
+        body: buildPetCopilotRequestBody({
           message: query,
           history: chatHistoryRef.current,
-          stream: true
+          origin,
         })
       });
 
@@ -619,6 +686,14 @@ export const PetCompanion: React.FC<PetCompanionProps> = ({ onNavigate }) => {
             <Send size={15} />
           </button>
         </form>
+
+        {/* EXT-06: microphone state + processing location disclosure */}
+        <div className="px-3 pb-3 flex flex-col gap-1.5">
+          <MicPermissionIndicator state={micState} onRevoke={revokeMicrophone} />
+          <p className="text-[10px] leading-relaxed text-[var(--ui-muted)]">
+            {processingLocationDisclosure()}
+          </p>
+        </div>
       </aside>
     </>
   );

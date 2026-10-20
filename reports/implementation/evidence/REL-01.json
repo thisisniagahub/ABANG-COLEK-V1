@@ -1,0 +1,47 @@
+{
+  "requirementId": "REL-01",
+  "status": "partial",
+  "environment": "local_build",
+  "timestamp": "2026-10-20T12:25:00Z",
+  "sourceCommit": "60311aad5a1695eb2804e830488a3133e182397f",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "testName": "Vite production build + prerender bundle validation + runtime fail-closed config",
+  "testPath": "tests/platform/vercel-entry.test.ts, tests/platform/runtime-config.test.ts, tests/platform/runtime-identity.test.ts",
+  "command": "bun run build && bun run lint",
+  "exitCode": 0,
+  "result": "1949 modules transformed in 11.76s; tsc exit code 0; Playwright enumerates 53 tests across 16 spec files (bun run test:e2e --list, exit 0)",
+  "artifactRefs": [
+    "dist/index.html",
+    "tests/platform/vercel-entry.test.ts",
+    "tests/platform/runtime-config.test.ts",
+    "tests/platform/runtime-identity.test.ts",
+    "tests/playwright.config.ts",
+    "reports/implementation/acceptance-verification.json"
+  ],
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "orchestrator-double-check-2026-10-20",
+  "limitations": "Build produksi dan fail-closed config DIJANGKIT pada skop tempatan sahaja. Tiada deployment receipt: tiada preview/production artifact ID, tiada URL deployment, tiada bukti browser atau API terhadap deployment sebenar. 53 ujian Playwright enumerated (tests/e2e/, 16 spec files) tetapi belum dijalankan terhadap server live, dan skop e2e meliputi landing/navigation/commerce/dealer/marketing/founder/offline — TIDAK meliputi Copilot/AG-UI/MCP. Audit sumber: reports/audits/2026-10-20-acceptance-source-audit.md (defect D-31).",
+  "corrections": [
+    {
+      "date": "2026-10-20",
+      "previousStatus": "verified_local",
+      "previousEnvironment": "local_build",
+      "previousTestName": "Vite production build and prerender bundle validation",
+      "previousTestPath": "package.json",
+      "previousCommand": "bun run build && bun run lint",
+      "previousResult": "1949 modules transformed in 11.76s; tsc exit code 0",
+      "previousArtifactRefs": [
+        "dist/index.html",
+        "reports/implementation/06-release-receipt.json"
+      ],
+      "previousTimestamp": "2026-10-20T05:25:00Z",
+      "previousLimitations": "Deployment relies on verified local receipts prior to production cutover.",
+      "reason": "Evidence file asal citing 'package.json' sebagai testPath — itu manifest build, bukan ujian — dan melaporkan environment 'local_build' sebagai 'verified_local' tanpa sebarang deployment receipt. Laporan asalan juga mendakwa artifacts 'reports/implementation/06-release-receipt.json' yang tidak wujud dalam repo. Tiada bukti deployment sebenar (preview/production artifact ID, URL, atau respons API). Audit sumber: reports/audits/2026-10-20-acceptance-source-audit.md (defect D-31).",
+      "evidenceRefs": [
+        "reports/audits/2026-10-20-acceptance-source-audit.md#D-31",
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "reopenCondition": "REL-01 boleh ditick semula apabila: (a) build dan lint exit 0 pada commit yang mengandungi semua perubahan wave, (b) 53 ujian e2e Playwright dijalankan terhadap server live dan hasilnya direkodkan, (c) deployment receipt sebenar ada — preview/production artifact ID + URL + bukti respons API — dan (d) commands/race direkodkan dengan commit SHA sebenar, bukan 'HEAD'."
+    }
+  ]
+}

@@ -1,6 +1,10 @@
 # ABANGCOLEK — Runbook operasi dan pemulihan
 
-Diselaraskan: **19 Oktober 2026**. [Blueprint v2.3](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md), [Source of Truth](../ABANGCOLEK-SOURCE-OF-TRUTH.md) dan [release](../production-release.md) membezakan local SQLite daripada cloud authoritative Supabase CAS. Runbook bukan current listener/provider/backup receipt; tiada drill dijalankan melalui kemas kini ini.
+<!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
+> **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Panduan aktif mengikut skop fail ini. Fakta source/runtime dan ownership semasa dirujuk di atas; arahan atau baseline bertarikh lama memerlukan revalidation. Tiada acceptance aplikasi ditutup oleh alignment dokumentasi.
+<!-- ABANGCOLEK-CURRENT-STATUS:END -->
+
+Diselaraskan: **19 Oktober 2026**. [Blueprint v2.4](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md), [Source of Truth](../ABANGCOLEK-SOURCE-OF-TRUTH.md) dan [release](../production-release.md) membezakan local SQLite daripada cloud authoritative Supabase CAS. Runbook bukan current listener/provider/backup receipt; tiada drill dijalankan melalui kemas kini ini.
 
 Arahan pengguna 3 Oktober mengekalkan OSvar ialah historical local data decision. Jangan menukar root, overwrite data atau melancarkan writer kedua tanpa preflight. Paths/PIDs/row counts lama bukan live state. Rujuk prompt semasa dalam [index](../prompts/README.md).
 ## 1. Peta runtime dan sumber kebenaran

@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-10-20T04:04:59.513Z",
+  "scope": "manual_cli_handoff_prompt_and_progress_docs",
+  "status": "verified_local",
+  "environment": "documentation",
+  "files": [
+    "PROJECT-CHECKLIST.md",
+    "docs/prompts/CONTINUE-MULTI-CLI-20261020.md",
+    "docs/prompts/README.md",
+    "docs/handover/IMPLEMENTATION-CHECKPOINT.md",
+    "docs/prompts/ACCEPTANCE-REGISTER.md"
+  ],
+  "localLinksChecked": 58,
+  "missingTargets": [],
+  "coreCount": 78,
+  "coreClosed": 0,
+  "extensions": 7,
+  "extensionsClosed": 0,
+  "baselineTasksChecked": 4,
+  "integrationPromptMatchesCanonical": true,
+  "workerOutcomes": {
+    "agy": "source_changes_unverified_timeout",
+    "kilo": "proposal_only_tools_unavailable",
+    "hermes": "parked_by_user",
+    "copilot": "baseline_review_returned"
+  },
+  "applicationAcceptanceClosed": 0,
+  "commitOrPushPerformed": false
+}

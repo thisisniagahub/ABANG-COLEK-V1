@@ -1,0 +1,21 @@
+{
+  "requirementId": "SEC-01",
+  "status": "verified_local",
+  "environment": "local_test",
+  "timestamp": "2026-10-20T05:25:00Z",
+  "sourceCommit": "HEAD",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "testName": "Token, expiry, redaction and upload revocation",
+  "testPath": "tests/platform/upload-revocation.test.ts",
+  "command": "bun test ./tests/platform/upload-revocation.test.ts",
+  "exitCode": 0,
+  "result": "1 pass, 0 fail, 2 expect() calls",
+  "artifactRefs": [
+    "server/platform/app.ts",
+    "shared/upload-limits.ts"
+  ],
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "integrator",
+  "limitations": "Immediate fail closed on session revocation during upload stream."
+}
+

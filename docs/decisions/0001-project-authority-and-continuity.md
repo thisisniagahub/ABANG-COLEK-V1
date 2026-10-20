@@ -1,5 +1,9 @@
 # ADR-0001 — project authority dan continuity
 
+<!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
+> **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Panduan aktif mengikut skop fail ini. Fakta source/runtime dan ownership semasa dirujuk di atas; arahan atau baseline bertarikh lama memerlukan revalidation. Tiada acceptance aplikasi ditutup oleh alignment dokumentasi.
+<!-- ABANGCOLEK-CURRENT-STATUS:END -->
+
 > **Alignment 19 Oktober 2026:** Keputusan source PLATFORM dan pemisahan evidence kekal. Snapshot runtime/data/proses di bawah ialah sejarah 3–4 Oktober. [ADR-0003](0003-blueprint-v23-execution-contract.md) dan [master blueprint v2.3](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) mengatasi pilihan topology/provider yang bercanggah. Tiada data cutover dilakukan melalui dokumentasi ini. Arahan pelaksanaan semasa: [prompt utama](../prompts/IMPLEMENT-ABANGCOLEK.md).
 
 **Tarikh:** 2026-10-03. **Status:** ACCEPTED_DOCUMENTATION_WITH_LATER_AMENDMENTS; bukan runtime cutover/release receipt. **Rujukan:** [Source of Truth](../ABANGCOLEK-SOURCE-OF-TRUTH.md), [handover](../handover/AGENT-HANDOVER-A-Z.md), [historical backlog](../archive/legacy-oct2026/PROJECT-ALIGNMENT-BACKLOG.md).

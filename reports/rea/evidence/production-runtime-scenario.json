@@ -1,0 +1,25 @@
+{
+  "browser": {
+    "mode": "launch",
+    "executable_path": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+    "headless": true
+  },
+  "start_url": {"url": "https://abangcolek.gangniaga.my", "query": []},
+  "environment": {
+    "viewport": {"width": 1440, "height": 900, "device_scale_factor": 1},
+    "locale": "en-US",
+    "timezone": "Asia/Kuala_Lumpur",
+    "color_scheme": "light",
+    "reduced_motion": "no-preference",
+    "service_workers": "block"
+  },
+  "actions": [
+    {"step_id": "settle", "action": "wait_for_timeout", "duration_ms": 3000}
+  ],
+  "capture": {
+    "after_each_step": ["accessibility"],
+    "at_end": ["url", "accessibility"],
+    "events": ["network"],
+    "network": {"request_body": false, "response_body": false, "header_values": false}
+  }
+}

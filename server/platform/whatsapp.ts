@@ -1,4 +1,5 @@
-import type { FlowIntent } from '../../shared/platform-contracts';
+import type { FlowIntent, LocalStubMarker } from '../../shared/platform-contracts';
+import { localStubMarkerOf } from '../../shared/platform-contracts';
 import { Auth, hash, type Principal } from './auth';
 import type { PlatformStore } from './store';
 import { DomainError, fail, fields, id, list, now, object, oneOf, text } from './store';
@@ -13,7 +14,7 @@ export interface WhatsAppTransport {
     templateName: string,
     parameters: Record<string, string>,
     signal: AbortSignal,
-  ): Promise<{ messageId: string; status: 'accepted' | 'sent' | 'failed' | 'unknown'; reasonCode?: string }>;
+  ): Promise<{ messageId: string; status: 'accepted' | 'sent' | 'failed' | 'unknown'; reasonCode?: string } & Partial<LocalStubMarker>>;
   verifyWebhookSignature(signature: string, rawPayload: string): boolean;
 }
 
@@ -25,6 +26,13 @@ export interface WhatsAppMessageReceipt {
   status: 'requested' | 'accepted' | 'sent' | 'delivered' | 'failed' | 'unknown';
   providerMessageId?: string;
   reasonCode?: string;
+  /**
+   * Penanda stub tempatan: hadir HANYA jika mesej ini tidak pernah dihantar
+   * melalui Meta. Ketiadaan penanda bermakna transport sebenar digunakan.
+   */
+  transport?: LocalStubMarker['transport'];
+  delivered?: LocalStubMarker['delivered'];
+  externalEffect?: LocalStubMarker['externalEffect'];
   createdAt: string;
   updatedAt: string;
 }
@@ -202,7 +210,7 @@ export class WhatsAppService {
       return null;
     });
     if (claimed) return claimed;
-    let outcome: { messageId: string; status: 'accepted' | 'sent' | 'failed' | 'unknown'; reasonCode?: string };
+    let outcome: { messageId: string; status: 'accepted' | 'sent' | 'failed' | 'unknown'; reasonCode?: string } & Partial<LocalStubMarker>;
     let timer: ReturnType<typeof setTimeout> | undefined;
     try {
       auth.founder(auth.revalidate(actor));
@@ -226,6 +234,10 @@ export class WhatsAppService {
       reasonCode: outcome.reasonCode ?? 'SENT_OK',
       createdAt: now(),
       updatedAt: now(),
+      // Penanda stub tempatan dibawa terus ke resit supaya pengguna tidak
+      // tersalah anggap mesej ini dihantar oleh Meta. Transport sebenar tidak
+      // membawa penanda, jadi tiada penanda dicipta di sini.
+      ...localStubMarkerOf(outcome),
     };
 
     this.store.save('whatsapp_receipts', receipt);

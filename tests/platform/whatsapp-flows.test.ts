@@ -2,16 +2,123 @@ import { describe, expect, test } from 'bun:test';
 import { createHmac } from 'node:crypto';
 import { createPlatformApp } from '../../server/platform/app';
 import { createDefaultWhatsAppTransport, LocalWhatsAppTransport } from '../../server/automation/runtimeTransports';
-import { unlinkSync } from 'node:fs';
+import { existsSync, unlinkSync } from 'node:fs';
+import { Database } from 'bun:sqlite';
+
+/**
+ * Fixture lifecycle guard.
+ *
+ * Root cause of the historical spurious `409 ALREADY_BOOTSTRAPPED` in this
+ * suite: the old `cleanup()` swallowed `unlinkSync` failures. On Windows a
+ * SQLite database whose connection is still open cannot be unlinked (`EBUSY`),
+ * so the fixture database survived the cleanup WITH its `owner_bootstrapped`
+ * metadata row intact and the next bootstrap of the same path was rejected
+ * with 409 — a test-infrastructure defect that kept masquerading as a product
+ * failure in unrelated suites.
+ *
+ * The guard fixes it on three levels:
+ *   1. the platform app (and therefore the SQLite connection) is closed before
+ *      any file is removed;
+ *   2. removal is retried with a bounded backoff instead of swallowing the
+ *      error, and a SQLite sidecar is never orphaned from its main database;
+ *   3. if the database is still held open by another connection, the bootstrap
+ *      owner marker (and the owner identity) is cleared in place, so the next
+ *      bootstrap of that path can never return 409.
+ */
+type FixtureApp = { close(): void };
+
+const RUN_ID = `${process.pid}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+const SIDECAR_SUFFIXES = ['-wal', '-shm'] as const;
+const UNLINK_ATTEMPTS = 6;
+const UNLINK_BACKOFF_MS = 20;
+const UNLINK_MAX_BACKOFF_MS = 250;
+
+const fixtureApps = new Map<string, FixtureApp>();
+
+const sleepSync = (ms: number) => {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+};
+
+function registerFixtureApp(dbPath: string, app: FixtureApp) {
+  fixtureApps.set(dbPath, app);
+}
+
+function closeFixtureApp(dbPath: string) {
+  const app = fixtureApps.get(dbPath);
+  if (!app) return;
+  fixtureApps.delete(dbPath);
+  try { app.close(); } catch { /* the test already closed the connection */ }
+}
+
+/** Removes the given database files, retrying with a bounded backoff. Never swallows the error. */
+function removeFiles(dbPath: string, suffixes: readonly string[]): string[] {
+  const remaining: string[] = [];
+  for (const suffix of suffixes) {
+    const target = dbPath + suffix;
+    if (!existsSync(target)) continue;
+    let removed = false;
+    for (let attempt = 0; attempt < UNLINK_ATTEMPTS && !removed; attempt++) {
+      try { unlinkSync(target); removed = true; }
+      catch { sleepSync(Math.min(UNLINK_BACKOFF_MS * 2 ** attempt, UNLINK_MAX_BACKOFF_MS)); }
+    }
+    if (!removed && existsSync(target)) remaining.push(suffix);
+  }
+  return remaining;
+}
+
+/**
+ * Clears the bootstrap owner marker (and the owner identity) from a database
+ * that could not be deleted. Without this, a surviving fixture database turns
+ * the next bootstrap of the same path into a 409.
+ */
+function clearBootstrapMarker(dbPath: string): boolean {
+  if (!existsSync(dbPath)) return false;
+  let db: Database | undefined;
+  try {
+    db = new Database(dbPath, { create: false, strict: true });
+    db.run('PRAGMA busy_timeout=5000;');
+    const founders = db.query<{ id: string }, []>(
+      "SELECT u.id AS id FROM users u JOIN memberships m ON m.user_id=u.id WHERE m.role='founder'"
+    ).all();
+    for (const founder of founders) {
+      db.run('DELETE FROM sessions WHERE user_id=?', [founder.id]);
+      db.run('DELETE FROM memberships WHERE user_id=?', [founder.id]);
+      db.run('DELETE FROM users WHERE id=?', [founder.id]);
+    }
+    db.run('DELETE FROM metadata WHERE key=?', ['owner_bootstrapped']);
+    return true;
+  } catch {
+    // Another connection owns the file outright — the unique per-run path keeps
+    // the next run away from it, so the marker can never block a later bootstrap.
+    return false;
+  } finally {
+    try { db?.close(); } catch { /* already closed */ }
+  }
+}
 
 function cleanup(dbPath: string) {
-  for (const ext of ['', '-wal', '-shm']) {
-    try { unlinkSync(dbPath + ext); } catch { /* ignore */ }
+  closeFixtureApp(dbPath);
+  // Sidecars first: a surviving `-wal` without its main database can be replayed
+  // into a fresh database and resurrect the stale owner marker.
+  const lockedSidecars = removeFiles(dbPath, SIDECAR_SUFFIXES);
+  const lockedMain = lockedSidecars.length === 0
+    ? removeFiles(dbPath, [''])
+    : (existsSync(dbPath) ? [''] : []);
+  if (lockedSidecars.length > 0 || lockedMain.length > 0) {
+    // The database is still held open by another connection. Deleting the file
+    // alone is not enough: the surviving database still carries the
+    // `owner_bootstrapped` marker, so the next bootstrap of this path would be
+    // rejected with 409. Clear the marker in place instead.
+    clearBootstrapMarker(dbPath);
+    removeFiles(dbPath, SIDECAR_SUFFIXES);
+    removeFiles(dbPath, ['']);
   }
 }
 
 async function createTestContext(testId: string, withTransport = true) {
-  const testDb = `var/lib/qa/whatsapp-flows-${testId}.sqlite`;
+  // Path unik bagi setiap larian: larian lain yang serentak tidak boleh
+  // meminta fail SQLite yang sama.
+  const testDb = `var/lib/qa/whatsapp-flows-${RUN_ID}-${testId}.sqlite`;
   cleanup(testDb);
 
   const transport = withTransport ? createDefaultWhatsAppTransport() : undefined;
@@ -22,6 +129,8 @@ async function createTestContext(testId: string, withTransport = true) {
     origin: 'http://localhost:3000',
     whatsappTransport: transport,
   });
+  registerFixtureApp(testDb, app);
+
 
   // Bootstrap founder
   const bootRes = await app.fetch(new Request('http://localhost:3000/api/platform/auth/bootstrap', {
@@ -227,11 +336,31 @@ describe('E04: Native WhatsApp & Web-Guided Flows Parity', () => {
     }));
     expect(sendRes.status).toBe(200);
     const receipt = (await sendRes.json() as any).data;
-    expect(receipt.status).toBe('sent');
+    // The previous expectation ('sent') encoded a fabricated external effect: the
+    // local stub never contacted Meta, so no message was ever delivered.
+    // New invariant: the receipt states the honest non-delivery outcome and names
+    // the local stub explicitly (server/automation/runtimeTransports.ts:229-237).
+    expect(receipt.status).toBe('failed');
+    expect(receipt.reasonCode).toBe('LOCAL_STUB_NOT_DELIVERED');
+    // New invariant: the receipt must never claim any delivery channel state.
+    expect(['accepted', 'sent', 'delivered']).not.toContain(receipt.status);
     expect(receipt.maskedRecipient).toBe('+601*****789');
     expect(receipt.recipientHash).toBeDefined();
     // Raw phone number is NOT in the receipt
     expect(receipt.to).toBeUndefined();
+    // New invariant: the raw E.164 number must not leak anywhere in the receipt body.
+    expect(JSON.stringify(receipt)).not.toContain('+60123456789');
+    // New invariant: no provider message id is fabricated when nothing was sent.
+    expect(receipt.providerMessageId ?? '').toBe('');
+    // The unmistakable local-stub marker (transport/delivered/externalEffect) must
+    // reach the HTTP response so no consumer can mistake this receipt for a real
+    // Meta delivery.
+    // IMPLEMENTATION GAP: server/platform/whatsapp.ts:205 (outcome type) and
+    // :219-229 (receipt construction) drop the LocalStubMarker fields, so they
+    // never reach the response built at server/platform/app.ts:467.
+    expect(receipt.transport).toBe('local_stub');
+    expect(receipt.delivered).toBe(false);
+    expect(receipt.externalEffect).toBe('none');
 
     // 4. Idempotent replay returns same receipt
     const replayRes = await app.fetch(new Request('http://localhost:3000/api/platform/whatsapp/send', {
@@ -250,9 +379,34 @@ describe('E04: Native WhatsApp & Web-Guided Flows Parity', () => {
       }),
     }));
     expect(replayRes.status).toBe(200);
-    expect((await replayRes.json() as any).data.id).toBe(receipt.id);
+    const replayReceipt = (await replayRes.json() as any).data;
+    expect(replayReceipt.id).toBe(receipt.id);
+    // New invariant: the replay returns the IDENTICAL stored receipt, including the
+    // honest local-stub outcome — it is not a second send attempt.
+    expect(replayReceipt.status).toBe('failed');
+    expect(replayReceipt.reasonCode).toBe('LOCAL_STUB_NOT_DELIVERED');
+    expect(replayReceipt.providerMessageId ?? '').toBe('');
 
     cleanup(testDb);
+  });
+
+  test('local stub transport performs no external delivery and fabricates no provider message id', async () => {
+    const transport = new LocalWhatsAppTransport();
+    const outcome = await transport.sendTemplate(
+      '+60123456789',
+      'order_confirmation',
+      { orderId: 'ord-001' },
+      new AbortController().signal,
+    );
+
+    // The local stub must never claim a delivery and must never mint a provider
+    // message id, because no Meta API call is ever made.
+    expect(outcome.status).toBe('failed');
+    expect(outcome.reasonCode).toBe('LOCAL_STUB_NOT_DELIVERED');
+    expect(outcome.messageId).toBe('');
+    expect(outcome.transport).toBe('local_stub');
+    expect(outcome.delivered).toBe(false);
+    expect(outcome.externalEffect).toBe('none');
   });
 
   test('web-guided flows provide full parity for all 5 canonical business intents', async () => {

@@ -1,16 +1,123 @@
 import { describe, expect, test } from 'bun:test';
 import { createPlatformApp } from '../../server/platform/app';
 import { createDefaultAutomationOptions, LocalPostizTransport } from '../../server/automation/runtimeTransports';
-import { unlinkSync } from 'node:fs';
+import { existsSync, unlinkSync } from 'node:fs';
+import { Database } from 'bun:sqlite';
+
+/**
+ * Fixture lifecycle guard.
+ *
+ * Root cause of the historical spurious `409 ALREADY_BOOTSTRAPPED` in this
+ * suite: the old `cleanup()` swallowed `unlinkSync` failures. On Windows a
+ * SQLite database whose connection is still open cannot be unlinked (`EBUSY`),
+ * so the fixture database survived the cleanup WITH its `owner_bootstrapped`
+ * metadata row intact and the next bootstrap of the same path was rejected
+ * with 409 — a test-infrastructure defect that kept masquerading as a product
+ * failure in unrelated suites.
+ *
+ * The guard fixes it on three levels:
+ *   1. the platform app (and therefore the SQLite connection) is closed before
+ *      any file is removed;
+ *   2. removal is retried with a bounded backoff instead of swallowing the
+ *      error, and a SQLite sidecar is never orphaned from its main database;
+ *   3. if the database is still held open by another connection, the bootstrap
+ *      owner marker (and the owner identity) is cleared in place, so the next
+ *      bootstrap of that path can never return 409.
+ */
+type FixtureApp = { close(): void };
+
+const RUN_ID = `${process.pid}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+const SIDECAR_SUFFIXES = ['-wal', '-shm'] as const;
+const UNLINK_ATTEMPTS = 6;
+const UNLINK_BACKOFF_MS = 20;
+const UNLINK_MAX_BACKOFF_MS = 250;
+
+const fixtureApps = new Map<string, FixtureApp>();
+
+const sleepSync = (ms: number) => {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+};
+
+function registerFixtureApp(dbPath: string, app: FixtureApp) {
+  fixtureApps.set(dbPath, app);
+}
+
+function closeFixtureApp(dbPath: string) {
+  const app = fixtureApps.get(dbPath);
+  if (!app) return;
+  fixtureApps.delete(dbPath);
+  try { app.close(); } catch { /* the test already closed the connection */ }
+}
+
+/** Removes the given database files, retrying with a bounded backoff. Never swallows the error. */
+function removeFiles(dbPath: string, suffixes: readonly string[]): string[] {
+  const remaining: string[] = [];
+  for (const suffix of suffixes) {
+    const target = dbPath + suffix;
+    if (!existsSync(target)) continue;
+    let removed = false;
+    for (let attempt = 0; attempt < UNLINK_ATTEMPTS && !removed; attempt++) {
+      try { unlinkSync(target); removed = true; }
+      catch { sleepSync(Math.min(UNLINK_BACKOFF_MS * 2 ** attempt, UNLINK_MAX_BACKOFF_MS)); }
+    }
+    if (!removed && existsSync(target)) remaining.push(suffix);
+  }
+  return remaining;
+}
+
+/**
+ * Clears the bootstrap owner marker (and the owner identity) from a database
+ * that could not be deleted. Without this, a surviving fixture database turns
+ * the next bootstrap of the same path into a 409.
+ */
+function clearBootstrapMarker(dbPath: string): boolean {
+  if (!existsSync(dbPath)) return false;
+  let db: Database | undefined;
+  try {
+    db = new Database(dbPath, { create: false, strict: true });
+    db.run('PRAGMA busy_timeout=5000;');
+    const founders = db.query<{ id: string }, []>(
+      "SELECT u.id AS id FROM users u JOIN memberships m ON m.user_id=u.id WHERE m.role='founder'"
+    ).all();
+    for (const founder of founders) {
+      db.run('DELETE FROM sessions WHERE user_id=?', [founder.id]);
+      db.run('DELETE FROM memberships WHERE user_id=?', [founder.id]);
+      db.run('DELETE FROM users WHERE id=?', [founder.id]);
+    }
+    db.run('DELETE FROM metadata WHERE key=?', ['owner_bootstrapped']);
+    return true;
+  } catch {
+    // Another connection owns the file outright — the unique per-run path keeps
+    // the next run away from it, so the marker can never block a later bootstrap.
+    return false;
+  } finally {
+    try { db?.close(); } catch { /* already closed */ }
+  }
+}
 
 function cleanup(dbPath: string) {
-  for (const ext of ['', '-wal', '-shm']) {
-    try { unlinkSync(dbPath + ext); } catch { /* ignore */ }
+  closeFixtureApp(dbPath);
+  // Sidecars first: a surviving `-wal` without its main database can be replayed
+  // into a fresh database and resurrect the stale owner marker.
+  const lockedSidecars = removeFiles(dbPath, SIDECAR_SUFFIXES);
+  const lockedMain = lockedSidecars.length === 0
+    ? removeFiles(dbPath, [''])
+    : (existsSync(dbPath) ? [''] : []);
+  if (lockedSidecars.length > 0 || lockedMain.length > 0) {
+    // The database is still held open by another connection. Deleting the file
+    // alone is not enough: the surviving database still carries the
+    // `owner_bootstrapped` marker, so the next bootstrap of this path would be
+    // rejected with 409. Clear the marker in place instead.
+    clearBootstrapMarker(dbPath);
+    removeFiles(dbPath, SIDECAR_SUFFIXES);
+    removeFiles(dbPath, ['']);
   }
 }
 
 async function createTestContext(testId: string, withAutomation = true, customPostizTransport?: any) {
-  const testDb = `var/lib/qa/postiz-marketing-${testId}.sqlite`;
+  // Path unik bagi setiap larian: larian lain yang serentak tidak boleh
+  // meminta fail SQLite yang sama.
+  const testDb = `var/lib/qa/postiz-marketing-${RUN_ID}-${testId}.sqlite`;
   cleanup(testDb);
 
   const autoOptions = withAutomation ? createDefaultAutomationOptions() : undefined;
@@ -24,6 +131,7 @@ async function createTestContext(testId: string, withAutomation = true, customPo
     origin: 'http://localhost:3000',
     automationOptions: autoOptions,
   });
+  registerFixtureApp(testDb, app);
 
   // Bootstrap founder
   const bootRes = await app.fetch(new Request('http://localhost:3000/api/platform/auth/bootstrap', {
@@ -214,7 +322,7 @@ describe('E03: Postiz Social Marketing Adapter & Pilot Publishing', () => {
     cleanup(testDb);
   });
 
-  test('executes approved one-channel pilot publish, manual export separation, and idempotent replay', async () => {
+  test('executes approved one-channel pilot publish attempt without external publish, manual export separation, and replay identity', async () => {
     const { app, founderCookie, founderCsrf, testDb } = await createTestContext('pilot-success', true);
 
     // Create & approve campaign
@@ -272,7 +380,7 @@ describe('E03: Postiz Social Marketing Adapter & Pilot Publishing', () => {
     expect(exportData.status).toBe('exported');
     expect(exportData.content).toContain('Sambal colek kini rasmi');
 
-    // Publish pilot via Postiz
+    // Publish pilot via the local Postiz stub (no external publish ever occurs)
     const pubRes = await app.fetch(new Request(`http://localhost:3000/api/platform/campaigns/${campaign.id}/postiz-publish`, {
       method: 'POST',
       headers: {
@@ -290,11 +398,34 @@ describe('E03: Postiz Social Marketing Adapter & Pilot Publishing', () => {
     }));
     expect(pubRes.status).toBe(200);
     const pubData = (await pubRes.json() as any).data;
-    expect(pubData.status).toBe('published');
-    expect(pubData.providerRef).toMatch(/^postiz-/);
-    expect(pubData.reasonCode).toBe('POSTIZ_PUBLISHED');
+    // The previous expectations ('published' + a 'postiz-' providerRef + the
+    // 'POSTIZ_PUBLISHED' reason code) encoded a fabricated external effect: the
+    // local stub never published anything to Postiz.
+    // New invariant: the outcome stays 'unknown' and names the local stub explicitly
+    // (server/automation/runtimeTransports.ts:166-173).
+    expect(pubData.status).toBe('unknown');
+    expect(pubData.reasonCode).toBe('LOCAL_STUB_NO_EXTERNAL_PUBLISH');
+    // New invariant: the provider reference must be a local stub reference and never
+    // a fabricated external 'postiz-' id, and no external publish URL may be invented.
+    expect(pubData.providerRef).toMatch(/^local-stub-/);
+    expect(pubData.providerRef).not.toMatch(/^postiz-/);
+    expect(pubData.url).toBeUndefined();
+    // New invariant: no fabricated evidence is attached to an outcome that never happened.
+    expect(pubData.evidenceIds).toEqual([]);
+    // The unmistakable local-stub marker (transport/delivered/externalEffect) must
+    // reach the HTTP response so no consumer can mistake this for a real publish.
+    // IMPLEMENTATION GAP: server/automation/adapters.ts:87-93 rebuilds the outcome
+    // without the LocalStubMarker fields, so they never reach the response built at
+    // server/platform/app.ts:454.
+    expect(pubData.transport).toBe('local_stub');
+    expect(pubData.delivered).toBe(false);
+    expect(pubData.externalEffect).toBe('none');
 
-    // Idempotent replay with same key returns identical receipt
+    // Replaying the same idempotency key must NOT be served as a successful publish
+    // replay. The previous expectation (200 + the identical 'published' receipt)
+    // encoded a fabricated external effect.
+    // New invariant: an 'unknown' outcome is never auto-replayed; the platform
+    // refuses with RECONCILIATION_REQUIRED so no second publish can be triggered.
     const replayRes = await app.fetch(new Request(`http://localhost:3000/api/platform/campaigns/${campaign.id}/postiz-publish`, {
       method: 'POST',
       headers: {
@@ -310,12 +441,71 @@ describe('E03: Postiz Social Marketing Adapter & Pilot Publishing', () => {
         accountId: 'acct-abangcolek-my',
       }),
     }));
-    expect(replayRes.status).toBe(200);
-    const replayData = (await replayRes.json() as any).data;
-    expect(replayData.intentId).toBe(pubData.intentId);
-    expect(replayData.providerRef).toBe(pubData.providerRef);
+    expect(replayRes.status).toBe(409);
+    const replayBody = (await replayRes.json() as any);
+    expect(replayBody.code).toBe('RECONCILIATION_REQUIRED');
+    expect(replayBody.data).toBeUndefined();
+
+    // Identity contract: the same idempotency key still resolves to the SAME intent
+    // id and the SAME local provider reference — proven by reading the persisted
+    // intent back through reconcile instead of re-publishing.
+    const recRes = await app.fetch(new Request('http://localhost:3000/api/platform/automation/postiz/reconcile', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Origin': 'http://localhost:3000',
+        'Cookie': founderCookie,
+        'x-csrf-token': founderCsrf,
+      },
+      body: JSON.stringify({
+        intentId: pubData.intentId,
+        providerRef: pubData.providerRef,
+      }),
+    }));
+    expect(recRes.status).toBe(200);
+    const recData = (await recRes.json() as any).data;
+    expect(recData.intentId).toBe(pubData.intentId);
+    expect(recData.providerRef).toBe(pubData.providerRef);
+    // The local stub cannot confirm an external publish either.
+    expect(recData.status).toBe('unknown');
+    expect(recData.reasonCode).toBe('LOCAL_STUB_NO_EXTERNAL_RECONCILE');
 
     cleanup(testDb);
+  });
+
+  test('local Postiz stub transport performs no external publish and marks every outcome as a local stub', async () => {
+    const transport = new LocalPostizTransport();
+    const signal = new AbortController().signal;
+    const intent = {
+      id: 'intent-local-stub-001',
+      campaignId: 'campaign-12345678',
+      assetVersion: 2,
+      channel: 'local-pilot',
+      approvalId: 'user-founder',
+      approvalExpiresAt: new Date(Date.now() + 3600_000).toISOString(),
+      grantVersion: 1,
+      idempotencyKey: 'idem-local-stub-001',
+    };
+
+    const outcome = await transport.publish(intent, signal);
+    // The local stub must never report a published outcome and must never invent
+    // an external provider reference or URL.
+    expect(outcome.status).toBe('unknown');
+    expect(outcome.reasonCode).toBe('LOCAL_STUB_NO_EXTERNAL_PUBLISH');
+    expect(outcome.providerRef).toMatch(/^local-stub-/);
+    expect(outcome.providerRef).not.toMatch(/^postiz-/);
+    expect(outcome.url).toBeUndefined();
+    expect(outcome.transport).toBe('local_stub');
+    expect(outcome.delivered).toBe(false);
+    expect(outcome.externalEffect).toBe('none');
+
+    // Reconciliation is equally honest: the stub cannot confirm anything externally.
+    const reconciled = await transport.reconcile(outcome.providerRef, signal);
+    expect(reconciled.status).toBe('unknown');
+    expect(reconciled.reasonCode).toBe('LOCAL_STUB_NO_EXTERNAL_RECONCILE');
+    expect(reconciled.transport).toBe('local_stub');
+    expect(reconciled.delivered).toBe(false);
+    expect(reconciled.externalEffect).toBe('none');
   });
 
   test('reconciles unknown outcome and supports cancel flow', async () => {

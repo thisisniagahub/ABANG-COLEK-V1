@@ -1,12 +1,44 @@
 import { createHmac } from 'node:crypto';
 import type { AgentResult, CancelOutcome, PublishIntent, ReadOnlyAgentTask, ResearchRequest, UsageSnapshot } from '../../shared/platform-contracts';
 import { now } from '../platform/store';
+import type { PlatformStore } from '../platform/store';
 import type { AutomationOptions, PostizPublisherTransport, ReadOnlyHermesTransport, ReadOnlyResearchTransport, ResearchCollection } from './adapters';
 import type { WhatsAppTransport } from '../platform/whatsapp';
 import { publicSourceUrl } from './sourcePolicy';
 
+/**
+ * Reason codes bagi transport tempatan (stub). Setiap satu menyatakan secara
+ * eksplisit bahawa tiada kesan luaran berlaku.
+ */
+export const LOCAL_STUB_NO_EXTERNAL_EFFECT = 'LOCAL_STUB_NO_EXTERNAL_EFFECT';
+export const LOCAL_STUB_NOT_DELIVERED = 'LOCAL_STUB_NOT_DELIVERED';
+export const LOCAL_STUB_NO_EXTERNAL_PUBLISH = 'LOCAL_STUB_NO_EXTERNAL_PUBLISH';
+export const LOCAL_STUB_NO_EXTERNAL_RECONCILE = 'LOCAL_STUB_NO_EXTERNAL_RECONCILE';
+export const LOCAL_STUB_NO_EXTERNAL_CANCEL = 'LOCAL_STUB_NO_EXTERNAL_CANCEL';
+export const LOCAL_STUB_NO_PERSISTED_ARTIFACT = 'LOCAL_STUB_NO_PERSISTED_ARTIFACT';
+
+/**
+ * Penanda yang tidak boleh diabaikan oleh mana-mana pengguna hasil:
+ * `transport: 'local_stub'`, `delivered: false`, `externalEffect: 'none'`.
+ */
+export interface LocalStubMarker {
+  transport: 'local_stub';
+  delivered: false;
+  externalEffect: 'none';
+}
+
 export class LocalHermesTransport implements ReadOnlyHermesTransport {
   readonly zeroNewSpend = true as const;
+  private store?: PlatformStore;
+
+  constructor(store?: PlatformStore) {
+    this.store = store;
+  }
+
+  /** Platform menyambungkan store kanonikal supaya ringkasan benar-benar disimpan. */
+  attachStore(store: PlatformStore): void {
+    this.store = store;
+  }
 
   async run(task: ReadOnlyAgentTask, signal: AbortSignal): Promise<AgentResult> {
     if (signal.aborted) {
@@ -36,9 +68,28 @@ export class LocalHermesTransport implements ReadOnlyHermesTransport {
     // Harmless, grounded analysis on permitted source references
     const summary = `Hermes Analysis for Job ${task.jobId}: Processed ${task.sourceRefs.length} approved references under objective: "${task.objective.slice(0, 100)}".`;
 
+    // Ringkasan HANYA boleh dipaparkan sebagai artifak jika ia benar-benar
+    // disimpan. Tanpa store, tiada artifak dikclaimed.
+    if (!this.store) {
+      return {
+        status: 'partial',
+        artifactIds: [],
+        evidenceIds: [],
+        unknownReasons: [LOCAL_STUB_NO_PERSISTED_ARTIFACT],
+      };
+    }
+
+    const artifactId = `art-hermes-${task.jobId}`;
+    this.store.save('job_artifacts', {
+      id: artifactId,
+      jobId: task.jobId,
+      kind: 'hermes_local_summary',
+      content: summary,
+      createdAt: now(),
+    });
     return {
       status: 'completed',
-      artifactIds: [`art-hermes-${task.jobId}`],
+      artifactIds: [artifactId],
       evidenceIds: [],
       unknownReasons: [],
     };
@@ -88,6 +139,11 @@ export class LocalAgentReachTransport implements ReadOnlyResearchTransport {
   }
 }
 
+/**
+ * Transport penerbitan tempatan. Ia TIDAK menghubungi Postiz atau mana-mana
+ * saluran luaran: tiada penerbitan pernah berlaku, jadi ia tidak pernah
+ * melaporkan `published`.
+ */
 export class LocalPostizTransport implements PostizPublisherTransport {
   readonly zeroNewSpend = true as const;
   readonly channel = 'local-pilot' as const;
@@ -95,27 +151,41 @@ export class LocalPostizTransport implements PostizPublisherTransport {
   async publish(
     intent: PublishIntent,
     signal: AbortSignal,
-  ): Promise<{ providerRef: string; status: 'published' | 'blocked' | 'unknown'; url?: string; reasonCode?: string }> {
+  ): Promise<
+    {
+      providerRef: string;
+      status: 'published' | 'blocked' | 'unknown';
+      url?: string;
+      reasonCode?: string;
+    } & LocalStubMarker
+  > {
     if (signal.aborted) throw new Error('POSTIZ_ABORTED');
 
-    const providerRef = `postiz-${intent.campaignId.slice(0, 8)}-rev${intent.assetVersion}`;
+    // Rujukan tempatan sahaja — TIDAK ada URL luaran yang dipalsukan.
+    const providerRef = `local-stub-${intent.campaignId.slice(0, 8)}-rev${intent.assetVersion}`;
     return {
       providerRef,
-      status: 'published',
-      url: `https://postiz.local/posts/${providerRef}`,
-      reasonCode: 'POSTIZ_PUBLISHED',
+      status: 'unknown',
+      reasonCode: LOCAL_STUB_NO_EXTERNAL_PUBLISH,
+      transport: 'local_stub',
+      delivered: false,
+      externalEffect: 'none',
     };
   }
 
   async reconcile(
     providerRef: string,
     signal: AbortSignal,
-  ): Promise<{ status: 'published' | 'blocked' | 'unknown'; url?: string; reasonCode?: string }> {
+  ): Promise<
+    { status: 'published' | 'blocked' | 'unknown'; url?: string; reasonCode?: string } & LocalStubMarker
+  > {
     if (signal.aborted) throw new Error('POSTIZ_ABORTED');
     return {
-      status: 'published',
-      url: `https://postiz.local/posts/${providerRef}`,
-      reasonCode: 'RECONCILED',
+      status: 'unknown',
+      reasonCode: LOCAL_STUB_NO_EXTERNAL_RECONCILE,
+      transport: 'local_stub',
+      delivered: false,
+      externalEffect: 'none',
     };
   }
 
@@ -124,14 +194,20 @@ export class LocalPostizTransport implements PostizPublisherTransport {
     signal: AbortSignal,
   ): Promise<CancelOutcome> {
     if (signal.aborted) throw new Error('POSTIZ_ABORTED');
+    // Tiada penerbitan luaran existed, jadi tiada pembatalan luaran berlaku.
     return {
       providerRef,
-      status: 'cancelled',
+      status: 'unknown',
       evidenceIds: [],
     };
   }
 }
 
+/**
+ * Transport WhatsApp tempatan. Ia tidak menghubungi Meta: tiada mesej pernah
+ * dihantar, jadi ia tidak pernah melaporkan `sent` dan tidak memalsukan ID
+ * mesej provider.
+ */
 export class LocalWhatsAppTransport implements WhatsAppTransport {
   readonly zeroNewSpend = true as const;
   readonly phoneNumberId = 'local-phone-60123456789';
@@ -142,13 +218,22 @@ export class LocalWhatsAppTransport implements WhatsAppTransport {
     templateName: string,
     parameters: Record<string, string>,
     signal: AbortSignal,
-  ): Promise<{ messageId: string; status: 'accepted' | 'sent' | 'failed' | 'unknown'; reasonCode?: string }> {
+  ): Promise<
+    {
+      messageId: string;
+      status: 'accepted' | 'sent' | 'failed' | 'unknown';
+      reasonCode?: string;
+    } & LocalStubMarker
+  > {
     if (signal.aborted) throw new Error('WHATSAPP_ABORTED');
-    const messageId = `wamid.HBgL${Date.now()}AB12CD`;
     return {
-      messageId,
-      status: 'sent',
-      reasonCode: 'SENT_OK',
+      // Tiada ID mesej provider wujud kerana tiada mesej dihantar.
+      messageId: '',
+      status: 'failed',
+      reasonCode: LOCAL_STUB_NOT_DELIVERED,
+      transport: 'local_stub',
+      delivered: false,
+      externalEffect: 'none',
     };
   }
 
@@ -162,14 +247,15 @@ export function createDefaultWhatsAppTransport(): WhatsAppTransport {
   return new LocalWhatsAppTransport();
 }
 
-export function createDefaultAutomationOptions(): AutomationOptions {
+export function createDefaultAutomationOptions(store?: PlatformStore): AutomationOptions {
   return {
-    hermes: new LocalHermesTransport(),
+    hermes: new LocalHermesTransport(store),
     agentReach: new LocalAgentReachTransport(),
     postiz: new LocalPostizTransport(),
     externalUsage: (): UsageSnapshot => ({
       providerId: 'agent_reach',
-      observedUnits: 1,
+      // Local stub: no external unit was ever consumed by this transport.
+      observedUnits: 0,
       limitUnits: 100,
       available: true,
       observedAt: now(),

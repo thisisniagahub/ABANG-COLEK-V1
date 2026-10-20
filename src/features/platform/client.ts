@@ -64,6 +64,39 @@ export async function apiPage<T>(path: string, options: RequestInit = {}): Promi
 }
 
 export async function api<T>(path:string,options:RequestInit={}) {return (await apiPage<T>(path,options)).data;}
+
+/**
+ * Reads a same-origin JSON document that is served OUTSIDE the platform
+ * envelope (`/api/platform/*`).
+ *
+ * The official CopilotKit runtime descriptor (`GET /api/copilotkit/descriptor`)
+ * is served RAW by `api/copilotkit.ts`: it carries no `{ ok, data }` wrapper.
+ * It therefore must NOT be read through `apiPage()`, which (a) prefixes every
+ * path with `/api/platform` and (b) rejects any body without a boolean `ok`.
+ *
+ * The caller stays responsible for validating the shape. A failed request, a
+ * non-JSON body, or a non-2xx status raises a `PlatformError` so the caller
+ * can fail closed instead of guessing.
+ */
+export async function apiRawJson(path:string,options:RequestInit={}):Promise<unknown>{
+  if(!path.startsWith('/')||path.startsWith('//')||path.includes('://'))throw new PlatformError('INVALID_PATH','Laluan request tidak sah.');
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),15_000);
+  const onAbort=()=>controller.abort();
+  options.signal?.addEventListener('abort',onAbort,{once:true});
+  if(options.signal?.aborted)controller.abort();
+  try{
+    const response=await fetch(path,{...options,method:options.method?.toUpperCase()??'GET',headers:new Headers(options.headers),credentials:'same-origin',cache:'no-store',signal:controller.signal});
+    if(!response.ok)throw new PlatformError('HTTP_ERROR','Server menolak request.');
+    const body=await response.json().catch(()=>null);
+    if(body===null||body===undefined)throw new PlatformError('INVALID_RESPONSE','Server tidak memberikan descriptor yang sah.');
+    return body;
+  }catch(error){
+    if(error instanceof PlatformError)throw error;
+    if(error instanceof Error&&error.name==='AbortError')throw new PlatformError('TIMEOUT','Request terganggu. Semak status runtime.');
+    throw new PlatformError('UNAVAILABLE','Server tidak dapat dicapai.');
+  }finally{clearTimeout(timeout);options.signal?.removeEventListener('abort',onAbort);}
+}
 export function pagePath(path:string,offset:number){
   const [pathname,query='']=path.split('?');const params=new URLSearchParams(query);params.set('offset',String(offset));
   return `${pathname}?${params}`;

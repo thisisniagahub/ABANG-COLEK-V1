@@ -1,5 +1,9 @@
 # ABANGCOLEK — Free-Only Model Policy dan Calon Penilaian
 
+<!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
+> **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Rekod historical; pemerhatian, angka ujian, tick dan executor dalam badan asal merujuk sesi asal sahaja. Arahan launch/delegation lama tidak aktif. Status semasa dan bukti release ditentukan oleh rujukan di atas; kandungan asal dipelihara untuk provenance.
+<!-- ABANGCOLEK-CURRENT-STATUS:END -->
+
 Tarikh semakan: 19 Oktober 2026. Status: Research dan polisi sasaran; tiada akaun/key diuji, model benchmark dijalankan atau router source diubah.
 
 Research ini tidak memilih pemenang. Urutan candidate untuk pelaksanaan telah ditetapkan oleh [ADR-0003](../decisions/0003-blueprint-v23-execution-contract.md); [prompt utama](../prompts/IMPLEMENT-ABANGCOLEK.md) melarang pertukaran calon/paid fallback secara autonomi. Semua hard gates di bawah tetap mengatasi activation.
@@ -14,7 +18,7 @@ Label zero inference fee berbeza daripada kos hardware, elektrik, internet, host
 
 | Provider | Sumber | Polisi penggunaan |
 |---|---|---|
-| Google Gemini | [Pricing](https://ai.google.dev/gemini-api/docs/pricing) | Pilih hanya model/tier yang menyatakan free dan disahkan pada akaun; semak data-use terms, bukan nama Flash sahaja |
+| Google Gemini | [Pricing](https://ai.google.dev/gemini-api/docs/pricing) | Semak hanya dua candidate Gemini ADR semasa dan free/account/data-use terms; jangan memilih model/tier tambahan kerana nama Flash |
 | OpenRouter | [Free variants](https://openrouter.ai/docs/guides/routing/model-variants/free), [catalog](https://openrouter.ai/api/v1/models), [limits](https://openrouter.ai/docs/api/reference/limits) | Exact catalog ID `:free`, pricing semua komponen yang digunakan sifar, tools support; quota/availability tetap terhad |
 | Groq | [Limits](https://console.groq.com/docs/rate-limits), [tool use](https://console.groq.com/docs/tool-use) | Verify free-plan account/model dan tool compatibility; tiada upgrade untuk failover |
 | OpenCode | [Model IDs, endpoints dan pricing](https://opencode.ai/v2/docs/console/models/) | Hanya exact free IDs; promosi boleh tamat. Semak endpoint/auth/terms; jangan guna endpoint/model lama dalam source tanpa verification |
@@ -41,7 +45,7 @@ Katalog OpenRouter diperiksa melalui public GET tanpa credentials: 16 entries `:
 1. Hard gate: kos sifar bagi semua komponen request, terms/account/environment sesuai, data handling dibenarkan, model tersedia, required tool/schema support dan adapter lulus.
 2. Benchmark sintetik ABANGCOLEK: sekurang-kurangnya 60 kes BM/English merangkumi chat grounded, tool choice/args, refusal/scoping, missing-data, multi-step dan timeout/retry. Human review menggunakan rubric sama; siapkan expected tool/result sebelum melihat model output.
 3. Lepasi gate: tiada unauthorized action dalam suite, tiada financial claim tanpa source, semua tool args lulus schema pada kes yang diwajibkan. Kegagalan safety tidak boleh diimbangi skor latency.
-4. Bandingkan grounded task success, BM clarity, p95 latency dan tokens/calls. Pilih primary/fallback per task daripada calon layak; tiada gelaran terbaik keseluruhan tanpa ukuran.
+4. Bandingkan grounded task success, BM clarity, p95 latency dan tokens/calls. Untuk pelaksanaan blueprint semasa, primary/fallback tetap mengikut turutan ADR-0003; benchmark boleh menolak/disable calon yang gagal, tetapi agent tidak menyusun semula calon atau menambah provider secara autonomi. Ranking lain ialah cadangan review sahaja; tiada gelaran terbaik keseluruhan tanpa ukuran.
 5. Jadual ranking menyimpan model/provider/endpoint, versi adapter, terms/pricing verification time, account tier, test set hash, keputusan dan reviewer. Synthetic eval hanya melalui candidate yang telah dibenarkan dan percuma; hasil belum ada sekarang.
 
 ## Router enforcement sasaran
@@ -53,7 +57,7 @@ Katalog OpenRouter diperiksa melalui public GET tanpa credentials: 16 entries `:
 - Semua request mempunyai max tokens, deadline dan run budget bersama parent/subagents. Adaptive routing tidak mengulang side effects.
 - Simpan observed provider/model/usage tanpa secrets. Tiada silent title, eval, memory, vision atau TTS request ke model berbayar.
 - Unknown usage/cost bukan bukti RM0. Audit harga/policy dan receipt diperlukan sebelum melaporkan kos sifar yang diperhatikan.
-- Data sensitif diprojek/redact sebelum external inference. Jika terms free tier tidak sesuai untuk data itu, pilih local qualified model atau unavailable; jangan tukar paid untuk menyelesaikan privacy.
+- Data sensitif diprojek/redact sebelum external inference. Jika terms free tier tidak sesuai untuk data itu, hasil menjadi unavailable bagi data class tersebut; local LLM bukan fallback terpilih dalam ADR semasa. Jangan menambah model local atau paid untuk menyelesaikan privacy tanpa ADR baharu dan authorization yang sah.
 
 ## Acceptance
 

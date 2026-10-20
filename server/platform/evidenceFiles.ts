@@ -3,10 +3,23 @@ import { mkdirSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import type { EvidenceRecord } from '../../shared/platform-contracts';
 import type { CampaignRecord, ExportArtifact } from '../../shared/platform-contracts';
+import type { AttachmentReference } from '../../shared/founder-intelligence-contracts';
 import { hash, opaque, type Principal } from './auth';
 import { fail, id, integer, now, oneOf, PlatformStore, text } from './store';
 import { Work } from './work';
 import { buildAssetBundle } from './assetBundle';
+
+/** The record kind that stores attachment revocations. */
+const REVOCATION_KIND = 'evidence_revocations';
+
+export interface EvidenceRevocation {
+  /** The record id inside the platform store. */
+  id: string;
+  evidenceId: string;
+  revokedAt: string;
+  revokedBy: string;
+  reason: string;
+}
 
 export interface EvidenceStorage {
   write(id:string,bytes:Uint8Array,mimeType:string):Promise<void>;
@@ -63,5 +76,79 @@ export class EvidenceFiles {
     try{this.store.atomic(()=>{this.work.linkEvidence(record);this.store.audit(actor.user.id,'evidence.upload',record.id);});}catch(error){if(!this.storage)unlinkSync(path);throw error;}return record;
   }
   async download(actor:Principal,evidenceId:string,url:URL){const record=this.store.require<EvidenceRecord>('evidence',evidenceId);this.work.entity(actor,record.entityId);const expires=Number(url.searchParams.get('expires')),signature=url.searchParams.get('signature');if(!Number.isSafeInteger(expires)||expires<=Date.now()||expires>Date.now()+5*60_000||!signature||hash(signature)!==hash(this.signature(evidenceId,actor,expires)))fail('DOWNLOAD_GRANT_INVALID',403);if(record.kind!=='file'||record.storageRef!==record.id)fail('FILE_UNAVAILABLE',404);const bytes=await this.bytes(record);actor=this.work.auth.revalidate(actor);this.work.entity(actor,record.entityId);return new Response(bytes as BodyInit,{headers:{'Content-Type':record.mimeType,'Content-Disposition':`attachment; filename*=UTF-8''${encodeURIComponent(record.name)}`,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Content-Security-Policy':"default-src 'none'; sandbox",'Referrer-Policy':'no-referrer'}});}
+
+  /* ----------------------------------------------------------------------- *
+   * EXT-07 — attachment references.
+   *
+   * An uploaded evidence file may be referenced by a copilot/agent request.
+   * The reference carries the file hash, the permission state and the
+   * revocation state. A revoked attachment is never referenceable.
+   *
+   * This surface does NOT change the upload security behaviour: uploads keep
+   * their size / MIME / signature / CSRF / authority checks exactly as they
+   * were, and no vision inference is performed here.
+   *
+   * INTEGRATION REQUIRED IN `server/platform/app.ts` (Writer E's file — NOT
+   * edited here). In the `/copilot/chat` handler (near
+   * `server/platform/app.ts:473-485`) accept the attachment ids and turn
+   * them into references before the run starts:
+   *     const attachmentIds = Array.isArray(b.attachmentIds) ? b.attachmentIds.filter((value) => typeof value === 'string') : [];
+   *     const attachments = attachmentIds.length ? evidenceFiles.attachmentReferences(actor, attachmentIds) : [];
+   * A revoked attachment fails the request with 409 `ATTACHMENT_REVOKED`; a
+   * reference the actor may not use fails with 403
+   * `ATTACHMENT_PERMISSION_DENIED`. The references (hash + permission +
+   * revocation + the explicit `vision.available === false` disclosure) are
+   * then handed to the agent request.
+   * ----------------------------------------------------------------------- */
+
+  /** The revocation record of an attachment, when it was revoked. */
+  revocation(evidenceId:string):EvidenceRevocation|null{return this.store.get<EvidenceRevocation>(REVOCATION_KIND,evidenceId);}
+
+  /**
+   * Revokes an attachment. Only the founder or the owner of the file may
+   * revoke it. The revocation is recorded and audited.
+   */
+  revokeAttachment(actor:Principal,evidenceId:string,reason:string):EvidenceRevocation{
+    const record=this.store.require<EvidenceRecord>('evidence',evidenceId);
+    const existing=this.revocation(evidenceId);if(existing)return existing;
+    if(!this.work.auth.has(actor,'founder')&&record.ownerId!==actor.user.id)fail('FORBIDDEN',403,'Hanya pengasas atau pemilik fail boleh menarik balik lampiran.');
+    this.work.entity(actor,record.entityId);
+    const revocation:EvidenceRevocation={id:evidenceId,evidenceId,revokedAt:now(),revokedBy:actor.user.id,reason:text(reason,'Sebab',500)};
+    this.store.atomic(()=>{this.store.save(REVOCATION_KIND,revocation);this.store.audit(actor.user.id,'evidence.revoke',evidenceId);});
+    return revocation;
+  }
+
+  /**
+   * Builds the attachment reference of one evidence file. The reference
+   * states the hash, the permission state and the revocation state. It does
+   * NOT read the file bytes and does NOT run any inference.
+   */
+  attachmentReference(actor:Principal,evidenceId:string):AttachmentReference{
+    const record=this.store.require<EvidenceRecord>('evidence',evidenceId);
+    const revocation=this.revocation(evidenceId);
+    let permitted=true;let refusalCode:string|undefined;
+    try{this.work.entity(actor,record.entityId);}catch{permitted=false;refusalCode='ATTACHMENT_PERMISSION_DENIED';}
+    const revoked=Boolean(revocation);
+    if(revoked)refusalCode='ATTACHMENT_REVOKED';
+    return {
+      evidenceId:record.id,entityId:record.entityId,name:record.name,mimeType:record.mimeType,size:record.size,
+      sha256:record.sha256??'',visibility:record.visibility,permitted:permitted&&!revoked,revoked,
+      ...(refusalCode?{refusalCode}:{}),
+      vision:{available:false,reasonCode:'QUALIFIED_VISION_MODEL_REQUIRED',reason:'Muat naik fail bukan bukti vision; inferensi memerlukan model layak dan skop data yang diluluskan.'},
+    };
+  }
+
+  /**
+   * Builds the attachment references of an agent request. A revoked
+   * attachment fails the whole reference set: it is never quietly dropped.
+   */
+  attachmentReferences(actor:Principal,evidenceIds:string[]):AttachmentReference[]{
+    const references=evidenceIds.map(evidenceId=>this.attachmentReference(actor,evidenceId));
+    const revoked=references.find(reference=>reference.revoked);
+    if(revoked)fail('ATTACHMENT_REVOKED',409,`Lampiran '${revoked.evidenceId}' telah ditarik balik dan tidak boleh dirujuk.`);
+    const denied=references.find(reference=>!reference.permitted);
+    if(denied)fail('ATTACHMENT_PERMISSION_DENIED',403,`Lampiran '${denied.evidenceId}' di luar akses anda.`);
+    return references;
+  }
 }
 function hashBytes(bytes:Uint8Array){return new Bun.CryptoHasher('sha256').update(bytes).digest('hex');}

@@ -1,3 +1,8 @@
+
+<!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
+> **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Rekod historical; pemerhatian, angka ujian, tick dan executor dalam badan asal merujuk sesi asal sahaja. Arahan launch/delegation lama tidak aktif. Status semasa dan bukti release ditentukan oleh rujukan di atas; kandungan asal dipelihara untuk provenance.
+<!-- ABANGCOLEK-CURRENT-STATUS:END -->
+
 <!-- blueprint-alignment: 2026-10-19 -->
 > **Penyelarasan autoriti — 19 Oktober 2026.** MATRIKS KEPUTUSAN SEJARAH — label APPROVED/ADOPTED dan topologi local-only di bawah ialah keputusan asal 4 Oktober, bukan authority deployment semasa atau bukti provider aktif. Blueprint mengatasi andaian local-only; runtime tempatan dan cloud CAS dibezakan. Hermes/Postiz/native JEV memerlukan bukti integrasi tersendiri.
 >

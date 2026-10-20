@@ -5,6 +5,7 @@ import { formatWhatsAppUrl } from '../../../shared/growth-contracts';
 import { useResource } from '../platform/client';
 import { money } from '../workspaces/experience-model';
 import ScrollWorldHero from './ScrollWorldHero';
+import GengColekShare from './GengColekShare';
 import BrandLogo from '../brand/BrandLogo';
 import './landing.css';
 
@@ -130,7 +131,7 @@ export default function LandingPage({ onNavigate,view='home',productId,theme='da
         <p>Produk akan dipaparkan selepas nama, harga dan stok disahkan. Semak kembali atau masuk untuk mengurus pesanan anda.</p>
         <button className="ac-button ac-button-dark" onClick={() => onNavigate('/customer/orders')}>Pesanan saya <ArrowRight size={17} />
         </button>
-      </div>}</section>}{view==='home'&&<section className="ac-how">
+      </div>}<GengColekShare products={visibleProducts} /></section>}{view==='home'&&<section className="ac-how">
         <div className="ac-section-heading">
           <div>
             <p className="ac-eyebrow">How it works</p>

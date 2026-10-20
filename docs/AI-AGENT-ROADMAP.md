@@ -1,6 +1,10 @@
 # ABANGCOLEK — Operations Copilot roadmap
 
-Diselaraskan: **19 Oktober 2026**. Status: **PLANNED**. [Blueprint v2.3](ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md), [architecture](AI-AGENT-ARCHITECTURE.md), [pelan terperinci](superpowers/plans/2026-10-19-copilotkit-ten-features.md) dan [prompts](prompts/README.md) menentukan urutan. Tidak ada checkbox lulus melalui kemas kini Markdown ini.
+<!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
+> **Alignment20Oktober2026:** [Status semasa](CURRENT-STATUS.md) · [Checklist](../PROJECT-CHECKLIST.md). Kontrak sasaran kekal di bawah blueprint v2.4; scope reka bentuk dan keputusan tetap bukan bukti semua fungsi telah diimplementasi. Semak status per-ID dan environment sebelum mendakwa siap atau production-ready.
+<!-- ABANGCOLEK-CURRENT-STATUS:END -->
+
+Diselaraskan: **19 Oktober 2026**. Status: **PLANNED**. [Blueprint v2.4](ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md), [architecture](AI-AGENT-ARCHITECTURE.md), [pelan terperinci](superpowers/plans/2026-10-19-copilotkit-ten-features.md) dan [prompts](prompts/README.md) menentukan urutan. Tidak ada checkbox lulus melalui kemas kini Markdown ini.
 
 ## 0. Baseline dan safety
 

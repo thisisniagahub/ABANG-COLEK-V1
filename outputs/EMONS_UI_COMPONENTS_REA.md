@@ -1,3 +1,8 @@
+
+<!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
+> **Alignment20Oktober2026:** [Status semasa](../docs/CURRENT-STATUS.md) · [Checklist](../PROJECT-CHECKLIST.md). Rekod historical/research/proposal; dapatan, copy, angka, approvals dan kebolehsediaan dalam badan asal bukan pengesahan status semasa. Keputusan blueprint v2.4 dan receipt semasa mengatasi cadangan lama; tiada kelulusan founder atau penghantaran proposal dianggap berlaku.
+<!-- ABANGCOLEK-CURRENT-STATUS:END -->
+
 <!-- blueprint-alignment: 2026-10-19 -->
 > **Penyelarasan autoriti — 19 Oktober 2026.** REKOD SEJARAH / RUJUKAN — pemerhatian, metrik ujian, status deployment, harga/model dan cadangan di bawah terikat kepada tarikh serta skop asal. Ia bukan checklist execution semasa atau pengesahan bahawa dapatan masih benar. Kekalkan bukti asal; revalidate sebelum mendakwa fixed, connected atau production-ready.
 >
@@ -15,7 +20,7 @@
 | Operasi | Keputusan | Evidence ID |
 |---|---|---|
 | `inspect-web-page` — DOM, accessibility tree dan bentuk body JSON | Berjaya, exit code 0; 3,215 nod DOM dan 2,010 nod accessibility | `ev_a1ac59d7fc71f4a7261a083f2906e88a193f565e62b5c8022ebd783cbcbbf43` |
-| `analyze-web-bundle` — analisis statik skrip halaman | Berjaya, exit code 0; 13 skrip dikumpulkan | `ev_309eccb376f00b3b7fe3d94f1e6df3e2aa2e4370e7095385493b015e47362e6` |
+| `analyze-web-bundle` — analisis statik skrip halaman | Berjaya, exit code 0; 13 skrip dikumpulkan | `ev_309eccb376f00b3b7fe3d94f1e6df3e2aa2e4370e7095385493b015e473623e6` |
 | Scenario browser — identiti tab berita dan lima pautan hero | Berjaya; lima pautan diaktifkan berasingan; section sepadan diperiksa selepas setiap activation | `ev_ff197f0993486c23e036d211982b240cdd47735794208820a4a26314022991a7` |
 
 Pemeriksaan dihadkan kepada origin `https://www.emons.de`. JSON Evidence penuh disimpan dalam folder kerja REA:

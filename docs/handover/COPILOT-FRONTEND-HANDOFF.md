@@ -1,5 +1,9 @@
 # DOKUMEN SERAHAN RASMI GITHUB COPILOT (FRONTEND HANDOFF v2.3 - REVISION 4)
 
+<!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
+> **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Rekod historical; pemerhatian, angka ujian, tick dan executor dalam badan asal merujuk sesi asal sahaja. Arahan launch/delegation lama tidak aktif. Status semasa dan bukti release ditentukan oleh rujukan di atas; kandungan asal dipelihara untuk provenance.
+<!-- ABANGCOLEK-CURRENT-STATUS:END -->
+
 > **Tarikh**: 19 Oktober 2026  
 > **Integrator & Pengeluar**: AGY Backend Owner & A2UI Contracts Specialist  
 > **Penerima**: GitHub Copilot (Frontend Owner)  

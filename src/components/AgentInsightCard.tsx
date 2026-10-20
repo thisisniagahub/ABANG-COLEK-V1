@@ -29,9 +29,9 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { 
-  supabaseAgentPerformance, 
-  AgentTaskLog 
+import {
+  supabaseAgentPerformance,
+  AgentPerformanceEvent
 } from '@/services/supabaseAgentPerformance';
 
 export interface AgentInsightCardProps {
@@ -45,11 +45,10 @@ export const AgentInsightCard: React.FC<AgentInsightCardProps> = ({
   onViewFullPerformance,
   onAction
 }) => {
-  const [logs, setLogs] = useState<AgentTaskLog[]>([]);
+  const [logs, setLogs] = useState<AgentPerformanceEvent[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isSimulating, setIsSimulating] = useState(false);
   const [realtimeConnected, setRealtimeConnected] = useState(true);
-  const [lastInsertedTask, setLastInsertedTask] = useState<AgentTaskLog | null>(null);
+  const [lastInsertedTask, setLastInsertedTask] = useState<AgentPerformanceEvent | null>(null);
 
   useEffect(() => {
     // Initial load
@@ -99,32 +98,6 @@ export const AgentInsightCard: React.FC<AgentInsightCardProps> = ({
       time: new Date(l.timestamp).toLocaleTimeString('ms-MY', { hour: '2-digit', minute: '2-digit' })
     }));
   }, [logs]);
-
-  // Quick simulate ping
-  const handleQuickPing = async () => {
-    setIsSimulating(true);
-    const candidateTools = [
-      { name: 'bus_freight_dispatch_create', cat: 'Logistik & Bas' as const },
-      { name: 'redbus_bus_freight_schedule', cat: 'Logistik & Bas' as const },
-      { name: 'create_google_sheet', cat: 'Google Workspace' as const },
-      { name: 'supabase_query_db', cat: 'Gedung Plugins' as const }
-    ];
-    const picked = candidateTools[Math.floor(Math.random() * candidateTools.length)];
-    const latency = Math.floor(130 + Math.random() * 220);
-
-    await supabaseAgentPerformance.recordTaskExecution({
-      task_id: `TSK-LIVE-${Math.floor(1000 + Math.random() * 9000)}`,
-      tool_name: picked.name,
-      tool_category: picked.cat,
-      latency_ms: latency,
-      status: 'SUCCESS',
-      tokens_used: Math.floor(220 + Math.random() * 300),
-      user_query: `Ujian kependaman pantas melalui AgentInsightCard (${picked.name})`,
-      model: 'gemini-3.8-flash'
-    });
-
-    setIsSimulating(false);
-  };
 
   const recentTasks = logs.slice(0, 4);
 
@@ -180,15 +153,6 @@ export const AgentInsightCard: React.FC<AgentInsightCardProps> = ({
           </div>
 
           <div className="flex items-center gap-1.5">
-            <button
-              onClick={handleQuickPing}
-              disabled={isSimulating}
-              className="p-1.5 rounded-xl bg-[var(--ui-soft)] [@media(hover:hover)_and_(pointer:fine)]:hover:brightness-95 text-[var(--ui-text)] text-xs font-semibold transition-all cursor-pointer"
-              title="Jana tugasan ujian pantas untuk melihat kemas kini masa nyata"
-            >
-              <Play size={13} className={cn(isSimulating && "animate-spin text-[var(--ui-text)]")} />
-            </button>
-
             {onViewFullPerformance && (
               <button
                 onClick={onViewFullPerformance}
@@ -295,6 +259,12 @@ export const AgentInsightCard: React.FC<AgentInsightCardProps> = ({
         </div>
 
         <div className="divide-y divide-[var(--ui-border)]">
+          {recentTasks.length === 0 && (
+            <p className="py-3 text-[11px] text-[var(--ui-muted)]">
+              Belum ada telemetri sebenar dikumpulkan. Hanya kategori permukaan, nama alat, hasil dan tempoh
+              direkodkan — tiada prompt, tiada token, tiada ID rekod.
+            </p>
+          )}
           {recentTasks.map((t) => (
             <div key={t.id} className="py-2 flex items-center justify-between gap-2 text-xs">
               <div className="flex items-center gap-2 truncate">

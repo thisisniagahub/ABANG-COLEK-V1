@@ -1,0 +1,107 @@
+{
+  "timestamp": "2026-10-19T20:59:50.730Z",
+  "scope": "documentation_only",
+  "markdownFiles": 21,
+  "markdownLines": 2676,
+  "localLinks": 120,
+  "localAnchors": 9,
+  "coreRequirements": 78,
+  "coreUnique": 78,
+  "extensionRequirements": 7,
+  "extensionUnique": 7,
+  "errors": [],
+  "applicationTestsRun": false,
+  "dependenciesInstalled": false,
+  "inferenceCalled": false,
+  "databaseModified": false,
+  "gitPushPerformed": false,
+  "files": [
+    {
+      "path": "docs/ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md",
+      "sha256": "1be5cdd7714e0d1cff98bfea76347256057891c0a2a4638a0d737b6f78f67a77"
+    },
+    {
+      "path": "docs/decisions/0003-blueprint-v23-execution-contract.md",
+      "sha256": "969363a59118466d83504b9e553e5070d41faf0eaa889cdf2df6cd5b919a60ef"
+    },
+    {
+      "path": "docs/research/2026-10-19-free-model-policy.md",
+      "sha256": "5ff74d7cc36deffdcb2a8185a11d9ce1cef9996b2a041be922c89fcd22e128b3"
+    },
+    {
+      "path": "docs/design/copilotkit-ten-features.md",
+      "sha256": "542bfe491fcd9c47c99b76505f617a1b0d30459a6547c170ad4050208a69d4b4"
+    },
+    {
+      "path": "docs/design/copilot-generative-ui-seven-approaches.md",
+      "sha256": "0e75627b25ed82ae9cd7b0b96a166a86146efea000d2561b2c2468eac22de1ef"
+    },
+    {
+      "path": "docs/design/copilot-advanced-tools.md",
+      "sha256": "85e014c8906e8201ca4fba5f7e1ffc78dcbcb6f2b736b2b29adbf5994de4db94"
+    },
+    {
+      "path": "docs/prompts/IMPLEMENT-ABANGCOLEK.md",
+      "sha256": "11750e6bff0d4893d4c7ab508e41f277bdaccd312fcd760db00892d6e747f4e7"
+    },
+    {
+      "path": "docs/prompts/AGENT-EXECUTION-CONTRACT.md",
+      "sha256": "90936322c81dc5e9cc7e4ab114f1139c27aae0c3bb67c20ef583a4eebb5cfe94"
+    },
+    {
+      "path": "docs/prompts/ACCEPTANCE-REGISTER.md",
+      "sha256": "dccf14f362700732ce1072aa4b6a621def09b8457cdf43ae44cf588051992dc5"
+    },
+    {
+      "path": "docs/prompts/00-baseline.md",
+      "sha256": "f20e40efc8588b4e9612db72ed106b229c76ed7a3af5f2c5c13f8e5cca4ab4fc"
+    },
+    {
+      "path": "docs/prompts/01-structure.md",
+      "sha256": "b0b792e71f076853f8264dd806c1070addeaea99912e8b986e90891c6355a3a3"
+    },
+    {
+      "path": "docs/prompts/02-copilot-foundation.md",
+      "sha256": "8034303bdba08dd4ef1db35c64efb4597ca1ed39c77b3df80fe830fcd9839e79"
+    },
+    {
+      "path": "docs/prompts/03-domains-and-tools.md",
+      "sha256": "b58514ccae4dfa92ef10003251f817849ddba4715ab2b1fee1f773b7e49d1b3f"
+    },
+    {
+      "path": "docs/prompts/04-ui-and-agents.md",
+      "sha256": "40d14e3c30e4f1dd149697739fc42cf607a3920c64527f9e9a5e5d917abdb151"
+    },
+    {
+      "path": "docs/prompts/05-intelligence.md",
+      "sha256": "5647102fd0a59ea4d55dc7422ef823c844d1b174d26b3fb02c16deec1277684e"
+    },
+    {
+      "path": "docs/prompts/06-release.md",
+      "sha256": "34fe629d8dcadaa8eba2487cdd3fa3ddae69079e203201113c800c5863c4594d"
+    },
+    {
+      "path": "docs/prompts/README.md",
+      "sha256": "d29b3c281749efb94f9623923c610701b6fa93f3c5236b331c3b671f6f404815"
+    },
+    {
+      "path": "docs/handover/IMPLEMENTATION-CHECKPOINT.md",
+      "sha256": "0dffa0c0dc035b449d6a59ad589fe4fe05aaa22f6221e6aa98cd46bd1e29638d"
+    },
+    {
+      "path": "reports/blueprint-review-20261020.md",
+      "sha256": "bafb9f6e2a2392e0c1342877dc128a1a013b27f4789f8db59bec1a950d969356"
+    },
+    {
+      "path": "reports/blueprint-review-20261020-domain.md",
+      "sha256": "c31856c8ac14131472a16910ae762898250cfc888fdec67aa3014a4f45e97c97"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-20-blueprint-review-and-prompts.md",
+      "sha256": "37103009177958dc86c56fe1eaed29ef3feb2e6a42282c01cd9bec8ea533f5c6"
+    }
+  ],
+  "timezone": "Asia/Kuala_Lumpur",
+  "timestampMalaysia": "2026-10-20 04:59:50 +08:00",
+  "newFileTrailingWhitespace": []
+}

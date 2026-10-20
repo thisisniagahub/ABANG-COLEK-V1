@@ -1,0 +1,5 @@
+# Workspace-private virtual environment for the ADK agent service.
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/

@@ -7,3 +7,6 @@ pathIgnorePatterns = [
   "**/var/**",
 ]
 timeout = 15000
+# Suite berjalan offline: panggilan provider live dilumpuhkan (kuota free tier
+# luar bukan OWN platform dan ia memakan kuota produksi).
+preload = ["./tests/setup/offline-providers.ts"]

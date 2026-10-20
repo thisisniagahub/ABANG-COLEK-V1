@@ -1,6 +1,10 @@
 # ABANGCOLEK — Operations Copilot architecture
 
-Diselaraskan: **19 Oktober 2026**. Status: **TARGET_DESIGN**, bukan runtime receipt. [Master Blueprint v2.3](ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) menentukan kontrak bisnes. [10 ciri](design/copilotkit-ten-features.md), [32 logical capabilities](design/copilot-advanced-tools.md), [free-only policy](research/2026-10-19-free-model-policy.md) dan [prompts](prompts/README.md) ialah spesifikasi pelaksanaan bersama.
+<!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
+> **Alignment20Oktober2026:** [Status semasa](CURRENT-STATUS.md) · [Checklist](../PROJECT-CHECKLIST.md). Kontrak sasaran kekal di bawah blueprint v2.4; scope reka bentuk dan keputusan tetap bukan bukti semua fungsi telah diimplementasi. Semak status per-ID dan environment sebelum mendakwa siap atau production-ready.
+<!-- ABANGCOLEK-CURRENT-STATUS:END -->
+
+Diselaraskan: **19 Oktober 2026**. Status: **TARGET_DESIGN**, bukan runtime receipt. [Master Blueprint v2.4](ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) menentukan kontrak bisnes. [10 ciri](design/copilotkit-ten-features.md), [32 logical capabilities](design/copilot-advanced-tools.md), [free-only policy](research/2026-10-19-free-model-policy.md) dan [prompts](prompts/README.md) ialah spesifikasi pelaksanaan bersama.
 
 ## Baseline dan sasaran yang diputuskan
 

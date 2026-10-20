@@ -94,7 +94,7 @@ test('absent customer membership fails explicitly and leaves application pending
   const record = app.store.get<DealerApplication>('dealer_applications', application.id)!;
   expect(record.status).toBe('pending');
   expect(record.revision).toBe(1);
-});
+}, 15000);
 
 test('revoked customer membership fails explicitly and prevents silent reactivation', async () => {
   const { app, dealers, founder, dealer } = await setup();
@@ -109,7 +109,7 @@ test('revoked customer membership fails explicitly and prevents silent reactivat
   const record = app.store.get<DealerApplication>('dealer_applications', application.id)!;
   expect(record.status).toBe('pending');
   expect(record.revision).toBe(1);
-});
+}, 15000);
 
 test('forced grant failure rolls back application approval and audit inside store.atomic', async () => {
   const { app, dealers, founder, dealer } = await setup();

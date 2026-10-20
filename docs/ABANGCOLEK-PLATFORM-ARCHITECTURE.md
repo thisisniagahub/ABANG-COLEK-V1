@@ -1,6 +1,10 @@
 # ABANGCOLEK — Platform Architecture
 
-Diselaraskan: **19 Oktober 2026**, mengikut [Master Blueprint v2.3](ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md). Ini kontrak architecture dan source mapping, bukan pengesahan deploy. [Struktur repo](design/repository-structure.md) menentukan destinasi modular monolith; path semasa kekal sehingga migration dilaksanakan dan diuji.
+<!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
+> **Alignment20Oktober2026:** [Status semasa](CURRENT-STATUS.md) · [Checklist](../PROJECT-CHECKLIST.md). Panduan aktif mengikut skop fail ini. Fakta source/runtime dan ownership semasa dirujuk di atas; arahan atau baseline bertarikh lama memerlukan revalidation. Tiada acceptance aplikasi ditutup oleh alignment dokumentasi.
+<!-- ABANGCOLEK-CURRENT-STATUS:END -->
+
+Diselaraskan: **19 Oktober 2026**, mengikut [Master Blueprint v2.4](ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md). Ini kontrak architecture dan source mapping, bukan pengesahan deploy. [Struktur repo](design/repository-structure.md) menentukan destinasi modular monolith; path semasa kekal sehingga migration dilaksanakan dan diuji.
 
 ## Domain dan dependency
 

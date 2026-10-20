@@ -1,7 +1,11 @@
-# AbangColek Sovereign GrowthOS & Orbit — Master Blueprint v2.3
+# AbangColek Sovereign GrowthOS & Orbit — Master Blueprint v2.4
 
-**Versi:** 2.3 — spesifikasi sasaran, tujuh pendekatan Generative UI dan keputusan implementasi eksplisit.  
-**Tarikh semakan:** 19 Oktober 2026.  
+<!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
+> **Alignment20Oktober2026:** [Status semasa](CURRENT-STATUS.md) · [Checklist](../PROJECT-CHECKLIST.md). Kontrak sasaran kekal di bawah blueprint v2.4; scope reka bentuk dan keputusan tetap bukan bukti semua fungsi telah diimplementasi. Semak status per-ID dan environment sebelum mendakwa siap atau production-ready.
+<!-- ABANGCOLEK-CURRENT-STATUS:END -->
+
+**Versi:** 2.4 — kontrak pelaksanaan tetap, coverage penuh dan gates berbukti.
+**Tarikh semakan:** 20 Oktober 2026.
 **Status:** Rujukan reka bentuk untuk pembangunan; implementasi, migrasi folder dan kesediaan production memerlukan bukti berasingan.  
 **Prinsip:** Rules Own The Money; domain modules; contribution margin; durable transactions; tiada caj inference baharu tanpa kebenaran; evidence sebelum dakwaan siap.
 
@@ -22,11 +26,15 @@ Dokumen ini menetapkan kontrak sasaran. Ia bukan pengesahan semua fungsi siap, s
 - [Struktur repo sasaran](design/repository-structure.md): pemetaan fail, dependency dan peringkat migrasi.
 - [Keputusan implementasi tetap](decisions/0003-blueprint-v23-execution-contract.md): pilihan stack, model, protokol dan fallback tanpa keputusan seni bina diserahkan kepada pelaksana.
 - [Prompt implementasi utama](prompts/IMPLEMENT-ABANGCOLEK.md): arahan lengkap dan fasa pelaksanaan; bukan bukti tugas sudah selesai.
+- [Kontrak pelaksanaan agent](prompts/AGENT-EXECUTION-CONTRACT.md): ownership, budgets, skills, plugin/MCP manifest, keputusan kewangan deterministik dan failure actions.
+- [Register acceptance](prompts/ACCEPTANCE-REGISTER.md): 78 requirement teras dan ekstensi CopilotKit yang digate secara berasingan; bukan jumlah tests.
+- [Checklist projek](../PROJECT-CHECKLIST.md): paparan current phase, delivered scope, semua requirement, blockers dan evidence; agent wajib mengemas kini ticks mengikut acceptance selepas setiap task.
+- [Review terperinci 20 Oktober](../reports/blueprint-review-20261020.md): dapatan, metadata dependency, sumber primer dan batas review dokumentasi.
 - [Research GitHub](research/2026-10-19-github-project-structure.md): sumber primer dan commit pin Bulletproof React, Medusa, CopilotKit, Hono dan Google ADK TypeScript.
 - [Review pemuktamadan](handoffs/2026-10-19-blueprint-finalization-review.md): review chat Antigravity `80abddbc-37fb-472e-ac65-d96784cc5832` serta source.
 - [Production runbook](production-release.md) dan [recovery runbook](runbooks/platform-recovery.md): prosedur operasi; konflik perlu diselesaikan melalui ADR sebelum release.
 
-Baseline source: HEAD `56bfa93f32b3986c72f8a63ad9b7e908b0f8b214` bersama perubahan worktree belum dikomit ketika semakan. HEAD sahaja tidak mewakili semua fail yang dibaca. Verification seterusnya mesti merekod manifest/diff. Tiada suite aplikasi atau deployment dijalankan sebagai sebahagian kemas kini dokumen ini.
+Baseline v2.3 dahulu ialah `56bfa93` bersama dirty worktree. Review v2.4 membaca root branch integrasi `60311aa` bersama dirty changes dan membandingkan release `main` `e736856`. Worktree frontend/backend dan integrasi yang terputus mempunyai diff berasingan. Nilai ini snapshot audit, bukan arahan checkout/reset. HEAD sahaja tidak mewakili semua fail yang dibaca; pelaksana mesti merekod manifest semasa. Tiada suite aplikasi, model call, migrasi atau deployment dijalankan sebagai sebahagian review dokumen v2.4 ini; evidence release terdahulu tidak menutup acceptance Copilot.
 
 Jika sasaran bercanggah dengan implementasi, rekodkan jurang. Mengemas kini blueprint tidak bermaksud source, schema atau data sudah dimigrasikan. Rujukan dalam dokumen ini menggunakan path semasa; kemas kini bersama pemindahan sebenar.
 
@@ -187,6 +195,8 @@ Net sales <= 0 menghasilkan `insufficient_data` atau `blocked` mengikut sebab; r
 
 Simulasi menyimpan input/provenance, versi kos, catalogue version dan masa pengiraan. Server tidak mempercayai nilai margin daripada client atau kad AI.
 
+Eligibility mesti dibandingkan sebelum rounding: `contributionSen * 10000 >= netSalesExTaxSen * minimumMarginBps`, dengan integer arithmetic yang selamat/BigInt. Paparan25.00% tidak meluluskan raw24.996% apabila minimum2500bps. Gunakan satu implementation canonical; wrapper client/shared tidak menduplikasi formula. Allocation wang menggunakan largest remainder, floor dahulu, residual mengikut pecahan menurun dan tie-break stable line ID menaik; jumlah allocation sama dengan jumlah input. Historical authoritative allocation/versi asal tidak dikira semula dengan polisi baharu. Nilai komersial/rates mesti datang daripada polisi diluluskan; algorithm allocation ini tidak menetapkan entitlement refund atau kadar reward.
+
 Kontrak shipping tunggal: `delivery_net_cost_sen = carrier_cost_sen - shipping_revenue_ex_tax_sen`. Carrier tidak ditolak sekali lagi sebagai fulfilment, dan hasil shipping tidak ditambah sekali lagi kepada net sales item. Contoh: hasil item 10,000 sen, carrier 800 sen dan hasil shipping 500 sen memberikan delivery net cost 300 sen. Jika semua kos lain 7,000 sen, contribution ialah 2,700 sen dan ratio 27%. Ini KPI contribution berasaskan hasil item; laporan hasil keseluruhan yang termasuk shipping menggunakan label dan denominator berasingan. Nama lama `delivery_subsidy_sen` perlu dipetakan secara eksplisit; jangan menukar makna medan source sedia ada secara senyap.
 
 Untuk `estimated`, expected return loss mewakili kerugian masa depan yang belum direalisasi. Untuk `actual`, refund berjaya sudah mengurangkan net sales, fee/carrier tidak dipulangkan kekal dalam bucket kos masing-masing, dan COGS hanya dikurangkan dengan nilai stok yang benar-benar dipulihkan selepas QC. Bahagian expected loss yang berkaitan return/refund direalisasi dilepaskan, bukan ditolak lagi. Baki expected loss hanya meliputi exposure belum selesai; selepas exposure ditutup nilainya sifar. Contoh: jualan item 10,000 sen, COGS 4,000 sen dan expected loss 500 sen memberi estimated contribution 5,500 sen sebelum kos lain. Selepas refund penuh tanpa stok boleh dipulihkan, net sales sifar, COGS kekal 4,000 sen dan reserve dilepaskan: actual contribution -4,000 sen, bukan -4,500 sen; ratio tidak digunakan. Jadual reconciliation menyimpan perubahan anggaran, refund dan pemulihan COGS mengikut order/line supaya tiada double counting.
@@ -210,6 +220,8 @@ Nama berikut ialah vocabulary sasaran; petakan kepada enum semasa sebelum migras
 | Commission | `pending -> eligible -> approved -> paid`; dispute sebagai event berasingan | Reversal sebelum payout berjejak; selepas payout melalui adjustment |
 
 Refund aggregate ialah `none`, `partial` atau `full` mengikut jumlah refund berjaya. Return barang mempunyai proses tersendiri; stok hanya boleh dijual semula selepas receiving/QC. Event berulang/out-of-order tidak menurunkan keadaan sah.
+
+Successful payment selepas attempt expired/cancelled mesti direkod sebagai verified receipt yang immutable dan idempotent. Jangan memadam fakta pembayaran sah, revive order atau reserve stock semula secara automatik. Gunakan `payment_exception_review`; fulfilment/refund seterusnya ialah command canonical berizin mengikut polisi. Tambah ujian late success, duplicate callback dan stok sudah habis.
 
 ### 6.1 Append-only dan partial refund
 
@@ -275,7 +287,7 @@ Referral satu peringkat ialah pilihan produk, bukan pengesahan undang-undang. Sa
 
 Petakan agent ABANGCOLEK-OS sedia ada dan Copilot baharu kepada satu tool registry canonical. Kekalkan kemampuan melalui adapter berizin; jangan aktifkan financial actions legacy berasaskan localStorage/mocks.
 
-Asingkan frontend chat, runtime/protocol, orchestration, providers, tools dan approvals. Rekod pilihan SDK CopilotKit/Google ADK sebenar atau custom runtime dalam ADR. Nama `GoogleAdkAgent` atau SSE custom tidak membuktikan integrasi framework/protokol. Sahkan Bun, hosting dan persistence jika SDK dipilih.
+Asingkan frontend chat, runtime/protocol, orchestration, providers, tools dan approvals. Pilihan telah ditetapkan: official CopilotKit TypeScript SDK `/v2` + HttpAgent + Google ADK Python melalui AG-UI, mengikut ADR-0003. Custom runtime/SSE yang wujud ialah legacy source untuk direconcile, bukan architecture alternatif yang agent boleh pilih. Nama `GoogleAdkAgent` atau SSE custom tidak membuktikan integrasi. Resolver/imports, Bun Fetch handler, private ADK hosting dan session persistence tetap memerlukan evidence compatibility.
 
 ### 9.2 Response dan data
 
@@ -386,6 +398,8 @@ Setiap hasil menyimpan requirement ID, test name/path, command, commit/worktree 
 
 ## 13. Pelaksanaan dan release
 
+Urutan executable tunggal ialah **00 -> 03A -> 01 -> 02 -> 03B -> 04 -> 05 -> 06** daripada [prompt pack](prompts/README.md). Jadual fasa0..5 di bawah ialah pengelompokan hasil legacy, bukan urutan kedua:0=00;1=03A;2/3=01;4=02+03B+04+05;5=06. Jangan memilih salah satu urutan atau melangkau03A kerana label checkpoint lama menyebut lengkap.
+
 | Fasa | Hasil | Gate keluar |
 |---|---|---|
 | 0 — Baseline | Inventori, ownership, ADR runtime/polisi dan gap register | Elak agent bertindih fail; baseline direkod |
@@ -399,7 +413,9 @@ Semakan terma/privasi bermula sebelum polisi reward dikodkan dan selesai sebelum
 
 Sebelum deploy, sahkan checks yang sesuai, migration compatibility, recovery, secret scopes, integration activation dan preview journeys. Rollback mempertimbangkan data format serta side effects, bukan bundle sahaja. Jangan reset/clean atau bulk-stage perubahan pengguna lain.
 
-## 14. Keputusan terbuka dan pemilikan
+## 14. Ownership dan gates yang belum dibuktikan
+
+Stack, protokol, nama agent, fasa, budgets, allocation algorithm dan tool specializations telah diputuskan dalam ADR/kontrak; jadual ini bukan lesen untuk memilihnya semula. Yang masih memerlukan owner ialah bukti compatibility, kelayakan akaun, polisi komersial, data processing/retention dan release authorization. Jika bukti tiada, gunakan reason code/fallback tetap; jangan mereka nilai atau menangguhkan seluruh kerja bebas.
 
 | Deliverable | Peranan bertanggungjawab | Bukti / dependency |
 |---|---|---|
@@ -415,6 +431,15 @@ Sebelum deploy, sahkan checks yang sesuai, migration compatibility, recovery, se
 Tetapkan individu serta ownership fail dalam pelan batch. Tugasan didelegasi belum selesai sehingga hasil boleh diperiksa, khususnya selepas quota, timeout atau interruption.
 
 ## 15. Changelog
+
+### v2.4 — 20 Oktober 2026
+
+- Mengikat prompt induk, execution contract dan acceptance register kepada10 CPK/7 GUI/10 MOD/32 ADV/19 master acceptance.
+- Membezakan official SDK, AG-UI protocol, Intelligence dan komponen UI; metadata dependency disemak semula tanpa pemasangan.
+- Menjelaskan MCP SDK major boundary, A2UI read-only surfaces/interactive controls, budgets/token accounting serta fixed failure actions.
+- Menutup ambiguity margin rounding/allocation/late payment, worktree ownership dan skill/plugin/MCP availability.
+- Menambah inventoried adjacent CopilotKit capabilities dengan activation gates; tidak mendakwa keseluruhan ecosystem aktif.
+- Tiada kod aplikasi, DB, dependency, model, merge atau deployment diubah oleh task dokumentasi ini.
 
 ### v2.3 — 19 Oktober 2026
 
@@ -432,3 +457,36 @@ Tetapkan individu serta ownership fail dalam pelan batch. Tugasan didelegasi bel
 - Memasukkan agent sedia ada, kos, fallback, HITL execution dan Pet/voice.
 - Membetulkan dakwaan gateway, consent, JEV vision dan recovery yang belum dibuktikan.
 - Menambah evidence matrix, pemilikan, release serta rollback.
+
+## 16. Penggunaan CopilotKit sepenuhnya dengan sempadan yang jelas
+
+**Teras wajib:** semua10 CPK dan7 GUI dalam kontrak reka bentuk; tiada ciri dibuang kerana komponen ringkas lebih mudah. **Coverage bisnes:** MOD-01..10 dan ADV-01..32. **Kebenaran activation:** berasingan daripada kebolehan membina adapter/ujian. Blocked Intelligence/hosting tidak boleh disembunyikan dan tidak menghentikan pembangunan OSS yang bebas.
+
+### 16.1 Journey sasaran yang menggabungkan ciri
+
+1. **Founder daily operations:** Chat -> scoped context/discovery -> dua specialist maksimum serentak dalam shared budget -> Tool Rendering -> A2UI Fixed Operations Brief -> read-only MCP App -> frontend open/filter -> Shared State yang sama pada Pet/workspace. Receipt sumber/revision dipaparkan; tiada KPI dummy.
+2. **QC kepada penyelesaian:** case/evidence berizin -> JEV LOCAL_RULES -> GUI kad/interactive draft -> refund/quarantine preview -> Human-in-the-loop -> revalidation/command/CAS -> authoritative receipt. Completed/redacted workflow hanya masuk Learning selepas gate; skill unpublished tidak digunakan.
+3. **Kempen berasaskan margin:** produk published/cost policy -> deterministic simulation -> fixed UI -> Marketing Drafter -> founder review -> saved draft. Model tidak mengira/meluluskan margin; publish/send memerlukan activation/consent dan execution receipt tersendiri.
+4. **Customer/dealer assistance:** akses order/balance/settlement sendiri -> cards/tools -> navigation/draft sahaja mengikut grants -> thread/state cleared apabila user/workspace berubah. Public tracking token bukan kebenaran membaca private order.
+
+Uji setiap journey dengan genuine SDK event lifecycle, spoofed identity, missing data, malformed UI, duplicate event, revoke, cancel/timeout dan failed durable commit. Browser replay hanya merender; tidak mengulangi execution.
+
+### 16.2 Ciri bersebelahan dalam dokumentasi CopilotKit semasa
+
+Inventori20 Oktober berdasarkan dokumentasi rasmi ADK/Intelligence; nama produk boleh berubah. Ini7requirement ekstensi berasingan daripada78teras, bukan penggantian atau penambahan palsu kepada kiraan10 CPK.
+
+| ID | Ciri | Keputusan tetap untuk ABANGCOLEK | Activation/acceptance |
+|---|---|---|---|
+| EXT-01 | Inspector/debugging | Gunakan pada local development untuk thread/tool/state/latency; developer-only dan redact payload | Pinned Inspector compatibility dan no secret/PII capture; tiada remote public debug endpoint |
+| EXT-02 | User Memories | Hanya preference bukan sensitif seperti bahasa/pilihan paparan; default ingestion off | Intelligence free/account/privacy/consent/retention/delete gate; memory tidak menyimpan role, harga, token atau financial authority |
+| EXT-03 | Capture interactions, Product Analytics, standalone collector | Satu telemetry adapter; jangan gandakan SDK/collector. Event allowlist: surface category, tool name, outcome dan duration; tiada prompt/body/record IDs | Default off sehingga data policy dan free offering disahkan; opt-out/delete diuji; collector alternatif hanya apabila SDK surface tiada, bukan pipeline kedua |
+| EXT-04 | Channels Slack/Teams | Adapter dan synthetic contract tests selepas core; default external delivery off | Skill channels hanya digunakan jika channel task diaktifkan; account/provider/event signatures/permissions dan arahan penghantaran sebenar diperlukan; tiada mesej ujian luar automatik |
+| EXT-05 | WebMCP | Own-app bounded context/UI actions sahaja; tiada arbitrary website automation atau cookie access | Browser/SDK support probe dan grants; unavailable browser memberikan typed unavailable, tiada fallback eval/shell |
+| EXT-06 | Voice | Pet/workspace menggunakan controller/thread sama; gesture dan microphone permission; local/browser option jika tersedia | External STT/TTS/voice model mesti lulus free/privacy gate; voice transcript ialah input tidak dipercayai, bukan approval refund |
+| EXT-07 | Attachments/multimodal | Private canonical evidence upload/reference dengan size/MIME/hash/permission checks | Tiada URL fetch bebas atau raw evidence auto-ingestion; upload bukan bukti vision; inference hanya melalui model layak dan approved data scope |
+
+Pemasangan SDK tidak mengaktifkan ekstensi ini. Pelaksana menyediakan kontrak, disabled reason dan synthetic tests bagi ekstensi yang digate; tidak melabel `verified_production` tanpa activation dan bukti sebenar. Menggunakan CopilotKit sebaik mungkin bermaksud aliran bersepadu dan berizin, bukan memaksa semua perkhidmatan cloud atau input data hidup serentak.
+
+### 16.3 Business/account decision artifacts
+
+Phase00 menyediakan `reports/implementation/activation-decisions.json` tanpa secrets untuk purpose, offering/account authorization, data classes, retention/delete/export, fee/overflow dan expiry. Snapshot privacy/gateway/reward terms yang belum tersedia dilabel `POLICY_UNCONFIGURED`; fixture sintetik bukan keputusan bisnes. Cloud backup4jam/RTO30minit kekal sasaran: encryption/key recovery, historical snapshot+evidence storage, scheduler/lease dan retention mesti mempunyai adapter/config serta restore drill sebelum DR-01 lulus. Tiada local serialized backup atau timestamp metadata sahaja membuktikan cloud RPO.

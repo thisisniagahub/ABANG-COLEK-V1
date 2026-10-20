@@ -1,0 +1,518 @@
+{
+  "timestamp": "2026-10-19T21:12:57.968Z",
+  "timezone": "Asia/Kuala_Lumpur",
+  "scope": "initial_checklist_status",
+  "localIntegrationHead": "60311aad5a1695eb2804e830488a3133e182397f",
+  "localMain": "e7368565d77cebe94b35fe5b7e1f87a0714b344e",
+  "remoteMainVerified": "e7368565d77cebe94b35fe5b7e1f87a0714b344e",
+  "production": [
+    {
+      "origin": "https://abangcolek.gangniaga.my",
+      "path": "/",
+      "requestUrl": "https://abangcolek.gangniaga.my/",
+      "responseUrl": "https://abangcolek.gangniaga.my/",
+      "checkedAt": "2026-10-19T21:16:29.144Z",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "origin": "https://abangcolek.gangniaga.my",
+      "path": "/login",
+      "requestUrl": "https://abangcolek.gangniaga.my/login",
+      "responseUrl": "https://abangcolek.gangniaga.my/login",
+      "checkedAt": "2026-10-19T21:16:29.147Z",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "origin": "https://abangcolek.gangniaga.my",
+      "path": "/api/platform/catalogue",
+      "requestUrl": "https://abangcolek.gangniaga.my/api/platform/catalogue",
+      "responseUrl": "https://abangcolek.gangniaga.my/api/platform/catalogue",
+      "checkedAt": "2026-10-19T21:16:53.409Z",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "ok": true,
+      "publishedProducts": 0,
+      "productCountField": "data"
+    }
+  ],
+  "applicationTestsRerun": false,
+  "coreClosed": 0,
+  "coreTotal": 78,
+  "extensionClosed": 0,
+  "extensionTotal": 7,
+  "coreItems": [
+    {
+      "id": "CPK-01",
+      "title": "Chat",
+      "phase": "02/04",
+      "status": "implemented_unverified"
+    },
+    {
+      "id": "CPK-02",
+      "title": "AG-UI Streams",
+      "phase": "05",
+      "status": "blocked_external"
+    },
+    {
+      "id": "CPK-03",
+      "title": "Automatic Learning",
+      "phase": "05",
+      "status": "blocked_external"
+    },
+    {
+      "id": "CPK-04",
+      "title": "Generative UI",
+      "phase": "04",
+      "status": "implemented_unverified"
+    },
+    {
+      "id": "CPK-05",
+      "title": "Declarative UI",
+      "phase": "04",
+      "status": "implemented_unverified"
+    },
+    {
+      "id": "CPK-06",
+      "title": "Human-in-the-loop",
+      "phase": "03A/04",
+      "status": "implemented_unverified"
+    },
+    {
+      "id": "CPK-07",
+      "title": "Frontend tools",
+      "phase": "04",
+      "status": "implemented_unverified"
+    },
+    {
+      "id": "CPK-08",
+      "title": "Shared state",
+      "phase": "02/04",
+      "status": "implemented_unverified"
+    },
+    {
+      "id": "CPK-09",
+      "title": "Headless UI",
+      "phase": "02/04",
+      "status": "implemented_unverified"
+    },
+    {
+      "id": "CPK-10",
+      "title": "Sub-agents",
+      "phase": "04",
+      "status": "implemented_unverified"
+    },
+    {
+      "id": "GUI-01",
+      "title": "Display Only",
+      "phase": "04",
+      "status": "implemented_unverified"
+    },
+    {
+      "id": "GUI-02",
+      "title": "Interactive",
+      "phase": "04",
+      "status": "implemented_unverified"
+    },
+    {
+      "id": "GUI-03",
+      "title": "Tool Rendering",
+      "phase": "04",
+      "status": "implemented_unverified"
+    },
+    {
+      "id": "GUI-04",
+      "title": "State Rendering",
+      "phase": "04",
+      "status": "implemented_unverified"
+    },
+    {
+      "id": "GUI-05",
+      "title": "MCP Apps",
+      "phase": "04",
+      "status": "implemented_unverified"
+    },
+    {
+      "id": "GUI-06",
+      "title": "A2UI",
+      "phase": "04",
+      "status": "implemented_unverified"
+    },
+    {
+      "id": "GUI-07",
+      "title": "Your Components",
+      "phase": "04",
+      "status": "implemented_unverified"
+    },
+    {
+      "id": "MOD-01",
+      "title": "Storefront & katalog",
+      "phase": "03B/04",
+      "status": "not_run"
+    },
+    {
+      "id": "MOD-02",
+      "title": "Orders & tracking",
+      "phase": "03B/04",
+      "status": "not_run"
+    },
+    {
+      "id": "MOD-03",
+      "title": "Inventory",
+      "phase": "03B/04",
+      "status": "not_run"
+    },
+    {
+      "id": "MOD-04",
+      "title": "QC & JEV",
+      "phase": "03B/04",
+      "status": "not_run"
+    },
+    {
+      "id": "MOD-05",
+      "title": "Dealer & komisen",
+      "phase": "03B/04",
+      "status": "not_run"
+    },
+    {
+      "id": "MOD-06",
+      "title": "Loyalty & referral",
+      "phase": "03B/04",
+      "status": "not_run"
+    },
+    {
+      "id": "MOD-07",
+      "title": "Marketing",
+      "phase": "03B/04",
+      "status": "not_run"
+    },
+    {
+      "id": "MOD-08",
+      "title": "Finance & day-close",
+      "phase": "03B/04",
+      "status": "not_run"
+    },
+    {
+      "id": "MOD-09",
+      "title": "Tasks, documents & SOP",
+      "phase": "03B/04",
+      "status": "not_run"
+    },
+    {
+      "id": "MOD-10",
+      "title": "Automations & integrations",
+      "phase": "03B/04",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-01",
+      "title": "`discover_capabilities` Q",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-02",
+      "title": "`search_records` Q",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-03",
+      "title": "`build_context_bundle` Q",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-04",
+      "title": "`explain_record` Q",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-05",
+      "title": "`diagnose_checkout` S",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-06",
+      "title": "`reconcile_payments` Q",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-07",
+      "title": "`preview_refund` S",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-08",
+      "title": "`propose_refund` D",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-09",
+      "title": "`assess_expiry_risk` S",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-10",
+      "title": "`plan_restock` S",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-11",
+      "title": "`trace_batch` Q",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-12",
+      "title": "`propose_quarantine` D",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-13",
+      "title": "`simulate_campaign` S",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-14",
+      "title": "`explain_commission` Q",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-15",
+      "title": "`audit_loyalty` Q",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-16",
+      "title": "`assess_referral` S",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-17",
+      "title": "`reconcile_dayclose` S",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-18",
+      "title": "`build_finance_digest` Q",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-19",
+      "title": "`trace_transaction` Q",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-20",
+      "title": "`export_report` C",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-21",
+      "title": "`triage_case` S",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-22",
+      "title": "`plan_consignment` S",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-23",
+      "title": "`draft_customer_reply` D",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-24",
+      "title": "`build_action_plan` S",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-25",
+      "title": "`execute_approved_action` C/X",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-26",
+      "title": "`reconcile_action` Q/C/X",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-27",
+      "title": "`inspect_runtime` Q",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-28",
+      "title": "`review_skill_candidate` S",
+      "phase": "05",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-29",
+      "title": "`search_sop` Q",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-30",
+      "title": "`propose_task` D",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-31",
+      "title": "`evaluate_job_retry` S",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ADV-32",
+      "title": "`draft_campaign` D",
+      "phase": "03B",
+      "status": "not_run"
+    },
+    {
+      "id": "FIN-01",
+      "title": "Amount lulus, ratio gagal menyekat kempen; override berizin/audit",
+      "phase": "03A",
+      "status": "not_run"
+    },
+    {
+      "id": "PAY-01",
+      "title": "Callback gateway pendua tidak menggandakan order/ledger",
+      "phase": "03A",
+      "status": "not_run"
+    },
+    {
+      "id": "PAY-02",
+      "title": "Redirect sahaja tidak mengesahkan paid",
+      "phase": "03A",
+      "status": "not_run"
+    },
+    {
+      "id": "PAY-03",
+      "title": "Partial/post-payout refund tepat, append-only dan deduplicated",
+      "phase": "03A",
+      "status": "not_run"
+    },
+    {
+      "id": "STK-01",
+      "title": "Perebutan unit terakhir tidak oversell; kegagalan rollback",
+      "phase": "03A",
+      "status": "not_run"
+    },
+    {
+      "id": "OFF-01",
+      "title": "Reconnect revalidate, semak perubahan dan retry tanpa pendua",
+      "phase": "03A/04",
+      "status": "not_run"
+    },
+    {
+      "id": "REF-01",
+      "title": "Identiti berbeza pada Wi-Fi sama tidak ditolak semata-mata IP",
+      "phase": "03A",
+      "status": "not_run"
+    },
+    {
+      "id": "REF-02",
+      "title": "Self-referral ditolak; dealer/customer reward berasingan",
+      "phase": "03A",
+      "status": "not_run"
+    },
+    {
+      "id": "LOY-01",
+      "title": "Redemption atomik, expiry/reversal/retry mengekalkan baki",
+      "phase": "03A",
+      "status": "not_run"
+    },
+    {
+      "id": "SEC-01",
+      "title": "Token, expiry, redaction; ID sahaja tidak membenarkan akses",
+      "phase": "03A",
+      "status": "not_run"
+    },
+    {
+      "id": "SEC-02",
+      "title": "Dealer silang rekod tidak mendapat data/kuasa",
+      "phase": "03A/03B",
+      "status": "not_run"
+    },
+    {
+      "id": "DR-01",
+      "title": "Restore database/evidence mencapai RPO/RTO diukur",
+      "phase": "06",
+      "status": "not_run"
+    },
+    {
+      "id": "AI-01",
+      "title": "Timeout/quota tidak memutus commerce; fallback tepat",
+      "phase": "02",
+      "status": "not_run"
+    },
+    {
+      "id": "AI-02",
+      "title": "Tiada kad rekaan atau dakwaan tindakan tanpa receipt",
+      "phase": "02/03B/04",
+      "status": "not_run"
+    },
+    {
+      "id": "AI-03",
+      "title": "Approval stale/expired/berulang atau gagal CAS tidak menggandakan command",
+      "phase": "03A/04",
+      "status": "not_run"
+    },
+    {
+      "id": "PD-01",
+      "title": "Opt-out menghalang promosi termasuk queued dispatch",
+      "phase": "03A/03B",
+      "status": "not_run"
+    },
+    {
+      "id": "OPS-01",
+      "title": "Quarantine tidak dijual dan movement diaudit",
+      "phase": "03A/03B",
+      "status": "not_run"
+    },
+    {
+      "id": "ARC-01",
+      "title": "Import terlarang/cycle ditolak; client bebas server secrets",
+      "phase": "01",
+      "status": "not_run"
+    },
+    {
+      "id": "REL-01",
+      "title": "Preview/production artifact dan config dikenal pasti",
+      "phase": "06",
+      "status": "not_run"
+    }
+  ],
+  "productionOrigin": "https://abangcolek.gangniaga.my",
+  "latestProductionCheck": "2026-10-19T21:16:53.409Z",
+  "latestProductionCheckMalaysia": "2026-10-20 05:16:53 +08:00"
+}

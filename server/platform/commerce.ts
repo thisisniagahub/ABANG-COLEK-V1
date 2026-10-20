@@ -285,16 +285,29 @@ export class Commerce {
     const next=oneOf(input.next,['requested','review','accepted','packing','packed','dispatched','received','cancelled'] as const);
     const transitions:Record<FulfilmentStatus,FulfilmentStatus[]>={requested:['review','cancelled'],review:['accepted','cancelled'],accepted:['packing','cancelled'],packing:['packed'],packed:['dispatched'],dispatched:['received'],received:[],cancelled:[]};
     if (!transitions[order.fulfilmentStatus].includes(next)) fail('INVALID_TRANSITION',409,'Perubahan status tidak dibenarkan.');
-    if (next==='cancelled'&&order.customerId===actor.user.id&&['requested','review'].includes(order.fulfilmentStatus)) {} else if (next==='received'&&order.customerId===actor.user.id) {} else this.auth.operational(actor,order.outletId);
+    // Pembatalan oleh pelanggan sendiri hanya dibenarkan semasa pesanan belum
+    // dimproses (requested/review). Semua perubahan status lain memerlukan
+    // keupayaan operasi. Keputusan ini dibuat secara eksplisit — Tiada
+    // cabang kosong yang membiarkan pelaksanaan melintas tanpa kebenaran.
+    const customerSelfServiceCancellation =
+      next==='cancelled' && order.customerId===actor.user.id && ['requested','review'].includes(order.fulfilmentStatus);
+    const customerSelfServiceReceipt = next==='received' && order.customerId===actor.user.id;
+    if (!customerSelfServiceCancellation && !customerSelfServiceReceipt) this.auth.operational(actor,order.outletId);
+    // Setiap mutasi status berikutnya dijalankan dalam satu transaksi atomik:
+    // jika mana-mana langkah gagal, tiada perubahan separa kekal.
+    return this.store.atomic(()=>{
     if (next==='accepted'&&order.paymentState!=='verified') fail('PAYMENT_NOT_VERIFIED',409);
     if(next==='accepted'){const reservations=this.store.all<InventoryReservation>('reservations').filter(r=>r.orderId===order.id);if(reservations.length!==order.lines.length||reservations.some(r=>r.status!=='active'||r.expiresAt<=now()))fail('RESERVATION_EXPIRED',409);for(const reservation of reservations)this.store.save('reservations',{...reservation,expiresAt:'9999-12-31T23:59:59.999Z',revision:reservation.revision+1});}
     if (['packed','dispatched','received'].includes(next)) this.evidence(actor,input.evidenceIds,order.id,1);
     if (next==='packed') this.consume(order);
     if (next==='cancelled') {
+      // Pembatalan sebenar: lepaskan tempahan stok dan tarik balik mata
+      // kesetiaan yang dikaitkan dengan pesanan ini.
       for (const reservation of this.store.all<InventoryReservation>('reservations').filter(r=>r.orderId===order.id&&r.status==='active')) this.store.save('reservations',{...reservation,status:'released' as const,revision:reservation.revision+1});
       this.loyalty.reversePointsForOrder(order.customerId, order.id, 'Pembatalan pesanan');
     }
     const updated={...order,fulfilmentStatus:next,revision:order.revision+1,updatedAt:now()};this.store.save('orders',updated);this.store.audit(actor.user.id,`order.${next}`,order.id,updated.revision);return updated;
+    });
   }
   payment(actor:Principal,orderId:string,raw:unknown,key:unknown) {
     const initial=this.order(actor,orderId),requestedAction=object(raw).action;

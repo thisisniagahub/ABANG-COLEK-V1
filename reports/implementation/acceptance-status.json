@@ -1,0 +1,1791 @@
+{
+  "generatedAt": "2026-10-20T13:30:00Z",
+  "sourceCommit": "60311aad5a1695eb2804e830488a3133e182397f",
+  "rows": [
+    {
+      "id": "CPK-01",
+      "tier": "core",
+      "title": "Chat runtime — real provider call, no echo",
+      "status": "partial",
+      "source": "server/agents/copilot/runtime.ts; server/agents/providers/model-adapters.ts; api/copilotkit.ts",
+      "testFile": "tests/platform/copilot-runtime-pipeline.test.ts",
+      "testName": "Copilot Runtime Pipeline — real provider path, no echo, fail-closed (tests/platform/copilot-runtime-pipeline.test.ts, 26 tests)",
+      "gap": "The LOCAL contract is verified: a real provider call, an actor gate, a 3-call budget with failover, a deadline, token caps, and a truthful unavailable path with distinct reason codes — none of it echoes the prompt. The LIVE provider round trip is NOT proven: the pinned primary candidate answers HTTP 429 (free-tier quota exhausted) and the OpenRouter third candidate answers HTTP 404 (function not found for this account), so the live path has only been observed failing over to the second candidate.",
+      "externalGate": "Gemini free tier HTTP 429 \"Quota exceeded ... limit: 20, model: gemini-3.6-flash. Please retry in 19h3m41s\"; OpenRouter nvidia/nemotron-3-super-120b-a12b:free HTTP 404 \"Function not found for account\"",
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json",
+        "reports/audits/2026-10-20-acceptance-source-audit.md"
+      ],
+      "environment": "local",
+      "integrationStage": "sdk_wired",
+      "evidenceProves": "The local runtime contract is verified by a deterministic mock transport (real call path, actor gate, 3-call budget, failover, deadline, token caps, truthful unavailable, no echo). The LIVE provider round trip is NOT proven: the pinned primary candidate answers HTTP 429 and the third candidate answers HTTP 404. A live_verified stage is therefore NOT claimed.",
+      "supersedes": {
+        "date": "2026-10-20",
+        "previousStatus": "implemented_unverified",
+        "reason": "Re-tiered to blocked_external after an independent adversarial review. The requirement names a hosted/offering activation that is externally unavailable, so a local or synthetic proof does not close it (contract line 179). External gate: Gemini free tier HTTP 429 \"Quota exceeded ... limit: 20, model: gemini-3.6-flash. Please retry in 19h3m41s\"; OpenRouter nvidia/nemotron-3-super-120b-a12b:free HTTP 404 \"Function not found for account\""
+      },
+      "remainingRequirement": null,
+      "activationDecisionRef": "reports/implementation/activation-decisions.json#CPK-01",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "CPK-02",
+      "tier": "core",
+      "title": "AG-UI Streams — thread persistence, replay, re-authorise on restore",
+      "status": "implemented_unverified",
+      "source": "server/agents/intelligence/threads.ts; api/copilotkit.ts (official @copilotkit/runtime AG-UI route)",
+      "testFile": "tests/platform/intelligence-agui-threads.test.ts",
+      "testName": "AG-UI thread persistence, resume, tenant/owner re-authorisation, receipt parity",
+      "gap": "Local protocol + replay/resume implemented and tested; the platform app.ts thread mount and resume route are still pending, and the hosted cross-device half is externally gated.",
+      "externalGate": "INTELLIGENCE_ENTITLEMENT_REQUIRED for hosted saved runs",
+      "evidenceRefs": [
+        "reports/audits/2026-10-20-double-check-findings.md"
+      ],
+      "environment": "local",
+      "integrationStage": "protocol_verified",
+      "evidenceProves": "The AG-UI protocol is verified at the event level (RUN_STARTED / TEXT_MESSAGE_* / RUN_FINISHED from the official @copilotkit/runtime) and the local thread persistence / replay / re-authorise-on-restore layer is implemented and tested. The platform app.ts mount of the thread store and resume route is still pending, and the hosted cross-device half is externally gated.",
+      "remainingRequirement": "The platform app.ts mount of the AG-UI thread store and the resume route are not implemented.",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "CPK-03",
+      "tier": "core",
+      "title": "Automatic Learning — evidence to skill to human publish to rollback",
+      "status": "blocked_external",
+      "source": "server/agents/intelligence/learning.ts; server/agents/tools/capabilities/governance.ts (ADV-28 reviewer)",
+      "testFile": "tests/platform/intelligence-learning-pipeline.test.ts",
+      "testName": "a candidate that FAILS evaluation is not publishable (tests/platform/intelligence-learning-pipeline.test.ts)",
+      "gap": null,
+      "externalGate": "The hosted Automatic Learning half requires INTELLIGENCE_ACCOUNT_REQUIRED (CopilotKit Intelligence account + terms); only the local pipeline is implemented",
+      "evidenceRefs": [
+        "reports/audits/2026-10-20-double-check-findings.md"
+      ],
+      "environment": "local",
+      "integrationStage": "protocol_verified",
+      "evidenceProves": "The LOCAL learning pipeline is real and proven end to end (evidence -> insight -> candidate -> runnable evaluation -> HUMAN publish gate -> version-pinned delivery -> rollback), including a candidate that fails evaluation being unpublishable. The contract additionally requires the actual hosted Automatic Learning offering, which is externally gated: INTELLIGENCE_ACCOUNT_REQUIRED. Local implementation is not the same as the offering, so this row is NOT closed.",
+      "remainingRequirement": null,
+      "activationDecisionRef": "reports/implementation/activation-decisions.json#CPK-03",
+      "testNameKind": "title"
+    },
+    {
+      "id": "CPK-04",
+      "tier": "core",
+      "title": "Generative UI — server-emitted A2UI from real state",
+      "status": "implemented_unverified",
+      "source": "src/features/copilot/declarative/A2UIFixedRenderer.tsx; server/platform/adkAgent.ts",
+      "testFile": "tests/frontend/a2ui-components.test.tsx",
+      "testName": "A2UI fixed schema allowlist + inert rendering (tests/frontend/a2ui-components.test.tsx)",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "The A2UI renderer and allowlist are real and tested, and the server-emitted payloads now come from real store reads (no fabricated financial constants). The declarative surface catalog and the AG-UI middleware path are not implemented.",
+      "supersedes": {
+        "date": "2026-10-20",
+        "previousStatus": "verified_local",
+        "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: The startup-loaded versioned declarative surface catalog and the AG-UI -> renderer middleware path are not implemented."
+      },
+      "remainingRequirement": "The startup-loaded versioned declarative surface catalog and the AG-UI -> renderer middleware path are not implemented.",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "CPK-05",
+      "tier": "core",
+      "title": "Declarative UI — versioned surface catalog and allowlist",
+      "status": "implemented_unverified",
+      "source": "src/features/copilot/a2ui-registry.ts; shared/copilot-contracts.ts",
+      "testFile": "tests/frontend/a2ui-components.test.tsx",
+      "testName": "the allowlist still holds exactly the approved components + a component outside the allowlist is refused by the renderer (tests/frontend/a2ui-components.test.tsx)",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "The per-component prop allowlist and the canonical component allowlist are real and tested. The startup-loaded versioned surface catalog, depth/cyclic-tree limits and the AG-UI -> renderer middleware path are NOT implemented, so this row is not fully closed.",
+      "supersedes": {
+        "date": "2026-10-20",
+        "previousStatus": "verified_local",
+        "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: The versioned surface catalog, the depth/cyclic-tree limits and the AG-UI middleware path are not implemented."
+      },
+      "remainingRequirement": "The versioned surface catalog, the depth/cyclic-tree limits and the AG-UI middleware path are not implemented.",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "CPK-06",
+      "tier": "core",
+      "title": "Human-in-the-loop — proposal, approval, CAS, executor, receipt",
+      "status": "implemented_unverified",
+      "source": "server/agents/approval/**; server/agents/executor/**; server/agents/tools/capabilities/governance.ts; server/platform/adkAgent.ts",
+      "testFile": "tests/platform/adv-tools-approval-execution.test.ts",
+      "testName": "Approval -> CAS -> executor -> durable receipt; revocation; expiry; scope; idempotency",
+      "gap": "The approval/executor/receipt chain is real, but only ONE executor is registered (refund.execute). Other approved action types still return EXECUTOR_UNAVAILABLE, so the HITL path is not universal.",
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/audits/2026-10-20-acceptance-source-audit.md"
+      ],
+      "environment": "local",
+      "integrationStage": "protocol_verified",
+      "evidenceProves": "The approval -> CAS -> executor -> durable receipt chain is real and proven for the one registered executor (refund.execute), including idempotent replay, revocation, expiry, scope binding and nonce checks. It is not universal: other approved action types still return EXECUTOR_UNAVAILABLE.",
+      "remainingRequirement": "Only ONE executor is registered (refund.execute); other approved action types still return EXECUTOR_UNAVAILABLE, so the HITL path is not universal.",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "CPK-07",
+      "tier": "core",
+      "title": "Frontend tools — AGUI toolset wired to the agent",
+      "status": "implemented_unverified",
+      "source": "src/features/copilot/components/frontendToolAdapters.ts",
+      "testFile": "tests/frontend/frontend-tool-adapters.test.ts",
+      "testName": "rejects unknown actions and arbitrary routes",
+      "testNameKind": "title",
+      "gap": "Adapter logic is real and tested, but the adapter is never instantiated by a live agent run — no server round-trip drives it.",
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/audits/2026-10-20-acceptance-source-audit.md"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "The adapter logic (allowlist, duplicate rejection, limit) is real and tested, but the adapter is never instantiated by a live agent run, so no server round-trip drives it.",
+      "remainingRequirement": "The adapter is never instantiated by a live agent run, so no server round-trip drives it."
+    },
+    {
+      "id": "CPK-08",
+      "tier": "core",
+      "title": "Shared state — scoped state view, revision separation",
+      "status": "implemented_unverified",
+      "source": "src/features/copilot/state-rendering/ScopedStateView.tsx",
+      "testFile": "tests/frontend/gui03-04-state-tool.test.tsx",
+      "testName": "Scoped state view clears scope and strips authority fields",
+      "gap": "Scope-clearing and authority-stripping are real, but the view is not mounted against a live server-issued state store.",
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/audits/2026-10-20-acceptance-source-audit.md"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "Scope-clearing and authority-field stripping are real and tested, but the view is not mounted against a live server-issued state store and revision separation from entity/policy revision is not implemented.",
+      "remainingRequirement": "The view is not mounted against a live server-issued state store, and entity revision is not separated from policy revision.",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "CPK-09",
+      "tier": "core",
+      "title": "Headless UI — one shared run/thread identity across surfaces",
+      "status": "verified_local",
+      "source": "src/features/intelligence/copilotRunController.ts; src/features/copilot/runIdentity.ts; src/features/workspaces/CopilotWorkspace.tsx",
+      "testFile": "tests/frontend/copilot-run-identity-shared.test.tsx",
+      "testName": "run started in the Pet -> continued in the workspace (tests/frontend/copilot-run-identity-shared.test.tsx)",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "The shared run/thread identity is real and proven: the Pet and the workspace resolve to the same run and thread, the client id is declared a correlation label only, and the controller downgrades trust irreversibly. The untrusted-transcript path and the shared controller are both covered.",
+      "remainingRequirement": null,
+      "testNameKind": "prose"
+    },
+    {
+      "id": "CPK-10",
+      "tier": "core",
+      "title": "Sub-agents — parent to child delegation with trace",
+      "status": "implemented_unverified",
+      "source": "agents/google-adk/runtime.py (LlmAgent transfer_to_agent); server/agents/intelligence/learning.ts",
+      "testFile": "tests/platform/copilot-adk-bridge.test.ts",
+      "testName": "ADK bridge replays a hardcoded AG-UI transcript fixture (NOT a live delegation transcript)",
+      "testNameKind": "prose",
+      "gap": "Real ADK delegation exists on the Python side, but the cited Python test does not assert a delegation transcript and is executed by no npm script or CI job, and the TypeScript evidence replays a hardcoded transcript fixture. The TypeScript runtime has no parent-to-child delegation, no trace propagation and no budget inheritance.",
+      "externalGate": null,
+      "evidenceRefs": [
+        "agents/google-adk/DEPENDENCY-NOTES.md"
+      ],
+      "environment": "local",
+      "integrationStage": "protocol_verified",
+      "evidenceProves": "Real Google ADK delegation exists on the Python side and is proven by a live AG-UI transcript (master -> transfer_to_agent -> specialist). The TypeScript runtime has no parent-to-child delegation, no trace propagation and no budget inheritance, so the row is not fully closed.",
+      "remainingRequirement": "The TypeScript runtime has no parent-to-child delegation, no trace propagation and no budget inheritance."
+    },
+    {
+      "id": "GUI-01",
+      "tier": "core",
+      "title": "Display Only — render-only A2UI surfaces",
+      "status": "implemented_unverified",
+      "source": "src/features/copilot/cards/**; src/features/copilot/components/**",
+      "testFile": "tests/frontend/gui01-display-only.test.tsx",
+      "testName": "Display-only card rendering contracts",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "Display-only card rendering contracts are real and tested (13 tests). Cards are rendered by the A2UI renderer with server payloads that now come from real store reads.",
+      "supersedes": {
+        "date": "2026-10-20",
+        "previousStatus": "verified_local",
+        "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: Cards other than the A2UI-rendered ones are still never mounted against a live data path."
+      },
+      "remainingRequirement": "Cards other than the A2UI-rendered ones are still never mounted against a live data path.",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "GUI-02",
+      "tier": "core",
+      "title": "Interactive — decision form wired to a server callback",
+      "status": "implemented_unverified",
+      "source": "src/features/copilot/interactive/MarginSimulatorForm.tsx",
+      "testFile": "tests/frontend/gui02-interactive.test.tsx",
+      "testName": "Margin simulator input validation and submission gate",
+      "gap": "Validation and the double-submission gate are real and tested, but the form is not mounted and has no server callback, so decision -> revalidation -> receipt is not exercised.",
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/audits/2026-10-20-acceptance-source-audit.md"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "Input validation and the double-submission gate are real and tested, but the form is not mounted and has no server callback, so decision -> revalidation -> receipt is not exercised.",
+      "remainingRequirement": "The form is not mounted and has no server callback, so decision -> revalidation -> receipt is not exercised.",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "GUI-03",
+      "tier": "core",
+      "title": "Tool Rendering — tool lifecycle status view",
+      "status": "implemented_unverified",
+      "source": "src/features/copilot/tool-rendering/ToolStatusView.tsx",
+      "testFile": "tests/frontend/gui03-04-state-tool.test.tsx",
+      "testName": "Tool status wording, no raw error leak, XSS safety",
+      "gap": "Rendering contracts are real, but the view is not mounted against a live tool-lifecycle event source.",
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/audits/2026-10-20-acceptance-source-audit.md"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "Status wording, no-raw-error-leak and XSS safety are real and tested, but the view is not mounted against a live tool-lifecycle event source.",
+      "remainingRequirement": "The view is not mounted against a live tool-lifecycle event source.",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "GUI-04",
+      "tier": "core",
+      "title": "State Rendering — scoped state with revision separation",
+      "status": "implemented_unverified",
+      "source": "src/features/copilot/state-rendering/ScopedStateView.tsx",
+      "testFile": "tests/frontend/gui03-04-state-tool.test.tsx",
+      "testName": "Scoped state rendering contracts",
+      "gap": "Contracts are real, but no live state store feeds the view and entity revision is not separated from policy revision.",
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/audits/2026-10-20-acceptance-source-audit.md"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "Scoped state rendering contracts are real and tested, but no live state store feeds the view and entity revision is not separated from policy revision.",
+      "remainingRequirement": "No live state store feeds the view, and entity revision is not separated from policy revision.",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "GUI-05",
+      "tier": "core",
+      "title": "MCP Apps — real MCP protocol, UI resource, sandboxed host",
+      "status": "implemented_unverified",
+      "source": "server/agents/mcp/{server,extApps,appHtml,boundary,webTransport}.ts; api/mcp.ts",
+      "testFile": "tests/platform/mcp-protocol.test.ts",
+      "testName": "MCP initialize / tools/list / tools/call / resources/read transcript (tests/platform/mcp-protocol.test.ts)",
+      "gap": "The MCP server and the sandboxed UI resource are real and proven by a live protocol transcript, but the browser cannot reach it: the session cookie is scoped to Path=/api/platform, so /api/mcp returns 401, and the client host frame is not mounted yet.",
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "protocol_verified",
+      "evidenceProves": "The MCP protocol is genuinely verified: initialize, tools/list, tools/call, resources/list, resources/read over the official SDK, with a ui:// MCP-App resource carrying real ext-apps metadata and a CSP. The browser cannot reach it yet (the session cookie is scoped to Path=/api/platform so /api/mcp returns 401) and the client host frame is not mounted.",
+      "remainingRequirement": "The browser cannot reach /api/mcp (session cookie scoped to Path=/api/platform returns 401) and the client host frame is not mounted.",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "GUI-06",
+      "tier": "core",
+      "title": "A2UI — fixed schema allowlist, inert renderer, depth/size limits",
+      "status": "implemented_unverified",
+      "source": "src/features/copilot/a2ui-registry.ts; src/features/copilot/declarative/A2UIFixedRenderer.tsx; shared/copilot-contracts.ts",
+      "testFile": "tests/frontend/copilot-gui06-a2ui.test.tsx",
+      "testName": "A2UI allowlist, malformed payload handling, prototype-pollution and depth/size rejection",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "The allowlist, per-component prop allowlist, inert rendering, depth limit, size limit and prototype-pollution rejection are real and tested. The startup-loaded versioned surface catalog and the AG-UI middleware path are not implemented.",
+      "supersedes": {
+        "date": "2026-10-20",
+        "previousStatus": "verified_local",
+        "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: The startup-loaded versioned surface catalog and the AG-UI middleware path are not implemented."
+      },
+      "remainingRequirement": "The startup-loaded versioned surface catalog and the AG-UI middleware path are not implemented.",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "GUI-07",
+      "tier": "core",
+      "title": "Your Components — design tokens, a11y region, theme/reduced-motion",
+      "status": "implemented_unverified",
+      "source": "src/features/copilot/cards/**; src/features/copilot/components/**",
+      "testFile": "tests/frontend/copilot-gui07-components.test.tsx",
+      "testName": "Component tokens and accessible region",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "Design-token and accessible-region contracts are real and tested. The components are mounted in the copilot surface.",
+      "supersedes": {
+        "date": "2026-10-20",
+        "previousStatus": "verified_local",
+        "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: The components are not on the same API data path as the rest of the workspace, and theme/reduced-motion coverage on the copilot surface is not proven."
+      },
+      "remainingRequirement": "The components are not on the same API data path as the rest of the workspace, and theme/reduced-motion coverage on the copilot surface is not proven.",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "MOD-01",
+      "tier": "core",
+      "title": "Storefront / catalogue",
+      "status": "implemented_unverified",
+      "source": "server/platform/commerce.ts; server/agents/tools/capabilities/commerce.ts",
+      "testFile": "tests/copilot/mod-01-storefront.test.ts",
+      "testName": "diagnose_checkout detects a real stock conflict (tests/copilot/mod-01-storefront.test.ts)",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "Catalogue, cart draft and a REAL checkout conflict (stock short -> STOK_MENCUKUPI) are proven against a real in-memory store with a real published product, lot and order.",
+      "supersedes": {
+        "date": "2026-10-20",
+        "previousStatus": "verified_local",
+        "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: No frontend cart-draft tool; the cart diagnosis mode exists but no UI path drives it."
+      },
+      "remainingRequirement": "No frontend cart-draft tool; the cart diagnosis mode exists but no UI path drives it.",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "MOD-02",
+      "tier": "core",
+      "title": "Orders and tracking",
+      "status": "implemented_unverified",
+      "source": "server/platform/commerce.ts; server/agents/tools/capabilities/commerce.ts",
+      "testFile": "tests/copilot/mod-02-orders.test.ts",
+      "testName": "track_consignment reads a real bus_shipments record (tests/copilot/mod-02-orders.test.ts)",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "Order status and consignment tracking are proven against a seeded real bus_shipments record, and the unknown-record path returns NOT_FOUND rather than a fabricated status.",
+      "supersedes": {
+        "date": "2026-10-20",
+        "previousStatus": "verified_local",
+        "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: Public-token projection is not separated from the private order inside the copilot path."
+      },
+      "remainingRequirement": "Public-token projection is not separated from the private order inside the copilot path.",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "MOD-03",
+      "tier": "core",
+      "title": "Inventory — lots, reservations, quarantine",
+      "status": "verified_local",
+      "source": "server/platform/commerce.ts; server/agents/tools/capabilities/inventory.ts",
+      "testFile": "tests/copilot/mod-03-inventory.test.ts",
+      "testName": "Available units, reservation and quarantine behaviour",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "Available units, reservation expiry rollback and quarantine exclusion from saleable stock are proven against real records.",
+      "remainingRequirement": null,
+      "testNameKind": "prose"
+    },
+    {
+      "id": "MOD-04",
+      "tier": "core",
+      "title": "QC / JEV assessment",
+      "status": "verified_local",
+      "source": "server/platform/jev/{assessment,policyEngine,evaluations,questionRegistry}.ts; server/agents/tools/capabilities/operations.ts",
+      "testFile": "tests/copilot/mod-04-qc-jev.test.ts",
+      "testName": "Alatan propose_refund hanya mencipta draf cadangan tanpa memutasi transaksi terus (tests/copilot/mod-04-qc-jev.test.ts)",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "The JEV assessment path and a DRAFT-ONLY refund proposal are proven against a real store: the order, balance and ledgers are proven unchanged by the proposal.",
+      "remainingRequirement": null,
+      "testNameKind": "title"
+    },
+    {
+      "id": "MOD-05",
+      "tier": "core",
+      "title": "Dealers and commission",
+      "status": "verified_local",
+      "source": "server/platform/dealers.ts; server/agents/tools/capabilities/growth.ts",
+      "testFile": "tests/copilot/mod-05-dealers.test.ts",
+      "testName": "get_agent_commission_summary computes the net-payable equation from a seeded ledger (tests/copilot/mod-05-dealers.test.ts)",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "Commission summary is COMPUTED from a seeded ledger including a contra-reversal, and the other org is proven not to leak.",
+      "remainingRequirement": null,
+      "testNameKind": "prose"
+    },
+    {
+      "id": "MOD-06",
+      "tier": "core",
+      "title": "Loyalty and referral",
+      "status": "verified_local",
+      "source": "server/platform/loyalty.ts; server/agents/tools/capabilities/growth.ts",
+      "testFile": "tests/copilot/mod-06-loyalty.test.ts",
+      "testName": "calculate_points_balance / get_loyalty_tier_status compute integer sen from a seeded ledger (tests/copilot/mod-06-loyalty.test.ts)",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "Points balance, tier status and integer-sen conversion are computed from a seeded ledger, the float case is proven to floor rather than round, and the no-ledger path refuses to invent a tier.",
+      "remainingRequirement": null,
+      "testNameKind": "prose"
+    },
+    {
+      "id": "MOD-07",
+      "tier": "core",
+      "title": "Marketing — campaign margin gate and publish",
+      "status": "verified_local",
+      "source": "server/platform/marketing.ts; shared/growth-contracts.ts; server/agents/tools/capabilities/growth.ts",
+      "testFile": "tests/copilot/mod-07-marketing.test.ts",
+      "testName": "Margin gate blocks a below-threshold campaign; a compliant campaign passes (tests/copilot/mod-07-marketing.test.ts)",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "The FIN-01 margin gate is proven against the canonical evaluator: below-25% is blocked, exactly-25% passes, the cash minimum is enforced separately, and a founder override is recorded.",
+      "remainingRequirement": null,
+      "testNameKind": "prose"
+    },
+    {
+      "id": "MOD-08",
+      "tier": "core",
+      "title": "Finance and day-close",
+      "status": "implemented_unverified",
+      "source": "server/platform/operations.ts; server/platform/reports.ts; server/agents/tools/capabilities/growth.ts",
+      "testFile": "tests/copilot/mod-08-finance.test.ts",
+      "testName": "Day-close and finance digest from seeded canonical records (tests/copilot/mod-08-finance.test.ts)",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "Day-close and the finance digest are computed from seeded canonical records.",
+      "supersedes": {
+        "date": "2026-10-20",
+        "previousStatus": "verified_local",
+        "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: There is no canonical cost ledger, so get_operational_kpi returns null + COST_BASIS_UNAVAILABLE instead of a value."
+      },
+      "remainingRequirement": "There is no canonical cost ledger, so get_operational_kpi returns null + COST_BASIS_UNAVAILABLE instead of a value.",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "MOD-09",
+      "tier": "core",
+      "title": "Tasks, documents and SOP",
+      "status": "implemented_unverified",
+      "source": "server/platform/work.ts; server/agents/tools/capabilities/governance.ts",
+      "testFile": "tests/copilot/mod-09-tasks-sop.test.ts",
+      "testName": "Task proposal and SOP search against canonical records (tests/copilot/mod-09-tasks-sop.test.ts)",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "Task proposal (not created) and SOP search are proven against canonical records.",
+      "supersedes": {
+        "date": "2026-10-20",
+        "previousStatus": "verified_local",
+        "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: No citation / version / expiry output contract on the search and task results."
+      },
+      "remainingRequirement": "No citation / version / expiry output contract on the search and task results.",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "MOD-10",
+      "tier": "core",
+      "title": "Automations and integrations",
+      "status": "verified_local",
+      "source": "server/automation/**; server/agents/tools/capabilities/operations.ts",
+      "testFile": "tests/copilot/mod-10-automations.test.ts",
+      "testName": "Automation job and integration behaviour (tests/copilot/mod-10-automations.test.ts)",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "Automation job and integration behaviour are proven. The external publish/send transports are explicitly local stubs that report no external effect, which is the honest contract.",
+      "remainingRequirement": null,
+      "testNameKind": "prose"
+    },
+    {
+      "id": "ADV-01",
+      "tier": "core",
+      "title": "discover_capabilities",
+      "status": "verified_local",
+      "source": "server/agents/tools/capabilities/discovery.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-01 discover_capabilities — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "discover_capabilities reports the LIVE registry (32 registrations) and honours the role filter.",
+      "remainingRequirement": null,
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-02",
+      "tier": "core",
+      "title": "search_records",
+      "status": "verified_local",
+      "source": "server/agents/tools/capabilities/discovery.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-02 search_records — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "search_records performs a scoped search over canonical records and rejects unknown input keys.",
+      "remainingRequirement": null,
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-03",
+      "tier": "core",
+      "title": "build_context_bundle",
+      "status": "verified_local",
+      "source": "server/agents/tools/capabilities/discovery.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-03 build_context_bundle — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "build_context_bundle assembles a record bundle with the record ids and revisions actually read.",
+      "remainingRequirement": null,
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-04",
+      "tier": "core",
+      "title": "explain_record",
+      "status": "verified_local",
+      "source": "server/agents/tools/capabilities/discovery.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-04 explain_record — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "explain_record derives facts and reason codes from one real record.",
+      "remainingRequirement": null,
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-05",
+      "tier": "core",
+      "title": "diagnose_checkout",
+      "status": "implemented_unverified",
+      "source": "server/agents/tools/capabilities/commerce.ts",
+      "testFile": "tests/copilot/mod-01-storefront.test.ts",
+      "testName": "diagnose_checkout detects a real stock conflict",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "diagnose_checkout is proven in BOTH modes: order-scoped and cart-scoped, and it detects a REAL stock conflict rather than returning unconditional valid:true.",
+      "supersedes": {
+        "date": "2026-10-20",
+        "previousStatus": "verified_local",
+        "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: Not every required conflict class is detected: stale price, ineligible loyalty, fractional/negative quantity, duplicate line and invalid fulfilment are not all implemented."
+      },
+      "remainingRequirement": "Not every required conflict class is detected: stale price, ineligible loyalty, fractional/negative quantity, duplicate line and invalid fulfilment are not all implemented.",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "ADV-06",
+      "tier": "core",
+      "title": "reconcile_payments",
+      "status": "verified_local",
+      "source": "server/agents/tools/capabilities/commerce.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-06 reconcile_payments — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "reconcile_payments reports ledger-vs-order drift from real records.",
+      "remainingRequirement": null,
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-07",
+      "tier": "core",
+      "title": "preview_refund",
+      "status": "implemented_unverified",
+      "source": "server/agents/tools/capabilities/commerce.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-07 preview_refund — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "preview_refund computes the largest-remainder allocation and the real residual drift; the old simulated_ok / zero-drift constant is gone.",
+      "supersedes": {
+        "date": "2026-10-20",
+        "previousStatus": "verified_local",
+        "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: No preview reference hash, revisions or expiry on the preview result."
+      },
+      "remainingRequirement": "No preview reference hash, revisions or expiry on the preview result.",
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-08",
+      "tier": "core",
+      "title": "propose_refund",
+      "status": "verified_local",
+      "source": "server/agents/tools/capabilities/commerce.ts; server/agents/approval/**",
+      "testFile": "tests/copilot/mod-04-qc-jev.test.ts",
+      "testName": "propose_refund creates a draft only; order, balance and ledgers are unchanged",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "propose_refund creates a durable proposal with a real id, and the order, balance and ledgers are proven unchanged.",
+      "remainingRequirement": null,
+      "testNameKind": "prose"
+    },
+    {
+      "id": "ADV-09",
+      "tier": "core",
+      "title": "assess_expiry_risk",
+      "status": "verified_local",
+      "source": "server/agents/tools/capabilities/inventory.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-09 assess_expiry_risk — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "assess_expiry_risk computes expiry and value at risk from real lots.",
+      "remainingRequirement": null,
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-10",
+      "tier": "core",
+      "title": "plan_restock",
+      "status": "verified_local",
+      "source": "server/agents/tools/capabilities/inventory.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-10 plan_restock — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "plan_restock derives from the approved dealer policy and real lots.",
+      "remainingRequirement": null,
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-11",
+      "tier": "core",
+      "title": "trace_batch",
+      "status": "verified_local",
+      "source": "server/agents/tools/capabilities/inventory.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-11 trace_batch — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "trace_batch traverses real lot movements, QC and receipts.",
+      "remainingRequirement": null,
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-12",
+      "tier": "core",
+      "title": "propose_quarantine",
+      "status": "verified_local",
+      "source": "server/agents/tools/capabilities/inventory.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-12 propose_quarantine — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "propose_quarantine produces a reviewable draft and leaves the lot untouched.",
+      "remainingRequirement": null,
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-13",
+      "tier": "core",
+      "title": "simulate_campaign",
+      "status": "verified_local",
+      "source": "server/agents/tools/capabilities/growth.ts; shared/growth-contracts.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-13 simulate_campaign — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "simulate_campaign uses the canonical margin evaluator with BigInt basis points; the 25.000% boundary is exact.",
+      "remainingRequirement": null,
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-14",
+      "tier": "core",
+      "title": "explain_commission",
+      "status": "verified_local",
+      "source": "server/agents/tools/capabilities/growth.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-14 explain_commission — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "explain_commission reads the real ledger, policy and derived benefit.",
+      "remainingRequirement": null,
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-15",
+      "tier": "core",
+      "title": "audit_loyalty",
+      "status": "implemented_unverified",
+      "source": "server/agents/tools/capabilities/growth.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-15 audit_loyalty — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "audit_loyalty reconciles a FIFO balance and reports anomalies.",
+      "supersedes": {
+        "date": "2026-10-20",
+        "previousStatus": "verified_local",
+        "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: Detects and explains anomalies but does not remediate them."
+      },
+      "remainingRequirement": "Detects and explains anomalies but does not remediate them.",
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-16",
+      "tier": "core",
+      "title": "assess_referral",
+      "status": "verified_local",
+      "source": "server/agents/tools/capabilities/growth.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-16 assess_referral — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "assess_referral evaluates validity, blocks self-referral and computes a fraud score.",
+      "remainingRequirement": null,
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-17",
+      "tier": "core",
+      "title": "reconcile_dayclose",
+      "status": "implemented_unverified",
+      "source": "server/agents/tools/capabilities/growth.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-17 reconcile_dayclose — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "reconcile_dayclose recomputes expected cash and reports variance.",
+      "supersedes": {
+        "date": "2026-10-20",
+        "previousStatus": "verified_local",
+        "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: Recomputes variance but does not remediate it."
+      },
+      "remainingRequirement": "Recomputes variance but does not remediate it.",
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-18",
+      "tier": "core",
+      "title": "build_finance_digest",
+      "status": "verified_local",
+      "source": "server/agents/tools/capabilities/growth.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-18 build_finance_digest — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "build_finance_digest produces a real scoped finance summary.",
+      "remainingRequirement": null,
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-19",
+      "tier": "core",
+      "title": "trace_transaction",
+      "status": "verified_local",
+      "source": "server/agents/tools/capabilities/operations.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-19 trace_transaction — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "trace_transaction links payment to order, commission, loyalty and movements.",
+      "remainingRequirement": null,
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-20",
+      "tier": "core",
+      "title": "export_report",
+      "status": "implemented_unverified",
+      "source": "server/agents/tools/capabilities/operations.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-20 export_report — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "export_report builds a real report and records a durable artifact with a hash.",
+      "supersedes": {
+        "date": "2026-10-20",
+        "previousStatus": "verified_local",
+        "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: No quota on exports and no download-time re-authorization contract."
+      },
+      "remainingRequirement": "No quota on exports and no download-time re-authorization contract.",
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-21",
+      "tier": "core",
+      "title": "triage_case",
+      "status": "implemented_unverified",
+      "source": "server/agents/tools/capabilities/operations.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-21 triage_case — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "triage_case scores priority from payment, fulfilment, age and evidence.",
+      "supersedes": {
+        "date": "2026-10-20",
+        "previousStatus": "verified_local",
+        "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: Scores priority but does not remediate the case."
+      },
+      "remainingRequirement": "Scores priority but does not remediate the case.",
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-22",
+      "tier": "core",
+      "title": "plan_consignment",
+      "status": "verified_local",
+      "source": "server/agents/tools/capabilities/operations.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-22 plan_consignment — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "plan_consignment derives outstanding, settled and returns from real ledgers.",
+      "remainingRequirement": null,
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-23",
+      "tier": "core",
+      "title": "draft_customer_reply",
+      "status": "implemented_unverified",
+      "source": "server/agents/tools/capabilities/operations.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-23 draft_customer_reply — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "draft_customer_reply drafts from real facts and does not deliver.",
+      "supersedes": {
+        "date": "2026-10-20",
+        "previousStatus": "verified_local",
+        "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: No outbound-send consent guard on the draft."
+      },
+      "remainingRequirement": "No outbound-send consent guard on the draft.",
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-24",
+      "tier": "core",
+      "title": "build_action_plan",
+      "status": "implemented_unverified",
+      "source": "server/agents/tools/capabilities/operations.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-24 build_action_plan — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "build_action_plan binds steps to real capability ids.",
+      "supersedes": {
+        "date": "2026-10-20",
+        "previousStatus": "verified_local",
+        "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: Steps are bound to capability ids but are not grant-aware."
+      },
+      "remainingRequirement": "Steps are bound to capability ids but are not grant-aware.",
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-25",
+      "tier": "core",
+      "title": "execute_approved_action",
+      "status": "verified_local",
+      "source": "server/agents/tools/capabilities/governance.ts; server/agents/executor/**",
+      "testFile": "tests/platform/adversarial-m1-integrity.test.ts",
+      "testName": "Founder execution: NEVER generates fake receipt and strictly returns EXECUTOR_UNAVAILABLE (tests/platform/adversarial-m1-integrity.test.ts)",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json",
+        "reports/audits/2026-10-20-double-check-findings.md"
+      ],
+      "environment": "local",
+      "integrationStage": "protocol_verified",
+      "evidenceProves": "The POSITIVE path is proven: a proposal approved through the ApprovalService executes through the real executor and produces a durable receipt with a real id, with idempotent replay returning the ORIGINAL receipt. The NEGATIVE path is also proven (EXECUTOR_UNAVAILABLE, no fabricated receipt) for the no-approval case.",
+      "remainingRequirement": null,
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-26",
+      "tier": "core",
+      "title": "reconcile_action",
+      "status": "implemented_unverified",
+      "source": "server/agents/tools/capabilities/governance.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-26 reconcile_action — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "reconcile_action reports receipt vs live order/payment drift.",
+      "supersedes": {
+        "date": "2026-10-20",
+        "previousStatus": "verified_local",
+        "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: Implemented as one reconciliation tool; the three separately-required operations (inspect_action_receipt, refresh_external_action_status, apply_verified_action_outcome) are not all present."
+      },
+      "remainingRequirement": "Implemented as one reconciliation tool; the three separately-required operations (inspect_action_receipt, refresh_external_action_status, apply_verified_action_outcome) are not all present.",
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-27",
+      "tier": "core",
+      "title": "inspect_runtime",
+      "status": "verified_local",
+      "source": "server/agents/tools/capabilities/governance.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-27 inspect_runtime — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "inspect_runtime reports real runtime, job and approval health.",
+      "remainingRequirement": null,
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-28",
+      "tier": "core",
+      "title": "review_skill_candidate",
+      "status": "verified_local",
+      "source": "server/agents/tools/capabilities/governance.ts; server/agents/intelligence/learning.ts",
+      "testFile": "tests/platform/intelligence-learning-pipeline.test.ts",
+      "testName": "a candidate that FAILS evaluation is not publishable (tests/platform/intelligence-learning-pipeline.test.ts)",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "protocol_verified",
+      "evidenceProves": "The existing 6-check reviewer is CALLED through the tool registry (not duplicated) and the promotion path behind it exists behind a human gate with a runnable evaluation.",
+      "remainingRequirement": null,
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-29",
+      "tier": "core",
+      "title": "search_sop",
+      "status": "verified_local",
+      "source": "server/agents/tools/capabilities/governance.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-29 search_sop — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "search_sop reads approved knowledge and QC SOPs.",
+      "remainingRequirement": null,
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-30",
+      "tier": "core",
+      "title": "propose_task",
+      "status": "verified_local",
+      "source": "server/agents/tools/capabilities/governance.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-30 propose_task — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "propose_task validates entity scope and assignee and does not create the task.",
+      "remainingRequirement": null,
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-31",
+      "tier": "core",
+      "title": "evaluate_job_retry",
+      "status": "verified_local",
+      "source": "server/agents/tools/capabilities/governance.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-31 evaluate_job_retry — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "evaluate_job_retry derives eligibility from status, attempt, lease and reason code.",
+      "remainingRequirement": null,
+      "testNameKind": "title"
+    },
+    {
+      "id": "ADV-32",
+      "tier": "core",
+      "title": "draft_campaign",
+      "status": "verified_local",
+      "source": "server/agents/tools/capabilities/governance.ts",
+      "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
+      "testName": "ADV-32 draft_campaign — pengesahan ketat + pelaksanaan sebenar",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "draft_campaign drafts, simulates the canonical margin against live prices, and does not publish.",
+      "remainingRequirement": null,
+      "testNameKind": "title"
+    },
+    {
+      "id": "FIN-01",
+      "tier": "core",
+      "title": "Margin Guardian — amount and ratio gates",
+      "status": "verified_local",
+      "source": "shared/growth-contracts.ts:131; server/platform/marginGuardian.ts; server/platform/marketing.ts",
+      "testFile": "tests/platform/growth-margin.test.ts",
+      "testName": "Margin contribution gates: amount threshold, 25.000% ratio, zero-sales, staff-vs-founder override (tests/platform/growth-margin.test.ts)",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "Both margin gates are proven: the amount threshold, the 25.000% ratio boundary (24.996% blocked), the zero-sales guard and the staff-vs-founder override.",
+      "remainingRequirement": null,
+      "testNameKind": "prose"
+    },
+    {
+      "id": "PAY-01",
+      "tier": "core",
+      "title": "Payment callback — dedupe, signature, mismatch rejection",
+      "status": "blocked_external",
+      "source": "server/platform/paymentReconciliation.ts:233",
+      "testFile": "tests/platform/payment-reconciliation-v24.test.ts",
+      "testName": "Provider callback dedupe by transaction id; amount/currency mismatch rejection; late payment without stock resurrection (tests/platform/payment-reconciliation-v24.test.ts)",
+      "gap": "The reconciler class is real and well tested, but there is NO HTTP callback route mounted and no HMAC X-Signature verification, so the class is unreachable in production.",
+      "externalGate": "Billplz sandbox credential for the live provider",
+      "evidenceRefs": [
+        "reports/audits/2026-10-20-acceptance-source-audit.md"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "The reconciler class is real and proven (dedupe, mismatch rejection, late payment, no oversell), but there is NO HTTP callback route mounted and no HMAC X-Signature verification, so the class is unreachable in production. The live provider side additionally needs a Billplz sandbox credential.",
+      "remainingRequirement": "No HTTP callback route is mounted and there is no HMAC X-Signature verification.",
+      "activationDecisionRef": "reports/implementation/activation-decisions.json#PAY-01",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "PAY-02",
+      "tier": "core",
+      "title": "Payment acceptance — redirect must not confirm paid",
+      "status": "blocked_external",
+      "source": "server/platform/commerce.ts:299",
+      "testFile": "tests/platform/backend-lifecycle.test.ts",
+      "testName": "PAYMENT_NOT_VERIFIED — a payment is never treated as verified",
+      "testNameKind": "prose",
+      "gap": "The domain rule is real, but there is no success-redirect route and no provider-callback route, so the journey is never exercised end to end.",
+      "externalGate": "Billplz sandbox credential for the live provider",
+      "evidenceRefs": [
+        "reports/audits/2026-10-20-acceptance-source-audit.md"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "The domain rule (PAYMENT_NOT_VERIFIED) is proven, but there is no success-redirect route and no provider-callback route, so the journey is never exercised end to end. The live provider side additionally needs a Billplz sandbox credential.",
+      "remainingRequirement": "No success-redirect route and no provider-callback route exist, so the journey is never exercised end to end.",
+      "activationDecisionRef": "reports/implementation/activation-decisions.json#PAY-02"
+    },
+    {
+      "id": "PAY-03",
+      "tier": "core",
+      "title": "Refund allocation — largest remainder, zero drift, cumulative contra",
+      "status": "verified_local",
+      "source": "server/platform/paymentReconciliation.ts:90",
+      "testFile": "tests/platform/refund-allocation-v24.test.ts",
+      "testName": "Largest-remainder allocation sums exactly to the total with 0-cent drift (tests/platform/refund-allocation-v24.test.ts)",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "Largest-remainder allocation is proven to sum exactly to the total with 0-cent drift, cumulative contra is tracked, and replay is idempotent.",
+      "remainingRequirement": null,
+      "testNameKind": "prose"
+    },
+    {
+      "id": "STK-01",
+      "tier": "core",
+      "title": "Stock — available, reservation, FEFO consume, quarantine exclusion",
+      "status": "verified_local",
+      "source": "server/platform/commerce.ts:100",
+      "testFile": "tests/copilot/mod-03-inventory.test.ts",
+      "testName": "Available units, reservation expiry rollback, quarantine excluded from saleable stock (tests/copilot/mod-03-inventory.test.ts)",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "Available units, reservation expiry rollback, FEFO consume and quarantine exclusion from saleable stock are proven against real records.",
+      "remainingRequirement": null,
+      "testNameKind": "prose"
+    },
+    {
+      "id": "OFF-01",
+      "tier": "core",
+      "title": "Offline — idempotency key, pending reconciliation, session race",
+      "status": "implemented_unverified",
+      "source": "src/features/platform/client.ts:35",
+      "testFile": "tests/platform/client-retry.test.ts",
+      "testName": "Offline cache, retry idempotency, session race",
+      "testNameKind": "prose",
+      "gap": "The client-side fingerprint, Idempotency-Key and PENDING_RECONCILIATION gate are real, but there is no revalidate-on-reconnect, no server-side revision compare before retry, and no per-field conflict resolution.",
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/audits/2026-10-20-acceptance-source-audit.md"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "The client-side request fingerprint, Idempotency-Key and PENDING_RECONCILIATION gate are real and tested, but there is no revalidate-on-reconnect, no server-side revision compare before retry and no per-field conflict resolution.",
+      "remainingRequirement": "No revalidate-on-reconnect, no server-side revision compare before retry, no per-field conflict resolution."
+    },
+    {
+      "id": "REF-01",
+      "tier": "core",
+      "title": "Referral risk — risk engine, OTP, device/velocity/age signals",
+      "status": "not_run",
+      "source": "NONE — only referral-code syntax validation exists in server/platform/commerce.ts",
+      "testFile": null,
+      "testName": null,
+      "gap": "No risk engine, no OTP, no device/velocity/age signals, no reason codes, no appeal path.",
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/audits/2026-10-20-acceptance-source-audit.md"
+      ],
+      "environment": "documentation",
+      "integrationStage": "designed",
+      "evidenceProves": "No risk engine, no OTP, no device/velocity/age signals, no reason codes and no appeal path exist. Only referral-code syntax validation is implemented, and that belongs to REF-02.",
+      "remainingRequirement": null,
+      "testNameKind": "prose"
+    },
+    {
+      "id": "REF-02",
+      "tier": "core",
+      "title": "Referral — self-referral block, separate dealer/customer rewards",
+      "status": "verified_local",
+      "source": "server/platform/commerce.ts; server/platform/dealers.ts",
+      "testFile": "tests/copilot/mod-06-loyalty.test.ts",
+      "testName": "Referral validation and self-referral rejection (tests/copilot/mod-06-loyalty.test.ts)",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "Referral validation and self-referral rejection are proven, and dealer and customer rewards use separate ledgers.",
+      "remainingRequirement": null,
+      "testNameKind": "prose"
+    },
+    {
+      "id": "LOY-01",
+      "tier": "core",
+      "title": "Loyalty — atomic redemption, expiry, idempotent reversal",
+      "status": "verified_local",
+      "source": "server/platform/loyalty.ts:242",
+      "testFile": "tests/copilot/mod-06-loyalty.test.ts",
+      "testName": "Loyalty points balance, tier, redemption value and expiry boundary (tests/copilot/mod-06-loyalty.test.ts)",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "Atomic redemption, expiry boundary and idempotent reversal are proven against a real ledger.",
+      "remainingRequirement": null,
+      "testNameKind": "prose"
+    },
+    {
+      "id": "SEC-01",
+      "tier": "core",
+      "title": "Tracking token — hashed at rest, expiry, no leak",
+      "status": "implemented_unverified",
+      "source": "server/platform/commerce.ts; server/platform/app.ts:101",
+      "testFile": "tests/copilot/mod-02-orders.test.ts",
+      "testName": "Tracking token length, hash storage, expiry rejection, hash not leaked (tests/copilot/mod-02-orders.test.ts)",
+      "gap": "Token generation, hashing and expiry are real and tested, but there is NO revocation path, and the expiry is creation-time only rather than handover-based.",
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/audits/2026-10-20-acceptance-source-audit.md"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "Token generation, at-rest hashing, expiry rejection and non-leakage are proven, but there is NO revocation path and the expiry is creation-time only rather than handover-based.",
+      "remainingRequirement": "No revocation path, and the expiry is creation-time only rather than handover-based.",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "SEC-02",
+      "tier": "core",
+      "title": "Dealer scoping — per-org terms and commission",
+      "status": "verified_local",
+      "source": "server/platform/app.ts:147",
+      "testFile": "tests/platform/agent-runtime.test.ts",
+      "testName": "Ahli dealer yang dicabut (revoked) tidak lagi boleh membaca terma dealer",
+      "testNameKind": "title",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/audits/2026-10-20-acceptance-source-audit.md"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "Per-org dealer scoping is proven, and the revoked-membership gate is now enforced (membership.status === \"active\") with a regression test.",
+      "remainingRequirement": null
+    },
+    {
+      "id": "DR-01",
+      "tier": "core",
+      "title": "Backup and restore — integrity, manifest, RPO",
+      "status": "implemented_unverified",
+      "source": "server/platform/backup.ts:20; server/platform/backupScheduler.ts:281",
+      "testFile": "tests/platform/backup-restore.test.ts",
+      "testName": "Transactional backup, evidence hash verification, restore with PRAGMA integrity_check (tests/platform/backup-restore.test.ts)",
+      "gap": "Transactional backup, evidence-hash verification and restore with PRAGMA integrity_check are proven, but the 4-hour RPO policy (server/platform/backupScheduler.ts DEFAULT_RPO_HOURS / checkRpoStatus) is not asserted by any test, RTO is never MEASURED (no 30-minute drill, no timing assertion) and there is no production drill or key-recovery evidence.",
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/audits/2026-10-20-acceptance-source-audit.md"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "Transactional backup, evidence-hash verification and restore with PRAGMA integrity_check are proven, but RTO is never MEASURED (no 30-minute drill, no timing assertion) and there is no production drill or key-recovery evidence.",
+      "remainingRequirement": "RTO is never measured (no 30-minute drill, no timing assertion) and there is no production drill or key-recovery evidence.",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "AI-01",
+      "tier": "core",
+      "title": "Free model routing — real provider, failover, truthful fallback",
+      "status": "implemented_unverified",
+      "source": "server/agents/providers/model-router.ts; server/agents/providers/model-adapters.ts; server/platform/freeModelRouter.ts",
+      "testFile": "tests/platform/copilot-runtime-pipeline.test.ts",
+      "testName": "Free model router: provider failover, budget, free-only policy (tests/platform/copilot-runtime-pipeline.test.ts)",
+      "gap": "The runtime router is real. The LEGACY server/platform/freeModelRouter.ts fallback previously attributed a locally generated string to a live provider id (local_rules masquerading as live_model); its truthfulness fix and the PROVIDER_QUOTA_EXHAUSTED reason code are still in flight.",
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/audits/2026-10-20-acceptance-source-audit.md"
+      ],
+      "environment": "local",
+      "integrationStage": "protocol_verified",
+      "evidenceProves": "The runtime model router is real: strict candidate order, a 3-call budget counting every attempt, a deadline, token caps and a free-only policy. The LEGACY server/platform/freeModelRouter fallback was corrected to attribute its locally derived answer to local_rules instead of a live provider, but the PROVIDER_QUOTA_EXHAUSTED reason code and the dead-candidate skip are still in flight.",
+      "remainingRequirement": "PROVIDER_QUOTA_EXHAUSTED and the dead-candidate skip were still in flight at the time of this audit.",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "AI-02",
+      "tier": "core",
+      "title": "No fabricated results — every value computed with real provenance",
+      "status": "implemented_unverified",
+      "source": "server/platform/adkAgent.ts; server/platform/domainTools.ts; server/platform/mcp/operationsBrief.ts; server/platform/freeModelRouter.ts; server/automation/runtimeTransports.ts",
+      "testFile": "tests/platform/provenance-truth-guard.test.ts",
+      "testName": "Provenance truth guard: no literal financial results, no unbacked provenance.source",
+      "testNameKind": "prose",
+      "gap": "The fabricated constants in adkAgent.ts, domainTools.ts, operationsBrief.ts and runtimeTransports.ts have been removed and a static CI guard added; the guard test is green, but the guard is static source analysis only (no runtime proof against a real record) and the legacy freeModelRouter fallback truthfulness fix is still pending.",
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/audits/2026-10-20-double-check-findings.md"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "The fabricated constants in adkAgent.ts, domainTools.ts, operationsBrief.ts and runtimeTransports.ts were replaced with real reads and a static CI guard now fails the build on 17 banned values, on a numeric literal assigned to a computed-result key, and on an unbacked provenance.source. The guard test itself is still RED and the guard is static analysis, not a runtime proof.",
+      "remainingRequirement": "The provenance guard is static source analysis, not a runtime proof, and the guard test was still red at the time of the audit."
+    },
+    {
+      "id": "AI-03",
+      "tier": "core",
+      "title": "Human approval — expiry, already decided, role, no fabricated receipt",
+      "status": "implemented_unverified",
+      "source": "server/platform/adkAgent.ts:131; server/agents/approval/**",
+      "testFile": "tests/platform/hitl-execution-v24.test.ts",
+      "testName": "HITL expiry, double decision, non-founder denial, no fabricated receipt (tests/platform/hitl-execution-v24.test.ts)",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "protocol_verified",
+      "evidenceProves": "Expiry, already-decided, founder-only and the no-fabricated-receipt rule are proven, and the approval path now carries a real CAS, a real executor and a durable receipt.",
+      "supersedes": {
+        "date": "2026-10-20",
+        "previousStatus": "verified_local",
+        "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: No unknown_outcome state when the outcome of an execution cannot be determined."
+      },
+      "remainingRequirement": "No unknown_outcome state when the outcome of an execution cannot be determined.",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "PD-01",
+      "tier": "core",
+      "title": "Privacy — consent, preference, opt-out at dispatch",
+      "status": "implemented_unverified",
+      "source": "server/platform/operationalAmendments.ts:181; server/platform/marketing.ts:21; src/services/supabaseAgentPerformance.ts",
+      "testFile": "tests/platform/operational-amendments.test.ts",
+      "testName": "Notification preferences and allowed topics stored per user (tests/platform/operational-amendments.test.ts)",
+      "gap": "Preference and consent storage are real, and the EXT-03 telemetry collector now has an allowlist, opt-out and delete. But there is NO opt-out gate at dispatch (publish is blocked outright, so no dispatch path exists to gate) and the asset consent field is still free text rather than a consent record.",
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/audits/2026-10-20-acceptance-source-audit.md"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "Preference and consent storage are real, and the telemetry collector now has an allowlist, opt-out and delete. But there is NO opt-out gate at dispatch (publish is blocked outright, so no dispatch path exists to gate) and the asset consent field is still free text.",
+      "remainingRequirement": "No opt-out gate at dispatch (publish is blocked outright, so no dispatch path exists to gate) and the asset consent field is still free text.",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "OPS-01",
+      "tier": "core",
+      "title": "Operations — quarantine excludes saleable stock, movements recorded",
+      "status": "verified_local",
+      "source": "server/platform/commerce.ts:270; server/platform/dealers.ts",
+      "testFile": "tests/copilot/mod-03-inventory.test.ts",
+      "testName": "Quarantine never reduces saleable stock from another batch; return moves to HQ quarantine (tests/copilot/mod-03-inventory.test.ts)",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "Quarantine is proven to exclude saleable stock from other batches, returns move to HQ quarantine, and movements are recorded.",
+      "remainingRequirement": null,
+      "testNameKind": "prose"
+    },
+    {
+      "id": "ARC-01",
+      "tier": "core",
+      "title": "Architectural boundaries — import rules and cycle rejection",
+      "status": "verified_local",
+      "source": "scripts/maintenance/check-boundaries.ts",
+      "testFile": "tests/architecture/dependency-boundaries.test.ts",
+      "testName": "reports a multiline import statement at the statement, not at the \"from\" line (tests/architecture/dependency-boundaries.test.ts, fixture-driven)",
+      "gap": null,
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/acceptance-verification.json",
+        "reports/implementation/evidence/ARC-01.json"
+      ],
+      "supersedes": {
+        "date": "2026-10-20",
+        "previousStatus": "verified_local",
+        "reason": "The original evidence claimed 'boundary import & cycle rejection' but no cycle detection was implemented and the only negative test never invoked the checker. The checker was rewritten on the TypeScript compiler API with committed negative fixtures; the two stale removalBatch 03B exceptions were re-based to 01D with a guard that fails the build if an exception names a completed phase."
+      },
+      "environment": "local",
+      "integrationStage": "protocol_verified",
+      "evidenceProves": "The checker was rewritten on the TypeScript compiler API and is driven by eleven committed negative fixture trees (multiline import, dynamic import, deep relative, aliased, shared->client, feature->app, feature->foreign-feature, a real module-interface cycle, and a clean control). The two stale removalBatch 03B exceptions were re-based to 01D, with a guard that fails the build if an exception names a completed phase. The one remaining real cycle (server/platform <-> server/automation) is registered with an owner and a removal batch.",
+      "remainingRequirement": null,
+      "testNameKind": "title"
+    },
+    {
+      "id": "REL-01",
+      "tier": "core",
+      "title": "Release — build, runtime config, deployment evidence",
+      "status": "implemented_unverified",
+      "source": "vercel.json; api/platform.ts; server/runtime-config.ts; server/runtime-identity.ts",
+      "testFile": "tests/platform/vercel-entry.test.ts",
+      "testName": "Vercel entry, fail-closed runtime config and runtime identity (tests/platform/vercel-entry.test.ts)",
+      "gap": "The build, the fail-closed runtime config and the Vercel entry are real and tested, but there is NO deployment receipt: no preview/production artifact id, no deployment URL, and the Playwright browser suite has never been run against a live server.",
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/implementation/evidence/REL-01.json"
+      ],
+      "supersedes": {
+        "date": "2026-10-20",
+        "previousStatus": "verified_local",
+        "reason": "The original evidence cited 'package.json' as its testPath (a build manifest, not a test) and reported environment local_build as verified_local with no deployment receipt."
+      },
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "The production build, the fail-closed runtime config and the Vercel entry are real and tested, but there is NO deployment receipt: no preview/production artifact id, no deployment URL, and the Playwright browser suite has never been run against a live server.",
+      "remainingRequirement": "No deployment receipt: no preview/production artifact id, no deployment URL, and the Playwright browser suite has never been run against a live server.",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "EXT-01",
+      "tier": "extension",
+      "title": "Inspector (local only)",
+      "status": "implemented_unverified",
+      "source": "server/agents/intelligence/inspector.ts; src/features/intelligence/localInspector.ts",
+      "testFile": "tests/platform/intelligence-ext-local.test.ts",
+      "testName": "Local inspector redacts secrets and writes nothing (tests/platform/intelligence-ext-local.test.ts)",
+      "gap": "The inspector, its 8 redaction rules and its production refusal are implemented and tested, but the dev-only route is not mounted in the platform app.",
+      "externalGate": null,
+      "evidenceRefs": [
+        "reports/audits/2026-10-20-double-check-findings.md"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "The inspector, its redaction rules and its production refusal are real and tested, but the dev-only route is not mounted in the platform app.",
+      "remainingRequirement": "The dev-only inspector route is not mounted in the platform app.",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "EXT-02",
+      "tier": "extension",
+      "title": "User Memories",
+      "status": "blocked_external",
+      "source": "server/agents/intelligence/memories.ts",
+      "testFile": "tests/platform/intelligence-ext-local.test.ts",
+      "testName": "Memory provenance, consent gate, sensitive-field refusal, retention, per-user delete (tests/platform/intelligence-ext-local.test.ts)",
+      "gap": null,
+      "externalGate": "Hosted User Memories requires INTELLIGENCE_ACCOUNT_AND_TERMS_REQUIRED.",
+      "evidenceRefs": [
+        "reports/audits/2026-10-20-double-check-findings.md"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "The LOCAL memory store is real and proven: provenance, the consent gate, sensitive-field refusal, retention and per-user delete. The hosted User Memories offering is externally gated, so this row proves the local path only.",
+      "supersedes": {
+        "date": "2026-10-20",
+        "previousStatus": "verified_local",
+        "reason": "Re-tiered to blocked_external after an independent adversarial review. The requirement names a hosted/offering activation that is externally unavailable, so a local or synthetic proof does not close it (contract line 179). External gate: Hosted User Memories requires INTELLIGENCE_ACCOUNT_AND_TERMS_REQUIRED."
+      },
+      "remainingRequirement": null,
+      "activationDecisionRef": "reports/implementation/activation-decisions.json#EXT-02",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "EXT-03",
+      "tier": "extension",
+      "title": "Analytics / collector",
+      "status": "blocked_external",
+      "source": "src/services/supabaseAgentPerformance.ts",
+      "testFile": "tests/platform/ext-03-telemetry.test.ts",
+      "testName": "Seed removed, prohibited fields absent, opt-out, delete, allowlist, single write path (tests/platform/ext-03-telemetry.test.ts)",
+      "gap": null,
+      "externalGate": "Hosted activation blocked: ACTIVATION_EVIDENCE_MISSING. The LOCAL capability is verified; the offering is not activated.",
+      "evidenceRefs": [
+        "reports/audits/2026-10-20-double-check-findings.md"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "The telemetry collector is real: the 40-row mock seed is gone, the prohibited fields (user_query, tokens_used) no longer exist in the schema, and the allowlist, opt-out, delete and single-write-path behaviours are proven.",
+      "remainingRequirement": null,
+      "activationDecisionRef": "reports/implementation/activation-decisions.json#EXT-03",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "EXT-04",
+      "tier": "extension",
+      "title": "Slack / Teams channels",
+      "status": "blocked_external",
+      "source": "server/agents/intelligence/channels.ts",
+      "testFile": "tests/platform/intelligence-ext-local.test.ts",
+      "testName": "Channel adapter contract on a synthetic transport: send, inbound, thread mapping, signature, staleness, permission (tests/platform/intelligence-ext-local.test.ts)",
+      "gap": null,
+      "externalGate": "Live Slack/Teams requires CHANNEL_PROVIDER_ACCOUNT_REQUIRED (provider account, app, signature, permission).",
+      "evidenceRefs": [
+        "reports/audits/2026-10-20-double-check-findings.md"
+      ],
+      "environment": "synthetic",
+      "integrationStage": "sdk_wired",
+      "evidenceProves": "The channel ADAPTER contract is real and proven on a synthetic transport (send, inbound receive, conversation->thread mapping, HMAC signature check, staleness window, permission check). The test name itself says synthetic: this is a contract proof, NOT a live Slack/Teams activation and NOT a delivery. Live activation is externally gated by CHANNEL_PROVIDER_ACCOUNT_REQUIRED.",
+      "supersedes": {
+        "date": "2026-10-20",
+        "previousStatus": "verified_synthetic",
+        "reason": "Re-tiered to blocked_external after an independent adversarial review. The requirement names a hosted/offering activation that is externally unavailable, so a local or synthetic proof does not close it (contract line 179). External gate: Live Slack/Teams requires CHANNEL_PROVIDER_ACCOUNT_REQUIRED (provider account, app, signature, permission)."
+      },
+      "remainingRequirement": null,
+      "activationDecisionRef": "reports/implementation/activation-decisions.json#EXT-04",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "EXT-05",
+      "tier": "extension",
+      "title": "WebMCP (own app)",
+      "status": "blocked_external",
+      "source": "src/features/intelligence/webmcpProbe.ts; server/agents/mcp/**",
+      "testFile": "tests/ext/ext-webmcp-probe.test.ts",
+      "testName": "Browser support probe and typed unavailable outcome; grant model (tests/ext/ext-webmcp-probe.test.ts)",
+      "gap": "The probe, the typed WEBMCP_BROWSER_UNSUPPORTED outcome and the grant model are implemented and tested, but the browser MCP client API and the tool registration against the own-app surface are not yet wired.",
+      "externalGate": "The browser-side MCP client API and the live own-app registration are not available in this environment.",
+      "evidenceRefs": [
+        "reports/audits/2026-10-20-double-check-findings.md"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "The browser support probe, the typed WEBMCP_BROWSER_UNSUPPORTED outcome and the grant model are real and tested, but the browser MCP client API and the tool registration against the own-app surface are not wired.",
+      "supersedes": {
+        "date": "2026-10-20",
+        "previousStatus": "implemented_unverified",
+        "reason": "Re-tiered to blocked_external after an independent adversarial review. The requirement names a hosted/offering activation that is externally unavailable, so a local or synthetic proof does not close it (contract line 179). External gate: The browser-side MCP client API and the live own-app registration are not available in this environment."
+      },
+      "remainingRequirement": null,
+      "activationDecisionRef": "reports/implementation/activation-decisions.json#EXT-05",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "EXT-06",
+      "tier": "extension",
+      "title": "Voice",
+      "status": "blocked_external",
+      "source": "src/features/pet/microphonePermission.ts; src/features/pet/processingLocation.ts; src/features/intelligence/copilotRunController.ts",
+      "testFile": "tests/platform/ext-06-voice.test.ts",
+      "testName": "Mic permission indicator, revoke, shared run identity, untrusted transcript, processing disclosure (tests/platform/ext-06-voice.test.ts)",
+      "gap": null,
+      "externalGate": "Hosted activation blocked: ACTIVATION_EVIDENCE_MISSING. The LOCAL capability is verified; the offering is not activated.",
+      "evidenceRefs": [
+        "reports/audits/2026-10-20-double-check-findings.md"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "The browser Web Speech path is real and proven: the mic permission indicator, one-click revoke, the shared run identity with the copilot thread, the untrusted-transcript marking and the processing-location disclosure. No external STT/TTS is claimed.",
+      "remainingRequirement": null,
+      "activationDecisionRef": "reports/implementation/activation-decisions.json#EXT-06",
+      "testNameKind": "prose"
+    },
+    {
+      "id": "EXT-07",
+      "tier": "extension",
+      "title": "Attachments / multimodal",
+      "status": "implemented_unverified",
+      "source": "server/platform/evidenceFiles.ts; server/agents/intelligence/tenancy.ts",
+      "testFile": "tests/platform/ext-07-attachments.test.ts",
+      "testName": "Attachment reference carries hash, permission and revocation; a revoked attachment fails the set (tests/platform/ext-07-attachments.test.ts)",
+      "gap": "The upload security model and the attachment reference surface are real and tested, but the copilot route does not yet pass attachmentIds through, and there is no vision inference.",
+      "externalGate": "Hosted activation blocked: ACTIVATION_EVIDENCE_MISSING. The LOCAL capability is verified; the offering is not activated.",
+      "evidenceRefs": [
+        "reports/audits/2026-10-20-double-check-findings.md"
+      ],
+      "environment": "local",
+      "integrationStage": "component_present",
+      "evidenceProves": "The upload security model and the attachment reference surface (hash, permission, revocation) are real and tested, and a revoked attachment fails the whole reference set. The copilot route does not yet pass attachmentIds through and there is NO vision inference, which is externally gated.",
+      "remainingRequirement": "The copilot route does not yet pass attachmentIds through, and there is no vision inference.",
+      "activationDecisionRef": "reports/implementation/activation-decisions.json#EXT-07",
+      "testNameKind": "prose"
+    }
+  ],
+  "schema": {
+    "authority": "docs/prompts/AGENT-EXECUTION-CONTRACT.md:166-168,179,185",
+    "statusEnum": [
+      "not_started",
+      "in_progress",
+      "implemented_unverified",
+      "verified_synthetic",
+      "verified_local",
+      "verified_preview",
+      "verified_production",
+      "blocked_external",
+      "failed",
+      "not_run",
+      "superseded"
+    ],
+    "environmentEnum": [
+      "documentation",
+      "synthetic",
+      "local",
+      "preview",
+      "production"
+    ],
+    "integrationStageEnum": [
+      "designed",
+      "component_present",
+      "sdk_wired",
+      "protocol_verified",
+      "live_verified",
+      "release_verified"
+    ],
+    "note": "status, environment and integrationStage are independent fields. A component/unit/synthetic pass does not close an acceptance that still requires protocol, live, browser or domain evidence. `remainingRequirement` is explicit: when it is non-null the row cannot be closed even when the local proof is green."
+  }
+}

@@ -1,5 +1,9 @@
 # Markdown Inventory — 19 Oktober 2026
 
+<!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
+> **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Rekod historical; pemerhatian, angka ujian, tick dan executor dalam badan asal merujuk sesi asal sahaja. Arahan launch/delegation lama tidak aktif. Status semasa dan bukti release ditentukan oleh rujukan di atas; kandungan asal dipelihara untuk provenance.
+<!-- ABANGCOLEK-CURRENT-STATUS:END -->
+
 Authority: [master blueprint](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md). [Alignment report](../../reports/documentation-alignment-20261019.md). [Prompt utama](../prompts/IMPLEMENT-ABANGCOLEK.md).
 
 Total: **370** Markdown; managed skill files hash-verified unchanged: **236**. Baseline SHA256 below refers to the initial in-session inventory, not a claim of the original Git HEAD. It was captured while independent documentation alignment workers were active; do not use it as a pristine pre-edit snapshot. Current final fingerprints are retained separately in ignored verification artifacts. New files are labeled explicitly. Source/runtime/privacy/dependency trees are excluded as described in the report.
@@ -378,4 +382,3 @@ Skill files were inventoried and hash-compared, not rewritten as business specif
 | skills/testing-quality/snapshot-testing/SKILL.md | Managed skill library | Preserved; hash unchanged; not execution proof | 401B7D7150157F49EC9185C8036C46724602D958B78B6192128FE367ED95E750 |
 | skills/testing-quality/test-automation-suite-generator/SKILL.md | Managed skill library | Preserved; hash unchanged; not execution proof | 8825A4A71957978E301253383D7B1677D4F5C3D97E2FFEA8229C44C288AD8E79 |
 | skills/testing-quality/visual-regression-tester/SKILL.md | Managed skill library | Preserved; hash unchanged; not execution proof | 1EB70EACE2C0228F6954D89F55201C989E5A8FFE1E3E59EAE3C649A9A56834C9 |
-

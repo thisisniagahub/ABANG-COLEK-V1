@@ -1,90 +1,106 @@
-# COPY-READY — Implement ABANGCOLEK Blueprint v2.3
+# COPY-READY — Implement ABANGCOLEK Blueprint v2.4
 
-Salin arahan di bawah kepada coding agent yang mempunyai akses repo. Baca fail yang dirujuk; jangan menganggap ringkasan ini menggantikan kontrak domain.
+<!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
+> **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Panduan aktif mengikut skop fail ini. Fakta source/runtime dan ownership semasa dirujuk di atas; arahan atau baseline bertarikh lama memerlukan revalidation. Tiada acceptance aplikasi ditutup oleh alignment dokumentasi.
+<!-- ABANGCOLEK-CURRENT-STATUS:END -->
 
-## Arahan kepada agent pelaksana
+**Executor semasa:** Codex inline dalam candidate `D:/ABANGCOLEK-WORKTREES/codex-completion-20261020`. Pengguna menghentikan AGY/Kilo/Copilot/Hermes implementation agents. Baca [CURRENT-STATUS](../CURRENT-STATUS.md), [checklist](../../PROJECT-CHECKLIST.md) dan checkpoint sebelum sambung; jangan menggunakan prompt delegation lama untuk memulakan sesi luar. Blueprint dan skop CopilotKit kekal sama.
 
-Anda melaksanakan projek sedia ada di `D:\ABANGCOLEK-PLATFORM`. Objektif ialah implementasi sebenar blueprint, bukan hanya menambah dokumen/UI mock. Baca dan patuhi fail berikut mengikut urutan:
+Tarikh:20 Oktober 2026. Ini prompt pelaksanaan apabila pengguna mengarahkan implementasi; membaca/review dokumen tidak mengaktifkan provider, migration, merge, push atau deployment.
 
-1. `docs/ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md`.
-2. `docs/decisions/0003-blueprint-v23-execution-contract.md`.
-3. `docs/design/repository-structure.md`.
-4. `docs/design/copilotkit-ten-features.md`.
-5. `docs/design/copilot-generative-ui-seven-approaches.md`.
-6. `docs/design/copilot-advanced-tools.md`.
+## Prompt yang perlu diberi kepada integrator
+
+Anda ialah integrator projek sedia ada `D:\ABANGCOLEK-PLATFORM`; pelaksanaan aplikasi semasa dibuat secara inline dalam candidate `D:/ABANGCOLEK-WORKTREES/codex-completion-20261020`, sambil memelihara source asal yang dirty. Siapkan implementasi sebenar blueprint mengikut prerequisite yang telah diputuskan. Jangan berhenti pada pelan, scaffolding atau laporan subagent. Jangan meminta pengguna memilih stack, model, protocol, worktree lane, jumlah worker, nama tool atau susunan fasa.
+
+**Wajib baca dan kemas kini [PROJECT-CHECKLIST.md](../../PROJECT-CHECKLIST.md).** Selepas setiap task, integrator memeriksa evidence dan menukar `[ ]` kepada `[x]` hanya apabila keseluruhan acceptance item itu selesai. Source separa, blocked, failed dan not-run kekal unchecked. Sync checklist, acceptance register dan checkpoint, serta rekod current/next task sebelum handoff atau tamat sesi. Worker menghantar bukti; mereka tidak menulis tick canonical serentak. Kontrak lengkap ialah execution contract§10.
+
+Baca mengikut urutan:
+
+1. `docs/ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md` v2.4.
+2. `docs/decisions/0003-blueprint-v23-execution-contract.md` (filename legacy; keputusan semasa di dalam).
+3. `docs/prompts/AGENT-EXECUTION-CONTRACT.md` — semua defaults, identity, financial invariants, skill/plugin/MCP manifest dan reason codes wajib.
+4. `docs/prompts/ACCEPTANCE-REGISTER.md` —78 requirement teras dan7ekstensi berasingan.
+5. `reports/blueprint-review-20261020.md` serta laporan domain yang dipautkan.
+6. `docs/design/repository-structure.md`, `docs/design/copilotkit-ten-features.md`, `docs/design/copilot-generative-ui-seven-approaches.md` dan `docs/design/copilot-advanced-tools.md`.
 7. `docs/research/2026-10-19-free-model-policy.md`.
-8. `docs/superpowers/plans/2026-10-19-copilotkit-ten-features.md`.
-9. Prompt fasa 00 hingga 06 dalam folder ini.
+8. Prompt fasa00..06. Checkpoint ialah evidence ledger untuk diaudit, bukan authority mengatasi source.
 
-Keputusan teknikal telah ditetapkan. **Jangan bertanya pengguna untuk memilih stack, provider alternatif, protokol UI, folder, jumlah subagents atau urutan kerja.** Laksanakan kontrak. Jika prerequisite nyata tidak tersedia, tulis blocker tepat dan teruskan kerja bebas; jangan mengarang credential/approval atau mendakwa selesai. Jika invariant keselamatan tidak boleh dipenuhi, disable capability terlibat dengan reason code.
+## Hasil yang mesti diserahkan
 
-## Keputusan yang tidak boleh dipilih semula
+- Satu source/worktree manifest yang jelas dan satu implementation canonical; jangan menindih kerja agent/pengguna.
+- Official CopilotKit TypeScript runtime + AG-UI + ADK, accessible shared Chat pada workspace/Pet, tools berizin dan genuine protocol lifecycle.
+- Kesemua10 CPK: Chat, AG-UI Streams, Automatic Learning, Generative UI, Declarative UI, Human-in-the-loop, Frontend tools, Shared state, Headless UI, Sub-agents. Dua Intelligence capabilities boleh kekal `blocked_external` hanya jika prerequisite sebenar tidak tersedia; jangan menandakan10/10 siap.
+- Kesemua7 GUI: Display Only, Interactive, Tool Rendering, State Rendering, first-party read-only MCP App, A2UI Fixed Schema, Your Components.
+- Kesemua10 MOD dan32 logical ADV capabilities; semua specializations/risk-split registrations mengikut registry. Jangan menambah33logical capability atau menggunakan generic tool untuk menutup jurang.
+- EXT-01..07 mempunyai explicit activation state dan tests/disabled reason: Inspector, User Memories, Capture/Analytics, Channels, WebMCP, Voice, Attachments. Ini bukan7CPK tambahan; jangan auto-enable external processing atau outbound messaging.
+- Tiada fabricated facts, fake financial receipt, unsafe role/history trust atau paid fallback.
+- Acceptance receipts setiap ID dan laporan local/preview/production yang berasingan. Tests wujud tidak semestinya tests pernah dijalankan.
 
-- React/Vite + Bun modular monolith; kekalkan route discovery `api/`, satu root package dan entry aplikasi.
-- Google ADK Python 3.12 melalui AG-UI kepada runtime TypeScript CopilotKit `/v2` pada Bun. Agent ID `abangcolek_ops`.
-- Pins awal tepat dari ADR-0003. Lock dependencies dan uji compatibility; jangan menukar versi/model secara teka-teki jika gagal.
-- Canonical API local default 3010, UI 3000, Copilot runtime 3020, ADK 8030; loopback. Reuse hanya apabila identity checkout/runtime sah; port occupied yang tidak sepadan menjadi blocker, bukan alasan membunuh proses.
-- Model order: `gemini-3.6-flash`, `gemini-3.5-flash-lite`, kemudian OpenRouter `nvidia/nemotron-3-super-120b-a12b:free`. Setiap calon wajib lulus offering/account/privacy/price/tool gates dan eval. Tiada paid fallback atau calon tambahan dipilih sendiri. Semua gagal -> labeled local rules/unavailable.
-- A2UI Fixed Schema, dynamic model auto-injection disabled. MCP App pertama ialah first-party read-only Operations Brief, bukan third-party server bebas.
-- Tiga specialist: Commerce Reader, QC/JEV Reviewer dan Marketing Drafter. Parent/subagent mempunyai shared budget/depth/scope seperti spec.
-- JEV LOCAL_RULES review-only. Tiada native/vision/calibrated confidence tanpa bukti transport/evaluation sebenar.
-- Cloud commit ialah Supabase CAS seperti source. SQLite tempatan dan agent-session persistence bukan dua salinan authority yang bebas. Streaming agent tidak memegang store temporary selepas request tamat.
-- Intelligence disabled sehingga offering sedia ada disahkan percuma dan sesuai. Jangan login/create project/subscription hanya untuk menutup check. CPK-02/03 blocked jika gate tiada.
+## Langkah pertama — jangan edit aplikasi dahulu
 
-## Kemahiran yang wajib digunakan mengikut tugas
+1. Rekod timestamp Malaysia, cwd, `git rev-parse HEAD`, branch, origin, worktrees, tracked/untracked/index/working diffs, hashes fail owned dan listener/runtime identity. Jangan output secret, cookies, token atau business rows.
+2. Baseline audit asal ialah root integration60311aa/main e736856; ia historical. Receipt lebih baharu merekod main18c69b3 bagi patch11 fail konfigurasi sahaja. Sahkan actual HEAD/dirty source; jangan checkout/reset kepada mana-mana nilai lama.
+3. Sambung candidate `codex-completion-20261020` berdasarkan manifest takeover. Worktree lama `copilot-completion`, frontend/backend dan multi-CLI bukan lane aktif; preserve index/HEAD/MERGE_HEAD/dirty changes masing-masing. Jangan memulihkan, membersihkan atau menggunakan lane lama secara automatik.
+4. Bandingkan release main dengan integrasi. Kekalkan pembaikan landing/deployment/Bun/SPA yang sudah disahkan. Kod HITL/fixed facts dalam integrasi belum layak masuk main sehingga03A/02/03B lulus.
+5. Gunakan baseline receipt yang masih sepadan dengan manifest; jalankan checks yang diperlukan untuk perubahan aplikasi semasa dan final-source release. Rekod command/result serta failures/timeout; jangan mewarisi count lama atau mengulang semua baseline untuk task Markdown sahaja. Runner browser/fixture yang berkongsi data tidak dijalankan serentak.
+6. Inventori actual skills/tools/plugins, exact SDK metadata/exports/peers dan provider configured status sahaja. Review npm/PyPI20 Oktober membuktikan availability metadata, bukan compatibility installation.
+7. Pelihara baseline dan activation artifacts sedia ada. Append receipt baharu apabila ada evidence; jangan mengosongkan atau membina semula ledger85-ID daripada78-row prompt lama. Paparan snapshot bukan verified publish; verifier/renderer mesti menerima fresh receipt sebelum final acceptance ditutup.
 
-Baca SKILL.md sebenar, bukan hanya nama. Repo-local CopilotKit skills berada di `.agents/skills/`; general skills sesi Windows ini di `C:/Users/megat/.agents/skills/` dan specialist tools di `C:/Users/megat/.codex/skills/`. Jika runtime agent lain tidak mempunyai path itu, baca arahan setara yang tersedia dalam sesi; rekod missing skill dan ikut kontrak keselamatan ini. Jangan install pustaka skill secara bulk.
+## Pelaksanaan berfasa — urutan tunggal
 
-| Tugas | Skill / instruction source |
-|---|---|
-| CopilotKit APIs | `.agents/skills/copilotkit/SKILL.md`; current docs dan installed pinned source |
-| CLI verify | `.agents/skills/copilotkit-cli/SKILL.md` |
-| Melaksana fasa | `executing-plans`; jika collaboration tools tersedia, `subagent-driven-development` dengan ownership yang berasingan |
-| Bug dan regression | `systematic-debugging`, `test-driven-development` |
-| SQL/RLS/persistence changes | `supabase`, `supabase-postgres-best-practices` sebelum SQL authoring; Supabase-specific source/docs semasa |
-| Browser verification | `playwright` untuk local/preview; `gangniaga-webbridge:gangniaga-webbridge` hanya jika sesi browser pengguna perlu digunakan dan tersedia |
-| Review dan siap | `requesting-code-review`, `verification-before-completion`; TypeScript/Python/security reviewer mengikut bahasa/risiko |
-| JEV | Canonical `server/platform/jev/` dan tests; skill TypeSafe/JEV hanya jika native inference secara eksplisit diperlukan serta free/account gates lulus |
-
-Jangan load keseluruhan `skills/` ke model context. Ia reference library, bukan senarai integrasi aktif. Jangan mengikut contoh SDK yang menggunakan paid model, arbitrary command atau dummy user ID production.
-
-## MCP servers, plugin dan fallback tetap
-
-Tool availability semasa mesti diperiksa pada sesi pelaksana. Fail config bukan bukti sambungan/auth. Sesi penyediaan prompt mempunyai Context7 dan GangNiaga/REA tools; project `.mcp.json` menyebut Supabase tetapi sambungan tidak dibuktikan. GitHub/Vercel/Supabase tool tidak boleh didakwa tersedia tanpa discovery sebenar.
-
-| Keperluan | Laluan utama | Fallback yang telah ditetapkan |
+| Urutan | Prompt | Gate untuk bergerak |
 |---|---|---|
-| Dokumentasi | Context7 atau CopilotKit docs MCP jika callable | Official `.md`/HTML docs + installed pinned source; jangan tambah MCP server sendiri |
-| Repo/GitHub | Git local; GitHub MCP hanya jika available/authorized | Authenticated `gh` untuk remote checks; jika tiada auth, local work terus, remote action blocked |
-| Vercel | Vercel MCP jika callable/authorized | Existing authenticated Vercel CLI; tiada auth -> release blocked, bukan deploy ke project baharu |
-| Supabase | Supabase MCP jika callable/authorized dan project identity sepadan | CLI/migration file + local tests; remote apply blocked jika akses tiada. Jangan output key |
-| Browser | Existing Playwright tests/CLI | Available browser automation tool selepas baca skill; tiada browser -> record E2E not run, jangan ganti HTTP200 sebagai bukti |
-| JEV | Canonical local evaluator | Native provider unavailable -> LOCAL_RULES berlabel; bukan fake latency/confidence |
-| MCP Apps dalam produk | First-party server/resource/renderer mengikut GUI-05 | Dependency belum sah -> GUI-05 disabled, bukan MCP text result dilabel App |
+|00|[Baseline](00-baseline.md)| Source/ownership/dependencies/permissions dan baseline diketahui; tests gagal direkod, bukan disembunyikan |
+|03A|[Integriti dahulu](03-domains-and-tools.md#fasa-03a--integriti-sebelum-struktur)| Margin/allocation/refund/payment/tracking/loyalty/CAS negative tests serta domain/security review |
+|01|[Struktur](01-structure.md)| Move/caller/hash/dependency boundaries sah; tiada content/data hilang |
+|02|[Runtime dan Chat](02-copilot-foundation.md)| Official pinned SDK/ADK imports+synthetic protocol, verified identity dan shared controller; live rows berasingan |
+|03B|[Tools dan modul](03-domains-and-tools.md#fasa-03b--registry-tools-dan-modul)|32 logical/semua registrations+MOD10 scoped outputs, nofakefacts/receipt |
+|04|[UI dan subagents](04-ui-and-agents.md)| GUI7+CPK UI/state/HITL/headless/delegation acceptance sebenar |
+|05|[Intelligence](05-intelligence.md)| Existing free account/privacy gates; jika tiada, blocked record dan teruskan06untuksubset yang lulus |
+|06|[Verification dan release](06-release.md)| Exact artifact/restore/security/QA/compatibility dan release authority; tiada whole-project claim jika blocked |
 
-Plugin Codex/IDE membantu development; ia bukan production dependency dan tidak memberi aplikasi API access. CopilotKit repo skills telah tersedia; jangan anggap marketplace plugin lain terpasang. `channels-setup`, Slack/Teams, imagegen dan deployment plugin tidak diperlukan bagi skop ini. Jangan menghantar mesej kepada pihak luar tanpa arahan yang sah.
+Jika prerequisite phase tertentu gagal, teruskan hanya task bebas yang tidak bergantung padanya. Jangan menukar urutan untuk menanda phase dependent lengkap. Satu gate luar tidak memberi lesen menangguhkan semua local/synthetic work.
 
-## Pelaksanaan tanpa keputusan pilihan
+## Ownership dan collaboration
 
-Jalankan urutan tetap **00 -> 03A (integriti dahulu) -> 01 -> 02 -> 03B (registry/tools) -> 04 -> 05 -> 06**. Fasa03 mempunyai dua bahagian dependency yang wajib, bukan pilihan alternatif. Ini mengikut integrity-first dalam blueprint. Dalam setiap bahagian, selesaikan tests/review sebelum menanda complete. Sesuaikan import kepada lokasi sebenar selepas move manifest; jangan mencipta duplicate domain service.
+Integrator memiliki composition/shared contracts/dependencies/moves/checkpoint/release. Sesi semasa dilaksanakan inline; jangan melancarkan implementation workers walaupun collaboration tools tersedia. Lane backend, frontend dan Python ialah pembahagian scope kerja Codex, bukan arahan spawn. Penggunaan semula worker hanya boleh dipertimbangkan selepas pengguna mengaktifkan delegation semula; ketika itu setiap lane mesti mempunyai fail owned, interface snapshot, negative tests dan exit gate, serta memelihara perubahan pihak lain.
 
-Jika collaboration tersedia, gunakan maksimum tiga workers dengan fail ownership berasingan dan parent sebagai integrator. Jika tidak tersedia, jalankan sequence yang sama sendiri. Semua worker diberitahu bahawa mereka bukan satu-satunya pengubah repo dan tidak boleh revert edit pihak lain. Reviewer tidak mengubah fail implementer tanpa coordination.
+Gunakan `executing-plans` secara inline untuk sambungan semasa. Jangan bertanya pengguna jumlah agent atau menunggu proses yang tidak pernah bermula. Report lama hanyalah input semakan; integrator mesti membaca diff dan mengesahkan output tests pada source yang berkaitan.
 
-Jangan menyekat semua kerja kerana satu provider/Intelligence gate. Capability blocked direkod dan kerja bebas diteruskan. Jika approach gagal dua kali, hentikan approach itu, baca error dan research root cause. Jangan cuba stack/model berbayar yang berbeza.
+Selepas implementasi, jadualkan TypeScript/Python/security/database/domain reviewer yang berkaitan. Reviewer read-only dahulu; pembetulan kembali kepada owner. Reviewer yang tidak tersedia direkod sebagai limitation, bukan independent pass palsu.
 
-## Gates dan bukti
+## Stack dan dependency yang terkunci
 
-- Rekod HEAD dan dirty manifest sebelum edit. Preserve user edits, media, DB, evidence dan credentials. Tiada clone/reset/clean/reinstall generik atau bulk git add.
-- TDD bagi business/security logic: failing test -> confirm failure -> implement -> pass -> independent review. Jangan menulis test yang sekadar menyalin implementation.
-- Setiap CPK-01..10, GUI-01..07, MOD-01..10 dan ADV-01..32 mempunyai row status, path/nama test, command, result, environment, timestamp, commit/worktree manifest dan receipt/artifact. Logical tool count tidak sama dengan registered functions.
-- Jejak juga semua acceptance blueprint: FIN-01, PAY-01..03, STK-01, OFF-01, REF-01..02, LOY-01, SEC-01..02, DR-01, AI-01..03, PD-01, OPS-01, ARC-01 dan REL-01. Fasa03A memiliki domain/offline/tracking/consent, fasa02/04 memiliki AI, fasa01 memiliki ARC, fasa06 memiliki DR/REL. Jangan menutup master requirement hanya kerana CPK/GUI pass.
-- Jalankan baseline dan final `bun run lint`, `bun run build`, `bun run test:platform`. Gunakan `bun run test:e2e` dengan fixture/QA environment yang disahkan dan Python tests seperti prompt02. Rekod actual coverage; sasaran business/security >=80% hanya boleh didakwa dengan denominator yang diukur.
-- CopilotKit wiring check selepas real runtime tersedia: `npx copilotkit@4.29.0 verify --expect-runtime oss --round-trip --agent abangcolek_ops --json --via skill:copilotkit-cli`. Sahkan CLI flags dengan `--help`; jika pin/flags tidak menyokong command, rekod compatibility blocker dan semak docs, bukan menukar app package pins. CLI version berbeza daripada runtime package version. Round-trip memanggil model: jalankan hanya selepas free gates. Tiada provider -> blocked, bukan memaksa login Intelligence.
-- Deterministic mock digunakan untuk tests dan dilabel. Live provider, AG-UI protocol, role boundaries, CAS, browser dan deployment masing-masing memerlukan evidence sendiri.
-- Pre-existing failures dibezakan daripada regressions. Jangan disable tests/guards, padam historical evidence atau menyembunyikan fallback untuk kelihatan lulus.
+React/Vite+Bun; official runtime imports `/v2`; `HttpAgent`; Google ADK Python3.12 + AG-UI bridge; agent `abangcolek_ops`. Pins tepat ADR-0003, termasuk MCPv2host peers bersama runtimeSDKv1 melalui authenticated HTTP boundary. Jangan menyalin example Node/Express/Next.js atau Built-in Agent secara membuta tuli. Gunakan SDK Fetch handler yang disahkan pada Bun; CLI wiring check selepas true runtime tersedia.
 
-## Checkpoint dan laporan akhir
+A2UI Fixed Schema tiada secondary-model schema injection. Fixed surfaces OperationsBrief/RefundImpact read-only; supported GUI-02 callbacks mengendalikan draft/approval. MCP App mesti mempunyai initialize/tool/UI-resource/host protocol, sandbox/CSP/origin/resource grants. Kad statik tidak memenuhi protocol acceptance.
 
-Selepas setiap batch kemas kini `docs/handover/IMPLEMENTATION-CHECKPOINT.md`: completed/current/next task, exact paths, revisions, test results, blockers dan rollback. Simpan receipts tanpa secrets di `reports/implementation/` atau runtime ignored storage yang sesuai. Jangan tulis model reasoning dalaman.
+Ports/UI routing/session paths, input/rate/token/tool/model budgets dan expiry tepat ialah execution contract. Jangan memilih port/model/provider/had sendiri. Config deployment mesti mengekalkan Bun1.x dan cleanURLs-safe SPA fallback.
 
-Laporan akhir menyatakan apa yang benar-benar berubah, files, tests, actual local/preview/production status, unresolved external gates dan next executable step. Jangan kata seluruh projek/10 features/production siap apabila ada row blocked/not run. Tiada permission question bagi pilihan teknikal yang sudah ditetapkan. Untuk credentials, bayaran atau action yang benar-benar memerlukan pengguna, jelaskan tindakan tepat dan dependency sahaja; jangan minta pengguna memilih architecture semula.
+## Model, account dan privacy gate
+
+Calon sahaja: `gemini-3.6-flash` -> `gemini-3.5-flash-lite` -> OpenRouter `nvidia/nemotron-3-super-120b-a12b:free`. Exact offering, account, tool compatibility, fees/overflow, privacy dan verification TTL wajib disahkan sebelum call. Nama model/free suffix/pricingpublic tidak mencukupi. Benchmark minimum60synthetic cases hanya melalui calon yang telah lulus gate; synthetic provider tanpa model boleh digunakan untuk protocol/security tests.
+
+Adapter ditetapkan ADR: native ADK Gemini; OpenRouter menggunakan app-owned `BaseLlm` subclass melalui pinned httpx pada `agents/google-adk/models/free_openrouter.py`, exact OpenRouter chat-completions endpoint/model field. Tiada LiteLLM/optional router dipilih sendiri, bare external model string atau duplicated TypeScript provider call. Import/transport compatibility yang gagal menghasilkan `MODEL_ADAPTER_INCOMPATIBLE`, bukan pertukaran stack.
+
+Jika semua calon tidak layak, expose labeled unavailable/local_rules sahaja. Jangan mengarang harga, data atau provider success untuk membuat chat nampak aktif. Model order tidak disusun semula oleh eval secara automatik. JEV kekal LOCAL_RULES tanpa vision/confidence/native claim palsu.
+
+CPK-02/03 memerlukan Intelligence yang benar-benar diluluskan dan percuma untuk penggunaan tersebut. Native ADK persistence dan manual SOP review tidak dilabel sebagai produk Intelligence. Jangan login/create project/subscribe/pay/menghantar history untuk menutup gap.
+
+## Skills, plugins dan MCP
+
+Baca manifest execution contract§6/7 untuk exact paths dan fallback. CopilotKit skill+current docs/pinned source ialah wajib bagi API; Context7 primary jika callable. GitHub/Vercel/Supabase/Playwright plugins hanya digunakan jika actual tool dan authorization tersedia. CLI `gh`/`vercel` yang telah disahkan ialah fallback, bukan token yang direka. Jangan menambah MCP servers, bulk skills atau plugins sebagai kerja kosmetik.
+
+Development MCP bukan first-party MCP App dalam aplikasi. JEV tidak memerlukan native model skill untuk local deterministic evaluator. Channels/Slack/Teams, WebBridge authenticated browser dan voice/vision skills hanya dibaca pada task berkaitan; tiada mesej/perkongsian luar tanpa arahan sebenar.
+
+## Kontrak bukti dan syarat siap
+
+Untuk setiap ID: source/hash/commit+dirty manifest, test path/name, command, actual exit/result, environment/timestamp, protocol/browser/provider/receipt artifact, cost/privacy state, reviewer dan batas bukti. Bezakan `implemented_unverified`, `verified_synthetic`, `verified_local`, `verified_preview`, `verified_production`, `blocked_external`, `failed`, `not_run`. Jangan menaikkan source presence kepada verified.
+
+Jalankan baseline/final `bun run lint`, `bun run build`, `bun run test:platform`, locked Python tests dan scoped browser suites mengikut phase. Jangan tambah coverage claim tanpa denominator. Failure injection mesti meliputi expired/revoked/forged grants, cross-user threads, history/tool injection, stale approvals, duplicate execution, CAS uncertainty, abort, quota, server restart, malformed MCP/A2UI dan worker reconciliation.
+
+Update `docs/handover/IMPLEMENTATION-CHECKPOINT.md` selepas setiap batch; supersede dakwaan lama yang tidak disokong, jangan memadam historical evidence. Exact next ready task dan blocker diperlukan. Jangan berhenti untuk meminta pengguna memilih seni bina yang sudah ditetapkan. Jika external action memerlukan user, sediakan hasil yang boleh direview dan nyatakan hanya tindakan/prerequisite yang diperlukan sambil meneruskan kerja bebas.
+
+Owned atomic commits dan push/deploy hanya selepas checks serta authorization sesi yang masih sah. Tiada force-push/bulk-stage; tiada deploy branch integrasi dengan fake success. Jika GitHub CI account billing blocked, rekod anotasi dan jangan claim greenCI. Vercel Ready tidak cukup: semak exact SHA, automatic custom-domain assignment, direct/login routes, API JSON, asset MIME dan browser actual.
+
+Laporan akhir mesti menyatakan subset yang siap, semua requirement blocked/not-run dan tindakan seterusnya yang executable.10 features hanya lengkap apabila semua10 CPK mempunyai bukti pada environment yang dinyatakan. Menyiapkan dokumen atau landing tidak bermakna Copilot siap.

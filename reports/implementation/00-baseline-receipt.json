@@ -1,0 +1,37 @@
+{
+  "requirementId": "PHASE-00",
+  "status": "verified_local",
+  "environment": "local",
+  "scope": "known baseline outcomes and safe independent03A preparation, not greenplatform",
+  "timestamp": "2026-10-20T03:55:41.244Z",
+  "sourceCommit": "60311aad5a1695eb2804e830488a3133e182397f",
+  "worktree": "D:/ABANGCOLEK-WORKTREES/multi-cli-integration-20261020",
+  "manifest": "00-file-manifest.json",
+  "sourceState": "00-source-state.json",
+  "reviewer": "GitHub Copilot CLI",
+  "review": "00-gate-review.md",
+  "baseline": {
+    "lint": 0,
+    "build": 0,
+    "platform": {
+      "exit": 1,
+      "pass": 416,
+      "fail": 3,
+      "reason": "5000ms timeouts"
+    },
+    "focused": {
+      "exit": 0,
+      "pass": 8,
+      "fail": 0
+    },
+    "discoveredBrowserTests": 53,
+    "browserTestsRun": false
+  },
+  "applicationAcceptanceClosed": 0,
+  "limitations": [
+    "Fullsuite notgreen; focused rerun doesnotreplacefullsuite",
+    "Runtimeidentity blocks live mutations/restarts",
+    "Externalpolicy/model/Intelligence gates remain closed",
+    "Interruptedoldlane preserved; newlane branch chosen for isolated technical work"
+  ]
+}

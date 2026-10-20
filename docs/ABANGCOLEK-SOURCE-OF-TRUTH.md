@@ -1,6 +1,12 @@
 # ABANGCOLEK — Source of Truth
 
-Diselaraskan: **19 Oktober 2026**. [Master Blueprint v2.3](ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) menentukan sasaran; source, test dan runtime receipts menentukan implementasi. [Prompt index](prompts/README.md) ialah arahan pelaksanaan terkini. Tiada suite/deploy baharu dibuat melalui alignment ini. Baseline 3–4 Oktober di bawah ialah sejarah, bukan dakwaan semua backlog/production siap.
+<!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
+> **Alignment20Oktober2026:** [Status semasa](CURRENT-STATUS.md) · [Checklist](../PROJECT-CHECKLIST.md). Panduan aktif mengikut skop fail ini. Fakta source/runtime dan ownership semasa dirujuk di atas; arahan atau baseline bertarikh lama memerlukan revalidation. Tiada acceptance aplikasi ditutup oleh alignment dokumentasi.
+<!-- ABANGCOLEK-CURRENT-STATUS:END -->
+
+**Mula dengan [CURRENT-STATUS](CURRENT-STATUS.md) dan [checklist](../PROJECT-CHECKLIST.md).** Main18c69b3 hanya release TypeScript/config; source integrasi/candidate dan85 requirement belum mempunyai full production certification. Fakta/receipt semasa mengatasi ringkasan baseline lama.
+
+Diselaraskan: **20 Oktober 2026**. [Master Blueprint v2.4](ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) menentukan sasaran; source, test dan runtime receipts menentukan implementasi. [Prompt index](prompts/README.md) ialah arahan pelaksanaan terkini. Tiada suite/deploy baharu dibuat melalui alignment ini. Baseline 3–4 Oktober di bawah ialah sejarah, bukan dakwaan semua backlog/production siap.
 
 ## 1. Visi dan prinsip
 
@@ -107,7 +113,7 @@ Migration memerlukan identity/ownership/IDs/SKU/price-version/lifecycle/evidence
 
 | Sistem | Keadaan source | Prinsip/cadangan yang dikekalkan |
 |---|---|---|
-| JEV | LOCAL_RULES; nativeAvailable false | Typed assessment, abstention, evidence/version/policy; tiada calibrated probability claim |
+| JEV | LOCAL_RULES; nativeAvailable false; adapter native wujud tetapi gate tertutup | Typed assessment, abstention, evidence/version/policy; tiada calibrated probability claim; native call hanya selepas kelayakan/terma/data handling dibuktikan |
 | Hermes | Interface/scaffold; tiada runtime injection | Specialist/memory provenance, satu bounded pilot setelah transport/usage verified |
 | Agent-Reach | Read-only contract; missing transport/unknown quota blocked | URL/hash/date/permitted-use research, scoped grant |
 | Postiz | Remote publish blocked | Exact revision rights/approval, manual export; provider receipt sebelum published |

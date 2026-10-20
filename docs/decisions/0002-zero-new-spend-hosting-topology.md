@@ -1,5 +1,9 @@
 # ADR-0002 — Zero-New-Spend Full-Platform Hosting Topology
 
+<!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
+> **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Panduan aktif mengikut skop fail ini. Fakta source/runtime dan ownership semasa dirujuk di atas; arahan atau baseline bertarikh lama memerlukan revalidation. Tiada acceptance aplikasi ditutup oleh alignment dokumentasi.
+<!-- ABANGCOLEK-CURRENT-STATUS:END -->
+
 > **SUPERSEDED — 19 Oktober 2026:** [ADR-0003](0003-blueprint-v23-execution-contract.md) dan [master blueprint v2.3](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) menggantikan local-only topology dan penolakan cloud dalam rekod ini. Kandungan di bawah ialah keputusan/snapshot sejarah, bukan deployment receipt atau arahan mengaktifkan tunnel. Runtime cloud menggunakan authority Supabase CAS seperti source; runtime local/data path mesti disahkan berasingan. Gunakan [prompt semasa](../prompts/IMPLEMENT-ABANGCOLEK.md).
 
 **Tarikh:** 2026-10-04  

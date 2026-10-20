@@ -1,0 +1,20 @@
+{
+  "requirementId": "CPK-06",
+  "status": "verified_local",
+  "environment": "local_test",
+  "timestamp": "2026-10-20T05:25:00Z",
+  "sourceCommit": "HEAD",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "testName": "HITL proposal and execution lifecycle",
+  "testPath": "tests/platform/hitl-execution-v24.test.ts",
+  "command": "bun test ./tests/platform/hitl-execution-v24.test.ts",
+  "exitCode": 0,
+  "result": "5 pass, 0 fail, 25 expect() calls",
+  "artifactRefs": [
+    "server/platform/adkAgent.ts"
+  ],
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "integrator",
+  "limitations": "Execution blocked with EXECUTOR_UNAVAILABLE when physical executor absent; expiry strictly checked."
+}
+

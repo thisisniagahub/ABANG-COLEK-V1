@@ -1,6 +1,10 @@
 # ABANGCOLEK — capability matrix: skills, MCP, plugins dan fallbacks
 
-Diselaraskan: **19 Oktober 2026**. [Blueprint v2.3](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) dan [prompts](../prompts/README.md) menentukan task semasa. Inventori sesi 3–4 Oktober di bawah ialah sejarah, bukan bukti semua MCP/CLI masih installed/authenticated. `DECLARED`, `EXPOSED`, `CLI_PRESENT`, `VERIFIED_SOURCE` dan `CONNECTED` mesti berasingan. Tiada provider/test/deploy diuji melalui alignment ini.
+<!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
+> **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Panduan aktif mengikut skop fail ini. Fakta source/runtime dan ownership semasa dirujuk di atas; arahan atau baseline bertarikh lama memerlukan revalidation. Tiada acceptance aplikasi ditutup oleh alignment dokumentasi.
+<!-- ABANGCOLEK-CURRENT-STATUS:END -->
+
+Diselaraskan: **19 Oktober 2026**. [Blueprint v2.4](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) dan [prompts](../prompts/README.md) menentukan task semasa. Inventori sesi 3–4 Oktober di bawah ialah sejarah, bukan bukti semua MCP/CLI masih installed/authenticated. `DECLARED`, `EXPOSED`, `CLI_PRESENT`, `VERIFIED_SOURCE` dan `CONNECTED` mesti berasingan. Tiada provider/test/deploy diuji melalui alignment ini.
 
 ## Current required capabilities
 

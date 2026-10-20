@@ -1,0 +1,469 @@
+/**
+ * AbangColek Sovereign GrowthOS — ADV-05..ADV-08 Commerce Tools
+ *
+ * diagnose_checkout, reconcile_payments, preview_refund and propose_refund all
+ * read the canonical order / payment / commission records and reuse the
+ * platform domain evaluators (payment reconciliation, largest-remainder
+ * allocation, cumulative commission reversal).
+ */
+
+import { defineTool, fail, resolveContext } from './common';
+import { provenance } from '../runtime';
+import type { ToolDefinition } from '../types';
+import {
+  activeReservations,
+  allLots,
+  catalogueProducts,
+  catalogueVersion,
+  commissionPolicies,
+  commissionsForOrder,
+  paymentsForOrder,
+  policyForVersion,
+  readOrder,
+} from '../records';
+import { orderAccessCode, outletAccessCode } from '../scope';
+import {
+  allocateCumulativeRefundAcrossLines,
+  calculateCumulativeReversal,
+} from '../../../platform/paymentReconciliation';
+import type { OrderRecord, StockLot } from '../../../../shared/platform-contracts';
+
+const availableUnits = (
+  lots: StockLot[],
+  reservations: Array<{ productId: string; quantity: number; locationId: string; orderId?: string }>,
+  productId: string,
+  locationId: string | undefined,
+  excludingOrderId: string,
+): number => {
+  const physical = lots
+    .filter(
+      (lot) =>
+        lot.productId === productId &&
+        (!locationId || lot.locationId === locationId) &&
+        lot.status === 'available' &&
+        (!lot.expiryAt || lot.expiryAt > new Date().toISOString()),
+    )
+    .reduce((sum, lot) => sum + lot.quantity, 0);
+  const held = reservations
+    .filter(
+      (reservation) =>
+        reservation.productId === productId &&
+        (!locationId || reservation.locationId === locationId) &&
+        reservation.orderId !== excludingOrderId,
+    )
+    .reduce((sum, reservation) => sum + reservation.quantity, 0);
+  return physical - held;
+};
+
+const staffOrderAccess = (
+  actor: import('../scope').ScopedActor,
+  order: OrderRecord,
+): string | null => {
+  const outlet = outletAccessCode(actor, order.outletId);
+  if (outlet) return outlet;
+  return orderAccessCode(actor, order);
+};
+
+export const commerceTools: ToolDefinition[] = [
+  // ADV-05: diagnose_checkout (S)
+  defineTool({
+    logicalCapabilityId: 'ADV-05',
+    registrationName: 'diagnose_checkout',
+    riskClass: 'S',
+    description:
+      'Mendiagnos checkout sebenar: sama ada satu pesanan (orderId) atau satu bakul (lines), dengan menyemak baki stor fizikal, versi katalog dan status bayaran (tanpa reservasi baharu).',
+    requiredRole: 'customer',
+    inputSchema: {
+      orderId: { type: 'string', min: 1, max: 120 },
+      lines: {
+        type: 'array',
+        maxItems: 50,
+        items: {
+          type: 'object',
+          fields: {
+            productId: { required: true, type: 'string', min: 1, max: 120 },
+            quantity: { required: true, type: 'integer', min: 1, max: 1_000_000 },
+          },
+        },
+      },
+      /** Catalogue version the draft was priced against. Absent => no reprice evidence. */
+      catalogueVersion: { type: 'integer', min: 0 },
+      $oneOf: { type: 'array', items: { type: 'string' } },
+    },
+    execute: async (input, ctx) => {
+      const resolved = resolveContext(ctx);
+      if (!resolved.ok) return resolved;
+      const { store, actor } = resolved;
+      const at = ctx.runtime.clock();
+      const lots = allLots(store);
+      const reservations = activeReservations(store).filter(
+        (reservation) => reservation.expiresAt > at,
+      );
+      const currentCatalogueVersion = catalogueVersion(store);
+
+      // --- Cart diagnosis: no order exists yet, price and stock come from the
+      //     canonical catalogue and the live inventory ledger.
+      if (!input.orderId) {
+        const requestedLines = (input.lines as Array<{ productId: string; quantity: number }>) ?? [];
+        const catalogue = catalogueProducts(store);
+        const issues: string[] = [];
+        const lines = requestedLines.map((line) => {
+          const product = catalogue.find((candidate) => candidate.id === line.productId) ?? null;
+          if (!product) {
+            issues.push(`PRODUKT_TIDAK_DITEMUI: ${line.productId}`);
+            return {
+              productId: line.productId,
+              requestedQuantity: line.quantity,
+              availableQuantity: 0,
+              sufficient: false,
+              priceSen: null,
+              knownProduct: false,
+            };
+          }
+          const free = Math.max(
+            0,
+            availableUnits(lots, reservations, line.productId, undefined, ''),
+          );
+          const sufficient = free >= line.quantity;
+          if (!sufficient) {
+            issues.push(`STOK_MENCUKUPI: ${line.productId} perlu ${line.quantity}, ada ${free}`);
+          }
+          return {
+            productId: line.productId,
+            requestedQuantity: line.quantity,
+            availableQuantity: free,
+            sufficient,
+            priceSen: product.priceSen,
+            knownProduct: true,
+          };
+        });
+        const blocking = issues.filter(
+          (issue) => issue.startsWith('STOK_MENCUKUPI') || issue.startsWith('PRODUKT_TIDAK_DITEMUI'),
+        );
+        // A cart is priced from the live catalogue; reprice is only required when
+        // the caller states the catalogue version it was drafted against.
+        const draftedCatalogueVersion = input.catalogueVersion as number | undefined;
+        const requiresReprice =
+          draftedCatalogueVersion !== undefined && draftedCatalogueVersion !== currentCatalogueVersion;
+        if (requiresReprice) {
+          issues.push(
+            `KATALOG_UFUK: draf pada versi ${draftedCatalogueVersion} vs semasa ${currentCatalogueVersion}`,
+          );
+        }
+        return {
+          ok: true,
+          mode: 'cart',
+          valid: blocking.length === 0,
+          requiresReprice,
+          itemCount: lines.length,
+          lines,
+          estimatedTotalSen: lines.reduce(
+            (sum, line) => sum + (line.priceSen ?? 0) * line.requestedQuantity,
+            0,
+          ),
+          catalogueVersion: currentCatalogueVersion,
+          issues,
+          mutated: false,
+          diagnosedAt: at,
+          provenance: provenance(ctx.runtime, ctx, ['catalogue', 'lots', 'reservations'], 'inventory-availability-read'),
+        };
+      }
+
+      const order = readOrder(store, input.orderId as string);
+      if (!order) {
+        return fail('ORDER_NOT_FOUND', `Pesanan ${String(input.orderId)} tidak ditemui.`);
+      }
+      const refusal = orderAccessCode(actor, order);
+      if (refusal) return fail(refusal, 'Pesanan ini di luar skop akses pemeran.');
+
+      const issues: string[] = [];
+      const lines = order.lines.map((line) => {
+        const orderReservation = reservations
+          .filter((reservation) => reservation.orderId === order.id && reservation.productId === line.productId)
+          .reduce((sum, reservation) => sum + reservation.quantity, 0);
+        const free = availableUnits(lots, reservations, line.productId, order.outletId, order.id);
+        const covered = orderReservation + Math.max(0, free);
+        const sufficient = covered >= line.quantity;
+        if (!sufficient) {
+          issues.push(`STOK_MENCUKUPI: ${line.productId} perlu ${line.quantity}, ada ${Math.max(0, covered)}`);
+        }
+        if (line.publishedVersion !== currentCatalogueVersion) {
+          issues.push(`KATALOG_UFUK: ${line.productId} harga versi ${line.publishedVersion} vs ${currentCatalogueVersion}`);
+        }
+        return {
+          productId: line.productId,
+          requestedQuantity: line.quantity,
+          reservedQuantity: orderReservation,
+          freeQuantity: Math.max(0, free),
+          coveredQuantity: covered,
+          sufficient,
+          priceSen: line.priceSen,
+        };
+      });
+
+      if (order.paymentState === 'rejected') issues.push('BAYARAN_DITOLAK');
+      if (order.paymentState === 'pending') issues.push('BAYARAN_MENUNGGU_VERIFIKASI');
+      if (order.fulfilmentStatus === 'cancelled') issues.push('PESANAN_DIBATALKAN');
+
+      const blocking = issues.filter(
+        (issue) => issue.startsWith('STOK_MENCUKUPI') || issue.startsWith('BAYARAN_DITOLAK') || issue.startsWith('PESANAN_DIBATALKAN'),
+      );
+
+      return {
+        ok: true,
+        mode: 'order',
+        orderId: order.id,
+        valid: blocking.length === 0,
+        requiresReprice: issues.some((issue) => issue.startsWith('KATALOG_UFUK')),
+        itemCount: order.lines.length,
+        lines,
+        paymentState: order.paymentState,
+        fulfilmentStatus: order.fulfilmentStatus,
+        catalogueVersion: currentCatalogueVersion,
+        issues,
+        mutated: false,
+        diagnosedAt: at,
+        provenance: provenance(ctx.runtime, ctx, ['orders', 'lots', 'reservations', 'catalogue'], 'inventory-availability-read'),
+      };
+    },
+  }),
+
+  // ADV-06: reconcile_payments (Q)
+  defineTool({
+    logicalCapabilityId: 'ADV-06',
+    registrationName: 'reconcile_payments',
+    riskClass: 'Q',
+    description:
+      'Menyelaraskan lejar bayaran sebenar dengan rekod pesanan dan melaporkan drift sen yang dikira, tanpa menulis apa-apa.',
+    requiredRole: 'staff',
+    inputSchema: {
+      orderId: { required: true, type: 'string', min: 1, max: 120 },
+    },
+    execute: async (input, ctx) => {
+      const resolved = resolveContext(ctx);
+      if (!resolved.ok) return resolved;
+      const { store, actor } = resolved;
+      const order = readOrder(store, input.orderId as string);
+      if (!order) {
+        return fail('ORDER_NOT_FOUND', `Pesanan ${String(input.orderId)} tidak ditemui.`);
+      }
+      const refusal = staffOrderAccess(actor, order);
+      if (refusal) return fail(refusal, 'Pesanan ini di luar skop akses pemeran.');
+
+      const payments = paymentsForOrder(store, order.id);
+      const confirmedSen = payments
+        .filter((payment) => payment.state === 'confirmed')
+        .reduce((sum, payment) => sum + payment.amountSen, 0);
+      const refundedSen = payments
+        .filter((payment) => payment.state === 'refunded')
+        .reduce((sum, payment) => sum + payment.amountSen, 0);
+      const paidDriftSen = confirmedSen - order.paidAmountSen;
+      const refundDriftSen = refundedSen - order.refundAmountSen;
+      const reconciled = paidDriftSen === 0 && refundDriftSen === 0;
+
+      return {
+        ok: true,
+        orderId: order.id,
+        orderRevision: order.revision,
+        orderPaymentState: order.paymentState,
+        paymentRecordCount: payments.length,
+        confirmedPaymentsSen: confirmedSen,
+        refundedPaymentsSen: refundedSen,
+        recordedPaidAmountSen: order.paidAmountSen,
+        recordedRefundAmountSen: order.refundAmountSen,
+        paidDriftSen,
+        refundDriftSen,
+        status: reconciled ? 'reconciled' : 'drift_detected',
+        payments: payments.map((payment) => ({
+          id: payment.id,
+          amountSen: payment.amountSen,
+          state: payment.state,
+          method: payment.method,
+          reference: payment.reference,
+          createdAt: payment.createdAt,
+        })),
+        provenance: provenance(ctx.runtime, ctx, ['orders', 'payments'], 'payment-reconciliation-read'),
+      };
+    },
+  }),
+
+  // ADV-07: preview_refund (S)
+  defineTool({
+    logicalCapabilityId: 'ADV-07',
+    registrationName: 'preview_refund',
+    riskClass: 'S',
+    description:
+      'Pratonton refund menggunakan agihan Largest-Remainder sebenar dan pembalikan komisen kumulatif daripada lejar platform (tanpa menulis).',
+    requiredRole: 'staff',
+    inputSchema: {
+      orderId: { required: true, type: 'string', min: 1, max: 120 },
+      amountSen: { required: true, type: 'integer', min: 1, max: 1_000_000_000 },
+    },
+    execute: async (input, ctx) => {
+      const resolved = resolveContext(ctx);
+      if (!resolved.ok) return resolved;
+      const { store, actor } = resolved;
+      const order = readOrder(store, input.orderId as string);
+      if (!order) {
+        return fail('ORDER_NOT_FOUND', `Pesanan ${String(input.orderId)} tidak ditemui.`);
+      }
+      const refusal = staffOrderAccess(actor, order);
+      if (refusal) return fail(refusal, 'Pesanan ini di luar skop akses pemeran.');
+
+      const amountSen = input.amountSen as number;
+      const refundableSen = order.paidAmountSen - order.refundAmountSen;
+      if (refundableSen <= 0) {
+        return fail('NO_REFUNDABLE_BALANCE', `Pesanan ini tiada baki boleh dipulangkan (${refundableSen} sen).`);
+      }
+      if (amountSen > refundableSen) {
+        return fail(
+          'REFUND_EXCEEDS_PAID_BALANCE',
+          `Amaun refund (${amountSen} sen) melebihi baki boleh dipulangkan (${refundableSen} sen).`,
+        );
+      }
+
+      const allocations = allocateCumulativeRefundAcrossLines(
+        amountSen,
+        order.refundAmountSen,
+        order.lines,
+      );
+      const allocatedTotalSen = allocations.reduce((sum, allocation) => sum + allocation.allocatedSen, 0);
+
+      // Naive proportional rounding drift — the real amount largest-remainder avoids.
+      const totalWeight = order.lines.reduce((sum, line) => sum + line.priceSen * line.quantity, 0);
+      const naiveTotalSen =
+        totalWeight > 0
+          ? order.lines.reduce((sum, line) => {
+              const weight = BigInt(line.priceSen * line.quantity);
+              return sum + Number((weight * BigInt(amountSen)) / BigInt(totalWeight));
+            }, 0)
+          : 0;
+
+      const commissions = commissionsForOrder(store, order.id);
+      const policies = commissionPolicies(store);
+      const reversal = commissions
+        .filter((entry) => entry.amountSen > 0)
+        .map((entry) => {
+          const policy = policyForVersion(store, entry.policyVersion) ?? policies[policies.length - 1] ?? null;
+          const rateBasisPoints = policy?.rateBasisPoints ?? 0;
+          const alreadyReversedSen = commissions
+            .filter(
+              (candidate) =>
+                candidate.status === 'reversed' &&
+                candidate.amountSen < 0 &&
+                candidate.contraOfId === entry.id,
+            )
+            .reduce((sum, candidate) => sum + Math.abs(candidate.amountSen), 0);
+          const cumulative = calculateCumulativeReversal({
+            originalAmountSen: entry.amountSen,
+            cumulativeRefundSen: order.refundAmountSen + amountSen,
+            rateBasisPoints,
+            previouslyReversedSen: alreadyReversedSen,
+          });
+          return {
+            commissionId: entry.id,
+            policyVersion: entry.policyVersion,
+            rateBasisPoints,
+            originalAmountSen: entry.amountSen,
+            previouslyReversedSen: alreadyReversedSen,
+            targetCumulativeReversalSen: cumulative.targetCumulativeReversalSen,
+            currentReversalDeltaSen: cumulative.currentReversalDeltaSen,
+          };
+        });
+
+      return {
+        ok: true,
+        orderId: order.id,
+        requestedRefundSen: amountSen,
+        refundableBalanceSen: refundableSen,
+        status: 'preview_ready',
+        mutated: false,
+        lineAllocations: allocations,
+        allocatedTotalSen,
+        // Computed difference between the request and the allocated total.
+        estimatedDriftSen: amountSen - allocatedTotalSen,
+        // Computed drift that naive proportional rounding would have introduced.
+        naiveFloorDriftSen: amountSen - naiveTotalSen,
+        commissionReversal: reversal,
+        provenance: provenance(ctx.runtime, ctx, ['orders', 'commission_ledger', 'commission_policies'], 'largest-remainder-allocator'),
+      };
+    },
+  }),
+
+  // ADV-08: propose_refund (D)
+  defineTool({
+    logicalCapabilityId: 'ADV-08',
+    registrationName: 'propose_refund',
+    riskClass: 'D',
+    description:
+      'Mencipta cadangan refund yang kekal (proposal + approval) untuk kelulusan founder. Tiada mutasi pada rekod pesanan.',
+    requiredRole: 'staff',
+    inputSchema: {
+      orderId: { required: true, type: 'string', min: 1, max: 120 },
+      amountSen: { required: true, type: 'integer', min: 1, max: 1_000_000_000 },
+      reason: { type: 'string', min: 3, max: 2000 },
+      reference: { type: 'string', min: 1, max: 200 },
+    },
+    execute: async (input, ctx) => {
+      const resolved = resolveContext(ctx);
+      if (!resolved.ok) return resolved;
+      const { store, actor } = resolved;
+      const order = readOrder(store, input.orderId as string);
+      if (!order) {
+        return fail('ORDER_NOT_FOUND', `Pesanan ${String(input.orderId)} tidak ditemui.`);
+      }
+      const refusal = staffOrderAccess(actor, order);
+      if (refusal) return fail(refusal, 'Pesanan ini di luar skop akses pemeran.');
+
+      const amountSen = input.amountSen as number;
+      const refundableSen = order.paidAmountSen - order.refundAmountSen;
+      if (refundableSen <= 0) {
+        return fail('NO_REFUNDABLE_BALANCE', `Pesanan ini tiada baki boleh dipulangkan (${refundableSen} sen).`);
+      }
+      if (amountSen > refundableSen) {
+        return fail(
+          'REFUND_EXCEEDS_PAID_BALANCE',
+          `Amaun refund (${amountSen} sen) melebihi baki boleh dipulangkan (${refundableSen} sen).`,
+        );
+      }
+
+      const proposal = ctx.runtime.approvalService.createProposal({
+        kind: 'refund.execute',
+        scope: `order:${order.id}#refund`,
+        payload: {
+          orderId: order.id,
+          amountSen,
+          reason: input.reason ?? 'Refund dicadangkan oleh kakitangan',
+          ...(input.reference ? { reference: input.reference } : {}),
+        },
+        amountSen,
+        proposedBy: ctx.actorId,
+        proposerRole: ctx.role,
+        sourceRefs: [`orders:${order.id}@${order.revision}`],
+      });
+
+      return {
+        ok: true,
+        proposalId: proposal.id,
+        proposalNonce: proposal.nonce,
+        version: proposal.version,
+        kind: proposal.kind,
+        scope: proposal.scope,
+        orderId: order.id,
+        amountSen,
+        reason: proposal.payload.reason,
+        proposedBy: proposal.proposedBy,
+        proposerRole: proposal.proposerRole,
+        status: proposal.status,
+        createdAt: proposal.createdAt,
+        expiresAt: proposal.expiresAt,
+        amountSenBound: proposal.amountSen,
+        refundableBalanceSen: refundableSen,
+        mutated: false,
+        authoritativeStateMutated: false,
+        persistence: ctx.runtime.approvalStore.persistence,
+        provenance: provenance(ctx.runtime, ctx, proposal.sourceRefs, 'proposal-store-write'),
+      };
+    },
+  }),
+];

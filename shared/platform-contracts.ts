@@ -10,6 +10,16 @@ export interface RouteMatch { kind: 'public' | 'workspace' | 'flow' | 'not_found
 export interface NavigationItem { id: string; label: string; path: string; requiredCapability: string }
 export type FulfilmentStatus = 'requested' | 'review' | 'accepted' | 'packing' | 'packed' | 'dispatched' | 'received' | 'cancelled';
 export type PaymentState = 'pending' | 'verified' | 'refund_requested' | 'part_refunded' | 'refunded' | 'rejected';
+export interface PaymentRecord {
+  id: string;
+  orderId: string;
+  amountSen: number;
+  method: 'cash' | 'bank';
+  reference: string;
+  state: 'confirmed' | 'refunded';
+  confirmedBy: string;
+  createdAt: string;
+}
 export interface PublicProduct { id: string; name: string; description: string; priceSen: number; currency: 'MYR'; packSize: number; publishedVersion: number; availableQuantity: number }
 export interface CatalogueProduct extends PublicProduct { revision: number; status: 'draft' | 'published' | 'retired' }
 export interface OrderInput { lines: { productId: string; quantity: number }[]; catalogueVersion: number; fulfilment: 'pickup' | 'delivery'; contactRef: string; outletId?: string; referralCode?: string; redeemPoints?: number }
@@ -57,7 +67,37 @@ export interface EarnedBenefit { orderId: string; policyVersion: number; amountS
 export interface CampaignAsset { id: string; name: string; evidenceId?: string; rights: string; consent: string }
 export interface CampaignRecord { id: string; title: string; objective: string; copy: string; status: 'draft' | 'approved' | 'planned' | 'exported'; ownerId: string; revision: number; assets: CampaignAsset[]; productIds: string[]; catalogueVersion: number; scheduledAt?: string; approvedBy?: string; approvalExpiresAt?: string; createdAt: string; marginSimulation?: MarginSimulationInput; marginResult?: MarginSimulationResult; founderOverride?: { approved: boolean; reason: string; approvedBy: string; approvedAt: string; } }
 export interface PublishIntent { id: string; campaignId: string; assetVersion: number; channel: string; accountId?: string; scheduledAt?: string; approvalId: string; approvalExpiresAt: string; grantVersion: number; idempotencyKey: string }
-export interface PublishOutcome { intentId: string; status: 'published' | 'blocked' | 'unknown'; providerRef?: string; evidenceIds: string[]; reasonCode: string }
+/**
+ * Penanda hasil yang datang daripada transport TEMPATAN (stub): tiada provider
+ * sebenar digunakan, jadi tiada penghantaran luaran pernah berlaku.
+ *
+ * Bentuk ini IDENTIK dengan `LocalStubMarker` dalam
+ * `server/automation/runtimeTransports.ts` — kesetaraan itu dibuktikan pada
+ * kompilasi oleh `server/automation/adapters.ts`.
+ */
+export interface LocalStubMarker {
+  transport: 'local_stub';
+  delivered: false;
+  externalEffect: 'none';
+}
+/**
+ * Penanda stub tempatan hanya Wajib hadir pada hasil yang benar-benar datang
+ * daripada stub tempatan. Ketiadaan penanda ialah isyarat bahawa transport itu
+ * adalah transport sebenar — penanda tidak pernah dicipta secara sintesis.
+ */
+export interface PublishOutcome { intentId: string; status: 'published' | 'blocked' | 'unknown'; providerRef?: string; evidenceIds: string[]; reasonCode: string; transport?: LocalStubMarker['transport']; delivered?: LocalStubMarker['delivered']; externalEffect?: LocalStubMarker['externalEffect'] }
+/**
+ * Menyerahkan penanda stub tempatan secara utuh. Jika sumber tidak menandakan
+ * stub tempatan, output ialah objek kosong: TIDAK ada penanda dicipta secara
+ * sintesis dan `delivered` tidak pernah dipaksa kepada `true`.
+ */
+export function localStubMarkerOf(source: Partial<LocalStubMarker> | undefined | null): Partial<LocalStubMarker> {
+  if (!source || source.transport !== 'local_stub') return {};
+  const marker: Partial<LocalStubMarker> = { transport: 'local_stub' };
+  if (source.delivered !== undefined) marker.delivered = source.delivered;
+  if (source.externalEffect !== undefined) marker.externalEffect = source.externalEffect;
+  return marker;
+}
 export interface CancelOutcome { providerRef: string; status: 'cancelled' | 'cancel_pending' | 'unknown'; evidenceIds: string[] }
 export interface ChannelCapability { provider: string; channel: string; accountScope: string; allowedOperations: string[]; verifiedAt: string }
 export interface ExportArtifact { id: string; campaignRevision: number; format: 'text' | 'asset_bundle'; fileRefs: string[]; status: 'exported'; content?: string }

@@ -1,0 +1,116 @@
+{
+  "status": "verified_local",
+  "environment": "documentation",
+  "scope": "project_checklist_and_mandatory_prompt_tick_rules",
+  "timestamp": "2026-10-19T21:17:57.964Z",
+  "timestampMalaysia": "2026-10-20 05:17:57 +08:00",
+  "sourceCommit": "60311aad5a1695eb2804e830488a3133e182397f",
+  "sourceWorktree": "D:/ABANGCOLEK-PLATFORM",
+  "sourceManifest": [
+    {
+      "path": "PROJECT-CHECKLIST.md",
+      "sha256": "f3d8c9e1ed53f8699228b96bd4389e89e4ce3cdfbd48e475ee6feaf4b793ce64"
+    },
+    {
+      "path": "README.md",
+      "sha256": "20561ab038bdc1d0a3835ac47f6a897719ad4655f44bd3f2687d0466bbed200c"
+    },
+    {
+      "path": "docs/prompts/AGENT-EXECUTION-CONTRACT.md",
+      "sha256": "53aa707d1b6f64e86787e219d7beec9eb7621a1446268e6122a7153b3edaa121"
+    },
+    {
+      "path": "docs/prompts/IMPLEMENT-ABANGCOLEK.md",
+      "sha256": "230a54875e3b39b9e52edf538b0fa74932b6611f746ec5ec0165cc46418a669b"
+    },
+    {
+      "path": "docs/prompts/README.md",
+      "sha256": "9e62daa644bbaa052abffd82a4159e65b855f2d6a8379bb367aedf6986f362f2"
+    },
+    {
+      "path": "docs/prompts/ACCEPTANCE-REGISTER.md",
+      "sha256": "a4c9637ebe9f1b5a5897e30b193133429bf08a1b4ef72fd3b5b5ab5688bcce4d"
+    },
+    {
+      "path": "docs/prompts/00-baseline.md",
+      "sha256": "526550cf7373fa7fc750c3db1fd17a0a614d28bc04882d9980bfd0baf92f8a42"
+    },
+    {
+      "path": "docs/prompts/01-structure.md",
+      "sha256": "f84ad09a6435fc5008182a8ae76acf9a89783acd8cf02af5d3d21934640f394e"
+    },
+    {
+      "path": "docs/prompts/02-copilot-foundation.md",
+      "sha256": "c6089f04e4f39766e81eee006ddcbbedabc8fbc36ae6638209b73936571e5615"
+    },
+    {
+      "path": "docs/prompts/03-domains-and-tools.md",
+      "sha256": "bd864d00c869a9d164dd0d49993df5cf02222fc87054e0a185d2213634a27361"
+    },
+    {
+      "path": "docs/prompts/04-ui-and-agents.md",
+      "sha256": "fcb64ca3bae4e48eb41667509f5889396853acbc9675288f01a194ef266607e4"
+    },
+    {
+      "path": "docs/prompts/05-intelligence.md",
+      "sha256": "b11d2efa6a2d41e665186e646dc1fbe1ebe1d6512519f1039526fe4cacf9cbd4"
+    },
+    {
+      "path": "docs/prompts/06-release.md",
+      "sha256": "d8ab5509d9dc711ecf27b72b2d244c1219f85015054517cfc01303ed829ab357"
+    },
+    {
+      "path": "docs/handover/IMPLEMENTATION-CHECKPOINT.md",
+      "sha256": "dc7246e6b394401bd70d031aa9c9b3a99f628fb94507810bc1640b615404fc17"
+    },
+    {
+      "path": "docs/ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md",
+      "sha256": "3297106b7b86c8fc20141400228212c7c4f74b6322df1b5ef1d1615dc234912b"
+    },
+    {
+      "path": "reports/checklist-status-20261020.json",
+      "sha256": "f04a770cc1087e98ee4c921170d18c471a26e4a8db8f206c225170e3ac94551e"
+    }
+  ],
+  "validation": {
+    "markdownFiles": 15,
+    "uniqueCore": 78,
+    "coreClosed": 0,
+    "extensionCount": 7,
+    "extensionClosed": 0,
+    "doneDocumentationLandingTasks": 7,
+    "nextBaselineTasks": 6,
+    "statusDistribution": {
+      "implemented_unverified": 15,
+      "blocked_external": 2,
+      "not_run": 61
+    },
+    "registerStatusRows": 85,
+    "localFileLinksChecked": 143,
+    "localAnchorsChecked": 10,
+    "phasePromptsWithMandatoryChecklistRules": 7,
+    "markdownErrors": [],
+    "gitDiffCheck": {
+      "command": "git -c core.safecrlf=false diff --check -- README.md PROJECT-CHECKLIST.md docs/prompts docs/handover/IMPLEMENTATION-CHECKPOINT.md docs/ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md",
+      "exitCode": 0
+    },
+    "untrackedDocumentLinksAndFencesChecked": true
+  },
+  "independentReview": {
+    "reviewer": "review_project_checklist",
+    "findings": 2,
+    "corrected": 2,
+    "rereview": "no residual actionable issues within scope",
+    "reviewScope": "read-only documentation, status evidence target identity and single writer consistency"
+  },
+  "applicationTestsRerun": false,
+  "applicationCodeChangedByTask": false,
+  "commitOrPushPerformed": false,
+  "nextTask": "NEXT-00-01",
+  "limitations": [
+    "This receipt validates documentation, not Copilot runtime or application acceptance.",
+    "Production probes identify HTTP responses only; catalogue data array currently empty.",
+    "Historical landing tests are referenced, not rerun by this task.",
+    "Source manifest covers the scoped documents and status JSON only; pre-existing user/agent changes remain."
+  ]
+}

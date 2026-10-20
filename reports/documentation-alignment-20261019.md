@@ -1,5 +1,9 @@
 # Markdown Alignment — 19 Oktober 2026
 
+<!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
+> **Alignment20Oktober2026:** [Status semasa](../docs/CURRENT-STATUS.md) · [Checklist](../PROJECT-CHECKLIST.md). Rekod historical; pemerhatian, angka ujian, tick dan executor dalam badan asal merujuk sesi asal sahaja. Arahan launch/delegation lama tidak aktif. Status semasa dan bukti release ditentukan oleh rujukan di atas; kandungan asal dipelihara untuk provenance.
+<!-- ABANGCOLEK-CURRENT-STATUS:END -->
+
 Status: DOCUMENTATION_ALIGNED; bukan source/runtime/release verification. Authority: [master blueprint v2.3](../docs/ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md), [ADR-0003](../docs/decisions/0003-blueprint-v23-execution-contract.md), [prompt pack](../docs/prompts/README.md).
 
 ## Scope dan hasil
@@ -30,4 +34,3 @@ Prompt pack menetapkan architecture, ports, agent IDs, package pins, candidate m
 ## Kegunaan
 
 Salin [IMPLEMENT-ABANGCOLEK.md](../docs/prompts/IMPLEMENT-ABANGCOLEK.md). Urutan tetap:00 ->03A integriti ->01 struktur ->02 foundation ->03B tools ->04 UI/agents ->05 Intelligence ->06 release. Agent meneruskan kerja bebas apabila dependency luar blocked; ia tidak boleh mendakwa seluruh projek siap jika rows belum verified.
-

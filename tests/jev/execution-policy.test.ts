@@ -18,7 +18,12 @@ describe('JEV action and scope boundary', () => {
     const result = await evaluateWithJev('');
     expect(result.dimensions.issueClass.value).toBe('UNKNOWN');
     expect(result.assessment?.status).toBe('ABSTAIN');
-    expect(result.dimensions.issueClass.probabilities).toEqual({});
+    // "Nothing was computed" is `null` (src/services/jevEngine.ts:74-75,136).
+    // The old `toEqual({})` asserted an EMPTY probability MAP, which read as
+    // "computed, and every class has probability 0" — the very lie the
+    // `confidence`/`probabilities` null contract exists to prevent.
+    expect(result.dimensions.issueClass.probabilities).toBeNull();
+    expect(result.dimensions.issueClass.confidence).toBeNull();
     const action = await executeAutomatedJevAction(result, 'email');
     expect(action.preview?.recipient).toBeNull();
     expect(action.preview?.status).toBe('PREPARED');

@@ -1,0 +1,84 @@
+{
+  "phase": "03A",
+  "name": "Financial Integrity, HITL Lifecycle, and Payment Reconciliation v2.4",
+  "generatedAt": "2026-10-20T04:41:00Z",
+  "executor": "Antigravity Sovereign Autopilot",
+  "governingDocuments": [
+    "Master Blueprint v2.4",
+    "ADR-0003",
+    "docs/prompts/CONTINUE-AGY-20261020.md",
+    "docs/prompts/PROJECT-CHECKLIST.md"
+  ],
+  "requirementsCovered": [
+    {
+      "id": "FIN-01",
+      "status": "passed",
+      "scope": "Contribution margin integrity (Rules Own The Money). Strict integer Sen & BigInt arithmetic. No floating-point or rounded percentage shortcuts. Blocks campaigns failing margin threshold.",
+      "testFile": "tests/platform/financial-integrity-v24.test.ts",
+      "testsPassed": 8,
+      "expectCalls": 29
+    },
+    {
+      "id": "CPK-06",
+      "status": "passed",
+      "scope": "Human-In-The-Loop (HITL) proposal lifecycle. Pre-mutation expiry verification (409 HITL_EXPIRED). No fabricated execution receipts (undefined). Status approved tagged with executionBlockedReason: 'EXECUTOR_UNAVAILABLE' until physical executor verified.",
+      "testFile": "tests/platform/hitl-execution-v24.test.ts",
+      "testsPassed": 5,
+      "expectCalls": 18
+    },
+    {
+      "id": "PAY-01",
+      "status": "passed",
+      "scope": "Payment provider webhook deduplication and idempotency. Strict transactionId lookup preventing double-crediting.",
+      "testFile": "tests/platform/payment-reconciliation-v24.test.ts",
+      "testsPassed": 2,
+      "expectCalls": 8
+    },
+    {
+      "id": "PAY-02",
+      "status": "passed",
+      "scope": "Late payment handling. Retains verified payment as valid financial fact under payment_exception_review without reviving cancelled order or releasing reserved stock.",
+      "testFile": "tests/platform/payment-reconciliation-v24.test.ts",
+      "testsPassed": 2,
+      "expectCalls": 8
+    },
+    {
+      "id": "PAY-03",
+      "status": "passed",
+      "scope": "Largest-remainder integer sen allocation (0-cent drift). Exact equality between cumulative partial refunds and single full refund. Cumulative commission reversal without rounding drift.",
+      "testFile": "tests/platform/refund-allocation-v24.test.ts",
+      "testsPassed": 9,
+      "expectCalls": 45
+    },
+    {
+      "id": "STK-01",
+      "status": "passed",
+      "scope": "Atomic inventory lot and reservation reconciliation. Zero race conditions under concurrent payment callbacks.",
+      "testFile": "tests/platform/payment-reconciliation-v24.test.ts",
+      "testsPassed": 4,
+      "expectCalls": 22
+    }
+  ],
+  "verificationSummary": {
+    "testCommand": "bun test ./tests/platform/financial-integrity-v24.test.ts ./tests/platform/hitl-execution-v24.test.ts ./tests/platform/payment-reconciliation-v24.test.ts ./tests/platform/refund-allocation-v24.test.ts ./tests/platform/growth-margin.test.ts",
+    "totalSuites": 5,
+    "totalTests": 40,
+    "passed": 40,
+    "failed": 0,
+    "totalExpectCalls": 216,
+    "durationMs": 1465,
+    "linterStatus": "passed (tsc exit code 0)"
+  },
+  "verifiedFiles": [
+    "shared/growth-contracts.ts",
+    "shared/copilot-contracts.ts",
+    "shared/platform-contracts.ts",
+    "server/platform/marginGuardian.ts",
+    "server/platform/adkAgent.ts",
+    "server/platform/paymentReconciliation.ts",
+    "tests/platform/financial-integrity-v24.test.ts",
+    "tests/platform/hitl-execution-v24.test.ts",
+    "tests/platform/payment-reconciliation-v24.test.ts",
+    "tests/platform/refund-allocation-v24.test.ts"
+  ]
+}

@@ -1,5 +1,9 @@
 # Repository Structure — Proposed Restructure
 
+<!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
+> **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Kontrak sasaran kekal di bawah blueprint v2.4; scope reka bentuk dan keputusan tetap bukan bukti semua fungsi telah diimplementasi. Semak status per-ID dan environment sebelum mendakwa siap atau production-ready.
+<!-- ABANGCOLEK-CURRENT-STATUS:END -->
+
 Date: 2026-10-19
 Status: Target structure fixed for the execution prompts by ADR-0003. No source or assets moved by this design. [Execution contract](../decisions/0003-blueprint-v23-execution-contract.md) resolves choices; [master prompt](../prompts/IMPLEMENT-ABANGCOLEK.md) controls sequencing.
 

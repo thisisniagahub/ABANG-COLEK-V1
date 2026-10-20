@@ -34,12 +34,28 @@ import { HermesAdapter, type AutomationOptions } from '../automation/adapters';
 
 import { Loyalty } from './loyalty';
 import { GoogleAdkAgent, A2UI_ALLOWLISTED_COMPONENTS } from './adkAgent';
-import { FreeModelRouter } from './freeModelRouter';
+import { FreeModelRouter, clientSafeErrorMessage } from './freeModelRouter';
 import { globalDomainTools, getActorCanonicalRole } from './domainTools';
-import { operationsBriefApp } from './mcp/operationsBrief';
+import { createOperationsBriefApp } from './mcp/operationsBrief';
+import { LocalHermesTransport } from '../automation/runtimeTransports';
 
 export interface PlatformAppOptions { googleIdentityVerifier?:GoogleIdentityVerifier; persistenceMode?:'local'|'supabase'; evidenceStorage?:EvidenceStorage; databasePath?:string; bootstrapToken?:string; origin?:string; allowedOrigins?:string[]; rateLimits?:{identityGlobal:number;identityAccount:number;actor:number}; automationOptions?:AutomationOptions; whatsappTransport?:WhatsAppTransport; adkAgent?:GoogleAdkAgent; freeModelRouter?:FreeModelRouter; backupScheduler?:BackupSchedulerOptions|boolean; log?:(entry:{requestId:string;code:string;status:number})=>void }
 const cookieClear='platform_session=; HttpOnly; SameSite=Strict; Path=/api/platform; Max-Age=0';
+
+/**
+ * Keanggotaan dealer yang sah untuk bacaan terma dealer.
+ *
+ * `dealerOrgId` sahaja tidak mencukupi: keanggotaan yang dicabut
+ * (`status: 'revoked'`) atau dinyahaktifkan tidak boleh memberi akses bacaan.
+ * Rujukan: `auth.memberships()` hanya memuatkan baris `status='active'`, tetapi
+ * gate ini kekal eksplisit supaya mana-mana Principal (contohnya yang dibina
+ * dalam proses lain) tidak melepasi semakan.
+ */
+export function hasActiveDealerMembership(actor: Principal): boolean {
+  return (actor.memberships ?? []).some(
+    (membership) => Boolean(membership.dealerOrgId) && membership.status === 'active'
+  );
+}
 export function createPlatformApp(options:PlatformAppOptions={}) {
   const store=new PlatformStore(options.databasePath??'var/lib/platform/platform.sqlite');
   const dbPath=options.databasePath??'var/lib/platform/platform.sqlite';
@@ -64,6 +80,10 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
   const legacyPilots=new LegacyPilotsService(store);
   const founderIntelligence=new FounderIntelligence(store,auth);
   const social=new SocialConnections(auth);
+  const operationsBrief=createOperationsBriefApp(store);
+  // Transport Hermes tempatan hanya boleh mengklaim artifak jika ringkasan
+  // benar-benar disimpan dalam store kanonikal platform.
+  if(options.automationOptions?.hermes instanceof LocalHermesTransport) options.automationOptions.hermes.attachStore(store);
   const freeModelRouter=options.freeModelRouter??new FreeModelRouter();
   const adkAgent=options.adkAgent??new GoogleAdkAgent(store,auth,commerce,dealers,loyalty,{router:freeModelRouter});
   const origin=options.origin??'http://localhost:3000';
@@ -124,7 +144,7 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
       if(path==='/founder-intelligence/analytics')return founderIntelligence.analytics(actor);
       if(path==='/dealer/applications')return dealers.applications(actor);
       if(path==='/dealer/restocks')return dealers.restocks(actor);
-      if(path==='/dealer/terms'){if(!actor.memberships.some(m=>m.dealerOrgId)&&!auth.has(actor,'founder'))fail('FORBIDDEN',403);return operations.settings().approvedPolicies.dealer??null;}
+      if(path==='/dealer/terms'){if(!hasActiveDealerMembership(actor)&&!auth.has(actor,'founder'))fail('FORBIDDEN',403);return operations.settings().approvedPolicies.dealer??null;}
       if(path==='/dealer/benefits')return dealers.benefits(actor);
       if(path==='/dealer/ledger')return dealers.ledger(actor);
       if(path==='/dealer/commission-policies'){auth.founder(actor);return store.all('commission_policies');}
@@ -166,7 +186,7 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
       if(path==='/jev/assessments')return jevEvaluations.assessments(actor);
       if(path==='/jev/evaluations')return jevEvaluations.evaluations(actor);
       if(path==='/jev/context')return jevEvaluations.context(actor,url.searchParams.get('packId')??'',url.searchParams.get('entityId')??'');
-      if(path==='/quotas'){runtimeControls.authorized(actor);return [jobs.usage(),...['hermes','nvidia','postiz','agent_reach'].map(providerId=>({providerId,observedUnits:null,limitUnits:null,available:false,observedAt:now()}))];}
+      if(path==='/quotas'){runtimeControls.authorized(actor);return [jobs.usage(),...['hermes','nvidia','postiz','agent_reach'].map(providerId=>({providerId,observation:'unavailable' as const,reasonCode:'PROVIDER_USAGE_NOT_OBSERVED',observedUnits:null,limitUnits:null,available:false,observedAt:now()}))];}
       if(segments[0]==='jobs'&&recordId&&command==='artifacts'){auth.founder(actor);return store.all<{jobId:string}>('job_artifacts').filter(a=>a.jobId===recordId);}
       if(path==='/flows')return flows.all();
       if(segments[0]==='flow-sessions'&&recordId)return flows.session(actor,recordId);
@@ -189,20 +209,34 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
       if(path==='/copilot/providers'){auth.operational(actor);return freeModelRouter.listProviders();}
       if(path==='/copilot/hitl'){auth.founder(actor);return adkAgent.listHitlActions();}
       if(path==='/copilot/v2'||path==='/v2'||path==='/copilotkit/v2'){
+        // Descriptor ini disahkan dengan auth.operational — sama seperti
+        // /copilot/providers — kerana ia mendedahkan konfigurasi model percuma
+        // yang sedang digunakan oleh platform.
         auth.operational(actor);
         return {
           version: '2.0.0',
-          runtime: 'copilotkit-v2-agui',
+          // Tiada CopilotKitRuntime / @ag-ui/core envelope digunakan oleh
+          // server. Laluan ini dilayani oleh router kata kunci tempatan yang
+          // memancarkan SSE dengan kontrak event platform sendiri
+          // (start | text_delta | a2ui | gen_ui | hitl_prompt | done | error).
+          runtime: 'local-keyword-router',
+          transport: 'http-json-sse',
+          aguiProtocolImplemented: false,
+          copilotkitRuntimeImplemented: false,
+          aguiEventContract: 'project-local-sse-events',
+          aguiEventNames: ['start', 'text_delta', 'a2ui', 'gen_ui', 'hitl_prompt', 'done', 'error'],
           schema: 'a2ui.v1',
+          a2uiSchemaImplemented: true,
           activeProvider: freeModelRouter.getActiveProvider().id,
           candidateModels: freeModelRouter.getStrictFreeCandidates(),
           allowlistedComponents: A2UI_ALLOWLISTED_COMPONENTS,
           paidFallbackAllowed: false,
+          notes: 'Dilayani oleh server/platform/adkAgent.ts (router kata kunci + penilai margin kanonikal). Runtime CopilotKit rasmi belum dipasang pada laluan ini.',
         };
       }
       if(path==='/copilot/tools'){auth.operational(actor);return globalDomainTools.listTools(getActorCanonicalRole(actor));}
-      if(path==='/copilot/mcp/brief/daily'){auth.operational(actor);return operationsBriefApp.getDailyBrief();}
-      if(path==='/copilot/mcp/brief/urgent'){auth.operational(actor);return operationsBriefApp.getUrgentBrief();}
+      if(path==='/copilot/mcp/brief/daily'){auth.operational(actor);return operationsBrief.getDailyBrief();}
+      if(path==='/copilot/mcp/brief/urgent'){auth.operational(actor);return operationsBrief.getUrgentBrief();}
     }
     if(method==='POST') {
       if(path==='/auth/logout'){auth.logout(actor);return {loggedOut:true};}
@@ -339,7 +373,7 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
       }
       if(segments[0]==='copilot'&&segments[1]==='tools'&&segments[2]&&segments[3]==='execute'){
         auth.operational(actor);
-        return globalDomainTools.executeTool(segments[2], { actor, store, commerce, dealers, loyalty }, input);
+        return globalDomainTools.executeTool(segments[2], { actor, store, commerce, dealers, loyalty, operations, auth }, input);
       }
     }
     fail('NOT_FOUND',404,'Laluan tidak ditemui.');
@@ -451,6 +485,15 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
           auth.founder(actor);
           return json({ok:true,data:await backupScheduler.runBackup('founder_manual')});
         }
+        if(request.method==='POST'&&path==='/jev/native-assessments'){
+          return json({ok:true,data:await jevEvaluations.assessNative(actor,input)});
+        }
+        if(request.method==='GET'&&path==='/jev/native-assessments'){
+          return json({ok:true,data:jevEvaluations.nativeAssessments(actor)});
+        }
+        if(request.method==='GET'&&path==='/jev/native-route'){
+          return json({ok:true,data:jevEvaluations.nativeRoute()});
+        }
         if(request.method==='POST'&&(path==='/copilot/chat'||path==='/copilot/v2'||path==='/v2'||path==='/copilotkit/v2')){
           auth.operational(actor);
           const b=object(input);
@@ -490,7 +533,12 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
                   controller.enqueue(encoder.encode(`event: done\ndata: ${JSON.stringify(result)}\n\n`));
                   controller.close();
                 }catch(err:any){
-                  controller.enqueue(encoder.encode(`event: error\ndata: ${JSON.stringify({message:err?.message||'Ralat Copilot'})}\n\n`));
+                  // Ralat upstream TIDAK pernah dipaparkan kepada pelayar sebagai
+                  // mesej mentah. Yang dihantar ialah reason code yang stabil dan
+                  // mesej tetap dalam Bahasa Melayu.
+                  const code=typeof err?.code==='string'?err.code:'COPILOT_RUNTIME_ERROR';
+                  const message=err instanceof DomainError?err.message:clientSafeErrorMessage(code);
+                  controller.enqueue(encoder.encode(`event: error\ndata: ${JSON.stringify({code,message})}\n\n`));
                   controller.close();
                 }
               }

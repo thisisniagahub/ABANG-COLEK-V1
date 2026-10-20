@@ -18,7 +18,13 @@ export default defineConfig(({mode}) => {
     },
     server: {
       watch: { ignored: ['**/var/**','**/reports/**','**/tests/**','**/docs/**','**/.git/**'] },
-      proxy: { '/api/platform': { target: process.env.PLATFORM_API_TARGET ?? 'http://127.0.0.1:3010', changeOrigin: false } },
+      proxy: {
+        '/api/platform': { target: process.env.PLATFORM_API_TARGET ?? 'http://127.0.0.1:3010', changeOrigin: false },
+        // CopilotKit runtime rasmi dan MCP diservis oleh API tempatan yang
+        // SAMA seperti dalam produksi — tanpa ini descriptor 404 dan chat mati.
+        '/api/copilotkit': { target: process.env.PLATFORM_API_TARGET ?? 'http://127.0.0.1:3010', changeOrigin: false },
+        '/api/mcp': { target: process.env.PLATFORM_API_TARGET ?? 'http://127.0.0.1:3010', changeOrigin: false },
+      },
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
       // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== 'true',

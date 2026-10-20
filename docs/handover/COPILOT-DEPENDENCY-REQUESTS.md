@@ -1,4 +1,8 @@
-# Frontend Dependency and Contract Requests for AGY (Status: RATIFIED & RESOLVED)
+# Historical Frontend Dependency and Contract Requests for AGY
+
+<!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
+> **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Rekod handoff historical. Label CLOSED/RATIFIED di bawah ialah dakwaan sesi asal yang tidak membuktikan SDK/ADK/session integration semasa. Executor AGY/Copilot di bawah bukan arahan aktif; tiada acceptance semasa ditutup oleh rekod ini.
+<!-- ABANGCOLEK-CURRENT-STATUS:END -->
 
 > **Tarikh**: 19 Oktober 2026  
 > **Integrator & Pengeluar**: AGY Backend Owner & A2UI Contracts Specialist  

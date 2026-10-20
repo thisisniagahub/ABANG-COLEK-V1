@@ -402,9 +402,18 @@ class PluginManager {
     this.plugins = this.loadPlugins();
   }
 
+  /**
+   * `localStorage` hanya wujud dalam browser. Service ini juga dimuatkan dalam
+   * Node/Bun (ujian, SSR, prerender) jadi storage disemak dahulu — rujukan
+   * terus kepada `localStorage` akan meletup `ReferenceError` di luar browser.
+   */
+  private storage(): Storage | null {
+    return typeof localStorage === 'undefined' ? null : localStorage;
+  }
+
   private loadPlugins(): PluginItem[] {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = this.storage()?.getItem(STORAGE_KEY);
       if (raw) {
         const saved: Partial<PluginItem>[] = JSON.parse(raw);
         return INITIAL_PLUGINS.map(initial => {
@@ -429,7 +438,7 @@ class PluginManager {
 
   private savePlugins() {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.plugins));
+      this.storage()?.setItem(STORAGE_KEY, JSON.stringify(this.plugins));
     } catch (e) {
       console.warn('Failed to save plugins to storage:', e);
     }

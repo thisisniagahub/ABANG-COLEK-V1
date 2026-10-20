@@ -1,6 +1,16 @@
-import type { AgentResult, CancelOutcome, PublishIntent, PublishOutcome, ReadOnlyAgentTask, ResearchRequest, UsageSnapshot } from '../../shared/platform-contracts';
+import type { AgentResult, CancelOutcome, LocalStubMarker, PublishIntent, PublishOutcome, ReadOnlyAgentTask, ResearchRequest, UsageSnapshot } from '../../shared/platform-contracts';
+import { localStubMarkerOf } from '../../shared/platform-contracts';
+import type { LocalStubMarker as RuntimeLocalStubMarker } from './runtimeTransports';
 import { fail, integer, list, object, strings, text } from '../platform/store';
 import { admitWork } from './jobs';
+
+/**
+ * Penanda yang dikongsi mesti IDENTIK dengan penanda runtime sebenar. Jika
+ * bentuknya pernah berbeza, pematahan ini menggagalkan kompilasi — supaya
+ * tidak pernah ada "penanda kedua" yang diam-diam berbeza bentuk.
+ */
+type IdenticalTypes<A, B> = (<T>() => T extends A ? 1 : 2) extends (<T>() => T extends B ? 1 : 2) ? true : false;
+export const LOCAL_STUB_MARKER_MATCHES_RUNTIME: IdenticalTypes<RuntimeLocalStubMarker, LocalStubMarker> = true;
 
 /** Transports belong to reviewed host integrations. No undocumented shell/HTTP protocol is invented here. */
 export interface ReadOnlyHermesTransport {
@@ -15,9 +25,23 @@ export interface ReadOnlyResearchTransport {
 export interface PostizPublisherTransport {
   zeroNewSpend: true;
   channel: string;
-  publish(intent: PublishIntent, signal: AbortSignal): Promise<{ providerRef: string; status: 'published' | 'blocked' | 'unknown'; url?: string; reasonCode?: string }>;
-  reconcile(providerRef: string, signal: AbortSignal): Promise<{ status: 'published' | 'blocked' | 'unknown'; url?: string; reasonCode?: string }>;
+  publish(intent: PublishIntent, signal: AbortSignal): Promise<{ providerRef: string; status: 'published' | 'blocked' | 'unknown'; url?: string; reasonCode?: string } & Partial<LocalStubMarker>>;
+  reconcile(providerRef: string, signal: AbortSignal): Promise<{ status: 'published' | 'blocked' | 'unknown'; url?: string; reasonCode?: string } & Partial<LocalStubMarker>>;
   cancel(providerRef: string, signal: AbortSignal): Promise<CancelOutcome>;
+}
+
+/**
+ * Hasil penyesuaian (reconcile). Penanda stub tempatan adalah pilihan: ia hadir
+ * HANYA jika transport yang menjawab memang menandakannya sebagai stub tempatan.
+ */
+export interface PostizReconcileOutcome {
+  status: 'published' | 'blocked' | 'unknown';
+  providerRef: string;
+  url?: string;
+  reasonCode: string;
+  transport?: LocalStubMarker['transport'];
+  delivered?: LocalStubMarker['delivered'];
+  externalEffect?: LocalStubMarker['externalEffect'];
 }
 
 export interface AutomationOptions {
@@ -90,6 +114,10 @@ export class PostizPublisherAdapter {
         providerRef: outcome.providerRef,
         evidenceIds: [],
         reasonCode: outcome.reasonCode ?? (outcome.status === 'published' ? 'POSTIZ_PUBLISHED' : 'POSTIZ_FAILED'),
+        // Penanda stub tempatan mesti mencapai HTTP response supaya pengguna
+        // tidak tersalah anggap hasil ini sebagai penerbitan sebenar. Transport
+        // sebenar tidak membawa penanda, jadi tiada penanda dicipta di sini.
+        ...localStubMarkerOf(outcome),
       };
     } catch {
       return {
@@ -105,14 +133,16 @@ export class PostizPublisherAdapter {
     }
   }
 
-  async reconcile(providerRef: string, signal: AbortSignal = new AbortController().signal): Promise<{ status: 'published' | 'blocked' | 'unknown'; providerRef: string; url?: string; reasonCode: string }> {
+  async reconcile(providerRef: string, signal: AbortSignal = new AbortController().signal): Promise<PostizReconcileOutcome> {
     const safeRef = text(providerRef, 'Provider reference', 200);
     if (!this.transport || this.transport.zeroNewSpend !== true) {
       return { status: 'unknown', providerRef: safeRef, reasonCode: 'REMOTE_PUBLISH_DISABLED' };
     }
     try {
       const outcome = await this.transport.reconcile(safeRef, signal);
-      return { status: outcome.status, providerRef: safeRef, url: outcome.url, reasonCode: outcome.reasonCode ?? 'RECONCILED' };
+      // Penanda stub tempatan dihantar terus — penyesuaian tempatan juga
+      // tidak boleh mengesahkan penerbitan luaran.
+      return { status: outcome.status, providerRef: safeRef, url: outcome.url, reasonCode: outcome.reasonCode ?? 'RECONCILED', ...localStubMarkerOf(outcome) };
     } catch {
       return { status: 'unknown', providerRef: safeRef, reasonCode: 'RECONCILIATION_FAILED' };
     }

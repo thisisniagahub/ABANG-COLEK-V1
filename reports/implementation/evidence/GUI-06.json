@@ -1,0 +1,24 @@
+{
+  "requirementId": "GUI-06",
+  "status": "verified_local",
+  "environment": "local_test",
+  "timestamp": "2026-10-20T05:25:00Z",
+  "sourceCommit": "HEAD",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "testName": "A2UI fixed schema & component allowlist validation",
+  "testPath": "tests/frontend/a2ui-components.test.tsx",
+  "command": "bun test ./tests/frontend/a2ui-components.test.tsx",
+  "exitCode": 0,
+  "result": "4 pass, 0 fail, 10 expect() calls",
+  "artifactRefs": [
+    "src/features/copilot/a2ui-registry.ts",
+    "src/features/copilot/components/MarginSimulatorCard.tsx",
+    "src/features/copilot/components/RefundImpactPanel.tsx",
+    "src/features/copilot/components/OrderTrackingBadge.tsx",
+    "src/features/copilot/components/OperationsBriefCard.tsx"
+  ],
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "integrator",
+  "limitations": "Anti-Arbitrary Dynamic Injection protocol strictly active."
+}
+

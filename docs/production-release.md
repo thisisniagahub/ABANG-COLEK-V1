@@ -1,6 +1,16 @@
 # Production runtime and release verification
 
+<!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
+> **Alignment20Oktober2026:** [Status semasa](CURRENT-STATUS.md) · [Checklist](../PROJECT-CHECKLIST.md). Panduan aktif mengikut skop fail ini. Fakta source/runtime dan ownership semasa dirujuk di atas; arahan atau baseline bertarikh lama memerlukan revalidation. Tiada acceptance aplikasi ditutup oleh alignment dokumentasi.
+<!-- ABANGCOLEK-CURRENT-STATUS:END -->
+
 Production project: `niaga-hub-pro/abang-colek-v1`, repository `thisisniagahub/ABANG-COLEK-V1`, domain `https://abangcolek.gangniaga.my`.
+
+## Release yang diperhatikan — 20 Oktober 2026
+
+Main `18c69b3` ialah patch11 fail TypeScript/editor/config sahaja; Vercel native Git integration READY pada deployment `dpl_PYt7aW43nmPKT5Q6rkpqMaxG1KcC` untuk domain production. Lint/build lulus,305 platform tests,16 local browser tests dan8 public production browser tests lulus. GitHub Actions tidak bermula kerana account billing; jangan menganggap semua CI hijau. [Receipt](../reports/implementation/main-typescript-release-20261020.json) dan [current status](CURRENT-STATUS.md) memisahkan source integrasi, public browser scope dan transaksi authenticated yang belum disahkan.
+
+Konfigurasi/migration di bawah ialah prasyarat yang perlu diperiksa, bukan arahan menjalankannya semula tanpa semakan keadaan project. SQL pernah dilaporkan telah dijalankan oleh pengguna; alignment ini tidak memeriksa schema/cloud credentials atau melakukan DB writes. Jangan memasukkan nilai secret dalam Markdown.
 
 ## Required configuration
 
@@ -47,7 +57,7 @@ The Vercel Git integration is the canonical automatic deployment path for pushes
 
 ## Blueprint/Copilot release gates — 19 October 2026
 
-[Blueprint v2.3](ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) and [implementation prompts](prompts/README.md) define the target. No deployment or suite was rerun for this documentation alignment. Preserve historical receipts as dated evidence; do not substitute them for final-source verification.
+[Blueprint v2.4](ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) and [implementation prompts](prompts/README.md) define the target. No deployment or suite was rerun for this documentation alignment. Preserve historical receipts as dated evidence; do not substitute them for final-source verification.
 
 Copilot TypeScript runtime and ADK Python service need their own authenticated deployment/lifecycle, session store, cancel/deadline and stream/reconnect tests. Begin founder-only; fixed-schema A2UI and first-party read-only MCP App. Verify 10 features, 10 modules, 32 logical capabilities and seven UI approaches independently. Intelligence Streams/Learning remain blocked_external until service entitlement, cost and data gates pass.
 

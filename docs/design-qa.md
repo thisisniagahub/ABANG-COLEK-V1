@@ -1,6 +1,10 @@
 # ABANGCOLEK — Design QA contract dan dated evidence
 
-Diselaraskan: **19 Oktober 2026**, mengikut [Master Blueprint v2.3](ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md). Bahagian Dashboard di bawah ialah **HISTORICAL_SNAPSHOT**; test/browser outcomes tidak dijalankan semula melalui alignment ini. Jangan menggunakan keadaan server atau paused/complete goal lama sebagai live status.
+<!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
+> **Alignment20Oktober2026:** [Status semasa](CURRENT-STATUS.md) · [Checklist](../PROJECT-CHECKLIST.md). Panduan aktif mengikut skop fail ini. Fakta source/runtime dan ownership semasa dirujuk di atas; arahan atau baseline bertarikh lama memerlukan revalidation. Tiada acceptance aplikasi ditutup oleh alignment dokumentasi.
+<!-- ABANGCOLEK-CURRENT-STATUS:END -->
+
+Diselaraskan: **19 Oktober 2026**, mengikut [Master Blueprint v2.4](ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md). Bahagian Dashboard di bawah ialah **HISTORICAL_SNAPSHOT**; test/browser outcomes tidak dijalankan semula melalui alignment ini. Jangan menggunakan keadaan server atau paused/complete goal lama sebagai live status.
 
 ## Acceptance semasa
 

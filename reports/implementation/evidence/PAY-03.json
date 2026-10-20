@@ -1,0 +1,20 @@
+{
+  "requirementId": "PAY-03",
+  "status": "verified_local",
+  "environment": "local_test",
+  "timestamp": "2026-10-20T05:25:00Z",
+  "sourceCommit": "HEAD",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "testName": "Largest-remainder integer sen allocation & reversal",
+  "testPath": "tests/platform/refund-allocation-v24.test.ts",
+  "command": "bun test ./tests/platform/refund-allocation-v24.test.ts",
+  "exitCode": 0,
+  "result": "9 pass, 0 fail, 45 expect() calls",
+  "artifactRefs": [
+    "server/platform/paymentReconciliation.ts"
+  ],
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "integrator",
+  "limitations": "Zero-cent drift guaranteed across cumulative partial refunds."
+}
+

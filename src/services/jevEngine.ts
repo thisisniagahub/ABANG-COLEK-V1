@@ -52,21 +52,38 @@ export type JevIssueClass = typeof JEV_TAXONOMY.IssueClass[number];
 export type JevProcessStage = typeof JEV_TAXONOMY.ProcessStage[number];
 export type JevRootCauseStatus = typeof JEV_TAXONOMY.RootCauseStatus[number];
 
+// Single canonical source: every stored dimension value must belong to one of these sets.
+const JEV_DIMENSION_VALUES = {
+  brand: JEV_TAXONOMY.Brand, businessFunction: JEV_TAXONOMY.BusinessFunction, salesChannel: JEV_TAXONOMY.SalesChannel,
+  customerIntent: JEV_TAXONOMY.CustomerIntent, issueClass: JEV_TAXONOMY.IssueClass,
+  processStage: JEV_TAXONOMY.ProcessStage, rootCauseStatus: JEV_TAXONOMY.RootCauseStatus,
+} as const;
+
+/**
+ * Check a server pack value against the canonical set. An out-of-taxonomy value is
+ * never projected into a dimension; it is recorded as drift and stays in the assessment.
+ */
+function resolveTaxonomy<T extends string>(raw: unknown, allowed: readonly T[]): { value: T | null; drifted: boolean } {
+  if (raw === undefined || raw === null) return { value: null, drifted: false };
+  if (typeof raw === 'string' && (allowed as readonly string[]).includes(raw)) return { value: raw as T, drifted: false };
+  return { value: null, drifted: true };
+}
+
 export interface JevDimensionResult<T extends string = string> {
   value: T;
-  confidence: number; // 0.0 to 1.0
-  probabilities: Record<string, number>;
+  confidence: number | null; // 0.0 to 1.0, null = nothing was computed
+  probabilities: Record<string, number> | null; // null = nothing was computed
 }
 
 export interface JevNoulResult {
-  probability: number; // 0.0 to 1.0
-  isAffirmative: boolean; // probability >= 0.5
+  probability: number | null; // 0.0 to 1.0, null = nothing was computed
+  isAffirmative: boolean | null; // probability >= 0.5, null = nothing was computed
 }
 
 export interface JevScoreResult {
-  score: number; // 1.0 to 5.0
+  score: number | null; // 1.0 to 5.0, null = nothing was computed
   label: string;
-  confidence: number;
+  confidence: number | null; // null = nothing was computed
 }
 
 export interface JevClassificationResult {
@@ -92,6 +109,8 @@ export interface JevClassificationResult {
     isRefundEligible: JevNoulResult;
     isHighValueAgentOpportunity: JevNoulResult;
   };
+  /** Dimensions whose pack value was outside the canonical taxonomy; no out-of-taxonomy value is stored. */
+  taxonomyDrift?: string[];
   recommendedAction: string;
   suggestedSop: string;
   automatedActionsTaken?: {
@@ -110,25 +129,30 @@ export interface JevClassificationResult {
  */
 export async function evaluateWithJev(inputText: string): Promise<JevClassificationResult> {
   const assessment = assessState('support', { text: inputText });
-  const intent = String(assessment.answers.intent?.value ?? 'UNKNOWN') as JevCustomerIntent;
-  const issue = String(assessment.answers.issue?.value ?? 'UNKNOWN') as JevIssueClass;
-  const dimension = <T extends string>(value: T): JevDimensionResult<T> => ({ value, confidence: 0, probabilities: {} });
+  const intent = resolveTaxonomy(assessment.answers.intent?.value, JEV_TAXONOMY.CustomerIntent);
+  const issue = resolveTaxonomy(assessment.answers.issue?.value, JEV_TAXONOMY.IssueClass);
+  const intentValue = intent.value ?? 'UNKNOWN';
+  const issueValue = issue.value ?? 'UNKNOWN';
+  const dimension = <T extends string>(value: T): JevDimensionResult<T> => ({ value, confidence: null, probabilities: null });
   const result: JevClassificationResult = {
     id: assessment.id, inputText, timestamp: assessment.createdAt, latencyMs: assessment.latencyMs,
     providerMode: 'LOCAL_RULES', assessment,
+    ...(intent.drifted || issue.drifted
+      ? { taxonomyDrift: [...(intent.drifted ? ['customerIntent'] : []), ...(issue.drifted ? ['issueClass'] : [])] }
+      : {}),
     dimensions: {
       brand: dimension('UNKNOWN'),
-      businessFunction: dimension(intent === 'AGENT_APPLICATION' ? 'AGENT_MANAGEMENT' : intent === 'UNKNOWN' ? 'UNKNOWN' : 'CUSTOMER_SERVICE'),
-      salesChannel: dimension(intent === 'AGENT_APPLICATION' ? 'AGENT' : 'UNKNOWN'),
-      customerIntent: dimension(intent), issueClass: dimension(issue),
+      businessFunction: dimension(intentValue === 'AGENT_APPLICATION' ? 'AGENT_MANAGEMENT' : intentValue === 'UNKNOWN' ? 'UNKNOWN' : 'CUSTOMER_SERVICE'),
+      salesChannel: dimension(intentValue === 'AGENT_APPLICATION' ? 'AGENT' : 'UNKNOWN'),
+      customerIntent: dimension(intentValue), issueClass: dimension(issueValue),
       processStage: dimension('UNKNOWN'), rootCauseStatus: dimension('UNDETERMINED'),
     },
     primitives: {
-      urgencyScore: { score: 0, label: 'Belum dinilai', confidence: 0 },
-      customerSatisfactionScore: { score: 0, label: 'Belum dinilai', confidence: 0 },
-      requiresImmediateIntervention: { probability: 0, isAffirmative: false },
-      isRefundEligible: { probability: 0, isAffirmative: false },
-      isHighValueAgentOpportunity: { probability: 0, isAffirmative: false },
+      urgencyScore: { score: null, label: 'Belum dinilai', confidence: null },
+      customerSatisfactionScore: { score: null, label: 'Belum dinilai', confidence: null },
+      requiresImmediateIntervention: { probability: null, isAffirmative: null },
+      isRefundEligible: { probability: null, isAffirmative: null },
+      isHighValueAgentOpportunity: { probability: null, isAffirmative: null },
     },
     recommendedAction: assessment.status === 'ABSTAIN'
       ? 'Tambah mesej dan bukti sebelum penilaian.'
@@ -182,29 +206,46 @@ function isStoredEvaluation(value: unknown): value is JevClassificationResult {
     !boundedString(value.recommendedAction, 8000) || !boundedString(value.suggestedSop, 8000) ||
     !isRecord(value.dimensions) || !isRecord(value.primitives)) return false;
   const dimensions = value.dimensions;
-  const enums = {
-    brand: JEV_TAXONOMY.Brand, businessFunction: JEV_TAXONOMY.BusinessFunction, salesChannel: JEV_TAXONOMY.SalesChannel,
-    customerIntent: JEV_TAXONOMY.CustomerIntent, issueClass: JEV_TAXONOMY.IssueClass,
-    processStage: JEV_TAXONOMY.ProcessStage, rootCauseStatus: JEV_TAXONOMY.RootCauseStatus,
-  };
-  if (!Object.entries(enums).every(([name, allowed]) => {
-    const dimension = dimensions[name];
-    return isRecord(dimension) && typeof dimension.value === 'string' && (allowed as readonly string[]).includes(dimension.value) &&
-      dimension.confidence === 0 && isRecord(dimension.probabilities) && Object.keys(dimension.probabilities).length === 0;
-  })) return false;
+  if (!Object.entries(JEV_DIMENSION_VALUES).every(([name, allowed]) =>
+    isStoredDimension(dimensions[name], allowed))) return false;
   const primitives = value.primitives;
-  if (!['urgencyScore', 'customerSatisfactionScore'].every(name => {
-    const score = primitives[name];
-    return isRecord(score) && score.score === 0 && score.confidence === 0 && boundedString(score.label, 200);
-  }) || !['requiresImmediateIntervention', 'isRefundEligible', 'isHighValueAgentOpportunity'].every(name => {
-    const noul = primitives[name];
-    return isRecord(noul) && noul.probability === 0 && noul.isAffirmative === false;
-  })) return false;
+  if (!['urgencyScore', 'customerSatisfactionScore'].every(name => isStoredScore(primitives[name])) ||
+    !['requiresImmediateIntervention', 'isRefundEligible', 'isHighValueAgentOpportunity'].every(name => isStoredNoul(primitives[name]))) return false;
+  const drift = value.taxonomyDrift;
+  if (drift !== undefined && (!Array.isArray(drift) || drift.length > 10 ||
+    drift.some(name => typeof name !== 'string' || !Object.hasOwn(JEV_DIMENSION_VALUES, name)))) return false;
   const actions = value.automatedActionsTaken;
   return actions === undefined || (isRecord(actions) &&
     ['taskCreated', 'emailDrafted', 'calendarScheduled', 'sheetLogged'].every(name => actions[name] === undefined || actions[name] === false) &&
     (actions.details === undefined || boundedString(actions.details, 8000)));
 }
+
+/** A dimension is either not computed (null) or a canonical value with a valid computed state. */
+function isStoredDimension(value: unknown, allowed: readonly string[]): boolean {
+  if (!isRecord(value)) return false;
+  if (typeof value.value !== 'string' || !(allowed as readonly string[]).includes(value.value)) return false;
+  if (value.confidence === null && value.probabilities === null) return true;
+  return isUnitInterval(value.confidence) && isRecord(value.probabilities) &&
+    Object.values(value.probabilities).every(isUnitInterval);
+}
+
+function isStoredScore(value: unknown): boolean {
+  if (!isRecord(value) || !boundedString(value.label, 200)) return false;
+  if (value.score === null && value.confidence === null) return true;
+  return typeof value.score === 'number' && Number.isFinite(value.score) && isUnitInterval(value.confidence);
+}
+
+function isStoredNoul(value: unknown): boolean {
+  if (!isRecord(value)) return false;
+  if (value.probability === null && value.isAffirmative === null) return true;
+  return isUnitInterval(value.probability) && typeof value.isAffirmative === 'boolean' &&
+    value.isAffirmative === (value.probability >= 0.5);
+}
+
+function isUnitInterval(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 1;
+}
+
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -336,19 +377,22 @@ export function validateAndRegisterHermesSkill(spec: {
 
   if (isValid) {
     try {
-      const storageKey = 'abangcolek_hermes_skills';
-      const existing = JSON.parse(localStorage.getItem(storageKey) || '[]');
-      const updated = [
-        {
-          name: spec.name,
-          category: normalizedCategory,
-          description: spec.description,
-          procedures: spec.procedures || [],
-          registeredAt: new Date().toISOString(),
-        },
-        ...existing.filter((s: any) => s.name !== spec.name)
-      ].slice(0, 30);
-      localStorage.setItem(storageKey, JSON.stringify(updated));
+      // Di luar browser (SSR/ujian) tiada storage — skill tidak disimpan, bukan ralat.
+      if (typeof localStorage !== 'undefined') {
+        const storageKey = 'abangcolek_hermes_skills';
+        const existing = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        const updated = [
+          {
+            name: spec.name,
+            category: normalizedCategory,
+            description: spec.description,
+            procedures: spec.procedures || [],
+            registeredAt: new Date().toISOString(),
+          },
+          ...existing.filter((s: any) => s.name !== spec.name)
+        ].slice(0, 30);
+        localStorage.setItem(storageKey, JSON.stringify(updated));
+      }
     } catch (e) {
       console.warn('Failed to store Hermes skill', e);
     }

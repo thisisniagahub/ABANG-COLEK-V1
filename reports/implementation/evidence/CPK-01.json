@@ -1,0 +1,21 @@
+{
+  "requirementId": "CPK-01",
+  "status": "verified_local",
+  "environment": "local_test",
+  "timestamp": "2026-10-20T05:25:00Z",
+  "sourceCommit": "HEAD",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "testName": "CopilotKit Fetch v2 Runtime Verification",
+  "testPath": "tests/platform/copilot-v2-runtime.test.ts",
+  "command": "bun test ./tests/platform/copilot-v2-runtime.test.ts",
+  "exitCode": 0,
+  "result": "5 pass, 0 fail, 23 expect() calls",
+  "artifactRefs": [
+    "server/agents/copilot/runtime.ts",
+    "api/platform/copilot/v2.ts"
+  ],
+  "actualProviderModel": "FreeModelRouter",
+  "reviewer": "integrator",
+  "limitations": "Max 3 model calls and 30s deadline enforced per request."
+}
+

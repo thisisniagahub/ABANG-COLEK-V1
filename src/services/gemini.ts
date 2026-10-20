@@ -1033,9 +1033,11 @@ export async function sendMessageToAgentStream(
             } else if (call.name === "jev_classify_issue") {
               try {
                 const jevRes = await evaluateWithJev(call.args.message);
+                const issueConfidence = jevRes.dimensions.issueClass.confidence;
+                const urgencyScore = jevRes.primitives.urgencyScore.score;
                 output = {
                   success: true,
-                  message: `JEV System-1 mengelaskan isu sebagai [${jevRes.dimensions.issueClass.value}] (${(jevRes.dimensions.issueClass.confidence * 100).toFixed(0)}% keyakinan). Urgensi: ${jevRes.primitives.urgencyScore.score}/5.0. Tindakan disyorkan: ${jevRes.recommendedAction}`,
+                  message: `JEV System-1 mengelaskan isu sebagai [${jevRes.dimensions.issueClass.value}] (${issueConfidence === null ? 'tiada keyakinan berkalibrasi' : `${Math.round(issueConfidence * 100)}% keyakinan`}). Urgensi: ${urgencyScore === null ? jevRes.primitives.urgencyScore.label : `${urgencyScore}/5.0`}. Tindakan disyorkan: ${jevRes.recommendedAction}`,
                   data: jevRes
                 };
               } catch (err: any) {
@@ -1444,23 +1446,21 @@ export async function sendMessageToAgentStream(
             const toolEndTime = performance.now();
             const measuredLatency = Math.round(toolEndTime - toolStartTime);
 
-            // Log tool execution telemetry to Supabase Agent Performance
+            // Log tool execution telemetry through the single EXT-03 collector.
+            // Only the allowlisted fields are sent: surface category, tool
+            // name, outcome and duration. No prompt text, no token count, no
+            // business record id.
             try {
               const category = call.name.includes('bus') ? 'Logistik & Bas' :
                                call.name.startsWith('create_google') || call.name.startsWith('send_') || call.name.startsWith('schedule_') || call.name.includes('drive') ? 'Google Workspace' :
                                call.name.includes('yearly') || call.name.includes('dashboard') || call.name.includes('jev') ? 'Analisis & Laporan' : 'Gedung Plugins';
-              
-              supabaseAgentPerformance.recordTaskExecution({
-                task_id: stepId,
+
+              supabaseAgentPerformance.record({
                 tool_name: call.name,
                 tool_category: category,
                 latency_ms: measuredLatency,
                 status: output?.success !== false ? 'SUCCESS' : 'ERROR',
-                tokens_used: 350,
-                user_query: finalFullText?.slice(0, 80) || `Pelaksanaan alat ${call.name}`,
-                model: MODEL_NAME,
-                error_message: output?.error
-              }).catch(() => {});
+              });
             } catch {
               // Non-blocking telemetry
             }
@@ -1773,9 +1773,11 @@ console.log(MODEL_NAME)
             try {
               const args = (call.args || {}) as any;
               const jevRes = await evaluateWithJev(String(args.message || ''));
+              const issueConfidence = jevRes.dimensions.issueClass.confidence;
+              const urgencyScore = jevRes.primitives.urgencyScore.score;
               output = {
                 success: true,
-                message: `JEV System-1 mengelaskan isu sebagai [${jevRes.dimensions.issueClass.value}] (${(jevRes.dimensions.issueClass.confidence * 100).toFixed(0)}% keyakinan). Urgensi: ${jevRes.primitives.urgencyScore.score}/5.0. Tindakan disyorkan: ${jevRes.recommendedAction}`,
+                message: `JEV System-1 mengelaskan isu sebagai [${jevRes.dimensions.issueClass.value}] (${issueConfidence === null ? 'tiada keyakinan berkalibrasi' : `${Math.round(issueConfidence * 100)}% keyakinan`}). Urgensi: ${urgencyScore === null ? jevRes.primitives.urgencyScore.label : `${urgencyScore}/5.0`}. Tindakan disyorkan: ${jevRes.recommendedAction}`,
                 data: jevRes
               };
             } catch (err: any) {

@@ -1,0 +1,53 @@
+{
+  "timestamp": "2026-10-20T11:51:53.2889890+08:00",
+  "tools": [
+    {
+      "tool": "git",
+      "available": true,
+      "path": "C:\\Program Files\\Git\\cmd\\git.exe"
+    },
+    {
+      "tool": "bun",
+      "available": true,
+      "path": "C:\\Users\\megat\\.bun\\bin\\bun.exe"
+    },
+    {
+      "tool": "node",
+      "available": true,
+      "path": "C:\\Program Files\\nodejs\\node.exe"
+    },
+    {
+      "tool": "py",
+      "available": true,
+      "path": "C:\\Users\\megat\\AppData\\Local\\Microsoft\\WindowsApps\\py.exe"
+    },
+    {
+      "tool": "python",
+      "available": true,
+      "path": "C:\\Users\\megat\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
+    },
+    {
+      "tool": "uv",
+      "available": true,
+      "path": "C:\\Users\\megat\\AppData\\Local\\hermes\\bin\\uv.exe"
+    },
+    {
+      "tool": "gh",
+      "available": true,
+      "path": "C:\\Program Files\\GitHub CLI\\gh.exe"
+    },
+    {
+      "tool": "vercel",
+      "available": true,
+      "path": "C:\\Users\\megat\\AppData\\Local\\pnpm\\vercel.ps1"
+    }
+  ],
+  "pythonInterpreters": [
+    " -V:3.12 *        C:\\Users\\megat\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+    " -V:Astral\\CPython3.11.15 C:\\Users\\megat\\AppData\\Roaming\\uv\\python\\cpython-3.11.15-windows-x86_64-none\\python.exe",
+    " -V:Astral\\CPython3.12.13 C:\\Users\\megat\\AppData\\Roaming\\uv\\python\\cpython-3.12.13-windows-x86_64-none\\python.exe",
+    " -V:Astral\\CPython3.14.0 C:\\Users\\megat\\AppData\\Roaming\\uv\\python\\cpython-3.14.0-windows-x86_64-none\\python.exe"
+  ],
+  "copilotRuntimeInstalled": false,
+  "agUiClientInstalled": false
+}

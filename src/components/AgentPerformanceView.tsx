@@ -43,15 +43,16 @@ import {
   Check,
   ChevronRight,
   Sparkles,
-  Radio
+  Radio,
+  Trash2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { 
-  supabaseAgentPerformance, 
-  AgentTaskLog, 
-  ToolPerformanceMetric, 
-  TimeSeriesPerformancePoint 
+import {
+  supabaseAgentPerformance,
+  AgentPerformanceEvent,
+  ToolPerformanceMetric,
+  TimeSeriesPerformancePoint
 } from '@/services/supabaseAgentPerformance';
 
 interface AgentPerformanceViewProps {
@@ -66,17 +67,15 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 export const AgentPerformanceView: React.FC<AgentPerformanceViewProps> = ({ onAction }) => {
-  const [logs, setLogs] = useState<AgentTaskLog[]>([]);
+  const [logs, setLogs] = useState<AgentPerformanceEvent[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [timeRangeDays, setTimeRangeDays] = useState<number>(7);
   const [sortBy, setSortBy] = useState<'efficiency' | 'latency' | 'successRate' | 'volume'>('efficiency');
   const [searchQuery, setSearchQuery] = useState('');
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isBenchmarking, setIsBenchmarking] = useState(false);
-  const [benchmarkFeedback, setBenchmarkFeedback] = useState<string | null>(null);
   const [selectedToolDetail, setSelectedToolDetail] = useState<ToolPerformanceMetric | null>(null);
   const [realtimeStatus, setRealtimeStatus] = useState<string>('SUBSCRIBED');
-  const [isSimulatingRealtimeInsert, setIsSimulatingRealtimeInsert] = useState(false);
+  const [optedOut, setOptedOut] = useState<boolean>(supabaseAgentPerformance.isOptedOut());
 
   // Load data & subscribe to Supabase logs + Realtime changes on `tasks` table
   useEffect(() => {
@@ -87,12 +86,10 @@ export const AgentPerformanceView: React.FC<AgentPerformanceViewProps> = ({ onAc
       setLogs(data);
     });
 
-    // 2. Live Supabase Realtime subscription on `tasks` table
+    // 2. Live Supabase Realtime subscription on the performance events table
     const unsubRealtime = supabaseAgentPerformance.subscribeToRealtimeTasks(
       (newLog) => {
         setLogs((prev) => [newLog, ...prev.filter(l => l.id !== newLog.id)]);
-        setBenchmarkFeedback(`⚡ Supabase Realtime: Rekod baharu dikesan dalam jadual 'tasks'! Alat: ${newLog.tool_name} (${newLog.latency_ms} ms) · Carta dikemas kini secara automatik.`);
-        setTimeout(() => setBenchmarkFeedback(null), 5500);
       },
       (status) => {
         setRealtimeStatus(status);
@@ -111,46 +108,19 @@ export const AgentPerformanceView: React.FC<AgentPerformanceViewProps> = ({ onAc
     setIsRefreshing(false);
   };
 
-  // Simulate inserting a new task directly into Supabase `tasks` table
-  const handleSimulateSupabaseTaskInsert = async () => {
-    setIsSimulatingRealtimeInsert(true);
-    const candidateTools: { name: string; cat: AgentTaskLog['tool_category'] }[] = [
-      { name: 'bus_freight_dispatch_create', cat: 'Logistik & Bas' },
-      { name: 'redbus_bus_freight_schedule', cat: 'Logistik & Bas' },
-      { name: 'create_google_sheet', cat: 'Google Workspace' },
-      { name: 'send_gmail_email', cat: 'Google Workspace' },
-      { name: 'supabase_query_db', cat: 'Gedung Plugins' },
-      { name: 'generate_yearly_report', cat: 'Analisis & Laporan' }
-    ];
-    const picked = candidateTools[Math.floor(Math.random() * candidateTools.length)];
-    const randomLatency = Math.floor(130 + Math.random() * 260);
-
-    const taskRecord = {
-      task_id: `TSK-RT-${Math.floor(1000 + Math.random() * 9000)}`,
-      tool_name: picked.name,
-      tool_category: picked.cat,
-      latency_ms: randomLatency,
-      status: Math.random() > 0.05 ? ('SUCCESS' as const) : ('ERROR' as const),
-      tokens_used: Math.floor(250 + Math.random() * 400),
-      user_query: `Simulasi sisipan Supabase Realtime jadual tasks (${picked.name})`,
-      model: 'gemini-3.8-flash'
-    };
-
-    await supabaseAgentPerformance.recordTaskExecution(taskRecord);
-    setIsSimulatingRealtimeInsert(false);
+  // The user may switch collection off, and may delete what was collected.
+  const handleToggleOptOut = () => {
+    const disclosure = supabaseAgentPerformance.setOptOut(!optedOut);
+    setOptedOut(disclosure.optedOut);
+    setLogs(supabaseAgentPerformance.getLogs());
   };
 
-  // Run live tool benchmark simulation
-  const handleRunBenchmark = async (toolName?: string, category?: any) => {
-    setIsBenchmarking(true);
-    const targetTool = toolName || 'bus_freight_dispatch_create';
-    const targetCategory = category || 'Logistik & Bas';
-
-    const recorded = await supabaseAgentPerformance.simulateToolBenchmark(targetTool, targetCategory);
-    setIsBenchmarking(false);
-    setBenchmarkFeedback(`Ujian penanda aras alat '${recorded.tool_name}' selesai dalam ${recorded.latency_ms}ms (Status: ${recorded.status}).`);
-    setTimeout(() => setBenchmarkFeedback(null), 4500);
+  const handleDeleteCollected = () => {
+    supabaseAgentPerformance.deleteCollectedData();
+    setLogs(supabaseAgentPerformance.getLogs());
   };
+
+  const disclosure = supabaseAgentPerformance.describe();
 
   // Calculate metrics
   const { toolMetrics, overallMetrics, timeSeries } = useMemo(() => {
@@ -222,7 +192,7 @@ export const AgentPerformanceView: React.FC<AgentPerformanceViewProps> = ({ onAc
               </h1>
               <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
                 <Radio size={12} className="animate-pulse text-emerald-600" />
-                <span>Supabase Realtime: Aktif (Jadual: tasks)</span>
+                <span>Realtime: {realtimeStatus}</span>
               </span>
             </div>
             <p className="text-xs text-[var(--ui-muted)] mt-1">
@@ -233,51 +203,46 @@ export const AgentPerformanceView: React.FC<AgentPerformanceViewProps> = ({ onAc
           {/* Quick Action Buttons */}
           <div className="flex items-center gap-2.5">
             <button
-              onClick={handleSimulateSupabaseTaskInsert}
-              disabled={isSimulatingRealtimeInsert}
-              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-[var(--ui-primary)] text-[var(--ui-primary-ink)] hover:brightness-95 text-xs font-semibold transition-all shadow-xs cursor-pointer"
-              title="Sisip rekod baru terus ke jadual tasks Supabase untuk menguji kemas kini carta secara langsung"
+              onClick={handleToggleOptOut}
+              className={cn(
+                "flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all shadow-xs cursor-pointer border",
+                optedOut
+                  ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                  : "bg-[var(--ui-primary)] text-[var(--ui-primary-ink)]"
+              )}
+              title="Matikan atau hidupkan pengumpulan telemetri"
             >
-              <Zap size={13} className={cn(isSimulatingRealtimeInsert && "animate-spin text-[var(--ui-warning-text)]")} />
-              <span>{isSimulatingRealtimeInsert ? 'Menyisip...' : 'Sisip Tugas Baru (tasks)'}</span>
+              <ShieldCheck size={13} />
+              <span>{optedOut ? 'Pengumpulan: Mati' : 'Matikan Pengumpulan'}</span>
             </button>
 
             <button
-              onClick={() => handleRunBenchmark()}
-              disabled={isBenchmarking}
-              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-[var(--ui-primary)] text-[var(--ui-primary-ink)] hover:bg-[var(--ui-primary)] text-xs font-semibold transition-all shadow-xs cursor-pointer"
-              title="Jalankan ujian penanda aras kependaman langsung"
+              onClick={handleDeleteCollected}
+              className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-[var(--ui-soft)] text-[var(--ui-text)] hover:brightness-95 text-xs font-semibold border border-[var(--ui-border)] transition-all"
+              title="Padam semua telemetri yang dikumpulkan"
             >
-              <Play size={13} className={cn(isBenchmarking && "animate-spin text-[var(--ui-warning-text)]")} />
-              <span>{isBenchmarking ? 'Menguji...' : 'Ujian Penanda Aras (Live)'}</span>
+              <Trash2 size={13} />
+              <span>Padam Data</span>
             </button>
 
             <button
               onClick={loadPerformanceData}
               disabled={isRefreshing}
               className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-[var(--ui-accent)] text-[var(--ui-accent-ink)] [@media(hover:hover)_and_(pointer:fine)]:hover:brightness-95 text-xs font-semibold border border-[var(--ui-border)] transition-all"
-              title="Segerak log tugasan terkini daripada Supabase"
+              title="Segerak telemetri yang dikumpulkan"
             >
               <RefreshCw size={13} className={cn(isRefreshing && "animate-spin")} />
-              <span>Segerak Supabase</span>
+              <span>Segerak</span>
             </button>
           </div>
         </div>
 
-        {/* Feedback Alert Toast */}
-        {benchmarkFeedback && (
-          <motion.div 
-            initial={{ opacity: 0, y: -6 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-3 p-3 rounded-xl bg-[var(--ui-accent)] border border-[var(--ui-border)] text-[var(--ui-accent-ink)] text-xs flex items-center justify-between"
-          >
-            <div className="flex items-center gap-2">
-              <CheckCircle2 size={15} className="text-[var(--ui-text)] shrink-0" />
-              <span className="font-medium">{benchmarkFeedback}</span>
-            </div>
-            <button onClick={() => setBenchmarkFeedback(null)} className="text-[var(--ui-text)] font-bold hover:underline">Tutup</button>
-          </motion.div>
-        )}
+        {/* Collection disclosure */}
+        <p className="mt-3 text-[11px] text-[var(--ui-muted)] leading-relaxed">
+          Koleksi: {disclosure.allowlist.join(', ')}. Tidak dikumpulkan: {disclosure.prohibited.join('; ')}.
+          Simpanan: {disclosure.persistence} (lokal). Status:{' '}
+          {disclosure.collectionEnabled ? 'aktif' : 'dimatikan (opt-out)'}. Rekod disimpan: {disclosure.storedEventCount}.
+        </p>
 
         {/* KPI Strip */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
@@ -757,10 +722,13 @@ export const AgentPerformanceView: React.FC<AgentPerformanceViewProps> = ({ onAc
                       {/* Action */}
                       <td className="py-3.5 pl-3 text-right">
                         <button
-                          onClick={() => handleRunBenchmark(t.toolName, t.category)}
+                          onClick={() => {
+                            setSelectedToolDetail(t);
+                            onAction?.(`Tunjukkan butiran prestasi alat ${t.displayName}.`);
+                          }}
                           className="px-2.5 py-1 rounded-lg bg-[var(--ui-soft)] [@media(hover:hover)_and_(pointer:fine)]:hover:brightness-95 text-[var(--ui-text)] font-semibold text-[11px] transition-all"
                         >
-                          Uji Alat
+                          Butiran
                         </button>
                       </td>
                     </tr>
@@ -784,6 +752,12 @@ export const AgentPerformanceView: React.FC<AgentPerformanceViewProps> = ({ onAc
           </div>
 
           <div className="divide-y divide-[var(--ui-border)]">
+            {logs.length === 0 && (
+              <p className="py-4 text-[11px] text-[var(--ui-muted)]">
+                Belum ada telemetri sebenar dikumpulkan. Tiada data rekaan dipaparkan — kad ini kekal kosong
+                sehingga alat sebenar dijalankan.
+              </p>
+            )}
             {logs.slice(0, 6).map((log) => (
               <div key={log.id} className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
                 <div className="flex items-start gap-3">
@@ -797,13 +771,10 @@ export const AgentPerformanceView: React.FC<AgentPerformanceViewProps> = ({ onAc
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-[var(--ui-text)]">{log.tool_name}</span>
-                      <span className="px-1.5 py-0.2 rounded bg-[var(--ui-soft)] text-[var(--ui-muted)] font-mono text-[10px]">
-                        {log.task_id}
-                      </span>
                       <span className="text-[10px] text-[var(--ui-muted)]">({log.tool_category})</span>
                     </div>
-                    <p className="text-[11px] text-[var(--ui-muted)] mt-0.5 line-clamp-1 italic">
-                      &quot;{log.user_query}&quot;
+                    <p className="text-[11px] text-[var(--ui-muted)] mt-0.5">
+                      {log.status === 'SUCCESS' ? 'Berjaya' : log.status === 'TIMEOUT' ? 'Tamat masa' : 'Ralat'}
                     </p>
                   </div>
                 </div>

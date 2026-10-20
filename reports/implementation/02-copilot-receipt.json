@@ -1,0 +1,47 @@
+{
+  "phase": "02",
+  "name": "CopilotKit Runtime Fetch v2 & Zero-Cost Free Model Router",
+  "generatedAt": "2026-10-20T05:19:00Z",
+  "executor": "Antigravity Sovereign Autopilot",
+  "governingDocuments": [
+    "Master Blueprint v2.4",
+    "ADR-0003",
+    "docs/prompts/02-copilot-foundation.md",
+    "PROJECT-CHECKLIST.md"
+  ],
+  "requirementsCovered": [
+    {
+      "id": "CPK-01",
+      "status": "passed",
+      "scope": "Official CopilotKit Fetch v2 Runtime Handler for Bun/Node. Enforces max 3 model calls, 30s deadline, and deterministic fallback responses.",
+      "testFile": "tests/platform/copilot-v2-runtime.test.ts",
+      "testsPassed": 5,
+      "expectCalls": 23
+    },
+    {
+      "id": "AI-01",
+      "status": "passed",
+      "scope": "Zero-New-Paid-Cloud-Spend enforcement. FreeModelRouter strictly sequences gemini-3.6-flash -> gemini-3.5-flash-lite -> nvidia/nemotron-3-super-120b-a12b:free with zero paid leakage.",
+      "testFile": "tests/platform/copilot-adk.test.ts",
+      "testsPassed": 5,
+      "expectCalls": 24
+    }
+  ],
+  "verificationSummary": {
+    "testCommand": "bun test ./tests/platform/copilot-v2-runtime.test.ts ./tests/platform/copilot-adk.test.ts",
+    "totalSuites": 2,
+    "totalTests": 10,
+    "passed": 10,
+    "failed": 0,
+    "totalExpectCalls": 47,
+    "linterStatus": "passed (tsc exit code 0)"
+  },
+  "verifiedFiles": [
+    "server/agents/providers/model-router.ts",
+    "server/agents/copilot/runtime.ts",
+    "api/platform/copilot/v2.ts",
+    "tests/platform/copilot-v2-runtime.test.ts",
+    "server/platform/freeModelRouter.ts"
+  ]
+}
+

@@ -1,0 +1,1752 @@
+{
+  "generatedAt": "2026-10-20T13:02:41.175Z",
+  "generator": "scripts/maintenance/fasa01/build-media-manifest.ts",
+  "algorithm": "sha256",
+  "targetDirectory": "references/media/product-2026-10-17/",
+  "gitignored": true,
+  "note": "Product media and archives are gitignored (\".gitignore: PRODUCT LLH-*/\", \"Product Photo-*/\", \"*.zip\"). A relocation of them produces no git provenance, so this SHA-256 manifest is the provenance: re-run the generator before and after the move and compare byte-for-byte.",
+  "totals": {
+    "mediaFiles": 246,
+    "archives": 2,
+    "entries": 248,
+    "bytes": 1255215815
+  },
+  "entries": [
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/._.DS_Store",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/._.DS_Store",
+      "bytes": 4096,
+      "sha256": "f81c4f284d788ce9f4bdd1a03833cbe57fd1f9cae7c6c5218bffe321e107e711",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/.DS_Store",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/.DS_Store",
+      "bytes": 8196,
+      "sha256": "6377791f8782f947c04d7533e6cc09747d3d39621381004f61512fb565869b2d",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/1111.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/1111.jpg",
+      "bytes": 136953,
+      "sha256": "e197b98592181c81ff70632c90edbb3ad3f5c64d90d89cd319a399793a924825",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/222.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/222.jpg",
+      "bytes": 136751,
+      "sha256": "05c20cbf993ab9914380553ddd5e97e27653c8511d8cdb30a47d35f0dbc1cb47",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/3333.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/3333.jpg",
+      "bytes": 285276,
+      "sha256": "1cda647c55e537f75bb512444f3822dece6096b7d23c16717bd86e33c1278207",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ASAM BOI/APPLE.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ASAM BOI/APPLE.png",
+      "bytes": 59261,
+      "sha256": "853eafbb9393e4894eae43d4304eca504b9ec4e8344f429c84ab0034d5daad20",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ASAM BOI/baru kedondong.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ASAM BOI/baru kedondong.png",
+      "bytes": 711173,
+      "sha256": "afd55fd08c335c53c6f00b5334bcb7d42713bd6b730e913ad080b7efb2310f84",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ASAM BOI/bru jambu.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ASAM BOI/bru jambu.png",
+      "bytes": 635949,
+      "sha256": "2bb9fd4e25b403312585235b9eab12a964730d7c89523e53adbcafe0d73d7b38",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ASAM BOI/debug.log",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ASAM BOI/debug.log",
+      "bytes": 83,
+      "sha256": "3c1529c6c2d0d707fc825f6ba3421ed5ab79dec931c1eeca479142f3018069db",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ASAM BOI/JAMBU.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ASAM BOI/JAMBU.png",
+      "bytes": 62988,
+      "sha256": "6f2f8220e3b4af8ccba3da32cee4ee548037a252cd18703d33bf48e4340e53bc",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ASAM BOI/KEDONDONG.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ASAM BOI/KEDONDONG.png",
+      "bytes": 56815,
+      "sha256": "4a6bf7192f7e01b6aceef540bf18ad49f137b44154e4297446739c5eddd8a375",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ASAM BOI/manga.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ASAM BOI/manga.png",
+      "bytes": 510458,
+      "sha256": "7e16d42c5724bd1d01f158e0395888c6d054ba26b51d3f5631862d17ee0d63a9",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ASAM BOI/MANGGA.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ASAM BOI/MANGGA.png",
+      "bytes": 42701,
+      "sha256": "d17eb303251b7497d35c4c74b992ff6961cbacf50828d2e83b2e0053efebd8e0",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ASAM BOI/MIX 5.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ASAM BOI/MIX 5.png",
+      "bytes": 67050,
+      "sha256": "6a6c2007854b275f7d3bd2010dee491e9095775e6da387fd1ddae66278780852",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ASAM BOI/MIX ASAMBOI.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ASAM BOI/MIX ASAMBOI.png",
+      "bytes": 66509,
+      "sha256": "3e8f5abceb68683dd536bd8347895fa99af338059f415d17b26e44c85f86980a",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ASAM BOI/Untitled-1.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ASAM BOI/Untitled-1.png",
+      "bytes": 538413,
+      "sha256": "c13309e65c126f5664b8983f4c71af87dba881df8a111d0e19464059fab8e223",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/AWESOME SHACX/APPLE.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/AWESOME SHACX/APPLE.png",
+      "bytes": 445574,
+      "sha256": "7feee3e7186a517a98159c46ce95e1b396d8bac6310249274c16e43a40965fda",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/AWESOME SHACX/JAMBU.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/AWESOME SHACX/JAMBU.png",
+      "bytes": 494667,
+      "sha256": "f61773360e12901266f71782db889b87f21a3b6af02c6461d8d37c4a435b0408",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/AWESOME SHACX/KEDONDONG.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/AWESOME SHACX/KEDONDONG.png",
+      "bytes": 469785,
+      "sha256": "bd6ac17e53169c226bf770ebc4bff0b99dc7c56e6f56f9be1df137269adb39d8",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/AWESOME SHACX/MANGGA.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/AWESOME SHACX/MANGGA.png",
+      "bytes": 373799,
+      "sha256": "c9607fbae4722a212077f2ba7f1c337cd42abd2de04442c802c29bac70e286bd",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/AWESOME SHACX/MIX.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/AWESOME SHACX/MIX.png",
+      "bytes": 55837,
+      "sha256": "1f466dab11446d26ee05803589ccdfba0d9a069d358485ff1741024af214e2e7",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/CATALOG JERUX-3.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/CATALOG JERUX-3.jpg",
+      "bytes": 6442449,
+      "sha256": "caa56a07501025fe53907d9ec1e6d6974f1d7daaeafd88cd012bea6928fd6f17",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/CATALOG JERUX-4.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/CATALOG JERUX-4.jpg",
+      "bytes": 6428206,
+      "sha256": "ee9945e94680739f7bbcc1de8c93f91a77114715695bb56d296f0f855d38772c",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/CONCEPT ALL-12.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/CONCEPT ALL-12.jpg",
+      "bytes": 8572816,
+      "sha256": "e4c7a70826b5c84fa78a865687f6449fa67823c74d66b37995618ad76d884fcb",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/CONCEPT ALL-18.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/CONCEPT ALL-18.jpg",
+      "bytes": 9219354,
+      "sha256": "34a7bdecb50a66f3c0e0f79043b53cf354681f7891c51a2692e94c9d663ef357",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/CONCEPT ALL-2.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/CONCEPT ALL-2.jpg",
+      "bytes": 10316957,
+      "sha256": "7dd616b7aa8026fb9198650e1c436227178c30377649781209fb995e03215f6f",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/CONCEPT ALL-29.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/CONCEPT ALL-29.jpg",
+      "bytes": 7384901,
+      "sha256": "e03f21bc5fbd6c7e650e3f5cfc088bf128c2f7e0cbb78fc1de042b141c9085b2",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/CONCEPT ALL-9.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/CONCEPT ALL-9.jpg",
+      "bytes": 9797193,
+      "sha256": "a7d7fa440e20f90c5cf8c750b8cd6b43a8744f96b3de9184b35b1f0463d627be",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/CONCEPT SAMBAL HIJAU-6.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/CONCEPT SAMBAL HIJAU-6.jpg",
+      "bytes": 8143694,
+      "sha256": "d36d93e1dc06912fea3e5a4bdf7a05e5be5543e27eb95f939a23061ba5f5f090",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/CONCEPT SAMBAL KICAP-5.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/CONCEPT SAMBAL KICAP-5.jpg",
+      "bytes": 10341300,
+      "sha256": "507e184705bd8aa956b99f8792b84ae05552a0f59a368a069394177deadc42fb",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC00686.JPG",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC00686.JPG",
+      "bytes": 17363277,
+      "sha256": "03baf8a9af8f3a5eefd0a22ae84707c8f07c6f2856919a0170012d270fa4f56c",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC00791.JPG",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC00791.JPG",
+      "bytes": 15533361,
+      "sha256": "66cff35dbf7bf4fd2dc8db66b3c9de83a4fd79472c404b080d6df21326e52b6d",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC00798.JPG",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC00798.JPG",
+      "bytes": 24662136,
+      "sha256": "d8a7ca62e3cbcd3bbb2bd0e3c566ee9589fe04c8837f2b6b1f442945849afc64",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC00804.JPG",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC00804.JPG",
+      "bytes": 7402587,
+      "sha256": "970a15ff542f1116e6eaab69bcb2118f0f7b865097081f47b4c54dcf4f40c179",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC01066.JPG",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC01066.JPG",
+      "bytes": 15914904,
+      "sha256": "851a0fc10e46f0d37989fd4093d559bcff09df9677bcdc6f3abb3ce4c8309682",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC01073.JPG",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC01073.JPG",
+      "bytes": 14704562,
+      "sha256": "a6cf6b5b9809d90a09b94d52bddb279fc9047d4fb8d57dced1226d5a6d195517",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC01392.JPG",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC01392.JPG",
+      "bytes": 17880215,
+      "sha256": "6aa755d9656efd420dfb427725233a9654e2d1cb1f221e96aa5c96b302b2f5db",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC01394.JPG",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC01394.JPG",
+      "bytes": 18938283,
+      "sha256": "8ae9b08b271e08544abf7bbfaff24198f65d32a7e84f937aae1cf0f9dbbe812e",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC01590.JPG",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC01590.JPG",
+      "bytes": 9334956,
+      "sha256": "68de484940c53df4a7f85283f048c08b942ab5594b2fe7e0c7e580dd6b1f0b08",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC01591.JPG",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC01591.JPG",
+      "bytes": 8381517,
+      "sha256": "765e145158da3dd559091c8f0aef3762116fee3f3dd27b7ab730065b4582a08c",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC01592.JPG",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC01592.JPG",
+      "bytes": 9502453,
+      "sha256": "722e091b5960ca0fb6818922a54578ea4d8104c34c4a0e87f62a4c8b3e708bab",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC01593.JPG",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC01593.JPG",
+      "bytes": 9140364,
+      "sha256": "144b4cad5bc3f3e0d178180cfef9316863bdf105b28779081223039f23da8b7e",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC01594.JPG",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC01594.JPG",
+      "bytes": 9044769,
+      "sha256": "412e4996ccb17fa618423c11d7e10b301e3a8de80b64ac89b45f4cbef815a97c",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC01598.JPG",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC01598.JPG",
+      "bytes": 9172796,
+      "sha256": "8316dc2a3f0748cf6c8e13998c8a6e94c410b0cb06f0beb1addacb9df1d36e92",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC01599.JPG",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC01599.JPG",
+      "bytes": 9113637,
+      "sha256": "19f4380435c98fdedce391567a4bde822a025d60c28817aab54483c31f5d5e1d",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC02816.JPG",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC02816.JPG",
+      "bytes": 21014608,
+      "sha256": "3d140f259a458a46c63d40dfefa11703850c0730e3404aea0c96f4104ef66198",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC02825.JPG",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC02825.JPG",
+      "bytes": 21566121,
+      "sha256": "352ee0e07282a9fee57dfed9fc668a4ce1240bdb3a49ebc4cf178531c589284b",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC02830.JPG",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/DSC02830.JPG",
+      "bytes": 20424959,
+      "sha256": "c2398dc6a1d9b9ca7fd7f390f32a1494e34febbae604ca0ce094d697581d5fa1",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/IMG_7723-Edit.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/IMG_7723-Edit.jpg",
+      "bytes": 2445565,
+      "sha256": "c9a61a901244fdf4d8f776a3ac8abacecca6ba4716fe653c2382c6fb3e86f3db",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/IMG_7724-Edit.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/IMG_7724-Edit.jpg",
+      "bytes": 2371953,
+      "sha256": "a5433c60e0408105caf61ab69055193297586f28106b58ce94be8d749cdcaba7",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/IMG_7743-Edit.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/IMG_7743-Edit.jpg",
+      "bytes": 2289288,
+      "sha256": "bcb6927a663d919a99c56d96a5a4bad975e0d96d18867d88433de3a2cc7e5d70",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/IMG_7752-Edit.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/IMG_7752-Edit.jpg",
+      "bytes": 2272578,
+      "sha256": "63375e07de31cc7abf3843392e3dd57885a13fa9d3da865c3c8cb2194930c47a",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/IMG_7761-Edit.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/IMG_7761-Edit.jpg",
+      "bytes": 3044484,
+      "sha256": "764a8d904a623e842a25462908f48657b0a39fdf46374d3c84280a9626675c5e",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/IMG_7766-Edit.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/IMG_7766-Edit.jpg",
+      "bytes": 2989261,
+      "sha256": "358cbb3937be16eb5c347822b8292eb4b7dc67b3bce411a72011de25a87ac912",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/IMG_7767-Edit.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/IMG_7767-Edit.jpg",
+      "bytes": 2334739,
+      "sha256": "5846ee77aa9d89bc76cc7f323aa72b544600cded7bbcc96d1f6339298551d5d6",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/IMG_7771-Edit.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/IMG_7771-Edit.jpg",
+      "bytes": 2430096,
+      "sha256": "4c2e72e1abd14e72c214a04296f90b98328c28c05db5e125cf66b06ef9651674",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._.DS_Store",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._.DS_Store",
+      "bytes": 4096,
+      "sha256": "f81c4f284d788ce9f4bdd1a03833cbe57fd1f9cae7c6c5218bffe321e107e711",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._2021-01-04 11.15.47.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._2021-01-04 11.15.47.jpg",
+      "bytes": 4096,
+      "sha256": "0142e0cfa0a5bda873d135b6d3893b1da29ca11ef3d56f67a69097da1460f202",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._mangga-cup-foodpanda.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._mangga-cup-foodpanda.jpg",
+      "bytes": 4096,
+      "sha256": "6c55d7df2a3d5aa2319b9f3cfbe9951188fbc931d28c869cddc2dc5b42f71c79",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._mc.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._mc.jpeg",
+      "bytes": 4096,
+      "sha256": "6c55d7df2a3d5aa2319b9f3cfbe9951188fbc931d28c869cddc2dc5b42f71c79",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._mc.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._mc.jpg",
+      "bytes": 4096,
+      "sha256": "6c55d7df2a3d5aa2319b9f3cfbe9951188fbc931d28c869cddc2dc5b42f71c79",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._MIXXX.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._MIXXX.png",
+      "bytes": 4096,
+      "sha256": "0d5317785d413f1ccdcf4ea40bd03911a7de17bc50c0a4cbf3042b671da5dbcb",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._n 03.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._n 03.png",
+      "bytes": 4096,
+      "sha256": "0d5317785d413f1ccdcf4ea40bd03911a7de17bc50c0a4cbf3042b671da5dbcb",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._nenasx-premium.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._nenasx-premium.jpg",
+      "bytes": 4096,
+      "sha256": "6c55d7df2a3d5aa2319b9f3cfbe9951188fbc931d28c869cddc2dc5b42f71c79",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._sambel kicx botol.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._sambel kicx botol.png",
+      "bytes": 4096,
+      "sha256": "0d5317785d413f1ccdcf4ea40bd03911a7de17bc50c0a4cbf3042b671da5dbcb",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._Untitled-1.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._Untitled-1.jpg",
+      "bytes": 4096,
+      "sha256": "6c55d7df2a3d5aa2319b9f3cfbe9951188fbc931d28c869cddc2dc5b42f71c79",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-09-30 at 14.30.30.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-09-30 at 14.30.30.jpeg",
+      "bytes": 4096,
+      "sha256": "436502631780d0fd84060a3de5b023a4ff82476e01ebecbe824651f8dda64dcc",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-09-30 at 14.30.31-2.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-09-30 at 14.30.31-2.jpeg",
+      "bytes": 4096,
+      "sha256": "759debc034c420803310be55d811dcd2fea4eadc714616210577c7ca67884835",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-09-30 at 14.30.31.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-09-30 at 14.30.31.jpeg",
+      "bytes": 4096,
+      "sha256": "2d5fcc2e013e0c36ff30f8e3bda77538fd23f892b5b4f6cae844124e548dab7f",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-09-30 at 14.30.32.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-09-30 at 14.30.32.jpeg",
+      "bytes": 4096,
+      "sha256": "77c20e23aa0477179e1b66b69cee43fe9af3127c6666baf6182949eb196678a5",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-09-30 at 14.30.33-2.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-09-30 at 14.30.33-2.jpeg",
+      "bytes": 4096,
+      "sha256": "fa7122b878fdc29acd9290ea7b1aa3f9d121a20275267187488b66d6add021ac",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-09-30 at 14.30.33-3.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-09-30 at 14.30.33-3.jpeg",
+      "bytes": 4096,
+      "sha256": "81e13c42359b3682d1b7ae770d258ef113f9aad026eff9a3302c56a8d983b7c7",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-09-30 at 14.30.33.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-09-30 at 14.30.33.jpeg",
+      "bytes": 4096,
+      "sha256": "eae1a3edf126f75eedfab5ec2c897f5117c7a3618b56637b4d1927e7dff0a4df",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-09-30 at 14.30.34-2.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-09-30 at 14.30.34-2.jpeg",
+      "bytes": 4096,
+      "sha256": "2db20fb68154faf20f215acdf8fd6d4ed8e020d56c698db33512c9ff80653c84",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-09-30 at 14.30.34-3.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-09-30 at 14.30.34-3.jpeg",
+      "bytes": 4096,
+      "sha256": "5e7f46546edbfaaac71a420e5f3436e8fd2919181b85c1cdbda8ebe79a9b85d0",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-09-30 at 14.30.34.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-09-30 at 14.30.34.jpeg",
+      "bytes": 4096,
+      "sha256": "b690990f3e3d96710b353e6a6a06bb8338391da6743146dae152aa73eae288ff",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-07 at 11.50.17 AM.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-07 at 11.50.17 AM.jpeg",
+      "bytes": 4096,
+      "sha256": "208a10715c3cec565683be73aa01b69b9d1872c6f50d77237a03cee8b3408a89",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-07 at 11.50.18 AM-2.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-07 at 11.50.18 AM-2.jpeg",
+      "bytes": 4096,
+      "sha256": "02e15b74d897314811c7e068c54515aa5302d9cb3cfecc94979b878fc48a9594",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-07 at 11.50.18 AM-3.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-07 at 11.50.18 AM-3.jpeg",
+      "bytes": 4096,
+      "sha256": "62f9e339d39ddbfb5f890a4aa1e98b87188edfb2d0760653bfa4323a1baf21af",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-07 at 11.50.18 AM.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-07 at 11.50.18 AM.jpeg",
+      "bytes": 4096,
+      "sha256": "b317174982bcada60e324125da4bd3a23cf5db77adb071e6b4b9c6c232ee55cd",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-07 at 11.50.19 AM.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-07 at 11.50.19 AM.jpeg",
+      "bytes": 4096,
+      "sha256": "fc129bdbabd655c399dbb5859a9e058a07840d25ad2edc5cafd6c777d06cc1ff",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-12 at 14.51.03.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-12 at 14.51.03.jpeg",
+      "bytes": 4096,
+      "sha256": "c8f95edce85847390ad77d8b5f691062739f6b4b256d8eb51927bc0b4b0a20e0",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-14 at 16.59.28.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-14 at 16.59.28.jpeg",
+      "bytes": 4096,
+      "sha256": "6caea085c122a49ffef7e572e4396dfdaa6c545e8e23af6b5b57b87ff4ab0a3c",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-14 at 16.59.29-2.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-14 at 16.59.29-2.jpeg",
+      "bytes": 4096,
+      "sha256": "35a28c38b2115bf99bbb2ef13a32751fec0a3b92207f691b4444ef403bb4c71b",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-14 at 16.59.29.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-14 at 16.59.29.jpeg",
+      "bytes": 4096,
+      "sha256": "e53d4ef114f4d3306c96b4910c97714597af0615a878ef443cea9444b13aabde",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-14 at 16.59.30-2.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-14 at 16.59.30-2.jpeg",
+      "bytes": 4096,
+      "sha256": "8907153d4c234b92b809cd070843f67c524b77947628edc1f2bc0994f4a20e35",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-14 at 16.59.30.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-14 at 16.59.30.jpeg",
+      "bytes": 4096,
+      "sha256": "6443595f736c17febd90f74cdb03f44b0137b09c043707fd65c4012aa58652d4",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-14 at 16.59.31-2.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-14 at 16.59.31-2.jpeg",
+      "bytes": 4096,
+      "sha256": "6369558e36c58f93cbab762eb562e98075f554dcc0ba78a6e5e293726894aa05",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-14 at 16.59.31.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-14 at 16.59.31.jpeg",
+      "bytes": 4096,
+      "sha256": "6affc94ff5b27c713b9c68437597790e136f4d1eda3266378547b94dccc02a32",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-14 at 16.59.34.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-14 at 16.59.34.jpeg",
+      "bytes": 4096,
+      "sha256": "4b244e60727fc5ebde08922c5b1377c13f35fead67333e7acb2f3a7d75679796",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-16 at 11.55.45.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-16 at 11.55.45.jpeg",
+      "bytes": 4096,
+      "sha256": "7b059e4462289fa8366c75dd4fb3a0e418af1372f4c30b79e6dc0caa6e12f6a8",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-16 at 12.15.08.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/._WhatsApp Image 2020-10-16 at 12.15.08.jpeg",
+      "bytes": 4096,
+      "sha256": "e03d50126ad01042fe9f2202ad261741008814193dccf77c73c170bb8bfcbf6a",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/.DS_Store",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/.DS_Store",
+      "bytes": 10244,
+      "sha256": "0e847998e7b8a9c87bc865b86473ef29c5aa75759152a342c6fcccef08133668",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/1.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/1.png",
+      "bytes": 5957450,
+      "sha256": "8280e352ef0f8e6f50d92c5caf5258f60087c9e84f29a7600f70c25e8d3d3800",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/11.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/11.png",
+      "bytes": 8456,
+      "sha256": "e129ae81b4aee7324e0adacdd9e7ddf890cd8e27ab14a4805f765a7a9654e306",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/12.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/12.png",
+      "bytes": 11680,
+      "sha256": "030e38a67ee21b5ceeffbe668930b9ec906cc5120efeabb1fccef588a32525bc",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/13.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/13.png",
+      "bytes": 54061,
+      "sha256": "cff6ffd0019be6770ce38c7dfac43ecd7a59ef34dc603d5acc54cd1df7f62d89",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/136448689_3163625953864079_5442399519065708382_n.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/136448689_3163625953864079_5442399519065708382_n.jpg",
+      "bytes": 515072,
+      "sha256": "0b9d89747db467b89af5f997e3144e47a8c6874ed6a3bc9cffd88d6cd9cbab07",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/2 hand gift.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/2 hand gift.png",
+      "bytes": 747088,
+      "sha256": "def97487c94a2591b81c6d9b18a648cedefa14ea877059d1088b499f2c406f10",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/2.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/2.png",
+      "bytes": 8338607,
+      "sha256": "358b15a9b0c76a2c899ceaaf983f4887e38381185ab46b5361814bf6acaced0f",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/2021-01-04 11.15.47.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/2021-01-04 11.15.47.jpg",
+      "bytes": 164799,
+      "sha256": "ebf1d14fd15acccbb34a2496ef5ac8973981605c78b35f3e7caaa8ce3e1e453b",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/3 hand gift.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/3 hand gift.png",
+      "bytes": 759035,
+      "sha256": "56459cf1e58c66c74b23603b5c282f33a720760a0e60a288a1e2ee278b0d5d49",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/3.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/3.png",
+      "bytes": 6072471,
+      "sha256": "c3847b24e0468caf38791e61217937deb692e0c78ce9881fcf1cc8c5d147d9aa",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/6.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/6.png",
+      "bytes": 23465,
+      "sha256": "da6aacf602791471c3d7f655682642ece9261045e7dc9a77b446496259768ae9",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/bidara.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/bidara.jpg",
+      "bytes": 778349,
+      "sha256": "082a3704ebb9d3d25ae2a2a884f99911011b2a69c3f6234d940f21e47e2e1940",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/debug.log",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/debug.log",
+      "bytes": 95,
+      "sha256": "9f30747caace61a177c5dcf3e6cb15fb458afb8d789c3ca4d512550c5b49ae4b",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/DSC_0208.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/DSC_0208.jpg",
+      "bytes": 12183100,
+      "sha256": "d996f5a94caa7dfbf41ea3f895985392d0881f21b71123d6da4e4498dd950695",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/DSC_0378.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/DSC_0378.png",
+      "bytes": 8724087,
+      "sha256": "0bd9731775145c12297d64ed3783af892dbc3ac5803bc04505d9dc8d9e3f8216",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/epal.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/epal.png",
+      "bytes": 596872,
+      "sha256": "8f76290e405214fab7af3f1dafe69b08c8bd5ccd7102ea3a543194ba818f548d",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/epalll.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/epalll.png",
+      "bytes": 927460,
+      "sha256": "8fbf14a92824570c682dc43a8c77366d38c622dd38d319a88ba4e735306937ee",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/game.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/game.png",
+      "bytes": 806605,
+      "sha256": "4e58e6fd066f544841c7c73ea5e21f6bc2946c9305350837735884ef9be48cef",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/HAND 2.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/HAND 2.png",
+      "bytes": 926744,
+      "sha256": "395bc1908f64e513a7d555eed6ef9ad71030f978ada50ec1007a78d3f137f237",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/hand.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/hand.png",
+      "bytes": 862428,
+      "sha256": "a802a2783b87acc900af3026dbe1c015640cbfe4ca9da26d67268835f2114452",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/HAND1.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/HAND1.png",
+      "bytes": 366105,
+      "sha256": "71c454b2aee7928f164aafdcb9359e9b82ad56febfdaea42340b79092612764f",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/IMG_1077.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/IMG_1077.jpg",
+      "bytes": 4700906,
+      "sha256": "8c405619bfb5a4097d508daf6352eae8b6659cb2513446747952841924b963e6",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/IMG-20200921-WA0017.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/IMG-20200921-WA0017.jpg",
+      "bytes": 90025,
+      "sha256": "aef95b59e053f8b8d59a682b7de192ea447cc0ef091b9bf98320d5c868d40468",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/IMG-20200921-WA0018.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/IMG-20200921-WA0018.jpg",
+      "bytes": 101524,
+      "sha256": "f3e2df59ccdcd7120cb7c1eafe8d542b6a1be6e7e71b667a91b68db55ba0b265",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/IMG-20200921-WA0019.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/IMG-20200921-WA0019.jpg",
+      "bytes": 91708,
+      "sha256": "5b0f5597d726f9b98df0742ecb0775e794c3fda48a3effc6e12a2b1b97392335",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/JERUX 1 BALANG-Recovered-Recovered-Recovered.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/JERUX 1 BALANG-Recovered-Recovered-Recovered.png",
+      "bytes": 332340,
+      "sha256": "5e60636a1c7b4f286cfba5a2efc8a3dae61c9031b75da818b6036bb1ec66c01d",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/kampung.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/kampung.png",
+      "bytes": 857511,
+      "sha256": "f384786c6ee352574269d0612019b150a0c7caa92744dce26964a654a069b4db",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/kundang.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/kundang.jpg",
+      "bytes": 404327,
+      "sha256": "8c758d20619c3bd779a027d4e3615e45b77221c31391ff80d889c4ecf21fc913",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/mangga 2.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/mangga 2.jpg",
+      "bytes": 179617,
+      "sha256": "4680df63b3559e7f05fbcf2ee40c5708467728250734ec044d4f326e6e18ba0c",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/mangga cup.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/mangga cup.jpg",
+      "bytes": 231210,
+      "sha256": "1b14c087b501562cf9cbd751a7b94abef8dae77900210907165fd9ef65f37bee",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/mangga-cup-foodpanda.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/mangga-cup-foodpanda.jpg",
+      "bytes": 191848,
+      "sha256": "01147d19243e44bef3c60e60106ecf5991a1219c82c9a8e172f036026c5f7f78",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/mc.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/mc.jpeg",
+      "bytes": 186962,
+      "sha256": "c9abf0006302696b4b00fbbde680085e16f494ddde0245e54172a28d0732edc9",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/mc.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/mc.jpg",
+      "bytes": 204397,
+      "sha256": "35667bde5410f4fbb7bbd9d0160720655b101738518217adb0b87301c070bae0",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/MIXXX.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/MIXXX.png",
+      "bytes": 951349,
+      "sha256": "3f463967b9fe729fc2479be44a89ebf38c7f245e64be21e8aeb3a6ad539b8b34",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/n 03.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/n 03.png",
+      "bytes": 10099022,
+      "sha256": "9d49772fb369c52e78fa8049f02524a8d15c33d8494052c265e48356a5bce7b7",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/N 04.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/N 04.png",
+      "bytes": 11746124,
+      "sha256": "aeb8a9ec3c51edbf4d79259ccaca223a0916f04584ad51fcf83346cde3c7ba18",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/NANGKA.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/NANGKA.jpg",
+      "bytes": 189158,
+      "sha256": "6e35ef2a8be94a97719c483cd36b6324c096e7aa545ca2e154adfc79ece7a7bb",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/NANGKA.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/NANGKA.png",
+      "bytes": 409399,
+      "sha256": "05bcd8809a433847f6ad9926c2a7a761ecd729e7b1f368bf162d5f3f42131e58",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/nenasx 1.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/nenasx 1.jpg",
+      "bytes": 335076,
+      "sha256": "87b055f7a77a12f05df8455b4003ad36068f6ce6dcaee2ea17784fef17d8304a",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/nenasx 2.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/nenasx 2.jpg",
+      "bytes": 210838,
+      "sha256": "06320b714687c8431d263fe2374f3a9abe3c6fb3e6629f75d12a5f23caf6f3c0",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/nenasx 3.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/nenasx 3.jpg",
+      "bytes": 263014,
+      "sha256": "0ff943b59bfeb39fd64ef16aeb8e87905d0d569eaeef330aed45b5cade7d3ff2",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/nenasx-premium.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/nenasx-premium.jpg",
+      "bytes": 218073,
+      "sha256": "f4bcdffbbbcfa4704ffec5c1f92c1eb09213c1f98c80b29d9a71a61325591760",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/nenasx.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/nenasx.jpg",
+      "bytes": 282376,
+      "sha256": "bbe0ed6dc7f2bb9572e935c48bc2781f2444e1174d435e40af0e5bb08ed44ac7",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/NENASX.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/NENASX.png",
+      "bytes": 14846649,
+      "sha256": "601e070b568b8b2f19430dbaa373aaa58bc7ed18675d216f733539f735ac127a",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/nnsx.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/nnsx.png",
+      "bytes": 715890,
+      "sha256": "da4f075ac0d1880a48e3c9db3bf1b7d982eb66b6d0ea2875a4fc1295eaa923d0",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/product.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/product.jpeg",
+      "bytes": 143002,
+      "sha256": "a49a77f888222ba8e90856b28e24b1a6bee9421fa2aaa7e180c91e44b33cc528",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/sambal kicx_.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/sambal kicx_.png",
+      "bytes": 85582,
+      "sha256": "ca589e1c95aa21349dace9c2ba2d5918cf6c3c22e892f15b6cdc08e7fb638823",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/sambel kicx botol.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/sambel kicx botol.png",
+      "bytes": 1077907,
+      "sha256": "aa776e087eb2beb833dfd814cbb4301391e3f0692748fa0007aaff2619f21951",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/Untitled-1.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/Untitled-1.jpg",
+      "bytes": 124654,
+      "sha256": "6d32638d084f0e13a88e6b1b536e461790ed9d84cc36e937ab705407df9a131a",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-09-30 at 14.30.30.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-09-30 at 14.30.30.jpeg",
+      "bytes": 152047,
+      "sha256": "46324cd95ba773f75ee237ccd9c8af318ed9f7a1cf02804935373a108ebdf71a",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-09-30 at 14.30.31-2.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-09-30 at 14.30.31-2.jpeg",
+      "bytes": 118478,
+      "sha256": "8df103d7bc219e0f07c1a64b91eb5b31627e2f8361fddbdcd794458ea80f943a",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-09-30 at 14.30.31.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-09-30 at 14.30.31.jpeg",
+      "bytes": 137183,
+      "sha256": "a5188c46d0443c69941f4e42793485ec4516a5ece926504429048186b51c551c",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-09-30 at 14.30.32.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-09-30 at 14.30.32.jpeg",
+      "bytes": 123327,
+      "sha256": "b163b4523d5fe927d5516edee0d12d4c6f1b320d31bb2383045db858c21a9c66",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-09-30 at 14.30.33-2.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-09-30 at 14.30.33-2.jpeg",
+      "bytes": 100018,
+      "sha256": "8c112fc14e359ffcbb03f1aec5b4b511e8771950a5829f3d69ccfd6d699441e7",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-09-30 at 14.30.33.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-09-30 at 14.30.33.jpeg",
+      "bytes": 96233,
+      "sha256": "87ac9d293777ae67bb8e0b75fe7fecb1f38aca756ad0589ba03b27a7eaa95b45",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-09-30 at 14.30.34-2.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-09-30 at 14.30.34-2.jpeg",
+      "bytes": 90025,
+      "sha256": "aef95b59e053f8b8d59a682b7de192ea447cc0ef091b9bf98320d5c868d40468",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-09-30 at 14.30.34-3.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-09-30 at 14.30.34-3.jpeg",
+      "bytes": 93364,
+      "sha256": "b55cdb3b861e1d021914ac550d1f57b5ab626df1b42739ee058f28260dad8e0e",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-09-30 at 14.30.34.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-09-30 at 14.30.34.jpeg",
+      "bytes": 119198,
+      "sha256": "7e71aa7e5cc0e18aca9995c59f29efde90a0414af6a7015f63fef3b202c269d1",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-07 at 11.50.17 AM.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-07 at 11.50.17 AM.jpeg",
+      "bytes": 172181,
+      "sha256": "e9566cfe296b6914e889936d34b70ce0505342c773a2b32de63c3d4b9bb5df08",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-07 at 11.50.18 AM-2.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-07 at 11.50.18 AM-2.jpeg",
+      "bytes": 183199,
+      "sha256": "da87ed46317d2528a1070b70a6d67b23631f2f84957161af2da1b7f6fa6fce40",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-07 at 11.50.18 AM-3.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-07 at 11.50.18 AM-3.jpeg",
+      "bytes": 176829,
+      "sha256": "2d8b90d8ba2c36eca77008cf5e5a9aae5d288bb48f135a33cbecb754354734fc",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-07 at 11.50.18 AM.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-07 at 11.50.18 AM.jpeg",
+      "bytes": 170546,
+      "sha256": "9baeb1eb0ce29a9d2e2b8c743777dd9359af9f70e2058e7cafa501b2e4d95656",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-07 at 11.50.19 AM.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-07 at 11.50.19 AM.jpeg",
+      "bytes": 180160,
+      "sha256": "443a0d98c560fde131620f462357dfea73d9ca46b17e5943b2e30080dae70ba8",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-12 at 14.51.03.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-12 at 14.51.03.jpeg",
+      "bytes": 81715,
+      "sha256": "e1c8e8ee9844e0a6c6b80d42063109760b16da66d7a3a8c4dc9b2d0680e0a752",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-14 at 16.59.28.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-14 at 16.59.28.jpeg",
+      "bytes": 106293,
+      "sha256": "6fd13ec7d8a36eba9a373d5b32be390cde1ac53c7f098e08c3c8c171a65a0321",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-14 at 16.59.29-2.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-14 at 16.59.29-2.jpeg",
+      "bytes": 97617,
+      "sha256": "359191fa991c441cf108223a33ae171fa689cbc4ad8c811fa2d3ad3e19d44c37",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-14 at 16.59.29.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-14 at 16.59.29.jpeg",
+      "bytes": 106156,
+      "sha256": "5945e9d7246ad65e0bf2e08df02603f7b8b2d22ed85d937f1221fe8df702d206",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-14 at 16.59.30-2.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-14 at 16.59.30-2.jpeg",
+      "bytes": 90774,
+      "sha256": "ab05f5daf8b3830087b10b8e32aee98ac11d159e42217baf3d01bb8661fe0cc1",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-14 at 16.59.30.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-14 at 16.59.30.jpeg",
+      "bytes": 88989,
+      "sha256": "a327b3f64c8d3fe8a493e2be5799648eb3497003da6bf08d683a4bbf2596f915",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-14 at 16.59.31-2.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-14 at 16.59.31-2.jpeg",
+      "bytes": 93626,
+      "sha256": "9dddb6ad8d741486a9db37e6aa192d7dde53f44e0df6715d1e896a8fe01838ea",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-14 at 16.59.31.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-14 at 16.59.31.jpeg",
+      "bytes": 104163,
+      "sha256": "dbca65ce0ac3a5e6ca00b9263fd72c290f6001fb2f4c8ff5b1bf33367bef97a8",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-14 at 16.59.34.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-14 at 16.59.34.jpeg",
+      "bytes": 101307,
+      "sha256": "f4b354e64de8b20342e539af7b14c1c5c6e41200b623aad4c6886f8602bb1a38",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-16 at 11.55.45.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-16 at 11.55.45.jpeg",
+      "bytes": 66516,
+      "sha256": "73ef24f81517d792901e5872185ec7a060d2bf6e42d39c1c71aaa98015ba04ae",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-16 at 12.15.08.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/ITEM/WhatsApp Image 2020-10-16 at 12.15.08.jpeg",
+      "bytes": 93364,
+      "sha256": "b55cdb3b861e1d021914ac550d1f57b5ab626df1b42739ee058f28260dad8e0e",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._Artboard 1 (1).png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._Artboard 1 (1).png",
+      "bytes": 4096,
+      "sha256": "bdfd0d92625656505509531ccea265e3d999968d5377f278ef2631390d898f88",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._Artboard 1 (2).png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._Artboard 1 (2).png",
+      "bytes": 4096,
+      "sha256": "bdfd0d92625656505509531ccea265e3d999968d5377f278ef2631390d898f88",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._Artboard 2.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._Artboard 2.png",
+      "bytes": 4096,
+      "sha256": "bdfd0d92625656505509531ccea265e3d999968d5377f278ef2631390d898f88",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._Artboard 3 (1).png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._Artboard 3 (1).png",
+      "bytes": 4096,
+      "sha256": "bdfd0d92625656505509531ccea265e3d999968d5377f278ef2631390d898f88",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._Artboard 3 (2).png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._Artboard 3 (2).png",
+      "bytes": 4096,
+      "sha256": "bdfd0d92625656505509531ccea265e3d999968d5377f278ef2631390d898f88",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._Artboard 3.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._Artboard 3.png",
+      "bytes": 4096,
+      "sha256": "bdfd0d92625656505509531ccea265e3d999968d5377f278ef2631390d898f88",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._Artboard 4 (1).png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._Artboard 4 (1).png",
+      "bytes": 4096,
+      "sha256": "bdfd0d92625656505509531ccea265e3d999968d5377f278ef2631390d898f88",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._Artboard 4 (2).png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._Artboard 4 (2).png",
+      "bytes": 4096,
+      "sha256": "bdfd0d92625656505509531ccea265e3d999968d5377f278ef2631390d898f88",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._Artboard 4.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._Artboard 4.png",
+      "bytes": 4096,
+      "sha256": "bdfd0d92625656505509531ccea265e3d999968d5377f278ef2631390d898f88",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._Artboard 5 (1).png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._Artboard 5 (1).png",
+      "bytes": 4096,
+      "sha256": "bdfd0d92625656505509531ccea265e3d999968d5377f278ef2631390d898f88",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._Artboard 5 (2).png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._Artboard 5 (2).png",
+      "bytes": 4096,
+      "sha256": "bdfd0d92625656505509531ccea265e3d999968d5377f278ef2631390d898f88",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._Artboard 5.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._Artboard 5.png",
+      "bytes": 4096,
+      "sha256": "bdfd0d92625656505509531ccea265e3d999968d5377f278ef2631390d898f88",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._ASAMBOI MANGGA.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._ASAMBOI MANGGA.png",
+      "bytes": 4096,
+      "sha256": "bdfd0d92625656505509531ccea265e3d999968d5377f278ef2631390d898f88",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._SPICY JACX.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/._SPICY JACX.png",
+      "bytes": 4096,
+      "sha256": "bdfd0d92625656505509531ccea265e3d999968d5377f278ef2631390d898f88",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/Artboard 1 (1).png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/Artboard 1 (1).png",
+      "bytes": 1642315,
+      "sha256": "715edbf1d80c774a8116b8b7ba863958742aeb093ba240c99c2a8e625203e56f",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/Artboard 1 (2).png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/Artboard 1 (2).png",
+      "bytes": 1661366,
+      "sha256": "b80a54223d086be088ffac51e9075ef52357f79e9218d41caefbce31c88b0f57",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/Artboard 2.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/Artboard 2.png",
+      "bytes": 1781866,
+      "sha256": "b28b45c002d54cf0d104428bd0bba897a1461dfc65269249e0fefe885586b6c5",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/Artboard 3 (1).png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/Artboard 3 (1).png",
+      "bytes": 1659286,
+      "sha256": "e3553a50494462c0905a3b81bca6db79b0c7c6c7e5cad069c225c206013b04aa",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/Artboard 3 (2).png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/Artboard 3 (2).png",
+      "bytes": 1650334,
+      "sha256": "72ac3a95f892c09ea5c1ca9c117d437e66c344a0ad83ae232b83a4a641042b6d",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/Artboard 3.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/Artboard 3.png",
+      "bytes": 1799126,
+      "sha256": "955d622bfa612bbf4c89d021979fc6b1c58f60b7af35f696f2098bcbbf3a5719",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/Artboard 4 (1).png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/Artboard 4 (1).png",
+      "bytes": 1568079,
+      "sha256": "de0a0b443253eefa4309199551193b74e9d01dec90210de02fac1050f8e00e1e",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/Artboard 4 (2).png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/Artboard 4 (2).png",
+      "bytes": 1499937,
+      "sha256": "fd90fa99208d83a72099c12b63fbaa22ed19191dfc8994a3ba639c67fd5f22f3",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/Artboard 4.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/Artboard 4.png",
+      "bytes": 1770613,
+      "sha256": "4f028e5210dfaf87cd19c309e07d0747a2791107c7cac303fde06786581b0703",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/Artboard 5 (1).png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/Artboard 5 (1).png",
+      "bytes": 1647602,
+      "sha256": "645de2848c11fd91a5651fa70ba9aad96381efd241970512ac9e1c44008b48d6",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/Artboard 5 (2).png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/Artboard 5 (2).png",
+      "bytes": 1651919,
+      "sha256": "08e1f009ba24fcc7d6f46957c6e677d63b3cf18f53728b311a37443b790933e2",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/Artboard 5.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/Artboard 5.png",
+      "bytes": 1775313,
+      "sha256": "82ff47bd95147aec60e43167395251ceb9be81d6031855b641a7a4a81ba371c0",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/ASAMBOI MANGGA.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/ASAMBOI MANGGA.png",
+      "bytes": 1726972,
+      "sha256": "3d9b4a5faa973432bda383ad170656eb407bc8348a902a80723e8453a07f9ec1",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/SPICY JACX.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/JERUK LIUR LELEH/SPICY JACX.png",
+      "bytes": 1496263,
+      "sha256": "53056e0c10847d70a4e4f38982594e94f70d8dff368778c1eb63814c086fe0da",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/LiurLeleh House Logo.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/LiurLeleh House Logo.png",
+      "bytes": 241067,
+      "sha256": "4a2577fa82351c28ff6e720907e1b5371cda87a725f0838d040bb71de649b985",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/logo outline.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/logo outline.png",
+      "bytes": 207999,
+      "sha256": "3ef09cd2d9b60ce143a904a0d8613abe8a814857e6a0b3ac718619696543ef3c",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Logo TFJ WORLDWIDE.pdf",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Logo TFJ WORLDWIDE.pdf",
+      "bytes": 958418,
+      "sha256": "d8cf10b623ef487b0e6679993da3087e0493648c0be5e907e7804cffeea96930",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/NO LOGO.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/NO LOGO.jpg",
+      "bytes": 63142567,
+      "sha256": "800d5eeb5e80aeb0e99be0ce9c25194fc5c21df83f570d78b915b2955a7c05f7",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/._.DS_Store",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/._.DS_Store",
+      "bytes": 4096,
+      "sha256": "f81c4f284d788ce9f4bdd1a03833cbe57fd1f9cae7c6c5218bffe321e107e711",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/.DS_Store",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/.DS_Store",
+      "bytes": 6148,
+      "sha256": "d65165279105ca6773180500688df4bdc69a2c7b771752f0a46ef120b7fd8ec3",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/1. Mangga Asam Boi.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/1. Mangga Asam Boi.jpg",
+      "bytes": 2315396,
+      "sha256": "26b15475404bd5f3c07d76adbe25eca52952719b098538e36197c4c0719018ea",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/10. Sambal Kicx Mangga.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/10. Sambal Kicx Mangga.jpg",
+      "bytes": 2344943,
+      "sha256": "89698d30e2cd7efa7c180e8c0afdde785edc2f522768454e95d438eee49b4c8a",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/11. Sambal Kicx Jambu.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/11. Sambal Kicx Jambu.jpg",
+      "bytes": 2288342,
+      "sha256": "c3cba778fe492726458d8917e51dbb39d88480cfb467015901768e32ff107b55",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/12. Sambal Kicx Kedondong.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/12. Sambal Kicx Kedondong.jpg",
+      "bytes": 2260891,
+      "sha256": "40b6752a6a336601d9915680243dca84800571ef1e8ea0fee9ab51c4fc26dd60",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/13. Sambal Kicx Epal.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/13. Sambal Kicx Epal.jpg",
+      "bytes": 1556474,
+      "sha256": "330efcc5b29de04f85ee0a4dbf5beb9014093b0adfe4b46b6f90957bee883ade",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/14. Sambal Kicx Nangka.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/14. Sambal Kicx Nangka.jpg",
+      "bytes": 1584993,
+      "sha256": "c2ea3367757995c2e16b75d1256fafbebae1e6d7755024324c502ccc808768b8",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/15. Sambal Kicx.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/15. Sambal Kicx.jpg",
+      "bytes": 2116379,
+      "sha256": "8a8bdef4f2b18669232cf012a8e1f476aaa01b7658d4a204d54360dafdcaf943",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/2. Jambu Asam Boi.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/2. Jambu Asam Boi.jpg",
+      "bytes": 2435125,
+      "sha256": "bc3072080c138e35041ecbbb204b8700d00c71c86aedd338481d7df9cdf4e5dc",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/3. Kedondong Asam Boi.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/3. Kedondong Asam Boi.jpg",
+      "bytes": 2494475,
+      "sha256": "b0ad86679ef5877e8bc6659bc8b91fdd7a157bf323c3c19f4b200ec8079c0332",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/5. Epal Asam Boi.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/5. Epal Asam Boi.jpg",
+      "bytes": 2369364,
+      "sha256": "e9f857b3394232f4342e01c5588e6f22c6eb937b87428b0aee03b5254b359de3",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/6. Awesome Shacx Mangga.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/6. Awesome Shacx Mangga.jpg",
+      "bytes": 2168847,
+      "sha256": "d1c47e7558f00cecc96e799476e97c4e2bfdb8f94720ed794bc61d93530c3175",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/7. Awesome Shacx Jambu.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/7. Awesome Shacx Jambu.jpg",
+      "bytes": 2156984,
+      "sha256": "34c0233d1f47c418600ca36834053e39ca9fd4adde85c4d7bc864c65b2d383ee",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/8. Awesome Shacx Kedondong.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/8. Awesome Shacx Kedondong.jpg",
+      "bytes": 2236238,
+      "sha256": "68caa04ab735ce32861d45192a1948bd7b8336c1b273cbf5a1b504bd1c55f91f",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/9. Awesome Shacx Epal.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/Product Photo/9. Awesome Shacx Epal.jpg",
+      "bytes": 1651883,
+      "sha256": "0d7b63e9fd0b45f584d7f1f784ad88f1050e08a09b9b1fda4b930e4db296de5a",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/product.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/product.jpeg",
+      "bytes": 143002,
+      "sha256": "a49a77f888222ba8e90856b28e24b1a6bee9421fa2aaa7e180c91e44b33cc528",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/SAMBAL KICX/EPAL.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/SAMBAL KICX/EPAL.png",
+      "bytes": 415840,
+      "sha256": "593022c4ef764d1c2c9fa6202db028b1bbc697f5ee4ea083ed5da940adf31b2f",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/SAMBAL KICX/JAMBU.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/SAMBAL KICX/JAMBU.png",
+      "bytes": 427841,
+      "sha256": "acbacc7324eba78f47861601f88de5bcf4e25678cffa89ee3acb0730736c43b5",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/SAMBAL KICX/KEDONDONG.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/SAMBAL KICX/KEDONDONG.png",
+      "bytes": 438696,
+      "sha256": "ae82227e139253bdae7a817bc1b71dcf530701fcdc160fd51f86fdc9e7543ac9",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/SAMBAL KICX/MANGGA.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/SAMBAL KICX/MANGGA.png",
+      "bytes": 464956,
+      "sha256": "2d9bdc39df56d79a3c333cdfbf1df72f8d9e92bbbb0564374f67811e9058d88f",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/SAMBAL KICX/MIX.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/SAMBAL KICX/MIX.png",
+      "bytes": 68031,
+      "sha256": "0c34e56bdf4baca30230542fc05c41f6be4c51ee6a0fb2236962e980cf056790",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/SAMBAL KICX/NANGKA.png",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/SAMBAL KICX/NANGKA.png",
+      "bytes": 409399,
+      "sha256": "05bcd8809a433847f6ad9926c2a7a761ecd729e7b1f368bf162d5f3f42131e58",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/SAMBAL KICX/WhatsApp Image 2020-09-30 at 14.30.36.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/SAMBAL KICX/WhatsApp Image 2020-09-30 at 14.30.36.jpeg",
+      "bytes": 88702,
+      "sha256": "aee35e81b9c98f48a2ba55e822ba6498fa2600d38041f9d4f6532bc5b98a45a2",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/SAMBAL KICX/WhatsApp Image 2020-10-14 at 16.59.32-2.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/SAMBAL KICX/WhatsApp Image 2020-10-14 at 16.59.32-2.jpeg",
+      "bytes": 88926,
+      "sha256": "b0174df6214aba96685cfa67354a4cf3daf2fdb4ae5a6490772d438d3a3d7b63",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/SAMBAL KICX/WhatsApp Image 2020-10-14 at 16.59.32.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/SAMBAL KICX/WhatsApp Image 2020-10-14 at 16.59.32.jpeg",
+      "bytes": 93591,
+      "sha256": "95fafc687e4b08170ad24dfb80e7889e394c6636866c25ae4b49086842b6f625",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/SAMBAL KICX/WhatsApp Image 2020-10-14 at 16.59.33.jpeg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/SAMBAL KICX/WhatsApp Image 2020-10-14 at 16.59.33.jpeg",
+      "bytes": 84591,
+      "sha256": "6b2ff5c24c7283ebab6d99808add9f7a0f6afa3e0f5b13cba78311543d9f8b8d",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/SSM TFJ WORLDWIDE 1.pdf",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/SSM TFJ WORLDWIDE 1.pdf",
+      "bytes": 177979,
+      "sha256": "e5437ac13bcaf966a4bfebb1004a6d44274e8dace5496b595aa532e67bb5e722",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/SSM TFJ WORLDWIDE 2.pdf",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/SSM TFJ WORLDWIDE 2.pdf",
+      "bytes": 220007,
+      "sha256": "9395dc991a02a6cb5b98baa8503762ab0de17ef7ebc5cd481754b4a2b95761e9",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/TFJ ONLY.pdf",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/TFJ ONLY.pdf",
+      "bytes": 638908,
+      "sha256": "0271814cf8b82f86070f4142d0be7ade7ebfe1c6db065f44542531423c0dc022",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/y1.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/y1.jpg",
+      "bytes": 5254756,
+      "sha256": "15e89e7409f036e6d23ce01b63a6e493d91bfb9fe1c4f0f65f8e13bd9a7d6b7c",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/yy4.jpg",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001/PRODUCT LLH/yy4.jpg",
+      "bytes": 5992998,
+      "sha256": "a50b2b286dc1ef83c1cfc81a0718d5c3e58c0cdadd54ad3759baabb64fc7338c",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "PRODUCT LLH-20261017T020159Z-1-001.zip",
+      "targetPath": "references/media/product-2026-10-17/PRODUCT LLH-20261017T020159Z-1-001.zip",
+      "bytes": 595183102,
+      "sha256": "9f73a950d04ad7773ff6249944f90fca2d6f045c467bcfd2499bc0062e5f7d13",
+      "kind": "archive"
+    },
+    {
+      "sourcePath": "Product Photo-20261017T020223Z-1-001/Product Photo/1. Mangga Asam Boi.jpg",
+      "targetPath": "references/media/product-2026-10-17/Product Photo-20261017T020223Z-1-001/Product Photo/1. Mangga Asam Boi.jpg",
+      "bytes": 2315396,
+      "sha256": "26b15475404bd5f3c07d76adbe25eca52952719b098538e36197c4c0719018ea",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "Product Photo-20261017T020223Z-1-001/Product Photo/10. Sambal Kicx Mangga.jpg",
+      "targetPath": "references/media/product-2026-10-17/Product Photo-20261017T020223Z-1-001/Product Photo/10. Sambal Kicx Mangga.jpg",
+      "bytes": 2344943,
+      "sha256": "89698d30e2cd7efa7c180e8c0afdde785edc2f522768454e95d438eee49b4c8a",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "Product Photo-20261017T020223Z-1-001/Product Photo/11. Sambal Kicx Jambu.jpg",
+      "targetPath": "references/media/product-2026-10-17/Product Photo-20261017T020223Z-1-001/Product Photo/11. Sambal Kicx Jambu.jpg",
+      "bytes": 2288342,
+      "sha256": "c3cba778fe492726458d8917e51dbb39d88480cfb467015901768e32ff107b55",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "Product Photo-20261017T020223Z-1-001/Product Photo/12. Sambal Kicx Kedondong.jpg",
+      "targetPath": "references/media/product-2026-10-17/Product Photo-20261017T020223Z-1-001/Product Photo/12. Sambal Kicx Kedondong.jpg",
+      "bytes": 2260891,
+      "sha256": "40b6752a6a336601d9915680243dca84800571ef1e8ea0fee9ab51c4fc26dd60",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "Product Photo-20261017T020223Z-1-001/Product Photo/13. Sambal Kicx Epal.jpg",
+      "targetPath": "references/media/product-2026-10-17/Product Photo-20261017T020223Z-1-001/Product Photo/13. Sambal Kicx Epal.jpg",
+      "bytes": 1556474,
+      "sha256": "330efcc5b29de04f85ee0a4dbf5beb9014093b0adfe4b46b6f90957bee883ade",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "Product Photo-20261017T020223Z-1-001/Product Photo/14. Sambal Kicx Nangka.jpg",
+      "targetPath": "references/media/product-2026-10-17/Product Photo-20261017T020223Z-1-001/Product Photo/14. Sambal Kicx Nangka.jpg",
+      "bytes": 1584993,
+      "sha256": "c2ea3367757995c2e16b75d1256fafbebae1e6d7755024324c502ccc808768b8",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "Product Photo-20261017T020223Z-1-001/Product Photo/15. Sambal Kicx.jpg",
+      "targetPath": "references/media/product-2026-10-17/Product Photo-20261017T020223Z-1-001/Product Photo/15. Sambal Kicx.jpg",
+      "bytes": 2116379,
+      "sha256": "8a8bdef4f2b18669232cf012a8e1f476aaa01b7658d4a204d54360dafdcaf943",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "Product Photo-20261017T020223Z-1-001/Product Photo/2. Jambu Asam Boi.jpg",
+      "targetPath": "references/media/product-2026-10-17/Product Photo-20261017T020223Z-1-001/Product Photo/2. Jambu Asam Boi.jpg",
+      "bytes": 2435125,
+      "sha256": "bc3072080c138e35041ecbbb204b8700d00c71c86aedd338481d7df9cdf4e5dc",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "Product Photo-20261017T020223Z-1-001/Product Photo/3. Kedondong Asam Boi.jpg",
+      "targetPath": "references/media/product-2026-10-17/Product Photo-20261017T020223Z-1-001/Product Photo/3. Kedondong Asam Boi.jpg",
+      "bytes": 2494475,
+      "sha256": "b0ad86679ef5877e8bc6659bc8b91fdd7a157bf323c3c19f4b200ec8079c0332",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "Product Photo-20261017T020223Z-1-001/Product Photo/4. Asam Boi Campur.jpg",
+      "targetPath": "references/media/product-2026-10-17/Product Photo-20261017T020223Z-1-001/Product Photo/4. Asam Boi Campur.jpg",
+      "bytes": 2430909,
+      "sha256": "54401ca5a019ede23cd05b33ae2846510e0ff6da2000c3ac8aaf6afea0d1526c",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "Product Photo-20261017T020223Z-1-001/Product Photo/5. Epal Asam Boi.jpg",
+      "targetPath": "references/media/product-2026-10-17/Product Photo-20261017T020223Z-1-001/Product Photo/5. Epal Asam Boi.jpg",
+      "bytes": 2369364,
+      "sha256": "e9f857b3394232f4342e01c5588e6f22c6eb937b87428b0aee03b5254b359de3",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "Product Photo-20261017T020223Z-1-001/Product Photo/6. Awesome Shacx Mangga.jpg",
+      "targetPath": "references/media/product-2026-10-17/Product Photo-20261017T020223Z-1-001/Product Photo/6. Awesome Shacx Mangga.jpg",
+      "bytes": 2168847,
+      "sha256": "d1c47e7558f00cecc96e799476e97c4e2bfdb8f94720ed794bc61d93530c3175",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "Product Photo-20261017T020223Z-1-001/Product Photo/7. Awesome Shacx Jambu.jpg",
+      "targetPath": "references/media/product-2026-10-17/Product Photo-20261017T020223Z-1-001/Product Photo/7. Awesome Shacx Jambu.jpg",
+      "bytes": 2156984,
+      "sha256": "34c0233d1f47c418600ca36834053e39ca9fd4adde85c4d7bc864c65b2d383ee",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "Product Photo-20261017T020223Z-1-001/Product Photo/8. Awesome Shacx Kedondong.jpg",
+      "targetPath": "references/media/product-2026-10-17/Product Photo-20261017T020223Z-1-001/Product Photo/8. Awesome Shacx Kedondong.jpg",
+      "bytes": 2236238,
+      "sha256": "68caa04ab735ce32861d45192a1948bd7b8336c1b273cbf5a1b504bd1c55f91f",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "Product Photo-20261017T020223Z-1-001/Product Photo/9. Awesome Shacx Epal.jpg",
+      "targetPath": "references/media/product-2026-10-17/Product Photo-20261017T020223Z-1-001/Product Photo/9. Awesome Shacx Epal.jpg",
+      "bytes": 1651883,
+      "sha256": "0d7b63e9fd0b45f584d7f1f784ad88f1050e08a09b9b1fda4b930e4db296de5a",
+      "kind": "media"
+    },
+    {
+      "sourcePath": "Product Photo-20261017T020223Z-1-001.zip",
+      "targetPath": "references/media/product-2026-10-17/Product Photo-20261017T020223Z-1-001.zip",
+      "bytes": 32406085,
+      "sha256": "5d8d1f78a31bb9a390c6cbdd8a46c74fad31f86ed411b20e64501b8192ce1dd9",
+      "kind": "archive"
+    }
+  ]
+}

@@ -1,10 +1,16 @@
 # ABANGCOLEK — indeks dokumentasi
 
-Diselaraskan: **19 Oktober 2026**. Blueprint ialah kontrak sasaran; source/runtime evidence menentukan apa yang benar-benar tersedia. `implemented`, `verified_local` dan `verified_production` ialah status berasingan. Tiada test/deployment baharu dibuat melalui alignment Markdown ini.
+<!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
+> **Alignment20Oktober2026:** [Status semasa](CURRENT-STATUS.md) · [Checklist](../PROJECT-CHECKLIST.md). Panduan aktif mengikut skop fail ini. Fakta source/runtime dan ownership semasa dirujuk di atas; arahan atau baseline bertarikh lama memerlukan revalidation. Tiada acceptance aplikasi ditutup oleh alignment dokumentasi.
+<!-- ABANGCOLEK-CURRENT-STATUS:END -->
+
+**Mula dengan [CURRENT-STATUS](CURRENT-STATUS.md) dan [checklist](../PROJECT-CHECKLIST.md).** Main18c69b3 hanya release TypeScript/config; source integrasi/candidate dan85 requirement belum mempunyai full production certification. Fakta/receipt semasa mengatasi ringkasan baseline lama.
+
+Diselaraskan: **20 Oktober 2026**. Blueprint ialah kontrak sasaran; source/runtime evidence menentukan apa yang benar-benar tersedia. `implemented`, `verified_local` dan `verified_production` ialah status berasingan. Tiada test/deployment baharu dibuat melalui alignment Markdown ini.
 
 ## Mula di sini
 
-1. [Master Blueprint v2.3](ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) — kontrak bisnes, topology, Copilot dan acceptance.
+1. [Master Blueprint v2.4](ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) — kontrak bisnes, topology, Copilot dan acceptance.
 2. [Source of Truth](ABANGCOLEK-SOURCE-OF-TRUTH.md) — source/data authority dan baseline berbanding sejarah.
 3. [Prompt implementasi induk dan peringkat](prompts/README.md) — keputusan tetap, skills/tools, preflight, acceptance dan blocker rules.
 4. [README projek](../README.md) — menjalankan dan memeriksa projek sedia ada.
@@ -20,6 +26,7 @@ Diselaraskan: **19 Oktober 2026**. Blueprint ialah kontrak sasaran; source/runti
 - [Pelan implementasi terperinci](superpowers/plans/2026-10-19-copilotkit-ten-features.md).
 - [Free-only policy](research/2026-10-19-free-model-policy.md) dan [activation register](AI-PROVIDER-FREE-MODELS-REGISTER.md).
 - [JEV](../JEV.md) — current LOCAL_RULES boundaries diikuti research sejarah; bukan native provider proof.
+- [JEV × TypeSafe System One](architecture/JEV-TYPESAFE-NATIVE-PROVIDER.md) — adapter native wujud, gate kelayakan/terma/data handling masih tertutup, tiada panggilan live.
 
 Tujuh UI approaches—Display Only, Interactive, Tool Rendering, State Rendering, MCP Apps, A2UI, Your Components—diperinci melalui blueprint/design/prompt. Intelligence Streams/Learning kekal gated jika entitlement, kos atau data policy belum tersedia. Model percuma tidak menjadikan servis Intelligence percuma.
 

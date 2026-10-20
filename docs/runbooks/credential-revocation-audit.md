@@ -1,5 +1,9 @@
 # Runbook Revokasi & Audit Keselamatan Kredensial ABANGCOLEK (B01)
 
+<!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
+> **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Panduan aktif mengikut skop fail ini. Fakta source/runtime dan ownership semasa dirujuk di atas; arahan atau baseline bertarikh lama memerlukan revalidation. Tiada acceptance aplikasi ditutup oleh alignment dokumentasi.
+<!-- ABANGCOLEK-CURRENT-STATUS:END -->
+
 **Diselaraskan:** 19 Oktober 2026
 **Status:** READY_FOR_OWNER_EXECUTION
 **Klasifikasi:** KESELAMATAN & AKSES
@@ -78,6 +82,6 @@ Selepas pemilik melengkapkan langkah di atas, salin dan lengkapkan resit berikut
 
 Vercel project ialah `niaga-hub-pro/abang-colek-v1`; audit `SUPABASE_SERVICE_ROLE_KEY`/`SUPABASE_SECRET_KEY`, bootstrap/cron tokens dan provider secret references mengikut apa yang benar-benar digunakan. Tiada nilai dimasukkan dalam prompt, MCP arguments yang dilog, Git atau browser. Publishable key bukan server secret.
 
-[Blueprint v2.3](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) dan [free-only policy](../research/2026-10-19-free-model-policy.md) memerlukan provider/account eligibility berasingan selepas rotation. Key baharu tidak memberi kebenaran paid fallback. Skill/MCP availability bukan bukti account connected. Jangan memasang integration atau rotate kunci hanya untuk menutup checklist.
+[Blueprint v2.4](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) dan [free-only policy](../research/2026-10-19-free-model-policy.md) memerlukan provider/account eligibility berasingan selepas rotation. Key baharu tidak memberi kebenaran paid fallback. Skill/MCP availability bukan bukti account connected. Jangan memasang integration atau rotate kunci hanya untuk menutup checklist.
 
 Status B01 belum dibuktikan selesai melalui runbook ini. Audit receipt contoh bukan actual receipt; isi tarikh sebenar, masked identifiers sahaja, successful replacement/old-key rejection dan limitations. Jangan melaporkan tiada unauthorized usage jika access logs belum diperiksa. Tiada rotation/audit account dijalankan melalui alignment Markdown ini.

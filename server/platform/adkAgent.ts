@@ -1,13 +1,23 @@
 /**
- * AbangColek Google ADK Agent Engine v1.0
+ * AbangColek Google ADK Agent Engine v1.1
  * Pematuhan Prinsip: Zero-New-Paid-Cloud-Spend • Rules Own The Money
- * 
+ *
  * Menyokong Ciri Penuh:
  * 1. Chat & AG-UI Streams (Rich Threads / SSE Protocol)
  * 2. Generative UI (JEV Assessment, Margin Simulator, Delivery Tracking)
  * 3. Human in the Loop (HITL Approval Gate bagi Refund / Kuarantin / Override)
  * 4. Automatic Learning (Memory & Episodic Invariant Records)
  * 5. Shared State & Frontend Tools
+ *
+ * KEBENARAN PROVENANCE (v1.1): Tiada kad kewangan, pesanan atau metrik boleh
+ * dipaparkan sebagai hasil tanpa sumber sebenar.
+ * - Margin: hanya selepas `evaluateMarginContribution` (shared/growth-contracts)
+ *   benar-benar dijalankan. Tanpa input komersial, kad menyatakan "simulasi tidak
+ *   dijalankan" — TIDAK pernah memancarkan margin lulus.
+ * - Jejak pesanan: hanya daripada rekod pesanan yang dibaca daripada store.
+ *   Tiada ID pesanan rekaan.
+ * - `provenance.source` hanya menyatakan `canonical_evaluator` atau `database`
+ *   apabila objek tersebut benar-benar dijalankan/dibaca.
  */
 
 import { FreeModelRouter, globalFreeRouter, type ChatMessageParam } from './freeModelRouter';
@@ -28,6 +38,13 @@ import {
   type OrderTrackingProjectionProps,
   type OperationsBriefCardProps,
 } from '../../shared/copilot-contracts';
+import {
+  type MarginSimulationInput,
+  type MarginSimulationResult,
+  evaluateMarginContribution,
+} from '../../shared/growth-contracts';
+import type { OrderRecord } from '../../shared/platform-contracts';
+import { parseMarginSimulationInput, type MarginSimulationParseResult } from './marginInputs';
 
 export {
   type A2UIFixedSchema,
@@ -41,6 +58,29 @@ export {
   type OrderTrackingProjectionProps,
   type OperationsBriefCardProps,
 };
+
+/**
+ * Ambang minimum sumbangan tunai (sen) yang digunakan sebagai nilai lalai
+ * apabila permintaan tidak menyatakan `minimumContributionSen`.
+ * INI ADALAH AMBANG KEPOLISIAN, BUKAN HASIL KIRAAN.
+ */
+export const DEFAULT_MIN_CONTRIBUTION_SEN = 2000;
+/** Ambang minimum nisbah sumbangan margin (%) — polisi FIN-01, bukan hasil kiraan. */
+export const DEFAULT_MIN_CONTRIBUTION_MARGIN_PCT = 25;
+
+const MARGIN_INPUT_KEYS: ReadonlyArray<keyof MarginSimulationInput> = [
+  'netSalesExTaxSen',
+  'cogsSen',
+  'packagingSen',
+  'paymentFeesSen',
+  'fulfilmentVariableCostSen',
+  'deliverySubsidySen',
+  'agentCommissionSen',
+  'rewardCostSen',
+  'expectedReturnLossSen',
+  'minimumContributionSen',
+  'minimumContributionMarginPct',
+];
 
 export interface AdkAgentOptions {
   providerId?: string;
@@ -58,6 +98,20 @@ export interface AdkStreamChunk {
   };
   a2ui?: A2UIFixedSchema;
   hitlAction?: HitlActionRequest;
+}
+
+/** Provenance terperinci yang dipaparkan bersama payload (bukan sekadar label). */
+interface ProvenanceDetail {
+  evaluator: string;
+  recordIds: string[];
+  revision: number | 'none';
+  sourceKind: 'evaluator' | 'store_read' | 'request_only';
+}
+
+function marginStatus(result: MarginSimulationResult): MarginSimulatorProps['status'] {
+  if (!result.isContributionPass) return 'INSUFFICIENT_CASH_MARGIN';
+  if (!result.isMarginPctPass) return 'INSUFFICIENT_PERCENT_MARGIN';
+  return 'PASSED';
 }
 
 export class GoogleAdkAgent {
@@ -110,7 +164,7 @@ Prinsip Operasi:
     const hitl: HitlActionRequest = {
       id: actionId,
       actionType,
-      entity: payload.entity ?? { type: 'order', id: payload.orderId ?? 'ord-unknown' },
+      entity: payload.entity ?? { type: 'order', id: payload.orderId ?? 'UNRESOLVED' },
       amountSen: typeof payload.amountSen === 'number' ? payload.amountSen : undefined,
       revision: typeof payload.revision === 'number' ? payload.revision : 1,
       reason: typeof payload.reason === 'string' ? payload.reason : description,
@@ -131,32 +185,24 @@ Prinsip Operasi:
   decideHitlAction(actor: Principal, actionId: string, approve: boolean): HitlActionRequest {
     this.auth.founder(actor);
     const action = this.store.require<HitlActionRequest>('hitl_actions', actionId);
+
+    // Semak tamat tempoh sebelum sebarang mutasi state
+    if (action.expiry && new Date(action.expiry) <= new Date()) {
+      fail('HITL_EXPIRED', 409, 'Tindakan HITL ini telah tamat tempoh.');
+    }
+
     if (action.status !== 'pending_approval') {
       fail('HITL_ALREADY_DECIDED', 409, 'Tindakan HITL ini telah pun dinilai.');
     }
 
-    const executionReceipt: ExecutionReceipt | undefined = approve
-      ? {
-          receiptId: `rcpt_${id()}`,
-          actionId: action.id,
-          executedBy: actor.user.id,
-          executedAt: now(),
-          targetEntity: action.entity,
-          preRevision: action.revision,
-          postRevision: action.revision + 1,
-          status: 'succeeded',
-          amountSen: action.amountSen,
-          journalEntryRef: `jrnl_hitl_${action.id}`,
-          auditLogId: `audit_${id()}`,
-        }
-      : undefined;
-
+    // Kelulusan BUKAN pelaksanaan. Dilarang mereka-reka executionReceipt palsu.
     const updated: HitlActionRequest = {
       ...action,
       status: approve ? 'approved' : 'rejected',
       reviewedBy: actor.user.id,
       reviewedAt: now(),
-      executionReceipt,
+      executionReceipt: undefined,
+      executionBlockedReason: approve ? 'EXECUTOR_UNAVAILABLE' : undefined,
     };
 
     this.store.save('hitl_actions', updated);
@@ -164,9 +210,122 @@ Prinsip Operasi:
     return updated;
   }
 
+  // -------------------------------------------------------------------------
+  // Pembacaan sumber sebenar
+  // -------------------------------------------------------------------------
+
   /**
-   * Penjanaan respons interaktif dengan sokongan failover model percuma & Generative UI.
+   * Cari pesanan sebenar yang boleh dikenal pasti daripada mesej pengguna.
+   * Tiada ID pesanan rekaan: hanya rekod yang benar-benar wujud dalam store.
+   *
+   * Resolusi adalah TEKAT. Token mesti sama dengan id kanonikal, atau menjadi
+   * segmen akhir id kanonikal (`ord-copilot-trace-01` <-> `copilot-trace-01`).
+   * Padanan substring (`includes`) dilumpuhkan sepenuhnya: `ord-001` akan
+   * memadankan `ord-0010`, dan jumlah wang boleh dilampirkan pada pesanan salah.
+   * Jika lebih satu pesanan sepadan untuk token yang sama, tiada pesanan dipilih
+   * (fails closed) dan tiada jumlah dipaparkan.
    */
+  private findOrder(message: string): {
+    order: OrderRecord | null;
+    reason: 'RESOLVED' | 'NOT_FOUND' | 'AMBIGUOUS';
+  } {
+    const orders = this.store.all<OrderRecord>('orders');
+    if (!orders.length) return { order: null, reason: 'NOT_FOUND' };
+    const tokens: string[] = [];
+    for (const match of message.matchAll(/(?:ord|order|pesanan)[-_ ]?([a-z0-9][a-z0-9-_]{2,})/gi)) {
+      tokens.push(match[1].toLowerCase());
+    }
+    for (const match of message.matchAll(/#(\d{3,})/g)) {
+      tokens.push(match[1].toLowerCase());
+    }
+    for (const token of tokens) {
+      const exact = orders.filter((order) => order.id.toLowerCase() === token);
+      if (exact.length === 1) return { order: exact[0], reason: 'RESOLVED' };
+      if (exact.length > 1) return { order: null, reason: 'AMBIGUOUS' };
+
+      const suffix = orders.filter((order) => order.id.toLowerCase().endsWith(`-${token}`));
+      if (suffix.length === 1) return { order: suffix[0], reason: 'RESOLVED' };
+      if (suffix.length > 1) return { order: null, reason: 'AMBIGUOUS' };
+    }
+    return { order: null, reason: 'NOT_FOUND' };
+  }
+
+  /**
+   * Adakah pengguna MEMINTA ganti rugi?
+   *
+   * Padanan kata kunci semata-mata membuka permintaan refund untuk ayat yang
+   * ditolak ("tak ada refund", "bukan ganti rugi"). Kata kunci hanya diterima
+   * dalam klausa yang tiada penanda negasi.
+   */
+  private requestsRefund(text: string): boolean {
+    const refundTerm = /\brefund\b|\brebate\b|ganti\s*rugi/i;
+    const negation =
+      /\b(tak|tidak|bukan|jangan|belum|tanpa|tiada|no|not|never|without)\b/i;
+    const clauses = text.split(/[.!?;,\n]|\b(?:tetapi|tapi|namun|however|but|although)\b/i);
+    for (const clause of clauses) {
+      if (!refundTerm.test(clause)) continue;
+      if (negation.test(clause)) continue;
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Penilai margin kanonikal tidak boleh melontar ralat ke lapisan HTTP.
+   * Sebarang TypeError/RangeError ditapis menjadi `null` (tiada kad margin
+   * dipaparkan) dan bukannya 500 atau frame ralat mentah.
+   */
+  private evaluateMarginSafely(simulation: MarginSimulationInput): MarginSimulationResult | null {
+    try {
+      return evaluateMarginContribution(simulation);
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Baca dan sahkan input simulasi margin daripada permintaan pengguna.
+   * Sokongan: objek JSON dengan kunci kanonikal, atau pasangan `kunci=nilai`.
+   * Pengesahan dilakukan oleh `parseMarginSimulationInput` (satu sumber kebenaran).
+   */
+  private readMarginInputs(message: string): MarginSimulationParseResult {
+    const raw: Record<string, unknown> = {};
+
+    const jsonMatch = message.match(/\{[^{}]*\}/);
+    if (jsonMatch) {
+      try {
+        const parsed = JSON.parse(jsonMatch[0]);
+        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+          Object.assign(raw, parsed as Record<string, unknown>);
+        }
+      } catch {
+        // Bukan JSON — terus ke parsing pasangan kunci=nilai.
+      }
+    }
+
+    for (const match of message.matchAll(
+      /\b(netSalesExTaxSen|cogsSen|packagingSen|paymentFeesSen|fulfilmentVariableCostSen|deliverySubsidySen|agentCommissionSen|rewardCostSen|expectedReturnLossSen|minimumContributionSen|minimumContributionMarginPct)\s*[=:]\s*(-?\d+(?:\.\d+)?)/gi
+    )) {
+      raw[match[1]] = Number(match[2]);
+    }
+
+    return parseMarginSimulationInput(raw, { defaultMinimumContributionSen: DEFAULT_MIN_CONTRIBUTION_SEN });
+  }
+
+  private missingMarginInputs(message: string): string[] {
+    const raw = new Set<string>();
+    for (const match of message.matchAll(/\b([a-zA-Z]+)\s*[=:]\s*-?\d+(?:\.\d+)?/g)) {
+      raw.add(match[1]);
+    }
+    const missing = MARGIN_INPUT_KEYS.filter(
+      (key) => key !== 'minimumContributionSen' && !raw.has(key)
+    );
+    return missing;
+  }
+
+  // -------------------------------------------------------------------------
+  // Penjanaan respons interaktif dengan sokongan failover model percuma & Generative UI.
+  // -------------------------------------------------------------------------
   async processMessage(
     actor: Principal,
     userMessage: string,
@@ -175,6 +334,7 @@ Prinsip Operasi:
     reply: string;
     providerUsed: string;
     modelUsed: string;
+    providerStatus: 'live' | 'local_rules';
     generativeUi?: {
       name: string;
       props: Record<string, any>;
@@ -202,25 +362,40 @@ Prinsip Operasi:
         evaluationState: 'reviewed',
         evidencePhotoRequired: true,
       };
+      // Punca utama belum disahkan secara fizikal, jadi skor keyakinan WAJIB
+      // null — tiada keyakinan yang direka. (Kontrak A2UI tidak medan
+      // keyakinan, jadi ia dipaparkan sebagai sifat tambahan.)
+      const jevCardProps = { ...jevProps, confidenceScore: null };
       genUi = {
         name: 'JevAssessmentCard',
-        props: jevProps,
+        props: jevCardProps,
       };
 
-      if (lower.includes('refund') || lower.includes('ganti rugi')) {
+      const { order } = this.findOrder(userMessage);
+
+      if (this.requestsRefund(userMessage)) {
+        // Nilai kesan kewangan hanya diisi daripada pesanan yang benar-benar dibaca.
+        const estimatedImpactSen = order ? order.amountSen : undefined;
         hitl = this.createHitlAction(
           actor,
           'refund',
           'Permintaan tuntutan ganti rugi botol bocor pelanggan',
           {
-            entity: { type: 'order', id: 'ord-refund-pending' },
-            amountSen: 2500,
-            revision: 1,
+            entity: { type: 'order', id: order ? order.id : 'UNRESOLVED' },
+            ...(estimatedImpactSen !== undefined ? { amountSen: estimatedImpactSen } : {}),
+            revision: order ? order.revision : 1,
             reason: 'Aduan kualiti penutup botol bocor semasa pos',
             expiry: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
             message: userMessage,
+            reasonCode: order ? 'ORDER_RESOLVED' : 'ORDER_NOT_IDENTIFIABLE',
           }
         );
+        const provenanceDetail: ProvenanceDetail = {
+          evaluator: 'none',
+          recordIds: order ? [order.id] : [],
+          revision: order ? order.revision : 'none',
+          sourceKind: order ? 'store_read' : 'request_only',
+        };
         a2ui = {
           schemaVersion: 'a2ui.v1',
           component: 'RefundImpactPanel',
@@ -229,13 +404,15 @@ Prinsip Operasi:
             issueClass: 'LEAKAGE',
             rootCause: 'UNDETERMINED',
             hitlRequired: true,
-            estimatedImpactSen: 2500,
+            ...(estimatedImpactSen !== undefined ? { estimatedImpactSen } : {}),
             sopAction: 'Kuarantin batch di cawangan & minta bukti foto penutup botol',
+            orderId: order ? order.id : 'UNRESOLVED',
+            provenanceDetail,
           },
           provenance: {
-            source: 'canonical_evaluator',
+            source: order ? 'database' : 'jev_local_rules',
             timestamp: now(),
-            revision: 1,
+            revision: order ? order.revision : 'none',
           },
           actions: [
             { id: 'hitl-refund', label: 'Luluskan Tuntutan', actionType: 'approve' },
@@ -247,11 +424,11 @@ Prinsip Operasi:
           schemaVersion: 'a2ui.v1',
           component: 'JevAssessmentCard',
           componentName: 'JevAssessmentCard',
-          props: jevProps,
+          props: jevCardProps,
           provenance: {
             source: 'jev_local_rules',
             timestamp: now(),
-            revision: 1,
+            revision: 'none',
           },
           actions: [
             { id: 'sop-quarantine', label: 'Mulakan Kuarantin Batch', actionType: 'recheck' },
@@ -259,80 +436,201 @@ Prinsip Operasi:
         };
       }
     } else if (lower.includes('margin') || lower.includes('kempen') || lower.includes('diskaun')) {
-      const marginProps: MarginSimulatorProps = {
-        contributionSen: 2800,
-        contributionMarginPct: 28.5,
-        requiredContributionSen: 2000,
-        requiredMarginPct: 25.0,
-        status: 'PASSED',
-        minMarginSen: 2000,
-        minMarginPercent: 25.0,
-      };
-      genUi = {
-        name: 'MarginSimulator',
-        props: marginProps,
-      };
-      a2ui = {
-        schemaVersion: 'a2ui.v1',
-        component: 'MarginSimulator',
-        componentName: 'MarginSimulator',
-        props: {
-          contributionSen: 2800,
-          contributionMarginPct: 28.5,
-          requiredContributionSen: 2000,
-          requiredMarginPct: 25.0,
-          status: 'PASSED',
-        },
-        provenance: {
-          source: 'canonical_evaluator',
-          timestamp: now(),
-          revision: 1,
-        },
-        actions: [
-          { id: 'act-campaign-draft', label: 'Cipta Draf Kempen', actionType: 'navigate' },
-        ],
-      };
+      const marginInput = this.readMarginInputs(userMessage);
+      const simulation = marginInput.ok ? marginInput.input : null;
+      const evaluation = simulation ? this.evaluateMarginSafely(simulation) : null;
+      if (!simulation || !evaluation) {
+        // Tiada input komersial yang sah: tiada simulasi boleh dijalankan. Tidak memancarkan margin lulus.
+        const reasonCode = marginInput.ok ? 'MARGIN_INPUTS_INVALID' : marginInput.reason;
+        const missing = this.missingMarginInputs(userMessage);
+        const provenanceDetail: ProvenanceDetail = {
+          evaluator: 'none',
+          recordIds: [],
+          revision: 'none',
+          sourceKind: 'request_only',
+        };
+        a2ui = {
+          schemaVersion: 'a2ui.v1',
+          component: 'MarginSummaryCard',
+          componentName: 'MarginSummaryCard',
+          props: {
+            simulationPerformed: false,
+            status: 'NOT_SIMULATED',
+            reasonCode,
+            requiredInputKeys: [...MARGIN_INPUT_KEYS],
+            missingInputKeys: missing,
+            requiredContributionSen: DEFAULT_MIN_CONTRIBUTION_SEN,
+            requiredMarginPct: DEFAULT_MIN_CONTRIBUTION_MARGIN_PCT,
+            provenanceDetail,
+          },
+          provenance: {
+            source: 'local_authoritative',
+            timestamp: now(),
+            revision: 'none',
+          },
+          actions: [
+            { id: 'act-campaign-draft', label: 'Cipta Draf Kempen', actionType: 'navigate' },
+          ],
+        };
+      } else {
+        // Penilai margin kanonikal SEBENARNYA dijalankan di sini.
+        const result = evaluation;
+        const status = marginStatus(result);
+        const marginProps: MarginSimulatorProps = {
+          contributionSen: result.contributionSen,
+          contributionMarginPct: result.contributionMarginPct,
+          requiredContributionSen: simulation.minimumContributionSen,
+          requiredMarginPct: simulation.minimumContributionMarginPct,
+          status,
+          minMarginSen: simulation.minimumContributionSen,
+          minMarginPercent: simulation.minimumContributionMarginPct,
+        };
+        const provenanceDetail: ProvenanceDetail = {
+          evaluator: 'evaluateMarginContribution',
+          recordIds: [],
+          revision: 'none',
+          sourceKind: 'evaluator',
+        };
+        genUi = {
+          name: 'MarginSimulator',
+          props: marginProps,
+        };
+        a2ui = {
+          schemaVersion: 'a2ui.v1',
+          component: 'MarginSimulator',
+          componentName: 'MarginSimulator',
+          props: {
+            ...marginProps,
+            evaluator: 'evaluateMarginContribution',
+            reasonCode: result.reasonCode,
+            provenanceDetail,
+          },
+          provenance: {
+            source: 'canonical_evaluator',
+            timestamp: now(),
+            revision: 'evaluateMarginContribution',
+          },
+          actions: [
+            { id: 'act-campaign-draft', label: 'Cipta Draf Kempen', actionType: 'navigate' },
+          ],
+        };
+      }
     } else if (lower.includes('jejak') || lower.includes('tracking')) {
-      const trackingProps: OrderTrackingProjectionProps = {
-        orderId: 'ord-2026-1019-01',
-        stage: 'dispatched',
-        trackingTokenRedactedHash: 'hash_redacted_9f82ab7e',
-        expiryDaysRemaining: 14,
-      };
-      genUi = {
-        name: 'OrderTrackingBadge',
-        props: trackingProps,
-      };
-      a2ui = {
-        schemaVersion: 'a2ui.v1',
-        component: 'OrderTrackingBadge',
-        componentName: 'OrderTrackingBadge',
-        props: trackingProps,
-        provenance: {
-          source: 'database',
-          timestamp: now(),
-          revision: 1,
-        },
-      };
+      const { order } = this.findOrder(userMessage);
+      if (order) {
+        const expiryDaysRemaining = order.trackingTokenExpiresAt
+          ? Math.max(
+              0,
+              Math.floor((new Date(order.trackingTokenExpiresAt).getTime() - Date.now()) / (24 * 3600 * 1000))
+            )
+          : 0;
+        const stage =
+          order.fulfilmentStatus === 'dispatched'
+            ? ('dispatched' as const)
+            : order.fulfilmentStatus === 'received'
+              ? ('received' as const)
+              : order.fulfilmentStatus === 'packed' || order.fulfilmentStatus === 'packing'
+                ? ('packing' as const)
+                : order.fulfilmentStatus === 'accepted'
+                  ? ('accepted' as const)
+                  : ('draft' as const);
+        const trackingProps: OrderTrackingProjectionProps = {
+          orderId: order.id,
+          stage,
+          trackingTokenRedactedHash: order.trackingTokenHash
+            ? order.trackingTokenHash.slice(0, 16)
+            : 'unavailable',
+          expiryDaysRemaining,
+        };
+        const provenanceDetail: ProvenanceDetail = {
+          evaluator: 'none',
+          recordIds: [order.id],
+          revision: order.revision,
+          sourceKind: 'store_read',
+        };
+        genUi = {
+          name: 'OrderTrackingBadge',
+          props: { ...trackingProps, fulfilmentStatus: order.fulfilmentStatus, provenanceDetail },
+        };
+        a2ui = {
+          schemaVersion: 'a2ui.v1',
+          component: 'OrderTrackingBadge',
+          componentName: 'OrderTrackingBadge',
+          props: {
+            ...trackingProps,
+            fulfilmentStatus: order.fulfilmentStatus,
+            paymentState: order.paymentState,
+            provenanceDetail,
+          },
+          provenance: {
+            source: 'database',
+            timestamp: now(),
+            revision: order.revision,
+          },
+        };
+      } else {
+        // Pesanan tidak dapat dikenal pasti: tiada ID rekaan dipaparkan.
+        const provenanceDetail: ProvenanceDetail = {
+          evaluator: 'none',
+          recordIds: [],
+          revision: 'none',
+          sourceKind: 'request_only',
+        };
+        a2ui = {
+          schemaVersion: 'a2ui.v1',
+          component: 'OrderTrackingCard',
+          componentName: 'OrderTrackingCard',
+          props: {
+            found: false,
+            status: 'ORDER_NOT_IDENTIFIABLE',
+            reasonCode: 'ORDER_NOT_IDENTIFIABLE',
+            provenanceDetail,
+          },
+          provenance: {
+            source: 'local_authoritative',
+            timestamp: now(),
+            revision: 'none',
+          },
+        };
+      }
     } else {
+      const orders = this.store.all<OrderRecord>('orders');
+      const pendingOrders = orders.filter(
+        (order) => order.fulfilmentStatus !== 'received' && order.fulfilmentStatus !== 'cancelled'
+      ).length;
+      const pendingHitl = this.store
+        .all<HitlActionRequest>('hitl_actions')
+        .filter((action) => action.status === 'pending_approval').length;
+      const collectedSen = orders.reduce(
+        (total, order) => total + order.paidAmountSen - order.refundAmountSen,
+        0
+      );
       const briefProps: OperationsBriefCardProps = {
         title: 'Taklimat Operasi AbangColek Sovereign GrowthOS',
         briefDate: now().slice(0, 10),
+        readOnlyNotice: 'FIRST_PARTY_RESOURCE_UNRESTRICTED_PROXY_BLOCKED',
         metrics: [
-          { label: 'Pesanan Menunggu', value: '14' },
-          { label: 'Status AI', value: 'Zero-Cost Active' },
+          { label: 'Pesanan Menunggu', value: String(pendingOrders) },
+          { label: 'Tunay Dikumpulkan (Sen)', value: String(collectedSen) },
+          { label: 'Tindakan HITL Menunggu', value: String(pendingHitl) },
           { label: 'Penyedia Model', value: this.router.getActiveProvider().name },
         ],
+      };
+      const provenanceDetail: ProvenanceDetail = {
+        evaluator: 'none',
+        recordIds: [],
+        revision: 'none',
+        sourceKind: 'store_read',
       };
       a2ui = {
         schemaVersion: 'a2ui.v1',
         component: 'OperationsBriefCard',
         componentName: 'OperationsBriefCard',
-        props: briefProps,
+        props: { ...briefProps, readOnly: true, provenanceDetail },
         provenance: {
-          source: 'local_authoritative',
+          source: 'database',
           timestamp: now(),
-          revision: 1,
+          revision: 'store_snapshot',
         },
       };
     }
@@ -351,10 +649,10 @@ Prinsip Operasi:
       reply: result.content,
       providerUsed: result.providerId,
       modelUsed: result.model,
+      providerStatus: result.status ?? (result.providerId === 'local_rules' ? 'local_rules' : 'live'),
       generativeUi: genUi,
       a2ui,
       hitlAction: hitl,
     };
   }
 }
-
