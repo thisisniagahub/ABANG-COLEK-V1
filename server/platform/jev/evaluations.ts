@@ -1,4 +1,4 @@
-import type { JevAllowedContext, JevAssessment, JevContextSource, JevEvaluationCase, JevEvaluationErrorClass, JevEvaluationMetric, JevEvaluationRun, JevNativeAssessment, JevPackId, JevState } from '../../../shared/jev-contracts';
+import type { JevAllowedContext, JevAssessment, JevContextSource, JevEvaluationCase, JevEvaluationErrorClass, JevEvaluationMetric, JevEvaluationRun, JevPackId, JevState } from '../../../shared/jev-contracts';
 import type { CampaignRecord, DocumentRecord, EvidenceRecord, KnowledgeEntry, QcRecord, RestockRecord } from '../../../shared/platform-contracts';
 import { Auth, hash, type Principal } from '../auth';
 import { Commerce } from '../commerce';
@@ -6,15 +6,11 @@ import { DomainError, fail, fields, id, list, now, object, oneOf, PlatformStore,
 import { Work } from '../work';
 import { assessState, LOCAL_EVALUATOR_VERSION } from './assessment';
 import { QUESTION_PACKS } from './questionRegistry';
-import { buildUnavailableNativeAssessment, evaluateWithTypeSafe, resolveTypeSafeEligibility } from './typesafeProvider';
-import { createBudgetState, decideJevRoute, nativeCooldownMs, recordNativeCall, recordNativeFailure, type JevNativeBudgetState, type JevRouteDecision } from './jevRouter';
 
 const packIds = Object.keys(QUESTION_PACKS) as JevPackId[];
 const errorClasses: JevEvaluationErrorClass[] = ['negation', 'sarcasm', 'contradictory_evidence', 'missing_evidence', 'missing_price', 'missing_payment', 'prompt_injection', 'stale_knowledge', 'routing'];
 const source = (recordId: string, kind: JevContextSource['kind'], version: number, content: unknown): JevContextSource => ({ id: recordId, kind, version, contentHash: hash(JSON.stringify(content)) });
 interface StoredAssessment extends JevAssessment { ownerId: string }
-interface StoredNativeAssessment extends JevNativeAssessment { ownerId: string }
-interface JevNativeBudgetRecord extends JevNativeBudgetState { id: string; day: string }
 interface QcSop { id: string; version: number; knowledgeId: string; knowledgeVersion: number; readings: { name: string; unit: string }[] }
 interface Outcome { item: JevEvaluationCase; result: JevAssessment; questions: string[]; unknown: number; count: number }
 
@@ -35,17 +31,7 @@ export class JevEvaluations {
 
   packs(actor: Principal) {
     if (!actor.memberships.some(member => member.status === 'active')) fail('FORBIDDEN', 403);
-    // Native becomes available only after a live provider receipt is actually recorded.
-    const nativeAvailable = this.store.all<StoredNativeAssessment>('jev_native_assessments').some(record => record.receipt?.transport === 'live');
-    const route = this.nativeRoute();
-    const nativeMode = {
-      providerMode: 'TYPESAFE_NATIVE' as const,
-      status: route.mode === 'TYPESAFE_NATIVE' ? 'ROUTED' : 'LOCAL_RULES_ONLY',
-      transport: route.transport,
-      model: route.model,
-      reasonCodes: route.reasonCodes,
-    };
-    return packIds.map(packId => ({ id: packId, version: QUESTION_PACKS[packId].version, schemaVersion: '1.0', providerMode: 'LOCAL_RULES', providerVersion: LOCAL_EVALUATOR_VERSION, activation: 'REVIEW_ONLY', nativeAvailable, nativeMode, questions: QUESTION_PACKS[packId].questions }));
+    return packIds.map(packId => ({ id: packId, version: QUESTION_PACKS[packId].version, schemaVersion: '1.0', providerMode: 'LOCAL_RULES', providerVersion: LOCAL_EVALUATOR_VERSION, activation: 'REVIEW_ONLY', nativeAvailable: false, questions: QUESTION_PACKS[packId].questions }));
   }
 
   context(actor: Principal, requestedPack: string, requestedEntity: string): JevAllowedContext {
@@ -137,66 +123,6 @@ export class JevEvaluations {
     this.store.atomic(() => { this.store.save('jev_assessments', saved); this.store.audit(actor.user.id, 'jev.assess', saved.id); });
     const { ownerId: _, ...result } = saved;
     return result;
-  }
-
-  /**
-   * Native TypeSafe judgment untuk satu pack. Router menentukan dahulu sama ada
-   * panggilan dibenarkan (transport, gate, bajet, cooldown). Jika router
-   * menolak, tiada request dihantar dan jawapan ialah UNAVAILABLE dengan
-   * reason code.
-   */
-  async assessNative(actor: Principal, raw: unknown): Promise<JevNativeAssessment> {
-    this.evaluator(actor);
-    const input = object(raw); fields(input, ['packId', 'entityId', 'expectedRevision', 'text']);
-    const context = this.context(actor, text(input.packId), text(input.entityId));
-    this.store.revision(context.entityRevision, input.expectedRevision);
-    const annotation = input.text === undefined ? '' : text(input.text, 'Review note', 8000);
-    const state: JevState = { ...context.state, text: `${context.state.text}${annotation ? `\nUnverified review note: ${annotation}` : ''}` };
-    const decision = this.nativeRoute();
-    if (decision.mode !== 'TYPESAFE_NATIVE' || !decision.transport) {
-      const assessment = buildUnavailableNativeAssessment(context.packId, state, decision.reasonCodes);
-      const saved: StoredNativeAssessment = { ...assessment, contextVersion: context.version, sourceRefs: context.sources, ownerId: actor.user.id };
-      this.store.atomic(() => { this.store.save('jev_native_assessments', saved); this.store.audit(actor.user.id, 'jev.assess.native', saved.id); });
-      const { ownerId: _, ...result } = saved;
-      return result;
-    }
-    const assessment = await evaluateWithTypeSafe(context.packId, state, { transport: decision.transport, model: decision.model ?? undefined });
-    this.recordNativeOutcome(assessment);
-    const saved: StoredNativeAssessment = { ...assessment, contextVersion: context.version, sourceRefs: context.sources, ownerId: actor.user.id };
-    this.store.atomic(() => { this.store.save('jev_native_assessments', saved); this.store.audit(actor.user.id, 'jev.assess.native', saved.id); });
-    const { ownerId: _, ...result } = saved;
-    return result;
-  }
-
-  /** Keadaan routing semasa: transport pilihan, sebab, bajet dan cooldown. */
-  nativeRoute(): JevRouteDecision {
-    return decideJevRoute({ budget: this.nativeBudget() });
-  }
-
-  private nativeBudget(): JevNativeBudgetState {
-    const record = this.store.get<JevNativeBudgetRecord>('jev_native_budget', this.budgetDay());
-    return createBudgetState(process.env, record ?? undefined);
-  }
-
-  private budgetDay(): string {
-    return new Date().toISOString().slice(0, 10);
-  }
-
-  private recordNativeOutcome(assessment: JevNativeAssessment): void {
-    const budget = this.nativeBudget();
-    const failed = assessment.status === 'UNAVAILABLE' && (assessment.abstentionReasons?.length ?? 0) > 0;
-    const next = failed
-      ? recordNativeFailure(budget, assessment.abstentionReasons?.[0] ?? 'JEV_NATIVE_PROVIDER_ERROR', Date.now(), nativeCooldownMs())
-      : recordNativeCall(budget);
-    this.store.save('jev_native_budget', { ...next, id: this.budgetDay(), day: this.budgetDay() } satisfies JevNativeBudgetRecord);
-  }
-
-  nativeAssessments(actor: Principal): JevNativeAssessment[] {
-    this.evaluator(actor);
-    return this.store.all<StoredNativeAssessment>('jev_native_assessments').map(record => {
-      const { ownerId: _, ...assessment } = record;
-      return assessment;
-    });
   }
 
   assessments(actor: Principal): (JevAssessment & { contextStatus: 'CURRENT' | 'STALE' })[] {

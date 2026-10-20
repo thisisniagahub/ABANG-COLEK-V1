@@ -109,45 +109,6 @@ export interface JevEvaluationRun {
   activation: 'REVIEW_ONLY';
   createdAt: string;
 }
-export type JevNativeStatus = 'NATIVE_JUDGMENT' | 'PARTIAL_JUDGMENT' | 'ABSTAIN' | 'INVALID' | 'UNAVAILABLE';
-export type JevNativeAnswerProvenance = 'MODEL_JUDGMENT' | 'SERVER_FACT';
-/** Confidence/uncertainty gates. A native judgment below these bands is not actionable. */
-export interface JevNativeThresholds { minConfidence: number; noulYes: number; noulNo: number }
-export interface JevNativeProviderReceipt {
-  provider: 'TYPESAFE';
-  transport: 'live' | 'fixture';
-  model: string;
-  endpoint: string;
-  requestQuestionIds: string[];
-  usage: { inputTokens: number; outputTokens: number } | null;
-  observedAt: string;
-  latencyMs: number;
-}
-export interface JevNativeAssessment {
-  id: string;
-  packId: JevPackId;
-  questionSetVersion: '1.0';
-  providerMode: 'TYPESAFE_NATIVE';
-  status: JevNativeStatus;
-  /** Answers that passed validation and the confidence gate. */
-  answers: Record<string, JevNativeAnswer>;
-  /** Every validated model answer, including gated ones. Raw judgments stay reusable. */
-  observations: Record<string, JevNativeAnswer>;
-  answerProvenance: Record<string, JevNativeAnswerProvenance>;
-  policy: JevPolicy;
-  evidence: JevEvidence[];
-  entityId?: string;
-  entityRevision?: number;
-  createdAt: string;
-  latencyMs: number;
-  schemaVersion?: '1.0';
-  evaluatorVersion?: string;
-  contextVersion?: string;
-  sourceRefs?: JevContextSource[];
-  abstentionReasons?: string[];
-  validationErrors?: string[];
-  receipt?: JevNativeProviderReceipt;
-}
 export interface JevActionPreview {
   id: string;
   assessmentId: string;

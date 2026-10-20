@@ -485,15 +485,6 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
           auth.founder(actor);
           return json({ok:true,data:await backupScheduler.runBackup('founder_manual')});
         }
-        if(request.method==='POST'&&path==='/jev/native-assessments'){
-          return json({ok:true,data:await jevEvaluations.assessNative(actor,input)});
-        }
-        if(request.method==='GET'&&path==='/jev/native-assessments'){
-          return json({ok:true,data:jevEvaluations.nativeAssessments(actor)});
-        }
-        if(request.method==='GET'&&path==='/jev/native-route'){
-          return json({ok:true,data:jevEvaluations.nativeRoute()});
-        }
         if(request.method==='POST'&&(path==='/copilot/chat'||path==='/copilot/v2'||path==='/v2'||path==='/copilotkit/v2')){
           auth.operational(actor);
           const b=object(input);

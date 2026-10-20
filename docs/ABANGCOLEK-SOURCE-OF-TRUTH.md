@@ -113,7 +113,7 @@ Migration memerlukan identity/ownership/IDs/SKU/price-version/lifecycle/evidence
 
 | Sistem | Keadaan source | Prinsip/cadangan yang dikekalkan |
 |---|---|---|
-| JEV | LOCAL_RULES; nativeAvailable false; adapter native wujud tetapi gate tertutup | Typed assessment, abstention, evidence/version/policy; tiada calibrated probability claim; native call hanya selepas kelayakan/terma/data handling dibuktikan |
+| JEV | LOCAL_RULES sahaja; nativeAvailable false; tiada adapter native dalam repo | Typed assessment, abstention, evidence/version/policy; tiada calibrated probability claim; native hanya research reference |
 | Hermes | Interface/scaffold; tiada runtime injection | Specialist/memory provenance, satu bounded pilot setelah transport/usage verified |
 | Agent-Reach | Read-only contract; missing transport/unknown quota blocked | URL/hash/date/permitted-use research, scoped grant |
 | Postiz | Remote publish blocked | Exact revision rights/approval, manual export; provider receipt sebelum published |

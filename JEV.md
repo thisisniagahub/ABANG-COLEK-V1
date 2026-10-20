@@ -4,12 +4,12 @@
 > **Alignment20Oktober2026:** [Status semasa](docs/CURRENT-STATUS.md) · [Checklist](PROJECT-CHECKLIST.md). Panduan aktif mengikut skop fail ini. Fakta source/runtime dan ownership semasa dirujuk di atas; arahan atau baseline bertarikh lama memerlukan revalidation. Tiada acceptance aplikasi ditutup oleh alignment dokumentasi.
 <!-- ABANGCOLEK-CURRENT-STATUS:END -->
 
-Diselaraskan: **19 Oktober 2026**, mengikut [Master Blueprint v2.4](docs/ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md). **Current mode: LOCAL_RULES; native TypeSafe ada adapter dalam repo tetapi panggilan live TIDAK berlaku.** [AI architecture](docs/AI-AGENT-ARCHITECTURE.md) dan [free-only policy](docs/research/2026-10-19-free-model-policy.md) mengatasi cadangan integrasi sejarah di bawah.
+Diselaraskan: **19 Oktober 2026**, mengikut [Master Blueprint v2.4](docs/ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md). **Current mode: LOCAL_RULES sahaja; tiada adapter native TypeSafe dalam repo dan tiada panggilan live.** [AI architecture](docs/AI-AGENT-ARCHITECTURE.md) dan [free-only policy](docs/research/2026-10-19-free-model-policy.md) mengatasi cadangan integrasi sejarah di bawah.
 
 ## Kontrak semasa
 
-- Source canonical: `server/platform/jev/assessment.ts`, `policyEngine.ts`, `evaluations.ts`, `typesafeProvider.ts`; evidence/version/scope dan unknown/abstention dikekalkan.
-- Native TypeSafe: adapter `server/platform/jev/typesafeProvider.ts` memetakan pack JEV kepada satu request System One (`choice`/`score`/`noul`), memvalidasi respons dengan validator sedia ada, dan gagal tertutup dengan reason code. Gate kelayakan/terma/pengendalian data masih tertutup ⇒ tiada request live dihantar dan tiada receipt provider wujud. Rujukan: [docs/architecture/JEV-TYPESAFE-NATIVE-PROVIDER.md](docs/architecture/JEV-TYPESAFE-NATIVE-PROVIDER.md).
+- Source canonical: `server/platform/jev/assessment.ts`, `policyEngine.ts`, `evaluations.ts`; evidence/version/scope dan unknown/abstention dikekalkan.
+- Native TypeSafe: **tiada adapter dalam repo**. Laluan native yang kecuali ini diketahui (Kilo AI Gateway mendedahkan passthrough System One dengan `KILO_API_KEY`, model `typesafe/jev-1.13`) hanya direkodkan sebagai research reference: [docs/research/2026-10-21-typesafe-jev-kilo-gateway.md](docs/research/2026-10-21-typesafe-jev-kilo-gateway.md). Tiada request live, tiada receipt, tiada sokongan native.
 - Soalan terikat fakta (ledger bayaran, harga kanonik, kes SOP, versi SOP) dibaca daripada fakta server; model tidak mengesahkannya.
 - Local deterministic score bukan calibrated probability/confidence model. Foto yang dilampirkan tidak membuktikan vision inference.
 - JEV membantu QC triage, review dan routing. Refund/stok/komisen/reward dikawal deterministic domain commands; model score tidak meluluskan wang atau bypass approval.
@@ -22,7 +22,7 @@ Diselaraskan: **19 Oktober 2026**, mengikut [Master Blueprint v2.4](docs/ABANGCO
 
 Bahagian asal dikekalkan untuk provenance. Nama model, founder/vendor assertions, code examples dan connected-Workspace claims tidak disahkan semula melalui kemas kini dokumentasi ini. Tiada test, API call atau benchmark baharu dijalankan.
 
-Pembetulan kontrak (2026-10-20, semasa live docs TypeSafe): API sebenar ialah `POST /v1/systemone` dengan soalan `choice`/`score`/`noul`; SDK JS rasmi ialah `@typesafe-ai/sdk` dengan `client.systemOne(...)`. Contoh `client.predict(...)` dalam bahagian sejarah **bukan** API semasa. Kontrak yang diimplementasikan dalam repo: [docs/architecture/JEV-TYPESAFE-NATIVE-PROVIDER.md](docs/architecture/JEV-TYPESAFE-NATIVE-PROVIDER.md).
+Pembetulan kontrak (2026-10-20, semasa live docs TypeSafe): API sebenar ialah `POST /v1/systemone` dengan soalan `choice`/`score`/`noul`; SDK JS rasmi ialah `@typesafe-ai/sdk` dengan `client.systemOne(...)`. Contoh `client.predict(...)` dalam bahagian sejarah **bukan** API semasa. Laluan native hanya sebagai research reference: [docs/research/2026-10-21-typesafe-jev-kilo-gateway.md](docs/research/2026-10-21-typesafe-jev-kilo-gateway.md).
 # JEV: Model "System One" dari TypeSafe AI
 ### Penyelidikan Mendalam, Dokumentasi Lengkap & Cadangan Integrasi ke dalam Projek ABANGCOLEK-OS
 

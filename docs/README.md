@@ -26,7 +26,8 @@ Diselaraskan: **20 Oktober 2026**. Blueprint ialah kontrak sasaran; source/runti
 - [Pelan implementasi terperinci](superpowers/plans/2026-10-19-copilotkit-ten-features.md).
 - [Free-only policy](research/2026-10-19-free-model-policy.md) dan [activation register](AI-PROVIDER-FREE-MODELS-REGISTER.md).
 - [JEV](../JEV.md) — current LOCAL_RULES boundaries diikuti research sejarah; bukan native provider proof.
-- [JEV × TypeSafe System One](architecture/JEV-TYPESAFE-NATIVE-PROVIDER.md) — adapter native wujud, gate kelayakan/terma/data handling masih tertutup, tiada panggilan live.
+- [Laporan sesi JEV × TypeSafe (21 Okt 2026)](JEV-TYPESAFE-SESSION-REPORT-2026-10-21.md) — rekod kerja sesi, 8 temuan audit (termasuk 7 fail conflict yang dipulihkan), dan status sebenar JEV; rujukan pantas.
+- [Research: laluan native Jev via Kilo Gateway](research/2026-10-21-typesafe-jev-kilo-gateway.md) — kontrak System One, kunci `KILO_API_KEY`, dan blokir 402 baki; research reference, tiada kod dalam repo.
 
 Tujuh UI approaches—Display Only, Interactive, Tool Rendering, State Rendering, MCP Apps, A2UI, Your Components—diperinci melalui blueprint/design/prompt. Intelligence Streams/Learning kekal gated jika entitlement, kos atau data policy belum tersedia. Model percuma tidak menjadikan servis Intelligence percuma.
 
