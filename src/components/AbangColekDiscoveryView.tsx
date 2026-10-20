@@ -50,6 +50,13 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { JevAssessmentCard } from '@/features/jev';
+import {
+  projectJevConfidence,
+  projectJevNoul,
+  projectJevScore,
+  JEV_NOT_COMPUTED_TEXT,
+  JEV_UNKNOWN_TEXT,
+} from '@/features/copilot/cards/jevValueSemantics';
 import type { JevActionPreview } from '../../shared/jev-contracts';
 import { 
   evaluateWithJev, 
@@ -81,13 +88,43 @@ import {
 } from '@/services/abangColekRepoData';
 import { SOCIAL_ACCOUNTS, OBSERVED_PRODUCT_SIGNALS, OBSERVED_CONTENT_PILLARS } from '@/data/abangcolekSocialSourceOfTruth';
 
-const jevConfidenceLabel = (confidence: number | null) =>
-  confidence === null ? 'Tiada keyakinan berkalibrasi' : `${Math.round(confidence * 100)}% Keyakinan`;
+/**
+ * Label keyakinan berkalibrasi bagi satu dimensi JEV.
+ *
+ * Semantik diambil daripada modul kanonik `jevValueSemantics` supaya
+ * seluruh aplikasi guna satu bahasa yang sama. `null` — atau nilai NaN /
+ * di luar julat 0..1 — bermaksud "tidak dikira" dan TIDAK pernah
+ * dipaparkan sebagai 0%, 100%, atau peratus rekaan.
+ */
+export const jevConfidenceLabel = (confidence: number | null | undefined): string => {
+  const projection = projectJevConfidence(confidence);
+  return projection.state === 'computed'
+    ? `${projection.text} Keyakinan`
+    : 'Tiada keyakinan berkalibrasi';
+};
 
-const jevNoulLabel = (isAffirmative: boolean | null, probability: number | null, affirmative: string, negative: string) =>
-  isAffirmative === null || probability === null
-    ? 'Belum dinilai · tiada probability model'
-    : `${isAffirmative ? affirmative : negative} (${Math.round(probability * 100)}%)`;
+/**
+ * Label noul (ya/tidak) JEV.
+ *
+ * `isAffirmative: null` bermaksud jawapan TIDAK DIKETAHUI — ia tidak
+ * pernah dipaparkan sebagai "Tidak" (itu tuduhan palsu). Kebarangkalian
+ * yang tidak dikira tidak pernah menjadi 0% atau peratus rekaan.
+ */
+export const jevNoulLabel = (
+  isAffirmative: boolean | null | undefined,
+  probability: number | null | undefined,
+  affirmative: string,
+  negative: string,
+): string => {
+  const projection = projectJevNoul(isAffirmative, probability);
+  if (projection.state === 'unknown') {
+    return `Belum dinilai · jawapan ${JEV_UNKNOWN_TEXT.toLowerCase()}`;
+  }
+  const label = projection.state === 'affirmative' ? affirmative : negative;
+  return projection.probability.state === 'computed'
+    ? `${label} (${projection.probability.text})`
+    : `${label} (kebarangkalian ${JEV_NOT_COMPUTED_TEXT.toLowerCase()})`;
+};
 
 interface AbangColekDiscoveryViewProps {
   onAction?: (msg?: string) => void;
@@ -213,6 +250,11 @@ export const AbangColekDiscoveryView: React.FC<AbangColekDiscoveryViewProps> = (
     setHistory(getSavedJevEvaluations());
     return () => unsubscribe();
   }, []);
+
+  // Urgensi JEV: skor `null` (atau NaN) bermaksud "tidak dikira" — ia tidak
+  // pernah dipaparkan sebagai 0/5.0 atau "NaN/5.0".
+  const urgencyScoreProjection = projectJevScore(jevResult?.primitives.urgencyScore.score);
+  const urgencyScoreValue = urgencyScoreProjection.value;
 
   const handleToggleSignoff = (workflowId: string, currentSignoff: boolean) => {
     appStore.updateWorkflowSignoff(workflowId, !currentSignoff);
@@ -1492,14 +1534,14 @@ Boundary: social ≠ price ledger ≠ stock ledger ≠ payment authority`}
                     <span className="text-xs text-[var(--ui-muted)] font-medium">Urgensi:</span>
                     <span className={cn(
                       "px-2.5 py-1 rounded-full text-xs font-bold",
-                      jevResult.primitives.urgencyScore.score === null ? "bg-[var(--ui-soft)] text-[var(--ui-muted)]" :
-                      jevResult.primitives.urgencyScore.score >= 4 ? "bg-red-100 text-red-700" :
-                      jevResult.primitives.urgencyScore.score >= 3 ? "bg-amber-100 text-amber-800" :
+                      urgencyScoreValue === null ? "bg-[var(--ui-soft)] text-[var(--ui-muted)]" :
+                      urgencyScoreValue >= 4 ? "bg-red-100 text-red-700" :
+                      urgencyScoreValue >= 3 ? "bg-amber-100 text-amber-800" :
                       "bg-emerald-100 text-emerald-800"
                     )}>
-                      {jevResult.primitives.urgencyScore.score === null
+                      {urgencyScoreValue === null
                         ? jevResult.primitives.urgencyScore.label
-                        : `${jevResult.primitives.urgencyScore.score}/5.0 (${jevResult.primitives.urgencyScore.label})`}
+                        : `${urgencyScoreValue}/5.0 (${jevResult.primitives.urgencyScore.label})`}
                     </span>
                   </div>
                 </div>

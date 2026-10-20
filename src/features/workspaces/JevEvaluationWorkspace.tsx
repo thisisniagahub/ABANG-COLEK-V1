@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import type { JevAllowedContext, JevAssessment, JevEvaluationRun, JevPackId, JevQuestion } from '../../../shared/jev-contracts';
 import { api, jsonMutation, useResource } from '../platform/client';
+import { JevPrimitivesCard } from '../copilot/cards/JevPrimitivesCard';
+import { projectJevAnswers } from '../copilot/cards/jevValueSemantics';
 import { Empty, FormPanel, Panel, ResourceState, Status, field } from './ui';
 
 interface Pack { id: JevPackId; version: string; providerVersion: string; activation: string; questions: JevQuestion[] }
@@ -39,9 +41,23 @@ export function JevEvaluationWorkspace({ canEvaluate = true }: { canEvaluate?: b
 }
 
 function AssessmentDetail({ assessment }: { assessment: JevAssessment }) {
+  // BL-24: jawapan JEV boleh membawa `null` pada confidence, probabilities,
+  // score dan isAffirmative. `null` bermaksud "tidak dikira" / "tidak
+  // diketahui" — kad tidak pernah memaparkannya sebagai 0, 0% atau "Tidak".
+  const projections = projectJevAnswers(assessment.answers);
+  const answerNames = Object.keys(assessment.answers ?? {});
   return <Panel title="Hasil penilaian" eyebrow={`${assessment.packId} · ${assessment.providerMode}`}>
     <p><Status value={assessment.status}/> · {assessment.id}</p>
-    {Object.keys(assessment.answers).length === 0 ? <p>Abstain: maklumat belum membolehkan keputusan yang boleh dipercayai.</p> : <dl className="xp-detail-grid">{Object.entries(assessment.answers).map(([name, answer]) => <div key={name}><dt>{name}</dt><dd>{answer.value === null ? 'Unknown / tidak dinilai' : String(answer.value)}</dd><p className="xp-muted">{answer.reason}</p></div>)}</dl>}
+    {answerNames.length === 0 ? <p>Abstain: maklumat belum membolehkan keputusan yang boleh dipercayai.</p> : <JevPrimitivesCard
+      dimensions={projections.dimensions}
+      scores={projections.scores}
+      nouls={projections.nouls}
+      source="jev.assessments"
+      revision={assessment.entityRevision}
+    />}
+    {answerNames.length > 0 && <dl className="xp-detail-grid">{answerNames.map((name) => (
+      <div key={name}><dt>{name}</dt><dd className="xp-muted">{assessment.answers[name]?.reason ?? 'Sebab tidak dinyatakan.'}</dd></div>
+    ))}</dl>}
     <p className="xp-muted">{assessment.policy.reasonCodes.join(' · ')}</p>
     <p>{assessment.evidence.length} bukti dibenarkan · context {assessment.contextVersion?.slice(0, 12) ?? 'tidak tersedia'} · latency {assessment.latencyMs} ms</p>
     {assessment.evidence.length > 0 && <ul>{assessment.evidence.map(evidence => <li key={evidence.id}>{evidence.id} · {evidence.kind} · {evidence.text}</li>)}</ul>}

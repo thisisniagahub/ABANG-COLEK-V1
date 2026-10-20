@@ -32,6 +32,7 @@ import type { Loyalty } from './loyalty';
 import type { Operations } from './operations';
 import {
   type A2UIFixedSchema,
+  type JevAssessmentCardProps,
   validateA2UIComponent,
 } from '../../shared/copilot-contracts';
 import {
@@ -40,7 +41,9 @@ import {
   evaluateMarginContribution,
   loyaltyPointsToDiscountSen,
 } from '../../shared/growth-contracts';
-import { parseMarginSimulationInput } from './marginInputs';
+import { parseMarginSimulationInput, type MarginSimulationParseResult } from './marginInputs';
+import { prepareCartDraft } from './cartDraft';
+import { readCanonicalCostBasis, type CostBasisScope } from './costLedger';
 import type {
   CampaignRecord,
   CatalogueProduct,
@@ -98,6 +101,64 @@ const QC_CHECKLIST_TEMPLATE: ReadonlyArray<{ check: string; status: 'NOT_RECORDE
   { check: 'Pelekat label kalis air', status: 'NOT_RECORDED' },
   { check: 'Integriti kotak beralun (Corrugated)', status: 'NOT_RECORDED' },
 ];
+
+/**
+ * Skop audit QC tetap: senarai semak di atas mengaudit kualiti penutup
+ * (kekedapan) — itulah skop yang dilaporkan oleh kad, BUKAN penemuan cacat.
+ */
+const QC_AUDIT_SCOPE_ISSUE_CLASS = 'LEAKAGE' as const;
+
+/** Peta nama bacaan QC kepada kelas isu yang dibenarkan renderer A2UI. */
+const QC_READING_ISSUE_CLASSES: ReadonlyArray<{ pattern: RegExp; issueClass: 'LEAKAGE' | 'CAP_DEFECT' | 'TASTE_ANOMALY' | 'LABEL_MISPRINT' }> = [
+  { pattern: /\b(?:taste|rasa|flavou?r)\b/i, issueClass: 'TASTE_ANOMALY' },
+  { pattern: /\b(?:label|pelekat|misprint|kesilapan cetakan)\b/i, issueClass: 'LABEL_MISPRINT' },
+  { pattern: /\b(?:cap defect|cacat penutup|kecacatan penutup|penutup rosak)\b/i, issueClass: 'CAP_DEFECT' },
+  { pattern: /\b(?:leak|bocor|seal|kekedapan|ketelusan)\b/i, issueClass: 'LEAKAGE' },
+];
+
+/**
+ * Rekod SOP QC seperti yang disimpan dalam store `qc_sops` (lihat
+ * `server/platform/operations.ts`). Bentuk ini ialah rekod penuh — ia
+ * mengandungi senarai `readings` (ambang), bukan satu ambang tunggal.
+ */
+interface QcSopRecord {
+  id: string;
+  readings: readonly { name: string; unit: string; minimum: number; maximum: number }[];
+}
+
+/**
+ * Kelas isu untuk kad JEV audit QC.
+ *
+ * Sumber keutamaan: bacaan QC yang MELALUI ambang SOP yang diluluskan —
+ * itu bukti sebenar bahawa ada sisihan. Sumber sandaran: skop audit tetap
+ * (kekedapan penutup), iaitu skop yang diaudit dan BUKAN penemuan cacat.
+ * Kad ini paparan sahaja: punca `UNDETERMINED`, keyakinan `null`.
+ */
+function qcIssueClass(
+  ctx: { store?: PlatformStore },
+  qcRecords: readonly QcRecord[],
+): {
+  issueClass: 'LEAKAGE' | 'CAP_DEFECT' | 'TASTE_ANOMALY' | 'LABEL_MISPRINT';
+  source: 'failed_reading' | 'audit_scope';
+  failedReadings: string[];
+} {
+  const failedReadings: string[] = [];
+  for (const record of qcRecords) {
+    const sop = ctx.store?.get<QcSopRecord>('qc_sops', record.sopId);
+    for (const reading of record.readings) {
+      const required = sop?.readings.find(candidate => candidate.name === reading.name && candidate.unit === reading.unit);
+      // Tanpa ambang SOP yang dipadankan, tiada penilaian yang jujur boleh
+      // dibuat — bacaan itu tidak melulus, tetapi tidak "gagal" juga.
+      if (!required) continue;
+      if (reading.value < required.minimum || reading.value > required.maximum) failedReadings.push(reading.name);
+    }
+  }
+  for (const failed of failedReadings) {
+    const match = QC_READING_ISSUE_CLASSES.find(candidate => candidate.pattern.test(failed));
+    if (match) return { issueClass: match.issueClass, source: 'failed_reading', failedReadings };
+  }
+  return { issueClass: QC_AUDIT_SCOPE_ISSUE_CLASS, source: 'audit_scope', failedReadings };
+}
 
 export interface JSONSchemaProperty {
   type: 'string' | 'number' | 'boolean' | 'object' | 'array';
@@ -165,6 +226,26 @@ function withObservation<T extends Record<string, any>>(
 ): T & { observation: 'observed' | 'unavailable'; reasonCode?: string } {
   const { observation, reasonCode } = observationOf(ctx);
   return { ...data, observation, ...(reasonCode ? { reasonCode } : {}) };
+}
+
+/**
+ * Skop lejar kos daripada input alat (MOD-08).
+ *
+ * Tempoh yang tidak dikenali DITOLAK — platform tidak meneka tempoh mana yang
+ * dimaksudkan. Bentuk yang sah: `all`, `YYYY-MM` (bulan), `YYYY-MM-DD` (hari).
+ */
+function costBasisScopeOf(raw: unknown): CostBasisScope {
+  if (raw === undefined || raw === null || raw === '') return { period: 'all' };
+  if (typeof raw !== 'string') {
+    throw new Error("Input tidak sah untuk 'get_operational_kpi': Medan 'period' mesti teks.");
+  }
+  const period = raw.trim();
+  if (period === 'all' || /^\d{4}-\d{2}$/.test(period) || /^\d{4}-\d{2}-\d{2}$/.test(period)) {
+    return { period };
+  }
+  throw new Error(
+    "Input tidak sah untuk 'get_operational_kpi': Medan 'period' mesti 'all', 'YYYY-MM' atau 'YYYY-MM-DD'.",
+  );
 }
 
 /** Baki boleh guna sebenar (lot available tolak tempahan aktif) untuk satu produk. */
@@ -283,9 +364,111 @@ function orderNotFoundCard(orderId: string): A2UIFixedSchema {
  * — satu sumber kebenaran, supaya input rosak tidak pernah sampai kepada
  * penilai kanonikal dan melontar ralat.
  */
-function readMarginSimulation(raw: unknown): MarginSimulationInput | null {
+/**
+ * Kegagalan bertip simulasi margin (BL-29).
+ *
+ * `MARGIN_INPUTS_NOT_PROVIDED` — tiada input komersial yang mencukupi.
+ * `MARGIN_INPUTS_INVALID` — input rosak (sen pecahan/negatif, peratusan di
+ * luar julat, nilai bukan nombor, atau penilai melontar ralat).
+ *
+ * `invalidKeys` tidak kosong apabila kunci yang bermasalah boleh dikenal
+ * pasti; senarai kosong bermaksud kegagalan tidak dapat dikaitkan pada satu
+ * kunci input (contoh limpahan agregat).
+ */
+export type MarginSimulationFailure = {
+  ok: false;
+  reason: 'MARGIN_INPUTS_NOT_PROVIDED' | 'MARGIN_INPUTS_INVALID';
+  invalidKeys: string[];
+};
+
+export type MarginSimulationOutcome =
+  | { ok: true; input: MarginSimulationInput; result: MarginSimulationResult }
+  | MarginSimulationFailure;
+
+/**
+ * Baca, sahkan dan NILAI input simulasi margin — SATU-satunya implementasi
+ * (BL-29). Semua laluan (alat domain dan chat) mesti memanggil fungsi ini
+ * atau `readMarginSimulationFromMessage`; tiada validator kedua.
+ *
+ * Kembaliannya sentiasa bertip: sama ada keputusan margin yang sebenar, atau
+ * kegagalan bertip dengan reason code + senarai kunci yang bermasalah.
+ */
+export function readMarginSimulation(raw: unknown): MarginSimulationOutcome {
   const parsed = parseMarginSimulationInput(raw);
-  return parsed.ok ? parsed.input : null;
+  if (!parsed.ok) return { ok: false, reason: parsed.reason, invalidKeys: parsed.invalidKeys };
+  const evaluated = evaluateMarginSimulation(parsed.input);
+  if (!evaluated.ok) return evaluated;
+  return { ok: true, input: parsed.input, result: evaluated.result };
+}
+
+/**
+ * Baca dan sahkan input simulasi margin daripada mesej chat.
+ *
+ * Sokongan: objek JSON dengan kunci kanonikal, atau pasangan `kunci=nilai`.
+ * Pengesahan dilakukan oleh `parseMarginSimulationInput` (satu sumber
+ * kebenaran) — tiada parser kedua.
+ */
+export function readMarginSimulationFromMessage(
+  message: string,
+  options: { defaultMinimumContributionSen?: number } = {},
+): MarginSimulationParseResult {
+  const raw: Record<string, unknown> = {};
+  const jsonMatch = message.match(/\{[^{}]*\}/);
+  if (jsonMatch) {
+    try {
+      const parsed = JSON.parse(jsonMatch[0]);
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        Object.assign(raw, parsed as Record<string, unknown>);
+      }
+    } catch {
+      // Bukan JSON — terus ke parsing pasangan kunci=nilai.
+    }
+  }
+  for (const match of message.matchAll(
+    /\b(netSalesExTaxSen|cogsSen|packagingSen|paymentFeesSen|fulfilmentVariableCostSen|deliverySubsidySen|agentCommissionSen|rewardCostSen|expectedReturnLossSen|minimumContributionSen|minimumContributionMarginPct)\s*[=:]\s*(-?\d+(?:\.\d+)?)/gi
+  )) {
+    raw[match[1]] = Number(match[2]);
+  }
+  return parseMarginSimulationInput(raw, options);
+}
+
+/** Kunci input margin yang boleh dikenal pasti daripada mesej penilai. */
+const MARGIN_EVALUATOR_KEYS: ReadonlyArray<keyof MarginSimulationInput> = [
+  'netSalesExTaxSen',
+  'cogsSen',
+  'packagingSen',
+  'paymentFeesSen',
+  'fulfilmentVariableCostSen',
+  'deliverySubsidySen',
+  'agentCommissionSen',
+  'rewardCostSen',
+  'expectedReturnLossSen',
+  'minimumContributionSen',
+  'minimumContributionMarginPct',
+];
+
+/**
+ * Jalankan penilai margin kanonikal tanpa membiarkan `TypeError`/`RangeError`
+ * melontar ke lapisan HTTP (BL-29).
+ *
+ * Penilai hanya melontar ralat apabila input tidak boleh dipercaya
+ * (contoh selepas serialization), jadi kegagalan dikembalikan sebagai
+ * `MARGIN_INPUTS_INVALID` + kunci yang bermasalah — bukan 500 dan bukan
+ * nilai margin rekaan.
+ */
+export function evaluateMarginSimulation(input: MarginSimulationInput): MarginSimulationOutcome {
+  try {
+    const result = evaluateMarginContribution(input);
+    return { ok: true, input, result };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    const named = MARGIN_EVALUATOR_KEYS.find(key => message.includes(key));
+    return {
+      ok: false,
+      reason: 'MARGIN_INPUTS_INVALID',
+      invalidKeys: named ? [named] : [],
+    };
+  }
 }
 
 function marginResultStatus(result: MarginSimulationResult): 'PASSED' | 'INSUFFICIENT_CASH_MARGIN' | 'INSUFFICIENT_PERCENT_MARGIN' {
@@ -436,6 +619,61 @@ export class DomainToolRegistry {
   }
 
   private registerStandardTools() {
+    // -------------------------------------------------------------
+    // 0. CART DRAFT (MOD-01)
+    // -------------------------------------------------------------
+    // Draf beli-belah yang BELUM dihantar: tiada pesanan, tiada tempahan, tiada
+    //-whatsoever yang disimpan. Ia hanya keputusan pelan, supaya `requiresReprice`
+    // boleh menyuruh pengguna reprice bila katalog sudah bergerak.
+    this.registerTool({
+      name: 'prepare_cart_draft',
+      domain: 'commerce',
+      description:
+        'Sediakan draf beli-belah BELUM dihantar daripada katalog yang diterbitkan dan ketersediaan lot sebenar. Tiada pesanan atau tempahan dibuat.',
+      allowedRoles: ['founder', 'staff', 'dealer', 'customer'],
+      readOnly: true,
+      inputSchema: {
+        type: 'object',
+        properties: {
+          lines: { type: 'array', description: 'Baris draf: [{ productId, quantity }]' },
+          catalogueVersion: { type: 'number', description: 'Versi katalog yang dilihat pengguna' },
+          outletId: { type: 'string', description: 'Outlet pilihan' },
+        },
+        required: ['lines', 'catalogueVersion'],
+      },
+      async execute(ctx, input) {
+        if (!ctx.commerce) {
+          return {
+            ok: true,
+            toolName: 'prepare_cart_draft',
+            data: withObservation(ctx, { draft: null, reasonCode: STORE_NOT_WIRED }),
+            message: 'Tiada store platform ⇒ draf tidak dapat disediakan.',
+          };
+        }
+        const outcome = prepareCartDraft(ctx.commerce, ctx.actor, input);
+        if (!outcome.ok) {
+          return {
+            ok: false,
+            toolName: 'prepare_cart_draft',
+            data: { code: outcome.code, message: outcome.message, conflicts: outcome.conflicts },
+            message: outcome.message,
+          };
+        }
+        return {
+          ok: true,
+          toolName: 'prepare_cart_draft',
+          data: {
+            ...withObservation(ctx, {
+              draft: outcome.draft,
+              observedCatalogueVersion: outcome.observedCatalogueVersion,
+              liveCatalogueVersion: outcome.liveCatalogueVersion,
+              ownerId: ctx.actor.user.id,
+            }),
+          },
+          message: 'Draf beli-belah disediakan tetapi BELUM dihantar.',
+        };
+      },
+    });
     // -------------------------------------------------------------
     // 1. COMMERCE
     // -------------------------------------------------------------
@@ -1349,18 +1587,21 @@ export class DomainToolRegistry {
         const campaign = typeof input?.campaignId === 'string' && ctx.store
           ? ctx.store.get<CampaignRecord>('campaigns', input.campaignId) ?? null
           : null;
-        const simulation =
-          readMarginSimulation(input?.marginSimulation) ??
-          (campaign?.marginSimulation ? readMarginSimulation(campaign.marginSimulation) : null);
+        // Satu-satunya laluan validasi + penilaian margin (BL-29).
+        const requested = readMarginSimulation(input?.marginSimulation);
+        const stored = campaign?.marginSimulation ? readMarginSimulation(campaign.marginSimulation) : null;
+        const outcome = requested.ok ? requested : (stored && stored.ok ? stored : requested);
 
-        if (!simulation) {
+        if (!outcome.ok) {
+          // Kegagalan bertip: tiada kad margin, tiada nilai rekaan.
           const data = withObservation(ctx, {
             title: 'Draf Kempen Sambal Liurleleh',
             discountPercent,
             simulationPerformed: false,
             projectedMargin: null,
             marginGuardianPassed: null,
-            reasonCode: NO_COMMERCIAL_INPUTS,
+            reasonCode: outcome.reason,
+            invalidInputKeys: outcome.invalidKeys,
           });
           return {
             ok: true,
@@ -1375,7 +1616,8 @@ export class DomainToolRegistry {
                 discountPercent,
                 simulationPerformed: false,
                 status: 'NOT_SIMULATED',
-                reasonCode: NO_COMMERCIAL_INPUTS,
+                reasonCode: outcome.reason,
+                invalidInputKeys: outcome.invalidKeys,
               },
               provenance: {
                 source: 'local_authoritative',
@@ -1386,7 +1628,8 @@ export class DomainToolRegistry {
           };
         }
 
-        const result = evaluateMarginContribution(simulation);
+        const simulation = outcome.input;
+        const result = outcome.result;
         const status = marginResultStatus(result);
         const data = withObservation(ctx, {
           title: 'Draf Kempen Sambal Liurleleh',
@@ -1408,13 +1651,15 @@ export class DomainToolRegistry {
             schemaVersion: 'a2ui.v1',
             component: 'MarginSimulator',
             componentName: 'MarginSimulator',
+            // Hanya medan yang dibenarkan oleh renderer A2UI (src/features/copilot/
+            // declarative/A2UIFixedRenderer.tsx). `evaluator` tidak dibenarkan
+            // dan akan menjadikan kad "insufficient-data".
             props: {
               contributionSen: result.contributionSen,
               contributionMarginPct: result.contributionMarginPct,
               requiredContributionSen: simulation.minimumContributionSen,
               requiredMarginPct: simulation.minimumContributionMarginPct,
               status,
-              evaluator: 'evaluateMarginContribution',
             },
             provenance: {
               source: 'canonical_evaluator',
@@ -1455,11 +1700,25 @@ export class DomainToolRegistry {
             qcRevision: record?.revision,
           };
         });
+        const jev = qcIssueClass(ctx, qcRecords);
+        const jevProps: JevAssessmentCardProps = {
+          issueClass: jev.issueClass,
+          rootCause: 'UNDETERMINED',
+          sopAction: 'Kuarantin batch di cawangan & minta bukti foto penutup botol',
+          evaluationState: qcRecords.length > 0 ? 'reviewed' : 'pending_quarantine',
+          evidencePhotoRequired: true,
+          // Tiada model berkalibrasi: `null`, bukan `0`.
+          confidenceScore: null,
+        };
         const data = withObservation(ctx, {
           inspections,
           batchNo: batchNo ?? null,
           qcRecordsObserved: qcRecords.length,
           rootCausePolicy: 'UNDETERMINED_UNTIL_VERIFIED',
+          auditScope: 'batch_audit',
+          issueClass: jev.issueClass,
+          issueClassSource: jev.source,
+          failedReadings: jev.failedReadings,
         });
         return {
           ok: true,
@@ -1468,14 +1727,14 @@ export class DomainToolRegistry {
           a2ui: {
             schemaVersion: 'a2ui.v1',
             component: 'JevAssessmentCard',
-            props: {
-              incidentType: 'batch_audit',
-              rootCause: 'UNDETERMINED',
-              confidenceScore: null,
-              evaluationState: qcRecords.length > 0 ? 'reviewed' : 'pending_quarantine',
-              evidencePhotoRequired: true,
-              sopAction: 'Kuarantin batch di cawangan & minta bukti foto penutup botol',
-            },
+            componentName: 'JevAssessmentCard',
+            // Bentuk wayar yang renderer benar-benar izinkan
+            // (src/features/copilot/declarative/A2UIFixedRenderer.tsx):
+            // issueClass, rootCause, sopAction, evaluationState,
+            // evidencePhotoRequired, confidenceScore. `incidentType` TIDAK
+            // dibenarkan dan menjadikan kad "insufficient-data"; skop audit
+            // kini hidup dalam `data.auditScope`.
+            props: jevProps,
             provenance: {
               source: ctx.store ? 'database' : 'jev_local_rules',
               timestamp: new Date().toISOString(),
@@ -1611,7 +1870,8 @@ export class DomainToolRegistry {
     this.registerTool({
       name: 'get_operational_kpi',
       domain: 'analytics',
-      description: 'Dapatkan KPI operasi platform: tempoh penghantaran, kadar pulangan, dan margin bersih.',
+      description:
+        'Dapatkan KPI operasi platform: tempoh penghantaran, kadar pulangan, dan margin bersih. Margin dilaporkan dalam INTEGER BASIS POINTS (10000 = 100.000%) — tiada peratus floating point.',
       allowedRoles: ['founder', 'staff'],
       readOnly: true,
       inputSchema: {
@@ -1622,9 +1882,14 @@ export class DomainToolRegistry {
             enum: ['day', 'week', 'month'],
             description: 'Jangka masa laporan KPI',
           },
+          period: {
+            type: 'string',
+            description:
+              "Tempoh lejar kos yang dibaca: 'all' (seluruh rekod), 'YYYY-MM' (bulan) atau 'YYYY-MM-DD' (hari). Default 'all'.",
+          },
         },
       },
-      async execute(ctx) {
+      async execute(ctx, input: any) {
         const orders = ctx.store ? ctx.store.all<OrderRecord>('orders') : [];
         const delivered = orders.filter((order) => order.fulfilmentStatus === 'received');
         const deliveryHours = delivered
@@ -1638,11 +1903,23 @@ export class DomainToolRegistry {
         const refundedSen = orders.reduce((total, order) => total + order.refundAmountSen, 0);
         const returnRatePercent =
           collectedSen === 0 ? null : Math.round((refundedSen / collectedSen) * 10000) / 100;
+        // MOD-08: asas kos kanonikal dibaca daripada store sebenar. Apabila tiada
+        // store, atau tiada rekod kos/jualan yang sah, hasilnya ialah null +
+        // reason code — TIADA margin rekaan.
+        const costScope = costBasisScopeOf(input?.period);
+        const costBasis = readCanonicalCostBasis(ctx.store, costScope);
+        const marginAvailable = costBasis.available;
         const data = withObservation(ctx, {
           avgDeliveryHours,
           returnRatePercent,
+          // Peratus sentiasa null: platform tidak pernah mengira peratus
+          // floating point. Margin dibaca dalam basis points integer.
           netOperatingMarginPercent: null,
-          netOperatingMarginReasonCode: COST_BASIS_UNAVAILABLE,
+          netOperatingMarginBasisPoints: marginAvailable ? costBasis.netOperatingMarginBasisPoints : null,
+          netOperatingMarginUnit: marginAvailable ? 'basis_points' : 'unavailable',
+          netOperatingMarginReasonCode: marginAvailable ? null : COST_BASIS_UNAVAILABLE,
+          netOperatingMarginDetail: marginAvailable ? null : costBasis.detail,
+          netOperatingMarginBasis: costBasis,
           deliveredOrdersObserved: delivered.length,
         });
         return {
@@ -1657,6 +1934,11 @@ export class DomainToolRegistry {
               avgDeliveryHours,
               returnRatePercent,
               netOperatingMarginPercent: null,
+              netOperatingMarginBasisPoints: data.netOperatingMarginBasisPoints,
+              netOperatingMarginUnit: data.netOperatingMarginUnit,
+              ...(data.netOperatingMarginReasonCode
+                ? { netOperatingMarginReasonCode: data.netOperatingMarginReasonCode }
+                : {}),
               observation: data.observation,
               ...(data.reasonCode ? { reasonCode: data.reasonCode } : {}),
             },

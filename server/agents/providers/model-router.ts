@@ -13,6 +13,7 @@
  */
 
 import {
+  COPILOT_RUN_BUDGET,
   type CopilotRunReasonCode,
   type FreeModelCandidate,
   STRICT_FREE_CANDIDATE_SEQUENCE,
@@ -40,16 +41,37 @@ export interface ModelCallBudget {
   maxCumulativeOutputTokens: number;
 }
 
+/**
+ * Had token lalai diambil daripada kontrak bajet yang dikongsi
+ * (`COPILOT_RUN_BUDGET`) supaya runtime Copilot dan router platform tidak
+ * pernah berbeza. Tiada konstanta kedua.
+ */
 const DEFAULT_TOKEN_CAPS: Required<ModelCallBudgetCaps> = {
-  maxInputTokensPerCall: 8192,
-  maxOutputTokensPerCall: 1024,
-  maxCumulativeInputTokens: 24576,
-  maxCumulativeOutputTokens: 3072,
+  maxInputTokensPerCall: COPILOT_RUN_BUDGET.maxInputTokensPerCall,
+  maxOutputTokensPerCall: COPILOT_RUN_BUDGET.maxOutputTokensPerCall,
+  maxCumulativeInputTokens: COPILOT_RUN_BUDGET.maxCumulativeInputTokens,
+  maxCumulativeOutputTokens: COPILOT_RUN_BUDGET.maxCumulativeOutputTokens,
 };
 
+/**
+ * Kesalahan bertyped daripada router.
+ *
+ * `reason` ialah reason code stabil yang boleh mesin baca; ia TIDAK pernah
+ * mengandungi badan provider mentah.
+ */
+export class ModelRouterError extends Error {
+  readonly reason: CopilotRunReasonCode;
+
+  constructor(reason: CopilotRunReasonCode, message: string) {
+    super(message);
+    this.name = 'ModelRouterError';
+    this.reason = reason;
+  }
+}
+
 export function createBudget(
-  maxCalls = 3,
-  deadlineMs = 30000,
+  maxCalls = COPILOT_RUN_BUDGET.maxModelCalls,
+  deadlineMs = COPILOT_RUN_BUDGET.deadlineMs,
   caps?: ModelCallBudgetCaps
 ): ModelCallBudget {
   return {
@@ -285,17 +307,26 @@ export class FreeModelRouter {
   ): FreeModelCandidate {
     // 1. Check budget constraints
     if (budget.callsMade >= budget.maxCalls) {
-      throw new Error('MODEL_BUDGET_EXCEEDED: Had maksimum 3 panggilan model bagi setiap sesi telah dicapai.');
+      throw new ModelRouterError(
+        'MODEL_BUDGET_EXCEEDED',
+        `MODEL_BUDGET_EXCEEDED: Had maksimum ${budget.maxCalls} panggilan model bagi setiap sesi telah dicapai.`
+      );
     }
     if (isDeadlineExceeded(budget)) {
-      throw new Error('MODEL_DEADLINE_EXCEEDED: Had masa 30 saat untuk inferensi telah tamat.');
+      throw new ModelRouterError(
+        'MODEL_DEADLINE_EXCEEDED',
+        `MODEL_DEADLINE_EXCEEDED: Had masa ${budget.deadlineMs}ms untuk inferensi telah tamat.`
+      );
     }
 
     // 2. Select from strict ordered candidates
     const excluded = new Set((options?.exclude ?? []).map(candidateKey));
     const available = this.getActiveCandidates().filter(c => !excluded.has(candidateKey(c)));
     if (available.length === 0) {
-      throw new Error('MODEL_ADAPTER_UNAVAILABLE: Tiada calon model percuma yang aktif atau layak. Beralih kepada local_rules.');
+      throw new ModelRouterError(
+        'MODEL_ADAPTER_UNAVAILABLE',
+        'MODEL_ADAPTER_UNAVAILABLE: Tiada calon model percuma yang aktif atau layak. Beralih kepada local_rules.'
+      );
     }
 
     const candidate = available[0];

@@ -99,7 +99,14 @@ describe('MOD-02: Orders & Tracking Copilot Integration Suite', () => {
       expect(orderA.trackingToken).toBeDefined();
 
       const tracked = commerce.trackOrder(orderA.trackingToken);
-      expect(tracked.id).toBe(orderA.id);
+      // WHY CHANGED: the public tracking route now returns a PUBLIC PROJECTION
+      // (MOD-02). The old assertion `tracked.id === orderA.id` encoded the leak
+      // of the private order id into an unauthenticated endpoint — that was the
+      // defect. The private order id must NOT be present; an opaque publicRef
+      // is exposed instead.
+      expect((tracked as { id?: string }).id).toBeUndefined();
+      expect((tracked as { orderId?: string }).orderId).toBeUndefined();
+      expect(tracked.publicRef).toBeDefined();
       expect(tracked.status).toBe('requested');
       expect(tracked.fulfilment).toBe('delivery');
       expect(tracked.city).toBe('Kuala Lumpur');

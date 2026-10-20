@@ -1,10 +1,11 @@
-import type { JevAllowedContext, JevAssessment, JevContextSource, JevEvaluationCase, JevEvaluationErrorClass, JevEvaluationMetric, JevEvaluationRun, JevPackId, JevState } from '../../../shared/jev-contracts';
+import type { JevAllowedContext, JevAssessment, JevClassificationProjection, JevContextSource, JevEvaluationCase, JevEvaluationErrorClass, JevEvaluationMetric, JevEvaluationRun, JevPackId, JevState } from '../../../shared/jev-contracts';
 import type { CampaignRecord, DocumentRecord, EvidenceRecord, KnowledgeEntry, QcRecord, RestockRecord } from '../../../shared/platform-contracts';
 import { Auth, hash, type Principal } from '../auth';
 import { Commerce } from '../commerce';
 import { DomainError, fail, fields, id, list, now, object, oneOf, PlatformStore, text } from '../store';
 import { Work } from '../work';
 import { assessState, LOCAL_EVALUATOR_VERSION } from './assessment';
+import { projectJevAssessment } from './dimensions';
 import { QUESTION_PACKS } from './questionRegistry';
 
 const packIds = Object.keys(QUESTION_PACKS) as JevPackId[];
@@ -113,7 +114,7 @@ export class JevEvaluations {
     return { version, actorId: actor.user.id, entityId, entityRevision, packId, sources, state, selectedAt: now() };
   }
 
-  assess(actor: Principal, raw: unknown): JevAssessment {
+  assess(actor: Principal, raw: unknown): JevAssessment & { classification: JevClassificationProjection } {
     const input = object(raw); fields(input, ['packId', 'entityId', 'expectedRevision', 'text']);
     const context = this.context(actor, text(input.packId), text(input.entityId));
     this.store.revision(context.entityRevision, input.expectedRevision);
@@ -122,11 +123,13 @@ export class JevEvaluations {
     const saved: StoredAssessment = { ...assessment, contextVersion: context.version, sourceRefs: context.sources, ownerId: actor.user.id };
     this.store.atomic(() => { this.store.save('jev_assessments', saved); this.store.audit(actor.user.id, 'jev.assess', saved.id); });
     const { ownerId: _, ...result } = saved;
-    return result;
+    // Unjuran dimensi dilampirkan pada respons (bukan disimpan): setiap medan
+    // "tidak dikira" keluar sebagai `null`, bukan 0/false/{}.
+    return { ...result, classification: projectJevAssessment(result) };
   }
 
-  assessments(actor: Principal): (JevAssessment & { contextStatus: 'CURRENT' | 'STALE' })[] {
-    const records: (JevAssessment & { contextStatus: 'CURRENT' | 'STALE' })[] = [];
+  assessments(actor: Principal): (JevAssessment & { contextStatus: 'CURRENT' | 'STALE'; classification: JevClassificationProjection })[] {
+    const records: (JevAssessment & { contextStatus: 'CURRENT' | 'STALE'; classification: JevClassificationProjection })[] = [];
     for (const stored of this.store.all<StoredAssessment>('jev_assessments')) {
       if (stored.packId === 'developer' && stored.ownerId !== actor.user.id && !this.auth.has(actor, 'founder')) continue;
       try {
@@ -136,7 +139,7 @@ export class JevEvaluations {
         const allowedSources = context.sources;
         const currentSources = (record.sourceRefs ?? []).filter(previous => allowedSources.some(current => current.id === previous.id && current.version === previous.version && current.contentHash === previous.contentHash));
         const sourceIds = new Set(currentSources.map(current => current.id));
-        records.push({ ...record, sourceRefs: currentSources, evidence: record.evidence.filter(item => sourceIds.has(item.id)), contextStatus: context.version === stored.contextVersion ? 'CURRENT' : 'STALE' });
+        records.push({ ...record, sourceRefs: currentSources, evidence: record.evidence.filter(item => sourceIds.has(item.id)), contextStatus: context.version === stored.contextVersion ? 'CURRENT' : 'STALE', classification: projectJevAssessment(record) });
       } catch (error) {
         if (error instanceof DomainError && [403, 404].includes(error.status)) continue;
         throw error;

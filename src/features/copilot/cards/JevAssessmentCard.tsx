@@ -1,3 +1,5 @@
+import { projectJevConfidence } from './jevValueSemantics';
+
 type ProjectionState =
   | 'ready'
   | 'loading'
@@ -69,9 +71,9 @@ export function JevAssessmentCard(props: JevAssessmentCardProps) {
     ? 'insufficient-data'
     : projectionState;
   const hasVisibleAssessment = hasAssessment && (state === 'ready' || state === 'stale');
-  const calibratedConfidence = typeof props.confidenceScore === 'number' && Number.isFinite(props.confidenceScore)
-    ? props.confidenceScore
-    : null;
+  // BL-24/BL-27: `confidenceScore` boleh `null` (tidak dikira). `null` mesti
+  // dipaparkan sebagai "tidak dikira" — bukan 0% dan bukan keyakinan sifar.
+  const calibratedConfidence = projectJevConfidence(props.confidenceScore);
 
   return (
     <article
@@ -122,9 +124,12 @@ export function JevAssessmentCard(props: JevAssessmentCardProps) {
           <div className="rounded-2xl bg-[var(--ui-soft)] p-3 sm:col-span-2">
             <dt className="text-xs text-[var(--ui-muted)]">Keyakinan berkalibrasi</dt>
             <dd className="mb-0 mt-1 text-sm font-medium">
-              {calibratedConfidence === null
-                ? 'Tiada probability model'
-                : `${Math.round(calibratedConfidence * 100)}%`}
+              {calibratedConfidence.text}
+              {calibratedConfidence.state === 'not-computed' && (
+                <span className="ml-1 text-xs font-normal text-[var(--ui-muted)]">
+                  Tiada model keyakinan berkalibrasi untuk penilaian ini.
+                </span>
+              )}
             </dd>
           </div>
         </dl>

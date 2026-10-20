@@ -9,6 +9,14 @@ export interface OperationsBriefCardProps {
   qcAlertCount: number;
 }
 
+/**
+ * Kad taklimat operasi.
+ *
+ * Penampilan menggunakan token `--ui-*` yang sama seperti seluruh aplikasi
+ * (lihat `src/features/theme/workspace-theme.css`) supaya kad ini mengikut
+ * tema light/dark aplikasi, bukan palet tetap atau varian `dark:` Tailwind
+ * yang tidak dikawal oleh `data-theme` shell.
+ */
 export const OperationsBriefCard: React.FC<OperationsBriefCardProps> = ({
   outletId,
   date,
@@ -18,43 +26,43 @@ export const OperationsBriefCard: React.FC<OperationsBriefCardProps> = ({
   qcAlertCount,
 }) => {
   return (
-    <div className="p-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm space-y-3 font-sans">
+    <div className="space-y-3 rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-surface)] p-4 text-[var(--ui-text)] shadow-[var(--ui-shadow)]">
       <div className="flex items-center justify-between">
         <div>
-          <h4 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+          <h4 className="text-sm font-semibold text-[var(--ui-text)]">
             Ringkasan Operasi Harian (GUI-05 / ADV-03)
           </h4>
-          <p className="text-xs text-zinc-500 font-mono">
+          <p className="font-mono text-xs text-[var(--ui-muted)]">
             Cawangan: {outletId} • Tarikh: {date}
           </p>
         </div>
         {qcAlertCount > 0 ? (
-          <span className="px-2 py-0.5 text-xs font-bold bg-amber-100 text-amber-900 rounded-full">
+          <span className="rounded-full bg-[var(--ui-soft)] px-2 py-0.5 text-xs font-bold text-[var(--ui-warning-text)]">
             {qcAlertCount} Amaran QC
           </span>
         ) : (
-          <span className="px-2 py-0.5 text-xs font-bold bg-emerald-100 text-emerald-900 rounded-full">
+          <span className="rounded-full bg-[var(--ui-soft)] px-2 py-0.5 text-xs font-bold text-[var(--ui-success-text)]">
             Operasi Lancar
           </span>
         )}
       </div>
 
-      <div className="grid grid-cols-3 gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800 text-center">
-        <div className="p-2 bg-zinc-50 dark:bg-zinc-800/40 rounded-lg">
-          <span className="text-xs text-zinc-500">Pesanan Terbuka</span>
-          <p className="font-mono text-base font-bold text-zinc-900 dark:text-zinc-100">
+      <div className="grid grid-cols-3 gap-2 border-t border-[var(--ui-border)] pt-2 text-center">
+        <div className="rounded-lg bg-[var(--ui-soft)] p-2">
+          <span className="text-xs text-[var(--ui-muted)]">Pesanan Terbuka</span>
+          <p className="font-mono text-base font-bold text-[var(--ui-text)]">
             {openOrdersCount}
           </p>
         </div>
-        <div className="p-2 bg-zinc-50 dark:bg-zinc-800/40 rounded-lg">
-          <span className="text-xs text-zinc-500">Tunai Dikutip</span>
-          <p className="font-mono text-base font-bold text-zinc-900 dark:text-zinc-100">
+        <div className="rounded-lg bg-[var(--ui-soft)] p-2">
+          <span className="text-xs text-[var(--ui-muted)]">Tunai Dikutip</span>
+          <p className="font-mono text-base font-bold text-[var(--ui-text)]">
             RM {(totalCollectedCashSen / 100).toFixed(2)}
           </p>
         </div>
-        <div className="p-2 bg-zinc-50 dark:bg-zinc-800/40 rounded-lg">
-          <span className="text-xs text-zinc-500">Penghantaran</span>
-          <p className="font-mono text-base font-bold text-zinc-900 dark:text-zinc-100">
+        <div className="rounded-lg bg-[var(--ui-soft)] p-2">
+          <span className="text-xs text-[var(--ui-muted)]">Penghantaran</span>
+          <p className="font-mono text-base font-bold text-[var(--ui-text)]">
             {pendingDeliveriesCount}
           </p>
         </div>

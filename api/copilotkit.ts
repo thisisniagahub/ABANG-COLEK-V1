@@ -36,9 +36,42 @@ import type { CopilotV2Runtime } from '../server/agents/copilot/runtime';import 
   copilotRuntime,
   PUBLIC_ORIGIN_ACTOR,
 } from '../server/agents/copilot/runtime-instance';
+import { visionInferenceAvailability } from '../server/agents/intelligence/availability';
 
 /** ID ejen AG-UI yang dipaparkan oleh laluan run. */
 export const COPILOTKIT_AGENT_ID = 'abangcolek';
+
+/**
+ * Penjaga lampiran (BL-21 / EXT-07) untuk laluan awam.
+ *
+ * Laluan ini TIDAK mempunyai kuasa sesi server: rujukan lampiran tidak boleh
+ * diselesaikan di sini (hash fail hanya boleh dibaca oleh store yang
+ * disahkan sesi). Vision pula tiada model layak dikonfigurasi dalam repo ini.
+ *
+ * Oleh itu mana-mana permintaan yang membawa `attachmentIds` ditolak secara
+ * jujur dengan 409 `VISION_INFERENCE_UNAVAILABLE` + `reasonCode`
+ * `QUALIFIED_VISION_MODEL_REQUIRED`. Tiada vision reka, tiada hash reka.
+ */
+function attachmentIdsOf(payload: unknown): string[] {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return [];
+  const ids = (payload as { attachmentIds?: unknown }).attachmentIds;
+  if (!Array.isArray(ids)) return [];
+  return ids.filter((value): value is string => typeof value === 'string');
+}
+
+/** Membaca `attachmentIds` tanpa mengubah badan asal (badan diklon). */
+async function readAttachmentIds(request: Request): Promise<string[]> {
+  if (request.method !== 'POST') return [];
+  let payload: unknown;
+  try {
+    payload = await request.clone().json();
+  } catch {
+    // Badan bukan JSON: kontrak sedia ada runtime yang mengendalikan
+    // (`MALFORMED_JSON_PAYLOAD`) — penjaga ini tidak mendahului runtime.
+    return [];
+  }
+  return attachmentIdsOf(payload);
+}
 
 interface PlatformRunPayload {
   status: 'completed' | 'partial' | 'unavailable' | 'local_rules';
@@ -245,6 +278,34 @@ export function createCopilotKitRoute(options: CopilotKitRouteOptions = {}): (
       },
     });
 
+  /**
+   * Penolakan vision yang jujur (BL-21).
+   *
+   * Rujukan lampiran TIDAK boleh diselesaikan pada laluan awam (tiada kuasa
+   * sesi server), jadi senarai `attachments` kosong dan sebabnya dinyatakan
+   * secara eksplisit — tiada hash reka.
+   */
+  const visionRefusal = (attachmentIds: string[]): Response => {
+    const vision = visionInferenceAvailability();
+    return jsonResponse(
+      {
+        ok: false,
+        error: 'VISION_INFERENCE_UNAVAILABLE',
+        code: 'VISION_INFERENCE_UNAVAILABLE',
+        reasonCode: vision.reasonCode,
+        message: vision.reason,
+        data: {
+          reasonCode: vision.reasonCode,
+          reason: vision.reason,
+          attachmentIds,
+          attachments: [],
+          attachmentResolution: 'NO_SESSION_AUTHORITY',
+        },
+      },
+      409,
+    );
+  };
+
   return async (req: Request): Promise<Response> => {
     const url = new URL(req.url);
 
@@ -252,6 +313,8 @@ export function createCopilotKitRoute(options: CopilotKitRouteOptions = {}): (
     // `CopilotV2Runtime` Writer B. GET devuelve 405 `METHOD_NOT_ALLOWED`
     // bersama `X-Copilot-Run-Id` — ini kontrak sedia ada dan tidak diubah.
     if (url.pathname === '/api/copilotkit' && !url.searchParams.has('surface')) {
+      const attachmentIds = await readAttachmentIds(req);
+      if (attachmentIds.length) return visionRefusal(attachmentIds);
       return runtime.handleRequest(req, actor);
     }
 
@@ -268,7 +331,10 @@ export function createCopilotKitRoute(options: CopilotKitRouteOptions = {}): (
     }
 
     // Semua laluan lain di bawah `/api/copilotkit` dikendalikan oleh pelayan
-    // CopilotKit rasmi (AG-UI run, info, dll).
+    // CopilotKit rasmi (AG-UI run, info, dll). Penjaga lampiran (BL-21) tetap
+    // memeriksa setiap laluan POST sebelum pelayan rasmi dipanggil.
+    const attachmentIds = await readAttachmentIds(req);
+    if (attachmentIds.length) return visionRefusal(attachmentIds);
     const response = await copilotKitHandler(req);
     if (response.status !== 404) return response;
 

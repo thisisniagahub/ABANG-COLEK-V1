@@ -296,7 +296,25 @@ describe('Domain Tools Registry v1.1 — 10 Platform Modules Conformance (real c
     expect(res.data.marginGuardianPassed).toBe(expected.allowed);
     expect(res.a2ui?.component).toBe('MarginSimulator');
     expect(res.a2ui?.provenance.source).toBe('canonical_evaluator');
-    expect(res.a2ui?.props.evaluator).toBe('evaluateMarginContribution');
+    // LAMA: `expect(res.a2ui?.props.evaluator).toBe('evaluateMarginContribution')`
+    // — kontrak lama itu mengekod PEPIJAT: `evaluator` tiada dalam allowlist
+    // renderer A2UI, jadi ia menjadikan kad MarginSimulator "insufficient-data".
+    // Kontrak BARU: props MENGANDUNGI HANYA medan yang dibenarkan renderer.
+    expect(res.a2ui?.props).not.toHaveProperty('evaluator');
+    expect(Object.keys(res.a2ui?.props ?? {}).sort()).toEqual([
+      'contributionMarginPct',
+      'contributionSen',
+      'requiredContributionSen',
+      'requiredMarginPct',
+      'status',
+    ]);
+    expect(res.a2ui?.props).toMatchObject({
+      contributionSen: expected.contributionSen,
+      contributionMarginPct: expected.contributionMarginPct,
+      requiredContributionSen: 2000,
+      requiredMarginPct: 25,
+      status: 'PASSED',
+    });
   });
 
   test('Module 8b (Marketing): without commercial inputs the tool states it cannot simulate', async () => {

@@ -24,8 +24,14 @@ import {
   type FreeModelCandidate,
   STRICT_FREE_CANDIDATE_SEQUENCE,
 } from '../../shared/copilot-contracts';
+import type {
+  ProviderCandidateOutcome,
+  ProviderCandidateReasonCode,
+  ProviderRunBudgetSummary,
+} from '../../shared/provider-run-contracts';
 
 export { type FreeModelCandidate, STRICT_FREE_CANDIDATE_SEQUENCE };
+export type { ProviderCandidateOutcome, ProviderRunBudgetSummary };
 
 export interface FreeProviderConfig {
   id: 'openrouter' | 'nvidia' | 'opencode_zen' | 'gemini_free' | 'ollama' | 'groq';
@@ -156,15 +162,21 @@ export interface CompletionResult {
    * menghalang failover. Nilai ini tidak pernah diteka.
    */
   budgetBlockReason?: CopilotRunBudgetBlockReason;
+  /**
+   * Reason code provider yang paling menentukan bagi run ini (contoh
+   * `PROVIDER_QUOTA_EXHAUSTED`). Ia DISALIN daripada klasifikasi HTTP
+   * sebenar; ia tidak pernah diteka dan tidak pernah menggantikan reason
+   * utama (`LOCAL_RULES_*`) yang tetap menggambarkan laluan yang melayani.
+   */
+  blockingReason?: ProviderCandidateReasonCode;
+  /**
+   * Pecahan sebab bagi setiap calon percuma dalam run ini. Setiap entri
+   * membawa reason code yang boleh mesin baca; badan mentah provider
+   * TIDAK pernah masuk ke sini.
+   */
+  candidates?: ProviderCandidateOutcome[];
   /** Ringkasan penggunaan bajet bagi run ini (sejajar dengan runtime Copilot). */
-  budget?: {
-    maxProviderCalls: number;
-    providerCallsMade: number;
-    deadlineMs: number;
-    outputTokensUsed: number;
-    maxOutputTokensPerCall: number;
-    maxCumulativeOutputTokens: number;
-  };
+  budget?: ProviderRunBudgetSummary;
   toolCalls?: any[];
   usage?: {
     promptTokens: number;
@@ -213,6 +225,8 @@ export const CLIENT_SAFE_ERROR_MESSAGES: Record<string, string> = {
     'Model yang diminta tidak tersedia untuk akaun ini.',
   PROVIDER_ACCESS_DENIED:
     'Akses kepada penyedia model ditolak untuk akaun ini.',
+  PROVIDER_CREDENTIALS_MISSING:
+    'Tiada kelayakan penyedia model dikonfigurasikan, jadi tiada panggilan model dibuat.',
   PROVIDER_HTTP_ERROR:
     'Penyedia model mengembalikan ralat HTTP. Cuba lagi sebentar nanti.',
   PROVIDER_UNAVAILABLE:
@@ -419,6 +433,30 @@ export class FreeModelRouter {
 
     let lastError: FreeModelProviderError | null = null;
     let budgetBlockReason: CopilotRunBudgetBlockReason | undefined;
+    /**
+     * Jejak keputusan setiap calon dalam run ini. Setiap entri membawa
+     * reason code yang boleh mesin baca; badan mentah provider tidak pernah
+     * disimpan di sini.
+     */
+    const candidateOutcomes: ProviderCandidateOutcome[] = [];
+    /**
+     * Reason code provider yang paling menentukan bagi run ini. Keutamaan:
+     * (1) kuota habis, (2) kelayakan ditolak, (3) ralat HTTP lain. Ia
+     * disalin daripada klasifikasi sebenar, tidak pernah diteka.
+     */
+    let blockingReason: ProviderCandidateReasonCode | undefined;
+    const noteBlocking = (reason: ProviderCandidateReasonCode): void => {
+      if (blockingReason) return;
+      if (
+        reason === 'PROVIDER_QUOTA_EXHAUSTED' ||
+        reason === 'PROVIDER_ACCESS_DENIED' ||
+        reason === 'PROVIDER_MODEL_NOT_FOUND'
+      ) {
+        blockingReason = reason;
+        return;
+      }
+      if (reason === 'PROVIDER_HTTP_ERROR') blockingReason = reason;
+    };
 
     for (const { providerId, model: targetModel } of candidatesToTry) {
       // Strict Zero-Cost Enforcement: Reject any paid model
@@ -429,11 +467,26 @@ export class FreeModelRouter {
 
       const apiKey = process.env[config.apiKeyEnv] || (config.id === 'ollama' ? 'ollama' : '');
       if (!apiKey && config.id !== 'ollama') {
-        // Skip provider if key is not configured in environment
+        // Tiada kelayakan: calon dilangkau TANPA membuang bajet panggilan
+        // (tiada panggilan keluar dibuat) dan dengan reason code jujur.
+        candidateOutcomes.push({
+          providerId: config.id,
+          model: targetModel,
+          state: 'skipped',
+          reason: 'PROVIDER_CREDENTIALS_MISSING',
+        });
+        noteBlocking('PROVIDER_CREDENTIALS_MISSING');
         continue;
       }
       if (liveProvidersDisabled()) {
         // Mod offline: tiada panggilan keluar. Jalur local_rules digunakan.
+        // Ini BUKAN kegagalan provider dan TIDAK membakar bajet panggilan.
+        candidateOutcomes.push({
+          providerId: config.id,
+          model: targetModel,
+          state: 'skipped',
+          reason: 'PROVIDER_LIVE_DISABLED',
+        });
         continue;
       }
 
@@ -486,6 +539,27 @@ export class FreeModelRouter {
             reason: classified.reason,
             body: errText,
           });
+          // CALON MATI / COOLDOWN: HTTP 404/410 (model tiada untuk akaun ini)
+          // dan 401/403 (kelayakan ditolak) berkaitan dengan AKAUN, bukan
+          // run ini sahaja; HTTP 429 pula dinding sementara. Semua tiga
+          // dicatatkan dengan reason code sebenar, bukan teks bebas.
+          const state: ProviderCandidateOutcome['state'] =
+            classified.reason === 'PROVIDER_QUOTA_EXHAUSTED'
+              ? 'cooldown'
+              : classified.reason === 'PROVIDER_MODEL_NOT_FOUND' ||
+                  classified.reason === 'PROVIDER_ACCESS_DENIED'
+                ? 'unusable'
+                : 'failed';
+          candidateOutcomes.push({
+            providerId: config.id,
+            model: targetModel,
+            state,
+            reason: classified.reason,
+            httpStatus: response.status,
+            ...(classified.retryAfterMs !== undefined ? { retryAfterMs: classified.retryAfterMs } : {}),
+            ...(classified.retryHint !== undefined ? { retryHint: classified.retryHint } : {}),
+          });
+          noteBlocking(classified.reason);
           throw new FreeModelProviderError(
             classified.reason,
             clientSafeErrorMessage(classified.reason),
@@ -503,15 +577,29 @@ export class FreeModelRouter {
         // sebelum jawapan dilayani.
         const verdict = checkRunTokenBudget(tracker, inputTokens, outputTokens);
         if (!verdict.ok) {
-          recordRunTokenUsage(tracker, inputTokens, outputTokens);
+          // Usage TIDAK direkodkan apabila verdict gagal: usage hanya
+          // dikira untuk jawapan yang benar-benar dilayani.
           lastError = new FreeModelProviderError(
             'MODEL_TOKEN_BUDGET_EXCEEDED',
             clientSafeErrorMessage('MODEL_TOKEN_BUDGET_EXCEEDED')
           );
+          candidateOutcomes.push({
+            providerId: config.id,
+            model: targetModel,
+            state: 'failed',
+            reason: 'MODEL_TOKEN_BUDGET_EXCEEDED',
+          });
           budgetBlockReason = 'MODEL_TOKEN_BUDGET_EXCEEDED';
           break;
         }
         recordRunTokenUsage(tracker, inputTokens, outputTokens);
+
+        candidateOutcomes.push({
+          providerId: config.id,
+          model: targetModel,
+          state: 'succeeded',
+          reason: 'PROVIDER_CALL_SUCCEEDED',
+        });
 
         return {
           providerId: config.id,
@@ -519,6 +607,7 @@ export class FreeModelRouter {
           content,
           status: 'live',
           reason: 'PROVIDER_CALL_SUCCEEDED',
+          candidates: candidateOutcomes,
           toolCalls: choice?.message?.tool_calls,
           usage: data.usage
             ? {
@@ -541,6 +630,17 @@ export class FreeModelRouter {
           err instanceof FreeModelProviderError
             ? err
             : new FreeModelProviderError('PROVIDER_UNAVAILABLE', clientSafeErrorMessage('PROVIDER_UNAVAILABLE'));
+        if (!(err instanceof FreeModelProviderError)) {
+          // Kegagalan jaringan / tamat masa: tiada HTTP status, tiada badan
+          // provider. Dicatatkan dengan reason code yang jujur.
+          candidateOutcomes.push({
+            providerId: config.id,
+            model: targetModel,
+            state: 'failed',
+            reason: 'PROVIDER_UNAVAILABLE',
+          });
+          noteBlocking('PROVIDER_UNAVAILABLE');
+        }
         // Continue to next free candidate model in failover queue
         continue;
       }
@@ -557,6 +657,8 @@ export class FreeModelRouter {
         status: 'local_rules',
         reason: budgetBlockReason ? LOCAL_RULES_BUDGET_EXHAUSTED_REASON : LOCAL_RULES_REASON,
         ...(budgetBlockReason ? { budgetBlockReason } : {}),
+        ...(blockingReason ? { blockingReason } : {}),
+        candidates: candidateOutcomes,
         budget: {
           maxProviderCalls: policy.maxModelCalls,
           providerCallsMade: tracker.providerCallsMade,
@@ -568,9 +670,13 @@ export class FreeModelRouter {
       };
     }
 
+    // Tanpa fallback tempatan: run gagal tutup dengan reason code yang
+    // jujur. Jika had bajet yang menghalang failover, reason code bajet
+    // yang prevailed (bukan ralat provider terakhir).
+    const terminalCode = budgetBlockReason ?? lastError?.code ?? 'PROVIDER_UNAVAILABLE';
     throw new FreeModelProviderError(
-      lastError?.code ?? 'PROVIDER_UNAVAILABLE',
-      clientSafeErrorMessage(lastError?.code ?? 'PROVIDER_UNAVAILABLE')
+      terminalCode,
+      clientSafeErrorMessage(terminalCode)
     );
   }
 

@@ -260,8 +260,8 @@ const ChatInterface = ({
                   <Zap size={13} className="text-[var(--ui-accent-text)]" />
                   Hotel Krew JB (Booking)
                 </button>
-                <button onClick={() => onSendMessage("Semak data latihan COROS dan stamina kecergasan krew hari ini")} className="px-3.5 py-1.5 bg-[var(--ui-soft)] hover:bg-[var(--ui-soft)] rounded-full transition-all border border-[var(--ui-border)] text-orange-700 font-medium text-[12px] flex items-center gap-1.5 shadow-xs">
-                  <Zap size={13} className="text-orange-600" />
+                <button onClick={() => onSendMessage("Semak data latihan COROS dan stamina kecergasan krew hari ini")} className="px-3.5 py-1.5 bg-[var(--ui-soft)] hover:bg-[var(--ui-soft)] rounded-full transition-all border border-[var(--ui-border)] text-[var(--ui-warning-text)] font-medium text-[12px] flex items-center gap-1.5 shadow-xs">
+                  <Zap size={13} className="text-[var(--ui-warning-text)]" />
                   Data Latihan (COROS)
                 </button>
               </div>
@@ -300,7 +300,7 @@ const ChatInterface = ({
                       <span className="font-semibold text-[14px] text-[var(--ui-text)] flex items-center gap-2">
                         {msg.hasPlugin ? (
                           <>
-                            <Zap size={16} className="text-[var(--ui-accent-text)] fill-amber-500" />
+                            <Zap size={16} className="text-[var(--ui-accent-text)] fill-[var(--ui-lilac)]" />
                             Tindakan Plugin 3P Selesai
                           </>
                         ) : msg.hasEmail ? (
@@ -497,7 +497,7 @@ const ChatInterface = ({
 
                     {msg.role === 'model' && msg.latencyMs !== undefined && (
                       <div className="mt-4 pt-4 border-t border-[var(--ui-border)] flex items-center justify-end text-[var(--ui-success-text)] text-[11px]">
-                        <span className="font-mono bg-emerald-50/50 text-emerald-600 px-2 py-0.5 rounded-md flex items-center gap-1.5">
+                        <span className="font-mono bg-[var(--ui-soft)] text-[var(--ui-success-text)] px-2 py-0.5 rounded-md flex items-center gap-1.5">
                           <CheckCircle2 size={12} />
                           {(msg.latencyMs / 1000).toFixed(2)}s
                         </span>
@@ -609,7 +609,7 @@ const ChatInterface = ({
           <div className="mb-2.5 px-2 flex items-center justify-between text-[11px] text-[var(--ui-muted)]">
             <div className="flex items-center gap-1.5 overflow-x-auto py-0.5">
               <span className="text-[10px] font-bold text-[var(--ui-muted)] uppercase tracking-wider shrink-0 flex items-center gap-1">
-                <Zap size={11} className="text-[var(--ui-accent-text)] fill-amber-500" />
+                <Zap size={11} className="text-[var(--ui-accent-text)] fill-[var(--ui-lilac)]" />
                 Plugins Aktif:
               </span>
               {['Skyscanner', 'Booking.com', 'Canva', 'GitHub', 'Vercel', 'Supabase', 'COROS'].map((name, i) => (
@@ -620,7 +620,7 @@ const ChatInterface = ({
             </div>
             <button 
               onClick={() => setActiveTab('plugins')}
-              className="text-[11px] font-bold text-black hover:underline shrink-0 ml-2 cursor-pointer flex items-center gap-1"
+              className="text-[11px] font-bold text-[var(--ui-text)] hover:underline shrink-0 ml-2 cursor-pointer flex items-center gap-1"
             >
               <span>+ Gedung Plugin</span>
             </button>
@@ -657,7 +657,7 @@ const ChatInterface = ({
               <button onClick={() => onSendMessage("Semak Pull Request dan Issues terkini di GitHub.")} className="px-4 py-2 bg-[var(--ui-soft)] hover:bg-[var(--ui-soft)] rounded-full transition-all border border-[var(--ui-border)] text-[var(--ui-text)] font-medium text-[12px] cursor-pointer">
                 Semak PR (GitHub)
               </button>
-              <button onClick={() => onSendMessage("Semak data latihan COROS dan stamina kecergasan krew gerai hari ini.")} className="px-4 py-2 bg-[var(--ui-soft)] hover:bg-[var(--ui-soft)] rounded-full transition-all border border-[var(--ui-border)] text-orange-700 font-medium text-[12px] cursor-pointer">
+              <button onClick={() => onSendMessage("Semak data latihan COROS dan stamina kecergasan krew gerai hari ini.")} className="px-4 py-2 bg-[var(--ui-soft)] hover:bg-[var(--ui-soft)] rounded-full transition-all border border-[var(--ui-border)] text-[var(--ui-warning-text)] font-medium text-[12px] cursor-pointer">
                 Stamina Krew (COROS)
               </button>
             </div>
@@ -705,7 +705,7 @@ const ReviewsView = ({ onAction }: { onAction: (msg?: string) => void }) => {
                       {review.issue_class && (
                         <span className={cn(
                           "text-[10px] font-bold px-2 py-0.5 rounded-full uppercase",
-                          review.issue_class === 'PRAISE' ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"
+                          review.issue_class === 'PRAISE' ? "bg-[var(--ui-soft)] text-[var(--ui-success-text)]" : "bg-[var(--ui-soft)] text-[var(--ui-danger-text)]"
                         )}>
                           {review.issue_class}
                         </span>
@@ -713,7 +713,7 @@ const ReviewsView = ({ onAction }: { onAction: (msg?: string) => void }) => {
                     </div>
                     <div className="flex gap-1 mb-3">
                       {[1, 2, 3, 4, 5].map(star => (
-                        <Sparkles key={star} size={14} className={star <= review.score ? "text-yellow-400 fill-yellow-400" : "text-zinc-200"} />
+                        <Sparkles key={star} size={14} className={star <= review.score ? "text-[var(--ui-lilac)] fill-[var(--ui-lilac)]" : "text-[var(--ui-border)]"} />
                       ))}
                     </div>
                     <p className="text-[var(--ui-text)] text-[15px] leading-relaxed mb-3">"{reviewText}"</p>
@@ -1019,14 +1019,14 @@ export default function App() {
   return (
     <div data-theme={theme} data-view={activeTab} className="app-shell flex flex-col h-screen overflow-hidden selection:bg-[#8C7DFF] selection:text-[#171422] relative">
       {quotaExceeded && (
-        <div className="bg-amber-50 border-b border-amber-200 text-amber-900 px-4 py-2.5 text-xs md:text-sm text-center sticky top-0 z-50 shadow-sm shrink-0">
+        <div className="bg-[var(--ui-soft)] border-b border-[var(--ui-border)] text-[var(--ui-warning-text)] px-4 py-2.5 text-xs md:text-sm text-center sticky top-0 z-50 shadow-sm shrink-0">
           <span>
             Google Maps Platform quota reached. If you are the app owner, visit{' '}
             <a
               href="https://developers.google.com/maps/ai/ai-studio?utm_campaign=gmp_mcp_codeassist_v1_aistudio#quota_exceeded_errors"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline font-semibold text-amber-950 hover:text-amber-800"
+              className="underline font-semibold text-[var(--ui-text)] hover:opacity-80"
             >
               maps developer site
             </a>{' '}

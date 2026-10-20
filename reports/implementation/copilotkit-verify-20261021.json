@@ -1,0 +1,66 @@
+npm warn Unknown user config "allow-scripts". This will stop working in the next major version of npm.
+npm warn deprecated prebuild-install@7.1.3: No longer maintained. Please contact the author of the relevant native addon; alternatives are available.
+{
+  "checks": [
+    {
+      "detail": "CopilotKit runtime 1.79.1 answered. The URL is this command's assumed default rather than one this project stated, so which project answered is unverified: another checkout serving this port answers exactly the same. Pass --runtime-url, or record \"runtimeUrl\" in .copilotkit/project.json, to probe the URL your own project names.",
+      "id": "runtime_reachable",
+      "status": "pass",
+      "title": "The CopilotKit runtime responds"
+    },
+    {
+      "detail": "Declares 1: abangcolek (PlatformAguiAgent). These are the agents of whatever answered the assumed default URL, not proof that this project declares them.",
+      "id": "runtime_agents_declared",
+      "status": "pass",
+      "title": "The runtime declares at least one agent"
+    },
+    {
+      "detail": "The runtime returned valid /info data reporting no Intelligence entitlement, as expected for OSS mode.",
+      "id": "runtime_mode",
+      "status": "pass",
+      "title": "The runtime uses the expected OSS mode"
+    },
+    {
+      "detail": "Every installed CopilotKit package is on 1.79.1.",
+      "id": "package_versions_aligned",
+      "status": "pass",
+      "title": "The installed packages match the runtime"
+    }
+  ],
+  "facts": {
+    "frameworks": [
+      "PlatformAguiAgent"
+    ],
+    "generativeUiEnabled": false,
+    "intelligenceGatewayWired": false,
+    "runtimeVersion": "1.79.1",
+    "transcriptionEnabled": false
+  },
+  "ok": true,
+  "roundTrip": {
+    "detail": "Agent \"abangcolek\" answered with 115 characters, recorded on thread 4e05b9bc-db04-4fb1-a15b-b5aa967c1658. Read back through the app, so the answer belongs to the caller the app identified. The URL is this command's assumed default rather than one this project stated, so which project answered is unverified: another checkout serving this port answers exactly the same. Pass --runtime-url, or record \"runtimeUrl\" in .copilotkit/project.json, to probe the URL your own project names.",
+    "evidence": {
+      "agentId": "abangcolek",
+      "answerCharacters": 115,
+      "readVia": "app-mount",
+      "threadId": "4e05b9bc-db04-4fb1-a15b-b5aa967c1658",
+      "toolCallNames": []
+    },
+    "id": "agent_answers",
+    "status": "pass",
+    "title": "The agent answers a real request"
+  },
+  "extraChecks": [
+    {
+      "id": "page_context_reaches_agent",
+      "title": "Page context reaches the agent",
+      "detail": "The frontend's files call no context hook, but CopilotKit's frontend sends context entries of its own, such as the A2UI catalog. So this sent one context entry and asked agent \"abangcolek\" for its value. The agent answered, so a chat that carries context gets an answer.",
+      "status": "pass"
+    }
+  ],
+  "frontendUrlSource": "unknown",
+  "expectRuntime": "oss",
+  "expectRuntimeSource": "detected",
+  "runtimeUrl": "http://localhost:3000/api/copilotkit",
+  "runtimeUrlSource": "default"
+}

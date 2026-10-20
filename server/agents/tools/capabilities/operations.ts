@@ -2,7 +2,7 @@
  * AbangColek Sovereign GrowthOS — ADV-19..ADV-24 Operations Tools
  */
 
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { defineTool, fail, resolveContext } from './common';
 import { provenance } from '../runtime';
 import type { ToolDefinition } from '../types';
@@ -23,6 +23,18 @@ import { Work } from '../../../platform/work';
 import { Reports } from '../../../platform/reports';
 import { Loyalty } from '../../../platform/loyalty';
 import { daysBetween } from '../records';
+import {
+  authorizeExportDownload,
+  checkExportQuota,
+  resolveCapabilityGrant,
+  resolveOutboundConsent,
+} from './advOperations';
+import { remediateCase, type CaseRemediationResult } from './advRemediation';
+import {
+  EXPORT_DOWNLOAD_WINDOW_MS,
+  type ExportArtifactRecord,
+  type OutboundChannel,
+} from '../../../../shared/adv-contracts';
 import type { BusinessSettings, OrderRecord, RestockRecord } from '../../../../shared/platform-contracts';
 
 export const operationsTools: ToolDefinition[] = [
@@ -102,9 +114,13 @@ export const operationsTools: ToolDefinition[] = [
     registrationName: 'export_report',
     riskClass: 'C',
     description:
-      'Menjana laporan sebenar daripada Reports platform dan menyusun artifak yang kekal (commit) dengan hash kandungan.',
+      'Menjana laporan sebenar daripada Reports platform dan menyusun artifak yang kekal (commit) dengan hash kandungan; muat turun disahkan semula pada masa muat turun (kuota harian milik server).',
     requiredRole: 'founder',
     inputSchema: {
+      /** `create` (default) builds a new artifact; `download` re-authorises an existing one. */
+      operation: { type: 'string', enum: ['create', 'download'] },
+      /** Artifact to download (required for `operation: 'download'`). */
+      artifactId: { type: 'string', min: 1, max: 120 },
       kind: { required: true, type: 'string', enum: ['orders', 'tasks', 'expenses', 'payments', 'stock'] },
       from: { type: 'string', min: 10, max: 10 },
       to: { type: 'string', min: 10, max: 10 },
@@ -117,15 +133,66 @@ export const operationsTools: ToolDefinition[] = [
       const resolved = resolveContext(ctx);
       if (!resolved.ok) return resolved;
       const { store, actor } = resolved;
-      const auth = new Auth(store);
-      const commerce = new Commerce(store, auth);
-      const work = new Work(store, auth, commerce);
-      const reports = new Reports(store, auth, commerce, work);
+      const at = ctx.runtime.clock();
+      const operation = (input.operation as 'create' | 'download' | undefined) ?? 'create';
 
+      // --- Download: the authority to download is re-verified against the LIVE
+      //     state (founder role, ownership, artifact kind, download window and
+      //     sha256 content integrity). It is never inherited from creation.
+      if (operation === 'download') {
+        const artifactId = input.artifactId as string | undefined;
+        if (!artifactId) {
+          return fail('EXPORT_ARTIFACT_NOT_FOUND', 'artifactId diperlukan untuk memuat turun laporan.');
+        }
+        const artifact = store.get<ExportArtifactRecord>('report_artifacts', artifactId);
+        const authorization = authorizeExportDownload({
+          store,
+          actor,
+          artifact,
+          kind: input.kind as string,
+          at,
+        });
+        if (!authorization.allowed || !artifact) {
+          return fail(
+            authorization.code ?? 'EXPORT_DOWNLOAD_NOT_ALLOWED',
+            authorization.detail,
+          );
+        }
+        const downloadCount = artifact.downloadCount + 1;
+        store.save('report_artifacts', { ...artifact, downloadCount, lastDownloadedAt: at });
+        store.audit(ctx.actorId, 'agent.report.download', artifact.id, downloadCount);
+        return {
+          ok: true,
+          operation: 'download',
+          artifactId: artifact.id,
+          filename: artifact.filename,
+          format: artifact.format,
+          kind: artifact.kind,
+          recordCount: artifact.recordCount,
+          generatedAt: artifact.generatedAt,
+          contentHash: artifact.contentHash,
+          contentBytes: artifact.contentBytes,
+          content: artifact.content,
+          downloadExpiresAt: artifact.downloadExpiresAt,
+          downloadCount,
+          lastDownloadedAt: at,
+          authorized: true,
+          mutated: true,
+          persistence: 'platform_store',
+          provenance: provenance(
+            ctx.runtime,
+            ctx,
+            ['report_artifacts'],
+            'export-download-authorizer',
+          ),
+        };
+      }
+
+      // --- Create
       const idempotencyKey = input.idempotencyKey as string | undefined;
       if (idempotencyKey) {
         const existing = store
-          .all<{ id: string; idempotencyKey?: string; ownerId: string }>('report_artifacts')
+          .all<ExportArtifactRecord>('report_artifacts')
           .find(
             (artifact) =>
               artifact.idempotencyKey === idempotencyKey && artifact.ownerId === ctx.actorId,
@@ -133,6 +200,7 @@ export const operationsTools: ToolDefinition[] = [
         if (existing) {
           return {
             ok: true,
+            operation: 'create',
             code: 'ALREADY_EXPORTED',
             artifactId: existing.id,
             replay: true,
@@ -141,6 +209,20 @@ export const operationsTools: ToolDefinition[] = [
           };
         }
       }
+
+      // Server-owned quota: the browser can neither raise nor reset it.
+      const quota = checkExportQuota(store, ctx.actorId, at);
+      if (!quota.allowed) {
+        return fail(
+          quota.code ?? 'EXPORT_QUOTA_EXCEEDED',
+          `Had laporan harian tercapai (${quota.used}/${quota.limit}); seterusnya tersedia pada ${quota.resetsAt}.`,
+        );
+      }
+
+      const auth = new Auth(store);
+      const commerce = new Commerce(store, auth);
+      const work = new Work(store, auth, commerce);
+      const reports = new Reports(store, auth, commerce, work);
 
       const filter: Record<string, unknown> = { kind: input.kind };
       if (input.from) filter.from = input.from;
@@ -158,16 +240,21 @@ export const operationsTools: ToolDefinition[] = [
       }
 
       const contentHash = createHash('sha256').update(report.content).digest('hex');
+      // The id is unique per export: the daily quota counts real exports, not
+      // distinct report shapes. `idempotencyKey` is the deduplication key.
       const artifactId = `rpt-${createHash('sha256')
-        .update(`${ctx.actorId}|${report.filename}|${contentHash}`)
+        .update(`${ctx.actorId}|${report.filename}|${contentHash}|${at}|${randomUUID()}`)
         .digest('hex')
         .slice(0, 24)}`;
-      const artifact = {
+      const downloadExpiresAt = new Date(
+        Date.parse(at) + EXPORT_DOWNLOAD_WINDOW_MS,
+      ).toISOString();
+      const artifact: ExportArtifactRecord = {
         id: artifactId,
         ownerId: ctx.actorId,
         filename: report.filename,
         format: report.format,
-        kind: input.kind,
+        kind: input.kind as string,
         recordCount: report.recordCount,
         generatedAt: report.generatedAt,
         sourceVersions: report.sourceVersions,
@@ -175,18 +262,25 @@ export const operationsTools: ToolDefinition[] = [
         metricScope: report.metricScope,
         contentHash,
         contentBytes: Buffer.byteLength(report.content, 'utf8'),
+        content: report.content,
+        filter,
         idempotencyKey: idempotencyKey ?? null,
-        createdAt: ctx.runtime.clock(),
+        createdAt: at,
+        downloadExpiresAt,
+        downloadCount: 0,
+        lastDownloadedAt: null,
+        revision: 1,
       };
       store.save('report_artifacts', artifact);
       store.audit(ctx.actorId, 'agent.report.export', artifactId, 1);
 
       return {
         ok: true,
+        operation: 'create',
         artifactId,
         filename: report.filename,
         format: report.format,
-        kind: input.kind,
+        kind: artifact.kind,
         recordCount: report.recordCount,
         generatedAt: report.generatedAt,
         contentHash,
@@ -194,6 +288,14 @@ export const operationsTools: ToolDefinition[] = [
         metrics: report.metrics,
         metricScope: report.metricScope,
         sourceVersionCount: Object.keys(report.sourceVersions).length,
+        downloadExpiresAt,
+        downloadCount: 0,
+        exportQuota: {
+          limit: quota.limit,
+          usedBefore: quota.used,
+          usedAfter: quota.used + 1,
+          resetsAt: quota.resetsAt,
+        },
         mutated: true,
         persistence: 'platform_store',
         provenance: provenance(ctx.runtime, ctx, ['report_definitions', 'report_artifacts'], 'reports-builder'),
@@ -207,10 +309,16 @@ export const operationsTools: ToolDefinition[] = [
     registrationName: 'triage_case',
     riskClass: 'S',
     description:
-      'Menyatukan kes pelanggan kepada keutamaan dan tindakan seterusnya berdasarkan status pesanan, umur kes dan bukti (tanpa mutate).',
+      'Menyatukan kes pelanggan kepada keutamaan dan tindakan seterusnya berdasarkan status pesanan, umur kes dan bukti; remediate membuka laluan pemulihan kekal (cadangan refund / tugasan bukti / penugasan founder).',
     requiredRole: 'staff',
     inputSchema: {
       caseId: { required: true, type: 'string', min: 1, max: 120 },
+      /** Opt-in: open the durable remediation path for this case. */
+      remediate: { type: 'boolean' },
+      /** Why the remediation is performed — recorded with the proposal. */
+      remediationReason: { type: 'string', min: 3, max: 1000 },
+      /** Optional staff member that may own the case (founder-only assignment). */
+      assignToStaffId: { type: 'string', min: 1, max: 120 },
     },
     execute: async (input, ctx) => {
       const resolved = resolveContext(ctx);
@@ -271,6 +379,35 @@ export const operationsTools: ToolDefinition[] = [
       if (record.status === 'open') nextActions.push('Tetapkan-owner kes dan kemas kini status kes.');
       if (!nextActions.length) nextActions.push('Tiada tindakan tambahan; sahkan determination kes.');
 
+      const remediate = input.remediate === true;
+      const remediationReason =
+        (input.remediationReason as string | undefined) ?? 'Triage kes oleh operator';
+
+      let remediation: CaseRemediationResult | null = null;
+      if (remediate) {
+        // The approval store is the canonical ledger of pending work, so a
+        // second remediation never creates a duplicate proposal for a scope.
+        const existingProposals = ctx.runtime.approvalService
+          .listProposals()
+          .map((proposal) => ({
+            id: proposal.id,
+            scope: proposal.scope,
+            status: proposal.status,
+          }));
+        remediation = remediateCase({
+          store,
+          actor,
+          record,
+          order,
+          evidenceCount,
+          at,
+          reason: remediationReason,
+          createProposal: (proposal) => ctx.runtime.approvalService.createProposal(proposal),
+          existingProposals,
+          assignToStaffId: (input.assignToStaffId as string | undefined) ?? null,
+        });
+      }
+
       return {
         ok: true,
         caseId: record.id,
@@ -285,8 +422,16 @@ export const operationsTools: ToolDefinition[] = [
         priorityScore: score,
         signals,
         nextActions,
-        mutated: false,
-        provenance: provenance(ctx.runtime, ctx, ['cases', 'orders', 'evidence'], 'case-triage-evaluator'),
+        remediate,
+        remediationReason: remediation ? remediationReason : null,
+        remediationOutcomes: remediation ? remediation.outcomes : [],
+        mutated: remediation ? remediation.mutated : false,
+        provenance: provenance(
+          ctx.runtime,
+          ctx,
+          ['cases', 'orders', 'evidence'],
+          remediation ? 'case-remediation-engine' : 'case-triage-evaluator',
+        ),
       };
     },
   }),
@@ -366,12 +511,16 @@ export const operationsTools: ToolDefinition[] = [
     registrationName: 'draft_customer_reply',
     riskClass: 'D',
     description:
-      'Menyediakan draf maklum balas pelanggan daripada fakta kes dan pesanan sebenar. Tiada mesej dihantar dan tiada rekod diubah.',
+      'Menyediakan draf maklum balas pelanggan daripada fakta kes dan pesanan sebenar. Penghantaran memerlukan rekod kebenaran hantar keluar yang sah; tanpa kebenaran, draf hanya disimpan sebagai cadangan.',
     requiredRole: 'staff',
     inputSchema: {
       caseId: { required: true, type: 'string', min: 1, max: 120 },
       body: { type: 'string', min: 1, max: 4000 },
       intent: { type: 'string', min: 1, max: 120 },
+      /** Opt-in: actually deliver the reply in-app (requires a valid consent record). */
+      send: { type: 'boolean' },
+      /** Outbound channel. The platform only ever delivers in-app messages. */
+      channel: { type: 'string', enum: ['in_app'] },
     },
     execute: async (input, ctx) => {
       const resolved = resolveContext(ctx);
@@ -389,6 +538,21 @@ export const operationsTools: ToolDefinition[] = [
         return fail('FORBIDDEN', 'Kes ini di luar skop akses pemeran.');
       }
 
+      const at = ctx.runtime.clock();
+      const channel = (input.channel as OutboundChannel | undefined) ?? 'in_app';
+      const send = input.send === true;
+
+      // The consent record is the only source of truth. An `unrecorded` consent
+      // is NOT consent: the send is refused with a machine-readable code.
+      const consent = resolveOutboundConsent(store, record.customerId, channel, at);
+      if (send && !consent.granted) {
+        return fail(
+          'OUTBOUND_CONSENT_NOT_GRANTED',
+          `Penghantaran ke pelanggan ${record.customerId} ditolak: ${consent.detail}`,
+          consent.code,
+        );
+      }
+
       const facts = [
         `Kes: ${record.subject} (${record.status}).`,
         order ? `Pesanan ${order.id}: status bayaran ${order.paymentState}, penghantaran ${order.fulfilmentStatus}.` : null,
@@ -400,35 +564,79 @@ export const operationsTools: ToolDefinition[] = [
           order ? ` Bayaran pesanan ${order.id} berstatus ${order.paymentState}.` : ''
         } Kami akan maklumkan perkembangan seterusnya.`;
 
-      const proposal = ctx.runtime.approvalService.createProposal({
-        kind: 'message.draft',
-        scope: `case:${record.id}#reply`,
-        payload: {
-          caseId: record.id,
-          orderId: record.orderId,
-          body,
-          intent: input.intent ?? 'status_update',
-          facts,
-        },
-        amountSen: 0,
-        proposedBy: ctx.actorId,
-        proposerRole: ctx.role,
-        sourceRefs: [`cases:${record.id}@${record.revision}`],
-      });
+      // --- Delivery: a real in-app CaseMessage, written only with consent.
+      let delivered = false;
+      let messageId: string | null = null;
+      if (send) {
+        const auth = new Auth(store);
+        const commerce = new Commerce(store, auth);
+        const work = new Work(store, auth, commerce);
+        try {
+          const message = work.reply(actor.principal, record.id, {
+            expectedRevision: record.revision,
+            body,
+          });
+          delivered = true;
+          messageId = message.id;
+        } catch (error) {
+          const code = (error as { code?: string }).code ?? 'DELIVERY_FAILED';
+          return fail(
+            code,
+            `Draf tidak boleh dihantar: ${error instanceof Error ? error.message : 'ralat tidak diketahui.'}`,
+          );
+        }
+      }
+
+      // A delivered reply is already a durable canonical message: no separate
+      // draft proposal is created for it.
+      let draftId: string | null = null;
+      if (!send) {
+        const proposal = ctx.runtime.approvalService.createProposal({
+          kind: 'message.draft',
+          scope: `case:${record.id}#reply`,
+          payload: {
+            caseId: record.id,
+            orderId: record.orderId,
+            body,
+            intent: input.intent ?? 'status_update',
+            facts,
+          },
+          amountSen: 0,
+          proposedBy: ctx.actorId,
+          proposerRole: ctx.role,
+          sourceRefs: [`cases:${record.id}@${record.revision}`],
+        });
+        draftId = proposal.id;
+      }
 
       return {
         ok: true,
-        draftId: proposal.id,
+        draftId,
         caseId: record.id,
         orderId: record.orderId,
         body,
-        intent: proposal.payload.intent,
+        intent: input.intent ?? 'status_update',
         facts,
-        delivered: false,
-        mutated: false,
-        authoritativeStateMutated: false,
+        channel,
+        send,
+        delivered,
+        messageId,
+        consent: {
+          granted: consent.granted,
+          status: consent.status,
+          code: consent.code,
+          consentId: consent.consentId,
+          detail: consent.detail,
+        },
+        mutated: delivered,
+        authoritativeStateMutated: delivered,
         persistence: ctx.runtime.approvalStore.persistence,
-        provenance: provenance(ctx.runtime, ctx, proposal.sourceRefs, 'proposal-store-write'),
+        provenance: provenance(
+          ctx.runtime,
+          ctx,
+          send ? [`cases:${record.id}@${record.revision}`, 'messages'] : [`cases:${record.id}@${record.revision}`],
+          send ? 'outbound-consent-guard+case-reply' : 'proposal-store-write',
+        ),
       };
     },
   }),
@@ -439,7 +647,7 @@ export const operationsTools: ToolDefinition[] = [
     registrationName: 'build_action_plan',
     riskClass: 'S',
     description:
-      'Menyusun pelan tindakan berurutan daripada keadaan sebenar, setiap langkah dikaitkan dengan keupayaan registri yang sah.',
+      'Menyusun pelan tindakan berurutan daripada keadaan sebenar; setiap langkah hanya ditawarkan jika pemeran memegang kebenaran keupayaan itu, langkah lain dilaporkan sebagai dilangkau.',
     requiredRole: 'staff',
     inputSchema: {
       objective: { required: true, type: 'string', min: 3, max: 500 },
@@ -449,11 +657,13 @@ export const operationsTools: ToolDefinition[] = [
       const resolved = resolveContext(ctx);
       if (!resolved.ok) return resolved;
       const { store, actor } = resolved;
+      const at = ctx.runtime.clock();
       const objective = input.objective as string;
       const entityId = input.entityId as string | undefined;
       const catalogue = ctx.catalog(ctx.role);
       const byName = new Map(catalogue.map((entry) => [entry.registrationName, entry]));
       const steps: Array<Record<string, unknown>> = [];
+      const omittedSteps: Array<Record<string, unknown>> = [];
       const facts: string[] = [];
       const sources: string[] = [];
 
@@ -468,16 +678,44 @@ export const operationsTools: ToolDefinition[] = [
         }
       }
 
-      const push = (name: string, why: string, blocked?: string): void => {
+      const grantScope = { entityId: entityId ?? null, outletId: order?.outletId ?? null };
+
+      /**
+       * A step is only offered when the actor really holds the grant. A step
+       * that is withheld is REPORTED (never silently dropped) with the grant
+       * reason code.
+       */
+      const push = (name: string, why: string): void => {
         const capability = byName.get(name);
         if (!capability) return;
+        const grant = resolveCapabilityGrant(
+          store,
+          actor,
+          capability.logicalCapabilityId,
+          grantScope,
+          at,
+        );
+        if (!grant.held) {
+          omittedSteps.push({
+            capabilityId: capability.logicalCapabilityId,
+            capability: capability.registrationName,
+            riskClass: capability.riskClass,
+            why,
+            reasonCode: grant.code,
+            detail: grant.detail,
+            grantId: grant.grantId,
+            grantScope: grant.scope,
+          });
+          return;
+        }
         steps.push({
           step: steps.length + 1,
           capabilityId: capability.logicalCapabilityId,
           capability: capability.registrationName,
           riskClass: capability.riskClass,
           why,
-          ...(blocked ? { blocked } : {}),
+          grantCode: grant.code,
+          grantId: grant.grantId,
         });
       };
 
@@ -496,6 +734,8 @@ export const operationsTools: ToolDefinition[] = [
       }
       push('build_action_plan', 'Semak semula pelan selepas setiap langkah untuk pengesahan keadaan terkini.');
 
+      const omittedReasonCodes = [...new Set(omittedSteps.map((step) => step.reasonCode as string))].sort();
+
       return {
         ok: true,
         objective,
@@ -503,6 +743,10 @@ export const operationsTools: ToolDefinition[] = [
         facts,
         stepCount: steps.length,
         steps,
+        omittedStepCount: omittedSteps.length,
+        omittedSteps,
+        omittedStepReasonCodes: omittedReasonCodes,
+        omittedStepReasonCode: omittedReasonCodes.length === 1 ? omittedReasonCodes[0] : null,
         availableCapabilityCount: catalogue.length,
         executed: false,
         mutated: false,
@@ -511,3 +755,4 @@ export const operationsTools: ToolDefinition[] = [
     },
   }),
 ];
+

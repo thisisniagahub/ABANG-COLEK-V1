@@ -4,9 +4,14 @@ import { dirname } from 'node:path';
 import { randomUUID } from 'node:crypto';
 
 export class DomainError extends Error {
-  constructor(readonly code: string, readonly status = 400, message = 'Permintaan tidak dapat diproses.') { super(message); }
+  /**
+   * `data` membawa butiran berstruktur untuk ralat yang perlu pandangan
+   * mesin (contoh senarai medan yang bereka-bcerca dalam `REVALIDATION_CONFLICT`).
+   * Tanpa medan ini, pemanggil hanya boleh meneka medan mana yang berubah.
+   */
+  constructor(readonly code: string, readonly status = 400, message = 'Permintaan tidak dapat diproses.', readonly data?: Record<string, unknown>) { super(message); }
 }
-export function fail(code: string, status = 400, message?: string): never { throw new DomainError(code, status, message); }
+export function fail(code: string, status = 400, message?: string, data?: Record<string, unknown>): never { throw new DomainError(code, status, message, data); }
 export const id = () => randomUUID();
 export const now = () => new Date().toISOString();
 export const object = (input: unknown): Record<string,unknown> => {

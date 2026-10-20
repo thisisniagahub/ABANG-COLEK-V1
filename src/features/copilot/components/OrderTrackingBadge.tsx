@@ -7,37 +7,46 @@ export interface OrderTrackingBadgeProps {
   isTokenVerified: boolean;
 }
 
+/**
+ * Lencana penjejakan pesanan.
+ *
+ * Penampilan menggunakan token `--ui-*` yang sama seperti seluruh aplikasi
+ * supaya lencana ini mengikut tema light/dark aplikasi.
+ */
 export const OrderTrackingBadge: React.FC<OrderTrackingBadgeProps> = ({
   orderId,
   fulfilmentStatus,
   city = 'Kuala Lumpur',
   isTokenVerified,
 }) => {
-  const statusLabels: Record<string, { label: string; color: string }> = {
-    requested: { label: 'Pesanan Dihantar', color: 'bg-zinc-100 text-zinc-800' },
-    packing: { label: 'Sedang Dibungkus', color: 'bg-amber-100 text-amber-800' },
-    dispatched: { label: 'Dalam Penghantaran', color: 'bg-blue-100 text-blue-800' },
-    received: { label: 'Selesai Diterima', color: 'bg-emerald-100 text-emerald-800' },
-    cancelled: { label: 'Dibatalkan', color: 'bg-rose-100 text-rose-800' },
+  const statusLabels: Record<string, { label: string; tone: string }> = {
+    requested: { label: 'Pesanan Dihantar', tone: 'text-[var(--ui-muted)]' },
+    review: { label: 'Dalam Semakan', tone: 'text-[var(--ui-muted)]' },
+    accepted: { label: 'Diterima', tone: 'text-[var(--ui-muted)]' },
+    packing: { label: 'Sedang Dibungkus', tone: 'text-[var(--ui-warning-text)]' },
+    packed: { label: 'Dibungkus', tone: 'text-[var(--ui-warning-text)]' },
+    dispatched: { label: 'Dalam Penghantaran', tone: 'text-[var(--ui-accent-text)]' },
+    received: { label: 'Selesai Diterima', tone: 'text-[var(--ui-success-text)]' },
+    cancelled: { label: 'Dibatalkan', tone: 'text-[var(--ui-danger-text)]' },
   };
 
-  const current = statusLabels[fulfilmentStatus] || { label: fulfilmentStatus, color: 'bg-zinc-100 text-zinc-800' };
+  const current = statusLabels[fulfilmentStatus] ?? { label: fulfilmentStatus, tone: 'text-[var(--ui-muted)]' };
 
   return (
-    <div className="p-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-sm flex items-center justify-between font-sans">
+    <div className="flex items-center justify-between rounded-xl border border-[var(--ui-border)] bg-[var(--ui-surface)] p-3 text-[var(--ui-text)] shadow-[var(--ui-shadow)]">
       <div className="space-y-0.5">
-        <span className="font-mono text-xs font-bold text-zinc-800 dark:text-zinc-200">
+        <span className="font-mono text-xs font-bold text-[var(--ui-text)]">
           {orderId}
         </span>
-        <p className="text-xs text-zinc-500">Destinasi: {city}</p>
+        <p className="text-xs text-[var(--ui-muted)]">Destinasi: {city}</p>
       </div>
 
       <div className="flex items-center space-x-2">
-        <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${current.color}`}>
+        <span className={`rounded-full bg-[var(--ui-soft)] px-2 py-0.5 text-xs font-semibold ${current.tone}`}>
           {current.label}
         </span>
         {isTokenVerified && (
-          <span className="w-2 h-2 rounded-full bg-emerald-500" title="Token Kriptografi Sah" />
+          <span className="h-2 w-2 rounded-full bg-[var(--ui-success-text)]" title="Token Kriptografi Sah" />
         )}
       </div>
     </div>

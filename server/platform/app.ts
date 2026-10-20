@@ -38,9 +38,32 @@ import { FreeModelRouter, clientSafeErrorMessage } from './freeModelRouter';
 import { globalDomainTools, getActorCanonicalRole } from './domainTools';
 import { createOperationsBriefApp } from './mcp/operationsBrief';
 import { LocalHermesTransport } from '../automation/runtimeTransports';
+import { sessionCookieClearHeaders } from './sessionCookie';
+import { visionInferenceAvailability } from '../../shared/intelligence-availability';
+import { isLocalInspectorAllowed, LocalInspector, LocalRunRecorder } from './inspection/inspector';
+import { AguiThreadStore } from './aguiThreads';
+import { RiskService, createRiskRoutes } from './risk';
+import { RecoveryService, createRecoveryRoutes } from './recovery';
+import { PaymentCallbackService } from './paymentCallbacks';
+import { recordAssetConsent } from './dispatchConsent';
+import { createPaymentCallbackRoute, createPaymentReturnRoute } from './paymentCallbackRoutes';
+/**
+ * Nama event AG-UI sebagai literal. Pelayan TIDAK mengimport `@ag-ui/core`
+ * sebagai dependency runtime: ujian launcher boot pelayan dalam checkout
+ * sintetik yang hanya ada `server/`, `shared/` dan `scripts/dev.ts` (tiada
+ * `node_modules` sebenar). String ini ialah nama event yang sama seperti
+ * enum AG-UI, dan `AguiThreadStore` menyimpannya sebagai teks.
+ */
+const EventType = {
+  RUN_STARTED: 'RUN_STARTED',
+  RUN_FINISHED: 'RUN_FINISHED',
+  RUN_ERROR: 'RUN_ERROR',
+  TEXT_MESSAGE_CONTENT: 'TEXT_MESSAGE_CONTENT',
+  CUSTOM: 'CUSTOM',
+} as const;
+import type { AguiThreadEvent, AguiThreadRecord } from '../../shared/founder-intelligence-contracts';
 
 export interface PlatformAppOptions { googleIdentityVerifier?:GoogleIdentityVerifier; persistenceMode?:'local'|'supabase'; evidenceStorage?:EvidenceStorage; databasePath?:string; bootstrapToken?:string; origin?:string; allowedOrigins?:string[]; rateLimits?:{identityGlobal:number;identityAccount:number;actor:number}; automationOptions?:AutomationOptions; whatsappTransport?:WhatsAppTransport; adkAgent?:GoogleAdkAgent; freeModelRouter?:FreeModelRouter; backupScheduler?:BackupSchedulerOptions|boolean; log?:(entry:{requestId:string;code:string;status:number})=>void }
-const cookieClear='platform_session=; HttpOnly; SameSite=Strict; Path=/api/platform; Max-Age=0';
 
 /**
  * Keanggotaan dealer yang sah untuk bacaan terma dealer.
@@ -56,6 +79,15 @@ export function hasActiveDealerMembership(actor: Principal): boolean {
     (membership) => Boolean(membership.dealerOrgId) && membership.status === 'active'
   );
 }
+/**
+ * Hasil sebenar satu run copilot.
+ *
+ * Jenis ini diambil daripada kontrak sebenar `GoogleAdkAgent.processMessage`
+ * supaya apa-apa yang persisted ke thread sentiasa mengikut bentuk yang
+ *ombrang oleh server — bukan bentuk yang dijangka.
+ */
+type CopilotRunResult=Awaited<ReturnType<GoogleAdkAgent['processMessage']>>;
+
 export function createPlatformApp(options:PlatformAppOptions={}) {
   const store=new PlatformStore(options.databasePath??'var/lib/platform/platform.sqlite');
   const dbPath=options.databasePath??'var/lib/platform/platform.sqlite';
@@ -80,6 +112,36 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
   const legacyPilots=new LegacyPilotsService(store);
   const founderIntelligence=new FounderIntelligence(store,auth);
   const social=new SocialConnections(auth);
+  // BL-22 — inspector tempatan (EXT-01). Ia hanya hidup dalam proses ini:
+  // penunjuk run disimpan dalam memori sahaja dan tiada apa-apa ditulis ke
+  // luar. Snapshot yang dihasilkan sudah disegel (redacted) oleh modul.
+  const inspectorRecorder=new LocalRunRecorder();
+  const inspector=new LocalInspector(inspectorRecorder,{nodeEnv:process.env.NODE_ENV});
+  // BL-15 — storan thread AG-UI (CPK-02 separuh tempatan). Setiap thread
+  // dimiliki satu tenant dan satu pemilik; sejarah eventnya disimpan secara
+  // kanonikal supaya sambungan semula boleh replay tanpa jurang dan tanpa
+  // penduaan. Ia menggunakan store dan pengesahan yang SAMA seperti platform
+  // lain supaya sesi serta tenancy tidak pernah diteka daripada pelayar.
+  const aguiThreads=new AguiThreadStore({store,auth});
+  // PAY-01/PAY-02 (separuh tempatan) — callback pembekal dengan pengesahan
+  // HMAC `X-Signature` + idempotency `eventId`, dan laluan pulangan yang
+  // hanya MEMBACAK status yang tersimpan. Tiada rahsia lalai: jika
+  // `PLATFORM_PAYMENT_WEBHOOK_SECRET` tiada, laluan menjawab 503 dengan
+  // reason code — bukan menerima callback tanpa pengesahan.
+  const paymentCallbacks=new PaymentCallbackService(store,{secret:process.env.PLATFORM_PAYMENT_WEBHOOK_SECRET,loyalty});
+  const paymentCallbackRoute=createPaymentCallbackRoute({store,auth,service:paymentCallbacks});
+  const paymentReturnRoute=createPaymentReturnRoute({store,auth,service:paymentCallbacks});
+  // REF-01 (risk engine) + DR-01 (pengukuran RTO). Semua keputusan ialah
+  // reason code yang boleh dibaca mesin; tiada skor angka, tiada "")
+  const risk=new RiskService(store,auth);
+  const riskRoutes=createRiskRoutes({service:risk});
+  const recovery=new RecoveryService(store,auth,{
+    databasePath:dbPath,
+    evidenceDirectory:join(dbDir,'evidence'),
+    workDirectory:join(dbDir,'recovery-drills'),
+    rpo:()=>{const r=backupScheduler.checkRpoStatus();return {compliant:r.compliant,elapsedSeconds:r.elapsedSeconds,lastBackupAt:r.lastBackupAt,reasonCode:r.reasonCode};},
+  });
+  const recoveryRoutes=createRecoveryRoutes({service:recovery});
   const operationsBrief=createOperationsBriefApp(store);
   // Transport Hermes tempatan hanya boleh mengklaim artifak jika ringkasan
   // benar-benar disimpan dalam store kanonikal platform.
@@ -88,7 +150,24 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
   const adkAgent=options.adkAgent??new GoogleAdkAgent(store,auth,commerce,dealers,loyalty,{router:freeModelRouter});
   const origin=options.origin??'http://localhost:3000';
   const allowedOrigins=options.allowedOrigins??[origin];
-  function json(data:unknown,status=200,extra:Record<string,string>={}) {return new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer',...extra}});}
+  /**
+   * JSON response dengan header tambahan.
+   *
+   * Nilai `string[]` ditambah satu per satu dengan `headers.append()` supaya
+   * beberapa header `Set-Cookie` kekal sebagai nilai BERASINGAN (sesi +
+   * cookie legacy yang dikosongkan), bukan satu nilai bercomma yang dipecah
+   * oleh pelayar.
+   */
+  function json(data:unknown,status=200,extra:Record<string,string|string[]>={}) {
+    const headers=new Headers({'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer'});
+    for(const [name,value] of Object.entries(extra)){
+      if(Array.isArray(value)){for(const entry of value)headers.append(name,entry);continue;}
+      headers.set(name,value);
+    }
+    return new Response(JSON.stringify(data),{status,headers});
+  }
+  /** Menambah atribut `Secure` pada header cookie apabila origin ialah HTTPS. */
+  function secureCookie(header:string,secure:boolean){return secure&&!/(^|;\s*)Secure(\s|;|$)/.test(header)?`${header}; Secure`:header;}
   function collection(data:unknown[],url:URL) {
     const limitValue=url.searchParams.get('limit')??'100',offsetValue=url.searchParams.get('offset')??'0';
     if(!/^\d+$/.test(limitValue)||!/^\d+$/.test(offsetValue))fail('INVALID_PAGINATION');
@@ -97,6 +176,111 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
     return json({ok:true,data:data.slice(offset,offset+limit)},200,{'X-Total-Count':String(data.length),'X-Next-Offset':offset+limit<data.length?String(offset+limit):''});
   }
   function overview(actor:Principal):PlatformOverview {auth.founder(actor);const orders=commerce.orders(actor);return {orders:orders.length,orderValueSen:orders.filter(o=>o.fulfilmentStatus!=='cancelled').reduce((sum,o)=>sum+o.amountSen,0),verifiedPaymentSen:orders.reduce((sum,o)=>sum+o.paidAmountSen-o.refundAmountSen,0),fulfilledOrders:orders.filter(o=>o.fulfilmentStatus==='received').length,openCases:work.cases(actor).filter(c=>c.status!=='resolved').length,openTasks:work.tasks(actor).filter(t=>t.status!=='done').length,pendingDealerApplications:store.all<{status:string}>('dealer_applications').filter(a=>a.status==='pending').length,stockAvailable:commerce.catalogue().reduce((sum,p)=>sum+p.availableQuantity,0),generatedAt:now(),source:'local_authoritative',empty:orders.length===0};}
+  /* ------------------------------------------------------------------------- *
+   * BL-15 — kitaran hidup thread AG-UI (sejarah kanonikal + replay).
+   * ------------------------------------------------------------------------- */
+
+  /**
+   * Menyelesaikan thread bagi satu run copilot.
+   *
+   * Thread yang diminta tetapi belum wujud ⇒ thread baharu milik pemohon.
+   * Thread yang wujud ⇒ sesi, tenancy DAN pemilikan disahkan semula sebelum
+   * satu event pun ditulis; thread tenant atau pemilik lain ditolak dengan
+   * ralat bertyped (`THREAD_TENANT_FORBIDDEN` / `THREAD_OWNER_FORBIDDEN`)
+   * supaya sejarah sesi lain tidak pernah bocor.
+   */
+  function resolveChatThread(actor:Principal,body:Record<string,unknown>):AguiThreadRecord {
+    const requested=typeof body.threadId==='string'?body.threadId.trim():'';
+    if(!requested)return aguiThreads.createThread(actor);
+    if(requested.length>120)fail('INVALID_THREAD_ID',400,'ID thread tidak sah.');
+    const existing=aguiThreads.getThread(requested);
+    if(!existing)return aguiThreads.createThread(actor,requested);
+    aguiThreads.requireOwned(actor,requested);
+    return existing;
+  }
+
+  /**
+   * Id resit SEBENAR bagi satu tindakan HITL, jika ada.
+   *
+   * Tindakan HITL yang masih `pending_approval` tidak membawa resit: ia adalah
+   * cadangan kepada pengasas, bukan perubahan keadaan. Hanya tindakan yang
+   * sudah dieksekusi (dengan `executionReceipt`) atau yang membawa `receiptId`
+   * sebenar di bawah dikira `stateChanging`.
+   */
+  function hitlReceiptId(hitl:unknown):string|undefined {
+    if(!hitl||typeof hitl!=='object')return undefined;
+    const record=hitl as {receiptId?:unknown;executionReceipt?:{receiptId?:unknown}|null};
+    if(typeof record.receiptId==='string'&&record.receiptId.trim())return record.receiptId;
+    const nested=record.executionReceipt;
+    if(nested&&typeof nested.receiptId==='string'&&nested.receiptId.trim())return nested.receiptId;
+    return undefined;
+  }
+
+  /**
+   * Menyimpan sejarah thread bagi satu run copilot.
+   *
+   * Peristiwa disimpan dengan bentuk `{name,data}`: `name` ialah nama bingkai
+   * SSE yang dihantar (`start`/`a2ui`/`gen_ui`/`hitl_prompt`/`text_delta`/
+   * `done`/`error`) dan `data` ialah muatan bingkai tersebut. Bentuk ini
+   * menjadikan replay sebagai tepat semula bait asal, bukan tekaan.
+   *
+   * Peristiwa `hitl_prompt` hanya bertanda `stateChanging` apabila resitnya
+   * benar-benar wujud; `appendEvent` menolak (400 `RECEIPT_ID_REQUIRED`)
+   * mana-maka peristiwa yang mengubah keadaan tanpa resit.
+   */
+  function persistChatEvents(actor:Principal,thread:AguiThreadRecord,startFrame:Record<string,unknown>,result:CopilotRunResult|undefined,failure:{error:unknown}|undefined):AguiThreadEvent[] {
+    const persisted:AguiThreadEvent[]=[];
+    const append=(type:string,event:Record<string,unknown>,stateChanging=false,receiptId?:string)=>{
+      persisted.push(aguiThreads.appendEvent(actor,{threadId:thread.id,type,event,stateChanging,...(receiptId?{receiptId}:{})}));
+    };
+    append(EventType.RUN_STARTED,{name:'start',data:startFrame});
+    if(result?.a2ui)append(EventType.CUSTOM,{name:'a2ui',data:result.a2ui});
+    if(result?.generativeUi)append(EventType.CUSTOM,{name:'gen_ui',data:result.generativeUi});
+    if(result?.hitlAction){
+      const receiptId=hitlReceiptId(result.hitlAction);
+      append(EventType.CUSTOM,{name:'hitl_prompt',data:result.hitlAction},Boolean(receiptId),receiptId);
+    }
+    if(result)append(EventType.TEXT_MESSAGE_CONTENT,{name:'text_delta',data:{content:result.reply}});
+    if(failure){
+      const code=typeof (failure.error as {code?:unknown})?.code==='string'?(failure.error as {code:string}).code:'COPILOT_RUNTIME_ERROR';
+      const message=failure.error instanceof DomainError?failure.error.message:clientSafeErrorMessage(code);
+      append(EventType.RUN_ERROR,{name:'error',data:{code,message}});
+    }else if(result){
+      append(EventType.RUN_FINISHED,{name:'done',data:result});
+    }
+    return persisted;
+  }
+
+  /**
+   * Satu bait SSE daripada satu peristiwa thread yang disimpan.
+   *
+   * Rangka yang digunakan adalah sama seperti bingkai chat: `event: <nama>\ndata:
+   * <json>\n\n`.
+   */
+  function sseFrameFor(event:AguiThreadEvent):string {
+    const payload=event.event as {name?:unknown;data?:unknown};
+    const name=typeof payload.name==='string'?payload.name:'unknown';
+    return `event: ${name}\ndata: ${JSON.stringify(payload.data??{})}\n\n`;
+  }
+
+  /**
+   * BL-22 — run sebenar dicatat ke inspector tempatan.
+   *
+   * Recorder tinggal dalam memori sahaja; snapshot dev tidak lagi kosong
+   * tanpa jujur, dan ia tidak pernah ditulis ke luar.
+   */
+  function recordInspectorRun(threadId:string,persisted:AguiThreadEvent[],durationMs:number,result:CopilotRunResult|undefined,failure:{error:unknown}|undefined):void {
+    for(const event of persisted)inspectorRecorder.recordEvent(threadId);
+    inspectorRecorder.recordToolCall(threadId,{toolName:'copilot.chat',durationMs,outcome:failure?'error':'success'});
+    inspectorRecorder.recordState(threadId,'threadId',threadId);
+    inspectorRecorder.recordState(threadId,'eventCount',persisted.length);
+    if(result){
+      inspectorRecorder.recordState(threadId,'providerId',result.providerUsed);
+      inspectorRecorder.recordState(threadId,'modelUsed',result.modelUsed);
+      inspectorRecorder.recordState(threadId,'providerStatus',result.providerStatus);
+    }
+    if(result?.hitlAction)inspectorRecorder.recordState(threadId,'hitlActionId',result.hitlAction.id);
+  }
   function postRoute(actor:Principal,path:string,input:unknown,key:string|null,url:URL) {
     if(!['/tasks','/documents','/calendar','/campaigns','/cases'].includes(path))return route(actor,'POST',path,input,key,url);
     const body=object(input);
@@ -242,6 +426,10 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
       if(path==='/auth/logout'){auth.logout(actor);return {loggedOut:true};}
       if(path==='/onboarding/validate'){auth.founder(actor);return onboarding.validate(object(input) as any);}
       if(path==='/onboarding/commit')return onboarding.commit(actor,object(input) as any);
+      // PD-01 — rekod kebenaran aset BERSTRUKTUR. Tanpa laluan ini, consent
+      // tidak boleh diberi dan gate `ASSET_CONSENT_NOT_GRANTED` akan menutup
+      // semua penghantaran secara kekal.
+      if(path==='/campaigns/consent')return recordAssetConsent(store,auth,actor,input);
       if(path==='/migration/dry-run'){auth.founder(actor);const body=object(input);return migration.dryRun(list(body.records,500));}
       if(path==='/migration/import'){const body=object(input);return migration.executeImport(actor,list(body.records,500));}
       if(segments[0]==='migration'&&segments[1]==='rollback'&&segments[2])return migration.rollback(actor,segments[2]);
@@ -383,10 +571,17 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
     adkAgent, freeModelRouter, backupScheduler,
     async fetch(request:Request):Promise<Response> {
       const requestId=randomUUID();
+      // BL-15 — id thread bagi respons chat, supaya walaupun ralat, pelayar
+      // tahu thread mana yang digunakan (dan boleh reconnect).
+      let chatThreadId:string|undefined;
       try {
         const url=new URL(request.url),path=url.pathname.replace(/^\/api\/platform/,'');
         if(!url.pathname.startsWith('/api/platform/')&&!url.pathname.startsWith('/v2')&&!url.pathname.startsWith('/copilotkit/v2'))fail('NOT_FOUND',404);
         if(!['GET','POST'].includes(request.method))fail('METHOD_NOT_ALLOWED',405);
+        // BL-22 — inspector tempatan hanya dibenarkan pada mesin pembangunan
+        // tempatan. Dalam produksi ia TIDAK didedahkan langsung (404), dan
+        // semakan ini berlaku SEBELUM sesi atau sesi_authority dikira.
+        if(request.method==='GET'&&path==='/dev/inspector'&&!isLocalInspectorAllowed({nodeEnv:process.env.NODE_ENV}))fail('INSPECTOR_NOT_AVAILABLE_IN_PRODUCTION',404,'Inspector tempatan tidak tersedia dalam persekitaran produksi.');
         // Provider callbacks use their signature as authority, never browser cookies or CSRF.
         if(request.method==='POST'&&path==='/whatsapp/webhook'){
           store.rate('whatsapp-webhook',120);
@@ -395,6 +590,12 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
           let rawBody:string;try{rawBody=new TextDecoder('utf-8',{fatal:true}).decode(bytes);}catch{fail('INVALID_JSON',400);}
           return json({ok:true,data:store.atomic(()=>whatsapp.processWebhook(request.headers.get('x-hub-signature-256'),rawBody))});
         }
+        // PAY-01/PAY-02 — laluan pembekal pembayaran. Authority ialah tandatangan
+        // HMAC dalam badan, bukan cookie pelayar dan bukan token CSRF, jadi
+        // ia diletakkan SEBELUM semakan asal/CSRF. Laluan pulangan pula
+        // hanya membaca status yang tersimpan.
+        if(request.method==='POST'&&path==='/payments/callback')return paymentCallbackRoute(request);
+        if(request.method==='GET'&&path==='/payments/return')return paymentReturnRoute(request);
         if(request.method==='POST'&&!allowedOrigins.includes(request.headers.get('origin')??''))fail('ORIGIN_DENIED',403,'Asal permintaan tidak dibenarkan.');
         if(request.method==='POST'&&path==='/evidence/upload'){const actor=auth.resolve(request);store.rate(`upload:${actor.user.id}`,12);auth.csrf(actor,request.headers.get('x-csrf-token'));if(runtimeControls.current().activeRelease==='platform-local-readonly-v1')fail('RELEASE_READ_ONLY',409);if(!request.headers.get('content-type')?.startsWith('multipart/form-data;'))fail('CONTENT_TYPE',415);return json({ok:true,data:await evidenceFiles.upload(actor,request)});}
         let input:unknown=undefined;
@@ -430,17 +631,57 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
           if(authenticated)fail('AUTHENTICATED_LOGIN_REQUIRES_LOGOUT',409,'Log keluar dahulu sebelum menukar akaun.');
           const identity=await options.googleIdentityVerifier(text(body.accessToken,'Token identiti',16000));
           const result=await auth.authenticateGoogle(identity);
-          return json({ok:true,data:result.data},200,{'Set-Cookie':result.cookie+(url.protocol==='https:'?'; Secure':'')});
+          // Putaran sesi: mana-mana sesi LAIN yang dikemukakan oleh pelayar
+          // yang sama dicabut, supaya cookie legacy yang tertinggal tidak
+          // boleh menaungi sesi baharu ini.
+          auth.revokePresentedSessions(result.actor,request);
+          return json({ok:true,data:result.data},200,{'Set-Cookie':result.cookies.map(header=>secureCookie(header,url.protocol==='https:'))});
         }
         if(request.method==='POST'&&['/auth/signup','/auth/login','/auth/bootstrap'].includes(path)) {
           store.rate('identity-global',options.rateLimits?.identityGlobal??30);const authInput=object(input);if(typeof authInput.email==='string')store.rate(`identity:${authInput.email.toLowerCase()}`,options.rateLimits?.identityAccount??6);
           const result=await auth.authenticate(path.slice(6) as 'signup'|'login'|'bootstrap',input);
-          return json({ok:true,data:result.data},200,{'Set-Cookie':result.cookie+(url.protocol==='https:'?'; Secure':'')});
+          // Putaran sesi (lihat handler Google di atas): sesi lain yang
+          // dikemukakan oleh pelayar yang sama dicabut selepas log masuk.
+          auth.revokePresentedSessions(result.actor,request);
+          return json({ok:true,data:result.data},200,{'Set-Cookie':result.cookies.map(header=>secureCookie(header,url.protocol==='https:'))});
         }
         const actor=auth.resolve(request);store.rate(`actor:${actor.user.id}`,options.rateLimits?.actor??180);
+        // BL-22 — inspector tempatan memerlukan sesi server yang sah DAN
+        // kebenaran pengasas/pembangun. Sesi pelanggan ditolak 403.
+        if(request.method==='GET'&&path==='/dev/inspector'){
+          if(!auth.has(actor,'founder')&&!auth.has(actor,'developer'))fail('FORBIDDEN',403,'Akses inspector tidak dibenarkan.');
+          return json({ok:true,data:inspector.snapshot()});
+        }
+        // BL-15 — replay sejarah thread AG-UI. `resume()` mengesahkan semula
+        // sesi DAN tenancy/kepemilikan thread sebelum satu event pun dihantar,
+        // jadi thread tenant atau pemilik lain menerima 403 bertyped
+        // (`THREAD_TENANT_FORBIDDEN` / `THREAD_OWNER_FORBIDDEN`) dan sejarahnya
+        // tidak pernah bocor. `?after=<eventId>` hanya memutar semula peristiwa
+        // selepas kursor tersebut.
+        if(request.method==='GET'&&/^\/copilot\/threads\/[^/]+\/events$/.test(path)){
+          const threadId=path.split('/')[3];
+          const after=url.searchParams.get('after');
+          const resumed=aguiThreads.resume(actor,{threadId,afterEventId:after??undefined});
+          return new Response(resumed.events.map(sseFrameFor).join(''),{
+            status:200,
+            headers:{
+              'Content-Type':'text/event-stream; charset=utf-8',
+              'Cache-Control':'no-cache, no-transform',
+              'Connection':'keep-alive',
+              'X-Accel-Buffering':'no',
+              'X-Thread-Id':resumed.threadId,
+              'X-Last-Event-Id':resumed.lastEventId??'',
+              'X-Receipt-Count':String(resumed.receiptCount),
+            }
+          });
+        }
         if(request.method==='GET'&&/^\/evidence\/[^/]+\/file$/.test(path))return await evidenceFiles.download(actor,path.split('/')[2],url);
         if(request.method==='GET'&&/^\/exports\/[^/]+\/file$/.test(path))return await evidenceFiles.downloadExport(actor,path.split('/')[2],url);
         if(request.method==='POST')auth.csrf(actor,request.headers.get('x-csrf-token'));
+        // Log out mencabut SEMUA sesi yang dikemukakan pelayar yang sama
+        // (termasuk sesi di dalam cookie legacy `Path=/api/platform`),
+        // supaya tiada sesi hidup tinggal selepas log keluar.
+        if(request.method==='POST'&&path==='/auth/logout')auth.revokePresentedSessions(actor,request);
         if(request.method==='POST'&&runtimeControls.current().activeRelease==='platform-local-readonly-v1'&&!['/runtime-controls','/auth/logout'].includes(path))fail('RELEASE_READ_ONLY',409,'Release semasa hanya membenarkan bacaan. Data kekal tersimpan.');
         if(request.method==='POST'&&path.startsWith('/legacy-ai/'))return json(await generateLegacyContent(auth,actor,path,input));
         if(request.method==='POST'&&path==='/research'){
@@ -485,9 +726,28 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
           auth.founder(actor);
           return json({ok:true,data:await backupScheduler.runBackup('founder_manual')});
         }
+        // REF-01 — risk engine (keputusan, cabaran OTP, rayuan). DR-01 —
+        // pengukuran RTO (latihan pemulihan). Kedua-duanya di-prefix supaya
+        // ia tidak berebut laluan dengan capability yang lain.
+        if(path.startsWith('/risk')||path.startsWith('/recovery')){
+          const handled=await (path.startsWith('/risk')?riskRoutes:recoveryRoutes).handle(actor,request.method,path,input);
+          if(handled!==undefined)return json({ok:true,data:handled});
+        }
         if(request.method==='POST'&&(path==='/copilot/chat'||path==='/copilot/v2'||path==='/v2'||path==='/copilotkit/v2')){
           auth.operational(actor);
           const b=object(input);
+          // BL-21 / EXT-07 — lampiran tidak pernah menjadi bukti vision.
+          // Rujukan lampiran diselesaikan dahulu oleh store (dicabut ⇒ 409
+          // `ATTACHMENT_REVOKED`, di luar akses ⇒ 403
+          // `ATTACHMENT_PERMISSION_DENIED`). Vision pula tiada model layak
+          // dikonfigurasi, jadi mana-mana run yang membawa lampiran ditolak
+          // secara jujur — tiada kejayaan reka, tiada hash reka.
+          const attachmentIds=Array.isArray(b.attachmentIds)?b.attachmentIds.filter((value):value is string=>typeof value==='string'):[];
+          const attachments=attachmentIds.length?evidenceFiles.attachmentReferences(actor,attachmentIds):[];
+          const vision=visionInferenceAvailability();
+          if(attachments.length&&!vision.available){
+            return json({ok:false,code:'VISION_INFERENCE_UNAVAILABLE',reasonCode:vision.reasonCode,requestId,message:vision.reason,data:{reasonCode:vision.reasonCode,reason:vision.reason,attachments,vision:{available:false,reasonCode:vision.reasonCode,reason:vision.reason}}},409);
+          }
           const rawMessage = typeof b.message === 'string'
             ? b.message
             : (Array.isArray(b.messages) && b.messages.length > 0
@@ -499,23 +759,49 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
             : (Array.isArray(b.messages) ? b.messages.slice(0, -1) : [])) as any[];
           const streamRequested=request.headers.get('accept')?.includes('text/event-stream')||b.stream===true;
 
+          // BL-15 — kitaran hidup thread AG-UI. Thread milik tenant atau
+          // pemilik lain ditolak dengan ralat bertyped SEBELUM satu event
+          // pun ditulis ke dalamnya.
+          const activeThread=resolveChatThread(actor,b);
+          chatThreadId=activeThread.id;
+
+          // Bingkai `start` diambil sebelum panggilan model supaya susunan
+          // bait SSE kekal sama seperti sebelum BL-15.
+          const startFrame={activeProvider:freeModelRouter.getActiveProvider().id,model:freeModelRouter.getActiveProvider().defaultModel,runtime:'v2',schemaVersion:'a2ui.v1'};
+
+          // Panggilan model DIKELUARKAN daripada badan SSE. Setiap peristiwa
+          // mesti disimpan SEBELUM Response dibina: pengendali durable awan
+          // mengkomit snapshot sebaik sahaja `app.fetch` kembali, jadi peristiwa
+          // yang di-append di dalam `start()` akan hilang. Akibatnya bait
+          // pertama kini menunggu latensi model (trade-off yang diterima).
+          const startedAt=Date.now();
+          let result:CopilotRunResult|undefined;
+          let failure:{error:unknown}|undefined;
+          try{result=await adkAgent.processMessage(actor,messageText,conversationHistory);}
+          catch(error){failure={error};}
+          const durationMs=Date.now()-startedAt;
+
+          // Sejarah thread disimpan sebelum Response dibina.
+          const persisted=persistChatEvents(actor,activeThread,startFrame,result,failure);
+          recordInspectorRun(activeThread.id,persisted,durationMs,result,failure);
+
           if(streamRequested){
             const encoder=new TextEncoder();
             const stream=new ReadableStream({
-              async start(controller){
+              start(controller){
                 try{
-                  controller.enqueue(encoder.encode(`event: start\ndata: ${JSON.stringify({activeProvider:freeModelRouter.getActiveProvider().id,model:freeModelRouter.getActiveProvider().defaultModel,runtime:'v2',schemaVersion:'a2ui.v1'})}\n\n`));
-                  const result=await adkAgent.processMessage(actor,messageText,conversationHistory);
-                  if(result.a2ui){
-                    controller.enqueue(encoder.encode(`event: a2ui\ndata: ${JSON.stringify(result.a2ui)}\n\n`));
+                  controller.enqueue(encoder.encode(`event: start\ndata: ${JSON.stringify(startFrame)}\n\n`));
+                  if(failure)throw failure.error;
+                  if(result!.a2ui){
+                    controller.enqueue(encoder.encode(`event: a2ui\ndata: ${JSON.stringify(result!.a2ui)}\n\n`));
                   }
-                  if(result.generativeUi){
-                    controller.enqueue(encoder.encode(`event: gen_ui\ndata: ${JSON.stringify(result.generativeUi)}\n\n`));
+                  if(result!.generativeUi){
+                    controller.enqueue(encoder.encode(`event: gen_ui\ndata: ${JSON.stringify(result!.generativeUi)}\n\n`));
                   }
-                  if(result.hitlAction){
-                    controller.enqueue(encoder.encode(`event: hitl_prompt\ndata: ${JSON.stringify(result.hitlAction)}\n\n`));
+                  if(result!.hitlAction){
+                    controller.enqueue(encoder.encode(`event: hitl_prompt\ndata: ${JSON.stringify(result!.hitlAction)}\n\n`));
                   }
-                  const words=result.reply.split(/(\s+)/);
+                  const words=result!.reply.split(/(\s+)/);
                   for(const word of words){
                     if(word){
                       controller.enqueue(encoder.encode(`event: text_delta\ndata: ${JSON.stringify({content:word})}\n\n`));
@@ -541,20 +827,26 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
                 'Cache-Control':'no-cache, no-transform',
                 'Connection':'keep-alive',
                 'X-Accel-Buffering':'no',
+                'X-Thread-Id':activeThread.id,
               }
             });
           }
 
-          const result=await adkAgent.processMessage(actor,messageText,conversationHistory);
-          return json({ok:true,data:result});
+          // Laluan JSON: ralat kekal sebagai ralat JSON (bukan bingkai SSE).
+          if(failure)throw failure.error;
+          return json({ok:true,data:result},200,{'X-Thread-Id':activeThread.id});
         }
         const data=request.method==='POST'?store.atomic(()=>postRoute(actor,path,input,request.headers.get('idempotency-key'),url)):route(actor,request.method,path,input,null,url);
         if(Array.isArray(data))return collection(data,url);
-        return json({ok:true,data},200,path==='/auth/logout'?{'Set-Cookie':cookieClear}:{});
+        // Log out mengosongkan KEDUA-DUA skop cookie (semasa `Path=/` dan lama
+        // `Path=/api/platform`) dan mencabut setiap sesi yang dikemukakan.
+        return json({ok:true,data},200,path==='/auth/logout'?{'Set-Cookie':sessionCookieClearHeaders()}:{});
       } catch(error) {
         const domain=error instanceof DomainError?error:new DomainError('INTERNAL_ERROR',500,'Perkhidmatan tidak tersedia. Cuba semula.');
         try{options.log?.({requestId,code:domain.code,status:domain.status});}catch{console.warn('Platform redacted audit logging unavailable.');}
-        return json({ok:false,code:domain.code,requestId,message:domain.message},domain.status,domain.status===429?{'Retry-After':'60'}:{});
+        const extra:Record<string,string|string[]>=domain.status===429?{'Retry-After':'60'}:{};
+        if(chatThreadId)extra['X-Thread-Id']=chatThreadId;
+        return json({ok:false,code:domain.code,requestId,message:domain.message},domain.status,extra);
       }
     },
     close(){backupScheduler.stop();store.close();},

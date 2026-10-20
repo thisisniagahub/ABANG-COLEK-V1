@@ -11,6 +11,27 @@ function cleanup(path: string) {
   }
 }
 
+/** Kunci API provider yang mengawal sama ada router boleh memanggil provider. */
+const PROVIDER_KEYS = [
+  'GEMINI_API_KEY',
+  'OPENROUTER_API_KEY',
+  'NVIDIA_API_KEY',
+  'OPENCODE_ZEN_API_KEY',
+  'GROQ_API_KEY',
+] as const;
+
+function snapshotProviderEnv(): Record<string, string | undefined> {
+  return Object.fromEntries(PROVIDER_KEYS.map(key => [key, process.env[key]]));
+}
+
+function restoreProviderEnv(snapshot: Record<string, string | undefined>): void {
+  for (const key of PROVIDER_KEYS) {
+    const value = snapshot[key];
+    if (value === undefined) delete process.env[key];
+    else process.env[key] = value;
+  }
+}
+
 describe('Google ADK Agent & Free Model Router Integration', () => {
   test('FreeModelRouter manages providers and provides deterministic fallback', async () => {
     const router = new FreeModelRouter('gemini_free');
@@ -34,18 +55,91 @@ describe('Google ADK Agent & Free Model Router Integration', () => {
     // Test deterministic sovereign completion fallback.
     // Fallback TIDAK boleh dikreditkan kepada provider awam yang aktif:
     // jawapan dijana secara lokal oleh platform (blueprint:293).
-    const result = await router.complete([
-      { role: 'user', content: 'Aduan botol bocor penutup pecah' }
-    ]);
-    expect(result.providerId).toBe('local_rules');
-    expect(result.model).toBe('local-rules-deterministic');
-    expect(result.status).toBe('local_rules');
-    expect(result.reason).toBe('LOCAL_RULES_NO_PROVIDER_RESPONSE');
-    expect(result.content).toContain('botol kuah colek bocor');
-    expect(result.content).toContain('UNDETERMINED');
-    // Fallback tidak boleh mendakwa sebarang tindakan luaran berlaku.
-    expect(result.content).not.toContain('telah direkodkan');
-    expect(result.content).not.toContain('telah dimulakan');
+    //
+    // KONTRAK BARU (bajet run bounded): reason code bergantung pada SEBAB
+    // tiada jawapan provider. Di sini Tiada provider dikonfigurasi langsung
+    // (semua kunci API dibuang, mod offline dikekalkan), jadi sebabnya
+    // `LOCAL_RULES_NO_PROVIDER_RESPONSE` — bukan reason code bajet. Assertion
+    // lama (`toBe('LOCAL_RULES_NO_PROVIDER_RESPONSE')`) hanya benar pada mesin
+    // tanpa kunci; pada mesin ber-kunci ia bergantung pada sama ada failover
+    // sempat membakar bajet — itu puncanya assertion ini perlu dipecah.
+    const envSnapshot = snapshotProviderEnv();
+    const previousDisable = process.env.ABANGCOLEK_DISABLE_LIVE_PROVIDERS;
+    try {
+      for (const key of PROVIDER_KEYS) delete process.env[key];
+      process.env.ABANGCOLEK_DISABLE_LIVE_PROVIDERS = '1';
+      const result = await router.complete([
+        { role: 'user', content: 'Aduan botol bocor penutup pecah' }
+      ]);
+      expect(result.providerId).toBe('local_rules');
+      expect(result.model).toBe('local-rules-deterministic');
+      expect(result.status).toBe('local_rules');
+      expect(result.reason).toBe('LOCAL_RULES_NO_PROVIDER_RESPONSE');
+      // Tiada ReasonCode bajet: tiada apa-apa yang cuba memanggil provider.
+      expect(result.budgetBlockReason).toBeUndefined();
+      expect(result.budget?.providerCallsMade).toBe(0);
+      expect(result.budget?.maxProviderCalls).toBe(3);
+      expect(result.content).toContain('botol kuah colek bocor');
+      expect(result.content).toContain('UNDETERMINED');
+      // Fallback tidak boleh mendakwa sebarang tindakan luaran berlaku.
+      expect(result.content).not.toContain('telah direkodkan');
+      expect(result.content).not.toContain('telah dimulakan');
+    } finally {
+      restoreProviderEnv(envSnapshot);
+      if (previousDisable === undefined) delete process.env.ABANGCOLEK_DISABLE_LIVE_PROVIDERS;
+      else process.env.ABANGCOLEK_DISABLE_LIVE_PROVIDERS = previousDisable;
+    }
+  });
+
+  test('Bajet run yang dibekukan menghalang failover dan dilabel LOCAL_RULES_BUDGET_EXHAUSTED', async () => {
+    const envSnapshot = snapshotProviderEnv();
+    const previousDisable = process.env.ABANGCOLEK_DISABLE_LIVE_PROVIDERS;
+    const previousFetch = globalThis.fetch;
+    let providerCalls = 0;
+    try {
+      // Hanya dua provider dikonfigurasi; selebihnya tiada kunci, jadi senarai
+      // calon yang dicuba ialah urutan ketat free + satu calon lokal.
+      for (const key of PROVIDER_KEYS) delete process.env[key];
+      process.env.GEMINI_API_KEY = 'kunci-ujian';
+      process.env.OPENROUTER_API_KEY = 'kunci-ujian';
+      process.env.ABANGCOLEK_DISABLE_LIVE_PROVIDERS = '0';
+      // Jaringan disekat pada sempadan: router tidak pernah memanggil provider
+      // sebenar, dan tiada kuota free tier produksi dimakan.
+      (globalThis as { fetch: typeof fetch }).fetch = (async () => {
+        providerCalls += 1;
+        throw new Error('PROVIDER_ENDPOINT_UNREACHABLE');
+      }) as unknown as typeof fetch;
+
+      const router = new FreeModelRouter('gemini_free');
+      const result = await router.complete([
+        { role: 'user', content: 'Aduan botol bocor penutup pecah' }
+      ]);
+
+      // Had bajet: maksimum 3 panggilan provider bagi satu run, walaupun
+      // failover cuba berlanjut selepas setiap kegagalan.
+      expect(providerCalls).toBe(3);
+      expect(result.budget?.maxProviderCalls).toBe(3);
+      expect(result.budget?.providerCallsMade).toBe(3);
+      expect(result.budget?.deadlineMs).toBe(30000);
+
+      // Reason code baharu: bajet yang nyata menghalang failover.
+      expect(result.reason).toBe('LOCAL_RULES_BUDGET_EXHAUSTED');
+      expect(result.reason).not.toBe('LOCAL_RULES_NO_PROVIDER_RESPONSE');
+      expect(result.budgetBlockReason).toBe('MODEL_BUDGET_EXCEEDED');
+
+      // Label kekal jujur: jawapan dijana lokal, BUKAN dikreditkan ke model awam.
+      expect(result.providerId).toBe('local_rules');
+      expect(result.model).toBe('local-rules-deterministic');
+      expect(result.status).toBe('local_rules');
+      expect(result.content).toContain('UNDETERMINED');
+      expect(result.content).not.toContain('telah direkodkan');
+      expect(result.content).not.toContain('telah dimulakan');
+    } finally {
+      (globalThis as { fetch: typeof fetch }).fetch = previousFetch;
+      restoreProviderEnv(envSnapshot);
+      if (previousDisable === undefined) delete process.env.ABANGCOLEK_DISABLE_LIVE_PROVIDERS;
+      else process.env.ABANGCOLEK_DISABLE_LIVE_PROVIDERS = previousDisable;
+    }
   });
 
   test('HTTP Platform API: Copilot providers, active switching, and validation', async () => {

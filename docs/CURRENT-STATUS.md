@@ -2,13 +2,22 @@
 
 Diselaraskan berdasarkan receipt bertarikh **20 Oktober 2026**. Dokumen ini ialah indeks fakta pelaksanaan semasa; blueprint v2.4 kekal kontrak sasaran. Dokumen ini tidak mengaktifkan fungsi atau menutup acceptance melalui penulisan sahaja.
 
+## Pakej sintesis & backlog — 21 Oktober 2026
+
+| Dokumen | Kegunaan | Status |
+|---|---|---|
+| [Sintesis chat log](../reports/chat-log-synthesis-20261021.md) | Rekonstruksi kerja 18–21 Okt 2026 daripada `kilo.db` (127 sessions): kronologi, claim vs verified, 9 subagent mati pada had step | analisis fakta |
+| [Backlog tersusun](../reports/open-task-backlog-20261021.md) | 60 item belum siap (W0 evidence → W1 core runtime → W2 domain → W3 closure → W4 bina baharu + gate pengguna), dependency-ordered dengan owner lane dan Definition of Done | plan kerja |
+
+Nota: seksyen di bawah masihsnapshot `60311aa`; working tree kini `6c5b16e` dengan satu fail belum commit (`tests/playwright.config.ts`). Refresh dokumen ini ialah item **BL-11** dalam backlog.
+
 ## Authority dan lokasi kerja
 
 | Lane | Identiti | Makna |
 |---|---|---|
-| Projek asal | `D:/ABANGCOLEK-PLATFORM`; `integrate/blueprint-v23` pada `60311aa` dengan perubahan belum commit | Source integrasi asal dipelihara; tidak sama dengan main |
-| Pelaksana semasa | Codex inline dalam `D:/ABANGCOLEK-WORKTREES/codex-completion-20261020`, branch `work/codex-completion-20261020` | Calon pembetulan dan QA terasing; belum release keseluruhan |
-| Release | `main` / `origin/main`: `18c69b32deb7acbd5134da6dea548823a041a614` | Sebelas fail pembetulan konfigurasi/editor TypeScript dan regression checks sahaja |
+| Projek asal | `D:/ABANGCOLEK-PLATFORM`; `integrate/blueprint-v23` pada `6c5b16e` (working tree: `tests/playwright.config.ts` belum commit + 2 report baru) | Source integrasi asal dipelihara; tidak sama dengan main |
+| Route integrasi | `main` / `origin/main`: `18c69b3deb7acbd5134da6dea548823a041a614` | Patch release kecil sahaja (11 fail konfigurasi/editor). `integrate/blueprint-v23` berbeza daripada `main` sebanyak **707 fail (+117,606 / −2,867)** — bulk integrasi **belum** ada dalam `main` |
+| Candidate lane | `D:/ABANGCOLEK-WORKTREES/codex-completion-20261020`, branch `work/codex-completion-20261020` | **290 fail berubah belum commit** pada 21 Okt 12:31 — jangan `git add -A` di situ; worktree itu dirty dan bercampur |
 
 AGY, Kilo, Copilot CLI dan Hermes bukan executor aktif untuk sambungan ini. Pengguna menghentikan background implementation agents. Jangan melancarkan swarm atau sesi implementation luar daripada prompt lama. Bounded read-only review selepas diff stabil dibenarkan untuk semakan; ia bukan pengaktifan semula implementer. Extension backend `kilo serve` pernah respawn; jangan mendakwa semua proses latar telah hilang tanpa pemeriksaan baharu.
 
@@ -76,8 +85,8 @@ Gap berikut ialah teks rekod bertarikh di atas; ia bukan diagnosis live baharu b
 
 | ID | Status snapshot | Baki requirement / gate yang direkod |
 |---|---|---|
-| CPK-01 | blocked_external | Gemini free tier HTTP 429 "Quota exceeded ... limit: 20, model: gemini-3.6-flash. Please retry in 19h3m41s"; OpenRouter nvidia/nemotron-3-super-120b-a12b:free HTTP 404 "Function not found for account" |
-| CPK-02 | implemented_unverified | The platform app.ts mount of the AG-UI thread store and the resume route are not implemented. |
+| CPK-01 | verified_local (integrationStage `live_verified`, 21 Okt 2026) | Tiada gap: bukti live sebenar — `gemini_free/gemini-3.6-flash` HTTP 200 (1440 ms), `gemini-3.5-flash-lite` HTTP 200 (999 ms), `openrouter/nvidia/nemotron-3-ultra-550b-a55b:free` HTTP 200 (6042 ms); actor gate, no-echo, bajet 3-panggilan/30s/token kekal. Rujukan: `reports/implementation/live-provider-evidence-20261021.json` |
+| CPK-02 | implemented_unverified | Thread store AG-UI sudah di-mount dalam `server/platform/app.ts` (21 Okt): `X-Thread-Id` pada setiap respons chat, `GET /api/platform/copilot/threads/:id/events` (SSE replay + `X-Last-Event-Id` + `X-Receipt-Count` + `?after=`), `requireOwned()` menolak thread tenant lain dengan reason code. Yang **belum** ada: assertion acceptance untuk semua itu (lanes tests belum tulis) — itu sebabnya baris ini belum `verified_local`. |
 | CPK-03 | blocked_external | The hosted Automatic Learning offering requires INTELLIGENCE_ACCOUNT_REQUIRED (CopilotKit Intelligence account + terms). |
 | CPK-04 | implemented_unverified | The startup-loaded versioned declarative surface catalog and the AG-UI -> renderer middleware path are not implemented. |
 | CPK-05 | implemented_unverified | The versioned surface catalog, the depth/cyclic-tree limits and the AG-UI middleware path are not implemented. |
@@ -111,15 +120,17 @@ Gap berikut ialah teks rekod bertarikh di atas; ia bukan diagnosis live baharu b
 | REF-01 | not_run | No risk engine, no OTP, no device/velocity/age signals, no reason codes, no appeal path. |
 | SEC-01 | implemented_unverified | No revocation path, and the expiry is creation-time only rather than handover-based. |
 | DR-01 | implemented_unverified | RTO is never measured (no 30-minute drill, no timing assertion) and there is no production drill or key-recovery evidence. |
-| AI-01 | implemented_unverified | PROVIDER_QUOTA_EXHAUSTED and the dead-candidate skip were still in flight at the time of this audit. |
+| AI-01 | verified_local (integrationStage `live_verified`, 21 Okt 2026) | Dead-candidate skip kini terbukti dengan HTTP 404 LIVE (`nvidia/nemotron-3-super-120b-a12b:free` ⇒ `PROVIDER_MODEL_NOT_FOUND`, state `unusable`, fallback `local_rules` yang jujur) dan jawapan live dari 4 calon. Branch `PROVIDER_QUOTA_EXHAUSTED` (429) kekal unit-proven sahaja — jangan burn kuota 20/hari untuk membuktikannya. |
 | AI-02 | implemented_unverified | The provenance guard is static source analysis, not a runtime proof, and the guard test was still red at the time of the audit. |
 | AI-03 | implemented_unverified | No unknown_outcome state when the outcome of an execution cannot be determined. |
 | PD-01 | implemented_unverified | No opt-out gate at dispatch (publish is blocked outright, so no dispatch path exists to gate) and the asset consent field is still free text. |
 | REL-01 | implemented_unverified | No deployment receipt: no preview/production artifact id, no deployment URL, and the Playwright browser suite has never been run against a live server. |
 | EXT-01 | implemented_unverified | The dev-only inspector route is not mounted in the platform app. |
 | EXT-02 | blocked_external | Hosted User Memories requires INTELLIGENCE_ACCOUNT_AND_TERMS_REQUIRED. |
+| EXT-03 | blocked_external | Hosted activation blocked: ACTIVATION_EVIDENCE_MISSING. The LOCAL telemetry collector is verified (seed removed, prohibited fields absent, allowlist, opt-out, delete, single write path); the offering is not activated. |
 | EXT-04 | blocked_external | Live Slack/Teams requires CHANNEL_PROVIDER_ACCOUNT_REQUIRED (provider account, app, signature, permission). |
 | EXT-05 | blocked_external | The browser-side MCP client API and the live own-app registration are not available in this environment. |
+| EXT-06 | blocked_external | Hosted activation blocked: ACTIVATION_EVIDENCE_MISSING. The LOCAL voice capability is verified (mic permission indicator, one-click revoke, shared run identity, untrusted transcript, processing-location disclosure); the offering is not activated. |
 | EXT-07 | implemented_unverified | The copilot route does not yet pass attachmentIds through, and there is no vision inference. |
 
 ## Scope alignment Markdown

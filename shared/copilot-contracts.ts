@@ -93,6 +93,8 @@ export interface A2UIFixedSchema<TProps = Record<string, any>> {
 // ============================================================================
 // Komponen 1: JevAssessmentCard (GUI-01 Display Only)
 // Peraturan Mutlak: Tiada skor keyakinan / confidenceScore rekaan.
+// `confidenceScore` mesti `null` apabila tiada model berkalibrasi digunakan.
+// Nilai `0`/`false` TIDAK boleh digunakan sebagai ganti "tidak dikira".
 // ============================================================================
 export interface JevAssessmentCardProps {
   issueClass: 'LEAKAGE' | 'CAP_DEFECT' | 'TASTE_ANOMALY' | 'LABEL_MISPRINT';
@@ -100,6 +102,8 @@ export interface JevAssessmentCardProps {
   sopAction: string;
   evaluationState: 'reviewed' | 'pending_quarantine';
   evidencePhotoRequired: boolean;
+  /** `null` = tiada keyakinan berkalibrasi (bukan `0`). */
+  confidenceScore: number | null;
 }
 
 // ============================================================================
@@ -533,12 +537,20 @@ export function classifyProviderHttpFailure(
  * (atau mesej "quota exceeded"). Ini DINDING SEMENTARA — runtime mengekalkan
  * petunjuk tunggu sebenar provider (contoh "retry in 19h3m41s") supaya callers
  * tahu bila run seterusnya boleh dicuba semula.
+ *
+ * `PROVIDER_UNAVAILABLE` bermaksud provider tidak dapat dihubungi sama sekali
+ * (ralat jaringan / timeout sebelum balasan) ATAU balasannya rosak sehingga
+ * tiada keputusan yang boleh dibaca. Ia berbeza daripada
+ * `PROVIDER_ENDPOINT_UNREACHABLE` (yang khusus kepada hos yang tidak boleh
+ * dihubungi) kerana ia juga meliputi kegagalan selepas sambungan rangkaian
+ * ditubuhkan.
  */
 export type CopilotRunReasonCode =
   | 'PROVIDER_CALL_SUCCEEDED'
   | 'PROVIDER_CREDENTIALS_MISSING'
   | 'PROVIDER_TIMEOUT'
   | 'PROVIDER_ENDPOINT_UNREACHABLE'
+  | 'PROVIDER_UNAVAILABLE'
   | 'PROVIDER_HTTP_ERROR'
   | 'PROVIDER_EMPTY_RESPONSE'
   | 'PROVIDER_RESPONSE_INVALID'

@@ -22,6 +22,7 @@ import {
 } from '../records';
 import { orderAccessCode } from '../scope';
 import type { OrderRecord, StockLot } from '../../../../shared/platform-contracts';
+import { buildVersionedSourceCitation, type VersionedSourceCitation } from '../../../../shared/mod-contracts';
 import { Loyalty } from '../../../platform/loyalty';
 
 const STAFF_ONLY_KINDS = ['tasks', 'knowledge', 'lots', 'campaigns', 'restocks', 'commissions'] as const;
@@ -104,7 +105,8 @@ export const discoveryTools: ToolDefinition[] = [
       const query = input.query as string | undefined;
       const limit = (input.limit as number | undefined) ?? 20;
       const sources: string[] = [];
-      let records: Array<Record<string, unknown>> = [];
+      const at = ctx.runtime.clock();
+      let records: Array<Record<string, unknown> & { citation: VersionedSourceCitation }> = [];
 
       switch (input.kind) {
         case 'orders': {
@@ -123,6 +125,12 @@ export const discoveryTools: ToolDefinition[] = [
               fulfilmentStatus: order.fulfilmentStatus,
               revision: order.revision,
               createdAt: order.createdAt,
+              citation: buildVersionedSourceCitation({
+                sourceKind: 'order',
+                sourceId: order.id,
+                revision: order.revision,
+                observedAt: at,
+              }),
             }));
           sources.push('orders');
           break;
@@ -146,6 +154,12 @@ export const discoveryTools: ToolDefinition[] = [
               status: record.status,
               revision: record.revision,
               createdAt: record.createdAt,
+              citation: buildVersionedSourceCitation({
+                sourceKind: 'case',
+                sourceId: record.id,
+                revision: record.revision,
+                observedAt: at,
+              }),
             }));
           sources.push('cases');
           break;
@@ -164,6 +178,13 @@ export const discoveryTools: ToolDefinition[] = [
               ownerId: lot.ownerId,
               expiryAt: lot.expiryAt ?? null,
               revision: lot.revision,
+              citation: buildVersionedSourceCitation({
+                sourceKind: 'stock_lot',
+                sourceId: lot.id,
+                revision: lot.revision,
+                expiresAt: lot.expiryAt ?? null,
+                observedAt: at,
+              }),
             }));
           sources.push('lots');
           break;
@@ -184,6 +205,11 @@ export const discoveryTools: ToolDefinition[] = [
               state: payment.state,
               confirmedBy: payment.confirmedBy,
               createdAt: payment.createdAt,
+              citation: buildVersionedSourceCitation({
+                sourceKind: 'payment',
+                sourceId: payment.id,
+                observedAt: at,
+              }),
             }));
           sources.push('payments');
           break;
@@ -202,6 +228,12 @@ export const discoveryTools: ToolDefinition[] = [
               assigneeId: task.assigneeId,
               dueAt: task.dueAt ?? null,
               revision: task.revision,
+              citation: buildVersionedSourceCitation({
+                sourceKind: 'task',
+                sourceId: task.id,
+                revision: task.revision,
+                observedAt: at,
+              }),
             }));
           sources.push('tasks');
           break;
@@ -219,6 +251,13 @@ export const discoveryTools: ToolDefinition[] = [
               version: entry.version,
               title: entry.title,
               expiresAt: entry.expiresAt ?? null,
+              citation: buildVersionedSourceCitation({
+                sourceKind: 'knowledge_entry',
+                sourceId: entry.id,
+                version: entry.version,
+                expiresAt: entry.expiresAt ?? null,
+                observedAt: at,
+              }),
             }));
           sources.push('knowledge');
           break;
@@ -236,6 +275,13 @@ export const discoveryTools: ToolDefinition[] = [
               ownerId: campaign.ownerId,
               revision: campaign.revision,
               createdAt: campaign.createdAt,
+              citation: buildVersionedSourceCitation({
+                sourceKind: 'campaign',
+                sourceId: campaign.id,
+                revision: campaign.revision,
+                expiresAt: campaign.approvalExpiresAt ?? null,
+                observedAt: at,
+              }),
             }));
           sources.push('campaigns');
           break;
@@ -253,6 +299,12 @@ export const discoveryTools: ToolDefinition[] = [
               totalSen: restock.totalSen,
               ownership: restock.ownership,
               revision: restock.revision,
+              citation: buildVersionedSourceCitation({
+                sourceKind: 'restock',
+                sourceId: restock.id,
+                revision: restock.revision,
+                observedAt: at,
+              }),
             }));
           sources.push('restocks');
           break;
@@ -271,6 +323,12 @@ export const discoveryTools: ToolDefinition[] = [
               status: entry.status,
               policyVersion: entry.policyVersion,
               createdAt: entry.createdAt,
+              citation: buildVersionedSourceCitation({
+                sourceKind: 'commission',
+                sourceId: entry.id,
+                version: entry.policyVersion,
+                observedAt: at,
+              }),
             }));
           sources.push('commission_ledger');
           break;
@@ -285,6 +343,8 @@ export const discoveryTools: ToolDefinition[] = [
         query: query ?? null,
         count: records.length,
         records,
+        citations: records.map((record) => record.citation),
+        citationContract: 'shared/mod-contracts.ts#VersionedSourceCitation',
         provenance: provenance(ctx.runtime, ctx, sources, 'platform-store-read'),
       };
     },
@@ -306,26 +366,60 @@ export const discoveryTools: ToolDefinition[] = [
       if (!resolved.ok) return resolved;
       const { store, actor } = resolved;
       const entityId = input.entityId as string;
+      const at = ctx.runtime.clock();
       const sources: string[] = [];
       const bundle: Record<string, unknown> = {};
+      // MOD-09: every record carried by the bundle is cited. A record without
+      // source metadata must never leave this tool.
+      const citations: VersionedSourceCitation[] = [];
+      const cite = (citation: VersionedSourceCitation) => {
+        citations.push(citation);
+        return citation;
+      };
 
       const order = readOrder(store, entityId);
       if (order) {
         const refusal = orderAccessCode(actor, order);
         if (refusal) return fail(refusal, 'Rekod ini di luar skop akses pemeran.');
-        bundle.order = order;
-        bundle.payments = paymentsForOrder(store, order.id);
-        bundle.commissions = commissionsForOrder(store, order.id);
-        bundle.case = store
+        bundle.order = {
+          ...order,
+          citation: cite(buildVersionedSourceCitation({ sourceKind: 'order', sourceId: order.id, revision: order.revision, observedAt: at })),
+        };
+        bundle.payments = paymentsForOrder(store, order.id).map((payment) => ({
+          ...payment,
+          citation: cite(buildVersionedSourceCitation({ sourceKind: 'payment', sourceId: payment.id, observedAt: at })),
+        }));
+        bundle.commissions = commissionsForOrder(store, order.id).map((entry) => ({
+          ...entry,
+          citation: cite(buildVersionedSourceCitation({ sourceKind: 'commission', sourceId: entry.id, version: entry.policyVersion, observedAt: at })),
+        }));
+        const linkedCase = store
           .all<import('../../../../shared/platform-contracts').CaseRecord>('cases')
           .find((record) => record.orderId === order.id) ?? null;
+        bundle.case = linkedCase
+          ? {
+              ...linkedCase,
+              citation: cite(buildVersionedSourceCitation({ sourceKind: 'case', sourceId: linkedCase.id, revision: linkedCase.revision, observedAt: at })),
+            }
+          : null;
         bundle.tasks = store
           .all<import('../../../../shared/platform-contracts').TaskRecord>('tasks')
-          .filter((task) => task.entityId === order.id);
+          .filter((task) => task.entityId === order.id)
+          .map((task) => ({
+            ...task,
+            citation: cite(buildVersionedSourceCitation({ sourceKind: 'task', sourceId: task.id, revision: task.revision, observedAt: at })),
+          }));
         bundle.evidence = store
           .all<import('../../../../shared/platform-contracts').EvidenceRecord>('evidence')
-          .filter((evidence) => evidence.entityId === order.id);
-        bundle.loyaltyEntries = new Loyalty(store).getEntries(order.customerId);
+          .filter((evidence) => evidence.entityId === order.id)
+          .map((evidence) => ({
+            ...evidence,
+            citation: cite(buildVersionedSourceCitation({ sourceKind: 'evidence', sourceId: evidence.id, observedAt: at })),
+          }));
+        bundle.loyaltyEntries = new Loyalty(store).getEntries(order.customerId).map((entry) => ({
+          ...entry,
+          citation: cite(buildVersionedSourceCitation({ sourceKind: 'loyalty_entry', sourceId: entry.id, expiresAt: entry.expiryAt ?? null, observedAt: at })),
+        }));
         sources.push('orders', 'payments', 'commission_ledger', 'cases', 'tasks', 'evidence', 'loyalty_ledger');
       } else {
         const caseRecord = readCase(store, entityId);
@@ -339,30 +433,62 @@ export const discoveryTools: ToolDefinition[] = [
           } else if (caseRecord.customerId !== actor.principal.user.id && !actor.isFounder && !actor.isStaff) {
             return fail('FORBIDDEN', 'Rekod ini di luar skop akses pemeran.');
           }
-          bundle.case = caseRecord;
-          bundle.order = linkedOrder ?? null;
+          bundle.case = {
+            ...caseRecord,
+            citation: cite(buildVersionedSourceCitation({ sourceKind: 'case', sourceId: caseRecord.id, revision: caseRecord.revision, observedAt: at })),
+          };
+          bundle.order = linkedOrder
+            ? {
+                ...linkedOrder,
+                citation: cite(buildVersionedSourceCitation({ sourceKind: 'order', sourceId: linkedOrder.id, revision: linkedOrder.revision, observedAt: at })),
+              }
+            : null;
           bundle.messages = store
             .all<import('../../../../shared/platform-contracts').CaseMessage>('messages')
-            .filter((message) => message.caseId === caseRecord.id);
+            .filter((message) => message.caseId === caseRecord.id)
+            .map((message) => ({
+              ...message,
+              citation: cite(buildVersionedSourceCitation({ sourceKind: 'case_message', sourceId: message.id, observedAt: at })),
+            }));
           bundle.evidence = store
             .all<import('../../../../shared/platform-contracts').EvidenceRecord>('evidence')
-            .filter((evidence) => evidence.entityId === caseRecord.id);
+            .filter((evidence) => evidence.entityId === caseRecord.id)
+            .map((evidence) => ({
+              ...evidence,
+              citation: cite(buildVersionedSourceCitation({ sourceKind: 'evidence', sourceId: evidence.id, observedAt: at })),
+            }));
           sources.push('cases', 'messages', 'evidence', 'orders');
         } else if (taskRecord) {
           if (!actor.isFounder && taskRecord.assigneeId !== actor.principal.user.id && taskRecord.ownerId !== actor.principal.user.id) {
             return fail('FORBIDDEN', 'Task ini di luar skop akses pemeran.');
           }
-          bundle.task = taskRecord;
-          bundle.linkedEntity = store.get('orders', taskRecord.entityId) ?? null;
+          bundle.task = {
+            ...taskRecord,
+            citation: cite(buildVersionedSourceCitation({ sourceKind: 'task', sourceId: taskRecord.id, revision: taskRecord.revision, observedAt: at })),
+          };
+          const linkedEntity = store.get<import('../../../../shared/platform-contracts').OrderRecord>('orders', taskRecord.entityId) ?? null;
+          bundle.linkedEntity = linkedEntity
+            ? {
+                ...linkedEntity,
+                citation: cite(buildVersionedSourceCitation({ sourceKind: 'order', sourceId: linkedEntity.id, revision: linkedEntity.revision, observedAt: at })),
+              }
+            : null;
           sources.push('tasks', 'orders');
         } else if (lot) {
           if (!actor.isStaff && !actor.isFounder) {
-            return fail('FORBIDDEN', 'Rekod stok memerlukan peranan kakitangan atau founder.');
+            return fail('FORBIDDEN', 'Rekod stok memerlukan peranan kakitangan atau staff.');
           }
-          bundle.lot = lot;
+          bundle.lot = {
+            ...lot,
+            citation: cite(buildVersionedSourceCitation({ sourceKind: 'stock_lot', sourceId: lot.id, revision: lot.revision, expiresAt: lot.expiryAt ?? null, observedAt: at })),
+          };
           bundle.movements = store
             .all<import('../../../../shared/platform-contracts').InventoryMovement>('movements')
-            .filter((movement) => movement.sourceEntityId === lot.id);
+            .filter((movement) => movement.sourceEntityId === lot.id)
+            .map((movement) => ({
+              ...movement,
+              citation: cite(buildVersionedSourceCitation({ sourceKind: 'inventory_movement', sourceId: movement.id, observedAt: at })),
+            }));
           sources.push('lots', 'movements');
         } else {
           return fail('RECORD_NOT_FOUND', `Tiada rekod kanonik untuk '${entityId}'.`);
@@ -373,6 +499,8 @@ export const discoveryTools: ToolDefinition[] = [
         ok: true,
         entityId,
         bundle,
+        citations,
+        citationContract: 'shared/mod-contracts.ts#VersionedSourceCitation',
         provenance: provenance(ctx.runtime, ctx, sources, 'platform-store-read'),
       };
     },
@@ -413,11 +541,18 @@ export const discoveryTools: ToolDefinition[] = [
         }
         if (order.paymentState === 'pending') reasons.push('BAYARAN_BELUM_DISAHKAN');
         if (order.fulfilmentStatus === 'cancelled') reasons.push('PESANAN_DIBATALKAN');
+        const orderCitation = buildVersionedSourceCitation({ sourceKind: 'order', sourceId: order.id, revision: order.revision, observedAt: at });
+        const paymentCitations = payments.map((payment) =>
+          buildVersionedSourceCitation({ sourceKind: 'payment', sourceId: payment.id, observedAt: at }),
+        );
         return {
           ok: true,
           entityId,
           recordType: 'order',
-          record: order,
+          record: { ...order, citation: orderCitation },
+          citation: orderCitation,
+          citations: [orderCitation, ...paymentCitations],
+          citationContract: 'shared/mod-contracts.ts#VersionedSourceCitation',
           derived: {
             confirmedPaymentsSen: confirmed,
             refundedPaymentsSen: refunded,
@@ -437,11 +572,18 @@ export const discoveryTools: ToolDefinition[] = [
           const refusal = orderAccessCode(actor, linkedOrder);
           if (refusal) return fail(refusal, 'Rekod ini di luar skop akses pemeran.');
         }
+        const caseCitation = buildVersionedSourceCitation({ sourceKind: 'case', sourceId: caseRecord.id, revision: caseRecord.revision, observedAt: at });
+        const linkedOrderCitation = linkedOrder
+          ? buildVersionedSourceCitation({ sourceKind: 'order', sourceId: linkedOrder.id, revision: linkedOrder.revision, observedAt: at })
+          : null;
         return {
           ok: true,
           entityId,
           recordType: 'case',
-          record: caseRecord,
+          record: { ...caseRecord, citation: caseCitation },
+          citation: caseCitation,
+          citations: linkedOrderCitation ? [caseCitation, linkedOrderCitation] : [caseCitation],
+          citationContract: 'shared/mod-contracts.ts#VersionedSourceCitation',
           derived: {
             orderId: caseRecord.orderId,
             orderPaymentState: linkedOrder?.paymentState ?? null,
@@ -466,11 +608,15 @@ export const discoveryTools: ToolDefinition[] = [
         }
         const expiresAt = lot.expiryAt ?? null;
         const expired = Boolean(expiresAt && expiresAt <= at);
+        const lotCitation = buildVersionedSourceCitation({ sourceKind: 'stock_lot', sourceId: lot.id, revision: lot.revision, expiresAt: lot.expiryAt ?? null, observedAt: at });
         return {
           ok: true,
           entityId,
           recordType: 'stock_lot',
-          record: lot,
+          record: { ...lot, citation: lotCitation },
+          citation: lotCitation,
+          citations: [lotCitation],
+          citationContract: 'shared/mod-contracts.ts#VersionedSourceCitation',
           derived: {
             expired,
             daysToExpiry: expiresAt ? daysBetween(at, expiresAt) : null,
@@ -489,11 +635,15 @@ export const discoveryTools: ToolDefinition[] = [
         if (!actor.isFounder && taskRecord.assigneeId !== actor.principal.user.id && taskRecord.ownerId !== actor.principal.user.id) {
           return fail('FORBIDDEN', 'Task ini di luar skop akses pemeran.');
         }
+        const taskCitation = buildVersionedSourceCitation({ sourceKind: 'task', sourceId: taskRecord.id, revision: taskRecord.revision, observedAt: at });
         return {
           ok: true,
           entityId,
           recordType: 'task',
-          record: taskRecord,
+          record: { ...taskRecord, citation: taskCitation },
+          citation: taskCitation,
+          citations: [taskCitation],
+          citationContract: 'shared/mod-contracts.ts#VersionedSourceCitation',
           derived: { dueAt: taskRecord.dueAt ?? null, overdue: Boolean(taskRecord.dueAt && taskRecord.dueAt < at) },
           explanation: [taskRecord.status === 'done' ? 'TASK_DIABAIKAN' : 'TASK_BELUM_DIABAIKAN'],
           provenance: provenance(ctx.runtime, ctx, ['tasks'], 'task-read'),

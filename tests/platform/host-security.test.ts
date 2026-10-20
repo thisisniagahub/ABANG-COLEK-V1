@@ -1,22 +1,73 @@
-import { describe, expect, test } from 'bun:test';
+import { afterAll, describe, expect, test } from 'bun:test';
 import { createPlatformApp } from '../../server/platform/app';
-import { unlinkSync } from 'node:fs';
+import { existsSync, mkdtempSync, rmSync, unlinkSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
-function cleanup(dbPath: string) {
+/**
+ * Membersihkan fail pangkalan data ujian.
+ *
+ * PEMADAMAN hanya melapor kegagalan sebenar. Sidecar yang tidak wujud
+ * (`ENOENT`) ialah keadaan normal selepas `close()`, bukan kegagalan — jadi ia
+ * tidak dilaporkan, jika tidak assertion "pembersihan berjaya" akan palsu
+ * pada larian yang bersih.
+ *
+ * Sebarang kegagalan LAIN (contoh `EBUSY`/`EPERM` pada Windows apabila handle
+ * SQLite masih hidup) dikembalikan kepada pemanggil supaya ia BOLEH dan
+ * MESTU di-assert.
+ */
+function cleanup(dbPath: string): string[] {
+  const failures: string[] = [];
   for (const ext of ['', '-wal', '-shm']) {
-    try { unlinkSync(dbPath + ext); } catch { /* ignore */ }
+    const target = dbPath + ext;
+    if (!existsSync(target)) continue;
+    try {
+      unlinkSync(target);
+    } catch (error) {
+      failures.push(`${target}: ${(error as NodeJS.ErrnoException).code ?? 'unknown'}`);
+    }
   }
+  return failures;
 }
 
+/**
+ * Direktori sementara unik bagi setiap konteks ujian.
+ *
+ * Root cause (dikuatkuasakan): laluan tetap `var/lib/qa/security-${testId}.sqlite`
+ * mengulang `testId` yang sama pada larian seterusnya, dan sufiks
+ * `process.pid`/`dbSequence` tidak boleh dipercayai — pid boleh diguna semula,
+ * dan dua proses `bun test` yang berjalan serentak dalam checkout yang sama
+ * akan memohon fail yang sama. Pada Windows fail SQLite yang masih dibuka TIDAK
+ * boleh dipadam, jadi fail basi dengan baris `owner_bootstrapped` tinggal di
+ * dalam fail dan bootstrap seterusnya membalas 409
+ * `OWNER_ALREADY_BOOTSTRAPPED` — kegagalan palsu, bukan pepijat produk.
+ *
+ * `mkdtempSync` memberi direktori unik bagi setiap larian/proses, jadi dua
+ * larian tidak mungkin pernah meminta fail SQLite yang sama.
+ */
+function uniqueDbDirectory(): string {
+  return mkdtempSync(join(tmpdir(), 'abangcolek-host-security-'));
+}
+
+/** Jaring keselamatan: tutup aplikasi walaupun ujian gagal di tengah. */
+const opened: Array<ReturnType<typeof createPlatformApp>> = [];
+
+afterAll(() => {
+  for (const app of opened.splice(0)) {
+    try { app.close(); } catch { /* sudah ditutup oleh ujian */ }
+  }
+});
+
 async function createSecurityTestContext(testId: string) {
-  const testDb = `var/lib/qa/security-${testId}.sqlite`;
-  cleanup(testDb);
+  const directory = uniqueDbDirectory();
+  const testDb = join(directory, `security-${testId}.sqlite`);
   const app = createPlatformApp({
     databasePath: testDb,
     bootstrapToken: 'sec-bootstrap-token-99999',
     origin: 'http://localhost:3000',
     allowedOrigins: ['http://localhost:3000', 'https://abangcolek.local'],
   });
+  opened.push(app);
 
   // 1. Bootstrap Founder
   const bootRes = await app.fetch(new Request('http://localhost:3000/api/platform/auth/bootstrap', {
@@ -102,10 +153,27 @@ async function createSecurityTestContext(testId: string) {
   return {
     app,
     testDb,
+    directory,
     founder: { id: founderId, cookie: founderCookie, csrf: founderCsrf },
     customer: { id: customerId, cookie: customerCookie, csrf: customerCsrf },
     developer: { id: developerId, cookie: developerCookie, csrf: developerCsrf },
   };
+}
+
+/**
+ * Menutup aplikasi dan MEMBUKTIKAN bahawa pembersihan benar-benar berlaku.
+ *
+ * `app.close()` melepaskan handle SQLite; selepas itu, `unlinkSync` mesti
+ * berjaya pada Windows. Jika mana-mana pemadaman gagal (contoh `EBUSY`,
+ * `EPERM`), senarai kegagalan itu tidak lagi ditelan — ia di-assert sebagai
+ * kosong, jadi handle yang tertinggal menjadi RED yang jelas dan bukan
+ * 409 palsu pada larian seterusnya.
+ */
+function closeAndCleanup(ctx: { app: ReturnType<typeof createPlatformApp>; testDb: string; directory: string }): void {
+  ctx.app.close();
+  expect(cleanup(ctx.testDb)).toEqual([]);
+  rmSync(ctx.directory, { recursive: true, force: true });
+  expect(existsSync(ctx.directory)).toBe(false);
 }
 
 describe('C03: Host Security Verification Suite', () => {
@@ -122,7 +190,7 @@ describe('C03: Host Security Verification Suite', () => {
     const body = await res.json() as { code: string };
     expect(body.code).toBe('CONTENT_TYPE');
 
-    cleanup(ctx.testDb);
+    closeAndCleanup(ctx);
   });
 
   test('Origin allowlist rejection on unauthorized origins', async () => {
@@ -138,7 +206,7 @@ describe('C03: Host Security Verification Suite', () => {
     const body = await res.json() as { code: string };
     expect(body.code).toBe('ORIGIN_DENIED');
 
-    cleanup(ctx.testDb);
+    closeAndCleanup(ctx);
   });
 
   test('Session cookie security attributes and response security headers', async () => {
@@ -147,7 +215,12 @@ describe('C03: Host Security Verification Suite', () => {
     // Verify session cookie attributes from signup/bootstrap
     expect(ctx.founder.cookie).toContain('HttpOnly');
     expect(ctx.founder.cookie).toContain('SameSite=Strict');
-    expect(ctx.founder.cookie).toContain('Path=/api/platform');
+    // lama: 'Path=/api/platform' — itu mengekod skop cookie LEGACY yang sempit:
+    // pelayar hanya hantar cookie itu ke /api/platform, jadi /api/copilotkit
+    // dan /api/mcp tiada sesi (401). Skop efektif mesti 'Path=/'.
+    expect(ctx.founder.cookie).toContain('Path=/; Max-Age=43200');
+    // Cookie sesi TIDAK boleh diekstrak ke skop '/api/platform' yang lama.
+    expect(ctx.founder.cookie).not.toContain('Path=/api/platform; Max-Age=43200');
 
     // Verify security headers on responses (no-store, nosniff, no-referrer)
     const res = await ctx.app.fetch(new Request('http://localhost:3000/api/platform/catalogue', {
@@ -158,7 +231,7 @@ describe('C03: Host Security Verification Suite', () => {
     expect(res.headers.get('x-content-type-options')).toBe('nosniff');
     expect(res.headers.get('referrer-policy')).toBe('no-referrer');
 
-    cleanup(ctx.testDb);
+    closeAndCleanup(ctx);
   });
 
   test('Negative RBAC: Customer cannot access administrative or founder endpoints', async () => {
@@ -185,7 +258,7 @@ describe('C03: Host Security Verification Suite', () => {
     }));
     expect(decisionsRes.status).toBe(403);
 
-    cleanup(ctx.testDb);
+    closeAndCleanup(ctx);
   });
 
   test('Negative RBAC: Developer without founder role cannot access commercial inventory', async () => {
@@ -198,7 +271,7 @@ describe('C03: Host Security Verification Suite', () => {
     }));
     expect(invRes.status).toBe(403);
 
-    cleanup(ctx.testDb);
+    closeAndCleanup(ctx);
   });
 
   test('Rate limiting / Throttling on rapid requests', async () => {
@@ -211,6 +284,6 @@ describe('C03: Host Security Verification Suite', () => {
       }
     }).toThrow();
 
-    cleanup(ctx.testDb);
+    closeAndCleanup(ctx);
   });
 });

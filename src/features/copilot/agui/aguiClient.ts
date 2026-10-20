@@ -189,7 +189,11 @@ function translateOfficialEvent(
       state.terminal = true;
       const message = boundedString(payload.message, MAX_TEXT_LENGTH)
         ?? 'Ralat runtime Copilot tidak dinyatakan.';
-      return [{ type: 'error', message }];
+      // Reason code pelayan WAJIB dikekalkan: sebelum ini `payload.code`
+      // dibuang, jadi satu kawalan mati (kode hanya dicatatkan, tidak pernah
+      // dipamerkai). Lihat `aguiEvents.ts` untuk bentuk `code`.
+      const code = boundedString(payload.code, MAX_IDENTIFIER_LENGTH);
+      return code ? [{ type: 'error', message, code }] : [{ type: 'error', message }];
     }
     case 'RUN_FINISHED': {
       // A failed run stays failed: `RUN_FINISHED` after `RUN_ERROR` must not

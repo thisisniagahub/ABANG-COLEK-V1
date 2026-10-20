@@ -5,6 +5,12 @@ import { Auth, type Principal } from './auth';
 import { Commerce } from './commerce';
 import { Work } from './work';
 import { fields, fail, id, integer, list, now, object, PlatformStore, strings, text, date } from './store';
+import { readAssetConsent } from './dispatchConsent';
+import { ReconnectRevalidation } from './reconnectRevalidation';
+
+function isPlainRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === 'object' && !Array.isArray(value);
+}
 
 export class Marketing {
   constructor(readonly store:PlatformStore,readonly auth:Auth,readonly commerce:Commerce,readonly work:Work){}
@@ -13,8 +19,24 @@ export class Marketing {
   save(actor:Principal,raw:unknown,campaignId?:string){
     this.work.staff(actor);
     const input=object(raw);
-    fields(input,campaignId?['expectedRevision','title','objective','copy','assets','productIds','catalogueVersion','scheduledAt','marginSimulation','founderOverride']:['title','objective','copy','assets','productIds','catalogueVersion','scheduledAt','marginSimulation','founderOverride']);
+    fields(input,campaignId?['expectedRevision','title','objective','copy','assets','productIds','catalogueVersion','scheduledAt','marginSimulation','founderOverride','observed']:['title','objective','copy','assets','productIds','catalogueVersion','scheduledAt','marginSimulation','founderOverride']);
     const existing=campaignId?this.get(actor,campaignId):null;
+    // OFF-01 — revalidate-on-reconnect. Pemanggil yang menyambung semula
+    // menghantar peta `observed`: nilai yang ia perhati SEBELUM menjadi
+    // offline. Jika pelayan berubah sejak itu, laporkan medan yang bereka-berca
+    // (bukan hanya "revision conflict") supaya klien tahu apa yang perlu
+    // disemak semula. Tanpa `observed`, tingkah laku lama dikekalkan.
+    if(existing&&input.observed!==undefined&&isPlainRecord(input.observed)){
+      const revalidation=new ReconnectRevalidation(this.store,this.auth).revalidate(actor,{
+        kind:'campaigns',
+        recordId:campaignId!,
+        expectedRevision:Number(input.expectedRevision),
+        submitted:input.observed as Record<string,unknown>,
+      });
+      if(!revalidation.ok){
+        fail(revalidation.code==='REVALIDATION_RECORD_NOT_FOUND'?'NOT_FOUND':revalidation.code,revalidation.code==='REVALIDATION_FORBIDDEN'?403:409,revalidation.message,{conflicts:revalidation.conflicts,serverRevision:revalidation.serverRevision});
+      }
+    }
     if(existing)this.store.revision(existing.revision,input.expectedRevision);
     const assets:CampaignAsset[]=list(input.assets??[],50).map(rawAsset=>{
       const a=object(rawAsset);
@@ -112,6 +134,9 @@ export class Marketing {
     const record=this.get(actor,campaignId);
     this.store.revision(record.revision,input.expectedRevision);
     if(record.catalogueVersion!==this.commerce.version())fail('REQUOTE_REQUIRED',409);
+    // NOTA PD-01: gate persetujuan aset ada pada laluan PENGLANTARAN
+    // (`export`), bukan pada kelulusan. Kelulusan ialah tandatangan dalaman;
+    // penghantaran/pek aset ialah bila persetujuan itu perlu di harden.
     const approvalExpiresAt=date(input.approvalExpiresAt);
     if(approvalExpiresAt<=now()||Date.parse(approvalExpiresAt)>Date.now()+90*24*3600_000)fail('INVALID_EXPIRY');
 
@@ -159,5 +184,18 @@ export class Marketing {
     this.store.audit(actor.user.id,'campaign.approve',campaignId,updated.revision);
     return updated;
   }
-  export(actor:Principal,campaignId:string,raw:unknown,key:unknown){const record=this.get(actor,campaignId);return this.commerce.idem(actor,`campaign.export:${campaignId}`,key,raw,()=>{const input=object(raw);fields(input,['expectedRevision','format']);this.store.revision(record.revision,input.expectedRevision);if(!['approved','planned'].includes(record.status)||!record.approvalExpiresAt||record.approvalExpiresAt<=now())fail('APPROVAL_REQUIRED',409);if(record.catalogueVersion!==this.commerce.version())fail('APPROVAL_STALE',409);if(input.format!=='text'&&input.format!=='asset_bundle')fail('INVALID_EXPORT_FORMAT');const fileRefs=input.format==='asset_bundle'?record.assets.map(asset=>{if(!asset.evidenceId)fail('ASSET_FILE_REQUIRED',409);const evidence=this.store.require<{id:string;kind:string}>('evidence',asset.evidenceId);if(evidence.kind!=='file')fail('ASSET_FILE_REQUIRED',409);return evidence.id;}):[];const artifact:ExportArtifact={id:id(),campaignRevision:record.revision,format:input.format,fileRefs,status:'exported',content:record.copy};this.store.save('exports',{...artifact,campaignId});this.store.audit(actor.user.id,'campaign.export',campaignId,record.revision);return artifact;});}
+  /**
+   * PD-01 — setiap aset yang akaniaran/dihantar mesti ada rekod persetujuan
+   * BERSTRUKTUR yang berstatus `granted`. Teks bebas `asset.consent` yang lama
+   * ialah `unknown`, bukan persetujuan — jadi ia tidak melepasi gate ini.
+   */
+  private assertAssetsConsented(record:CampaignRecord){
+    for(const asset of record.assets){
+      const consent=readAssetConsent(this.store,asset.id);
+      if(!consent||consent.state!=='granted'){
+        fail('ASSET_CONSENT_NOT_GRANTED',409,`Aset ${asset.id} tiada persetujuan yang granted.`);
+      }
+    }
+  }
+  export(actor:Principal,campaignId:string,raw:unknown,key:unknown){const record=this.get(actor,campaignId);return this.commerce.idem(actor,`campaign.export:${campaignId}`,key,raw,()=>{const input=object(raw);fields(input,['expectedRevision','format']);this.store.revision(record.revision,input.expectedRevision);if(!['approved','planned'].includes(record.status)||!record.approvalExpiresAt||record.approvalExpiresAt<=now())fail('APPROVAL_REQUIRED',409);if(record.catalogueVersion!==this.commerce.version())fail('APPROVAL_STALE',409);if(input.format!=='text'&&input.format!=='asset_bundle')fail('INVALID_EXPORT_FORMAT');this.assertAssetsConsented(record);const fileRefs=input.format==='asset_bundle'?record.assets.map(asset=>{if(!asset.evidenceId)fail('ASSET_FILE_REQUIRED',409);const evidence=this.store.require<{id:string;kind:string}>('evidence',asset.evidenceId);if(evidence.kind!=='file')fail('ASSET_FILE_REQUIRED',409);return evidence.id;}):[];const artifact:ExportArtifact={id:id(),campaignRevision:record.revision,format:input.format,fileRefs,status:'exported',content:record.copy};this.store.save('exports',{...artifact,campaignId});this.store.audit(actor.user.id,'campaign.export',campaignId,record.revision);return artifact;});}
 }

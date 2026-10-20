@@ -401,9 +401,13 @@ export interface AttachmentReference {
   /** Why the reference is refused, when it is refused. */
   refusalCode?: string;
   /**
-   * Whether the attachment can be interpreted by a model. An upload is not
-   * proof of vision: inference requires a qualified model and an approved
-   * data scope, neither of which is configured here.
+   * Whether the attachment can be interpreted by a qualified vision model
+   * for this run. An upload alone is never proof of vision: this is `true`
+   * only when a live-verified vision model is actually configured and
+   * reachable, and the inference itself still has to run against the real
+   * bytes. `reasonCode` is always machine-readable — `VISION_MODEL_CONFIGURED`
+   * when available, the exact blocking reason (e.g.
+   * `QUALIFIED_VISION_MODEL_REQUIRED`) when not.
    */
-  vision: { available: false; reasonCode: string; reason: string };
+  vision: { available: boolean; reasonCode: string; reason: string };
 }

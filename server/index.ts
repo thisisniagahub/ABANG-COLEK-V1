@@ -2,6 +2,9 @@ import { appendFileSync, existsSync, mkdirSync, readFileSync, unlinkSync, writeF
 import { join, resolve } from 'node:path';
 import { createPlatformApp } from './platform/app';
 import { opaque } from './platform/auth';
+import { PaymentCallbackService } from './platform/paymentCallbacks';
+import { createPaymentRoutes } from './platform/paymentCallbackRoutes';
+import { PAYMENT_CALLBACK_PATH, PAYMENT_RETURN_PATH } from '../shared/payment-contracts';
 import { runtimeConfig } from './runtime-config';
 import { createRuntimeIdentity, createRuntimeIdentityHandler } from './runtime-identity';
 
@@ -14,6 +17,14 @@ export interface LocalRouteHandlers {
   copilotKit: (request: Request) => Response | Promise<Response>;
   /** First-party MCP entry (`api/mcp.ts`). */
   mcp: (request: Request) => Response | Promise<Response>;
+  /**
+   * Payment callback + post-payment return routes (PAY-01/PAY-02).
+   *
+   * Authority of the callback is the HMAC signature, never a browser
+   * session, so these routes are served BEFORE the platform app and are
+   * never subject to the origin allow-list or CSRF token.
+   */
+  payments?: (request: Request) => Response | Promise<Response>;
 }
 
 /**
@@ -24,6 +35,8 @@ export interface LocalRouteHandlers {
  *  - `/api/platform/runtime-identity` → identiti operator tempatan.
  *  - `/api/copilotkit/*` → pengendali CopilotKit rasmi daripada `api/copilotkit.ts`.
  *  - `/api/mcp*` → pengendali MCP rasmi daripada `api/mcp.ts`.
+ *  - `/api/platform/payments/*` → pengendali bayaran daripada
+ *    `server/platform/paymentCallbackRoutes.ts` (authority: tandatangan HMAC).
  *  - everything else → aplikasi platform (`createPlatformApp`).
  *
  * Tiada laluan platform, pengendalian token bootstrap, had saiz badan atau
@@ -40,6 +53,12 @@ export function createLocalRouter(handlers: LocalRouteHandlers): (
     }
     if (pathname === '/api/mcp' || pathname.startsWith('/api/mcp/')) {
       return handlers.mcp(request);
+    }
+    if (
+      handlers.payments &&
+      (pathname === PAYMENT_CALLBACK_PATH || pathname === PAYMENT_RETURN_PATH)
+    ) {
+      return handlers.payments(request);
     }
     return handlers.platform(request);
   };
@@ -59,6 +78,16 @@ if (import.meta.main) {
   const databasePath=join(runtimeRoot,'lib','platform','platform.sqlite');
   const app=createPlatformApp({databasePath,bootstrapToken,allowedOrigins:config.allowedOrigins,log:entry=>appendFileSync(join(runtimeRoot,'log','platform-api.jsonl'),JSON.stringify({...entry,createdAt:new Date().toISOString()})+'\n')});
   if(app.store.metadata('owner_bootstrapped')&&existsSync(tokenPath))unlinkSync(tokenPath);
+
+  /**
+   * Laluan bayaran (PAY-01/PAY-02).
+   *
+   * Rahsia HMAC dipegang server dan datang daripada environment
+   * (`PLATFORM_PAYMENT_WEBHOOK_SECRET`). Tiada rahsia lalai: tanpa rahsia,
+   * callback ditolak secara jujur dengan `PAYMENT_SIGNATURE_SECRET_UNAVAILABLE`.
+   */
+  const paymentCallbacks=new PaymentCallbackService(app.store,{secret:process.env.PLATFORM_PAYMENT_WEBHOOK_SECRET,loyalty:app.loyalty});
+  const paymentRoutes=createPaymentRoutes({store:app.store,auth:app.auth,service:paymentCallbacks});
 
   // Pangkalan data kanonikal platform ditetapkan SEBELUM modul MCP
   // diselesaikan, supaya laluan MCP mengesahkan sesi terhadap pangkalan data
@@ -113,6 +142,7 @@ if (import.meta.main) {
     runtimeIdentity:request=>operatorIdentity(request),
     copilotKit:handleCopilotKit,
     mcp:handleMcp,
+    payments:request=>paymentRoutes.handle(request),
   });
 
   let server:ReturnType<typeof Bun.serve>;

@@ -42,7 +42,19 @@ export type AguiEvent =
       modelUsed?: string;
       payload: unknown;
     }
-  | { type: 'error'; message: string };
+  | {
+      type: 'error';
+      message: string;
+      /**
+       * Reason code asal daripada pelayan. Sebelum ini ia dibuang ⇒ satu
+       * kawalan mati: pelayan menghantar `payload.code` yang boleh dibaca mesin
+       * (contoh `PROVIDER_QUOTA_EXHAUSTED`, `VISION_INFERENCE_UNAVAILABLE`)
+       * tetapi pengguna hanya nampak teks sahaja. Docs CopilotKit: "Critical
+       * error codes … are alerted on, not just logged" — kod mesti kekal
+       * sehingga ke lapisan pemerksamai.
+       */
+      code?: string;
+    };
 
 const MAX_TEXT_LENGTH = 20_000;
 const MAX_IDENTIFIER_LENGTH = 160;

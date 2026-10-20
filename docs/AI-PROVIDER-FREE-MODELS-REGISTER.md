@@ -69,7 +69,50 @@ Punca ralat yang dibetulkan dalam source:
 2. Shay ketiga `nvidia/nemotron-3-super-120b-a12b:free` mati untuk akaun ini → HTTP 404. Diganti dengan `nvidia/nemotron-3-ultra-550b-a55b:free` (diverifikasi 200).
 3. Klasifikasi kegagalan provider tidak mengenali HTTP 410 (model EOL) dan HTTP 401 (kelayakan rosak) sebagai kegagalan bukan-boleh-cuba-semula.
 
-Gate luar yang masih terbuka: kuota free tier Gemini (20 permintaan/hari) dan kunci `OPENCODE_ZEN_API_KEY` yang telah tamat tempoh.
+Gate luar yang masih terbuka: kunci `OPENCODE_ZEN_API_KEY` yang telah tamat tempoh (401 `api_key_expired` — **gate akaun**, tiada fix kod) dan GitHub Actions billing.
 
 Suite ujian kini berjalan **offline** (`ABANGCOLEK_DISABLE_LIVE_PROVIDERS=1`, dimuat melalui `bunfig.toml`): ujian unit tidak bergantung pada akaun orang lain dan tidak memakan kuota produksi. Pengesahan live adalah gate berasingan, bukan sebahagian suite unit.
+
+## Rekod pengesahan live — 21 Oktober 2026 (inventori penuh)
+
+Probe HTTP sebenar daripada mesin pembangun (tanpa kunci dalam dokumen ini). Katalog diambil
+langsung daripada API provider; **kehadiran dalam katalog ≠ tersedia untuk akaun ini**
+(contoh: `nvidia/nemotron-3-super-120b-a12b:free` masih dalam katalog OpenRouter tetapi
+404 untuk akaun ini).
+
+| providerId | modelId | endpoint | status | keputusan |
+|---|---|---|---|---|
+| openrouter | `nvidia/nemotron-3-ultra-550b-a55b:free` | `openrouter.ai/api/v1/chat/completions` | 200, 1049 ms | calon ketiga — aktif, arahan "PING" diikut |
+| openrouter | `google/gemma-4-31b-it:free` | sama | **429** "Provider returned error" | model **hidup**, kumpulan free perkongsian penuh ⇒ cooldown + fallback, jangan probe dalam loop |
+| nvidia | `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning` | `integrate.api.nvidia.com/v1/chat/completions` | 200, 2821 ms selepas 1 retry | **vision hidup** — imej dibaca dengan betul ⇒ calon vision untuk EXT-07 (bukan gate luar) |
+| nvidia | `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning` (percubaan 1) | sama | 503 `ResourceExhausted: Worker local total request limit reached (16/16)` | **kapasiti**, bukan kredensial ⇒ bounded retry kemudian `local_rules` |
+| gemini_free | `gemini-3.8-flash` | `generativelanguage.googleapis.com/v1beta/openai/chat/completions` | 200, imej ditelan (1104 token input) | id sah + multimodal; jawapan akhir belum observe (thinking token makan bajet output) — memerlukan 1 probe dengan `max_tokens ≥ 200` sebelum diaktifkan |
+| groq | `openai/gpt-oss-120b` | `api.groq.com/openai/v1/models` + chat | 200, kunci sah | `llama-3.3-70b-versatile` **tidak lagi dalam katalog** (dibuang, bukan 404 sementara) |
+| opencode_zen | `x-preview-f-free` | `opencode.ai/zen/v1/models` | **401 `api_key_expired`** (kedua-dua kunci: `OPENCODE_ZEN_API_KEY` dan `OPENCODE_API_KEY`) | **gate akaun** — kekal dinyahaktifkan |
+| openrouter | `nvidia/nemotron-3-super-120b-a12b:free` | sama | 404 (rekod 20 Okt, disahkan semula) | dibuang daripada calon; tetapi masih tersenarai dalam katalog OpenRouter |
+
+**Katalog OpenRouter `:free` hari ini (17 daripada 468 model, semua `prompt=0`/`completion=0`):**
+`nvidia/nemotron-3-ultra-550b-a55b:free` (1M ctx) · `google/gemma-4-31b-it:free` (vision) ·
+`google/gemma-4-26b-a4b-it:free` (vision) · `nvidia/nemotron-3.5-lightning:free` (3B, 1M ctx,
+permintaan berikutnya selepas 429) · `nvidia/nemotron-3.5-super-vl:free` (**vision + structured
+output**) · `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free` (omni) ·
+`minimax/minimax-m3.1-flash:free` (1M ctx, vision) · `liquid/lfm-2.5-2.6b:free` (structured
+output termurah) · `xingchen-agi/xing4.0-29b-a4b:free` (structured output) ·
+`dots-studio/dots-3-note-preview:free` (vision + schema) · `poolside/laguna-s-2.1:free` ·
+`poolside/laguna-xs-2.1:free` · `cohere/north-mini-code:free` ·
+`thinkingmachines/inkling:free` + `inkling-small:free` (403 agentic-harness-only) ·
+`nvidia/nemotron-3.5-content-safety:free` (guardrail, bukan calon chat) ·
+`nvidia/nemotron-3-super-120b-a12b:free` (404 akaun).
+
+**Had free tier (dokumentasikan provider, dibaca 21 Okt 2026):**
+- Gemini: had mengikut **project** (bukan kunci), reset tengah malam Pasifik; akaun projek ini
+  menunjukkan had sebenar **20 `generate_content`/hari** ⇒ maksimum 1 probe live/hari.
+- OpenRouter `:free`: kumpulan upstream perkongsian ⇒ 429 dijangka ⇒ cooldown + fallback.
+- NVIDIA NIM: 503 = kapasiti worker (16/16), bukan kredensial.
+- `gemini-4-argon` **tidak** ada pada free tier (halaman harga).
+
+**Kesimpulan untuk ledger:** `EXT-07` (vision) **bukan** gate akaun — ada model free yang
+vision hidup (`nvidia/nemotron-3-nano-omni-30b-a3b-reasoning`, 200 dengan imej dibaca betul;
+`gemini-3.8-flash` juga menerima imej). Refusal bertip 409 `QUALIFIED_VISION_MODEL_REQUIRED`
+hanya betul sementara vision belum diaktifkan dalam laluan platform.
 

@@ -49,6 +49,12 @@ test('campaign asset bundle is a real private archive of approved revision and f
   const file=(await upload.json()).data;
   const updated=(await call(app,`/campaigns/${campaign.id}/update`,{...input,expectedRevision:1,assets:[{id:'asset1',name:'Approved note',rights:'Business-owned',consent:'No people depicted',evidenceId:file.id}]},founder)).json.data;
   const approved=(await call(app,`/campaigns/${campaign.id}/approve`,{expectedRevision:updated.revision,approvalExpiresAt:new Date(Date.now()+3600000).toISOString()},founder)).json.data;
+  // PD-01 — kebenaran aset ialah rekod BERSTRUKTUR; teks bebas `consent` yang
+  // lama TIDAK dikira sebagai kebenaran (ia `unknown`). Tanpa rekod `granted`,
+  // penghantaran pek aset mesti DITOLAK.
+  const refused=(await call(app,`/campaigns/${campaign.id}/export`,{expectedRevision:approved.revision,format:'asset_bundle'},founder,{'Idempotency-Key':'actual-asset-export-no-consent'}));
+  expect(refused.json.code).toBe('ASSET_CONSENT_NOT_GRANTED');
+  await call(app,'/campaigns/consent',{campaignId:campaign.id,assetId:'asset1',state:'granted',scope:'in_app:orders',evidenceId:file.id},founder);
   const artifact=(await call(app,`/campaigns/${campaign.id}/export`,{expectedRevision:approved.revision,format:'asset_bundle'},founder,{'Idempotency-Key':'actual-asset-export'})).json.data;
   const response=await app.fetch(new Request(`http://localhost:3010${artifact.downloadUrl}`,{headers:{Cookie:founder.cookie}}));
   expect(response.status).toBe(200);

@@ -415,7 +415,7 @@ export function CopilotWorkspaceView(props: CopilotWorkspaceViewProps) {
           )}
 
           {chatError && (
-            <div role="alert" className="mt-4 p-3 rounded-lg border border-red-500/30 bg-red-500/10 text-sm text-red-600 dark:text-red-400">
+            <div role="alert" className="mt-4 p-3 rounded-lg border border-[var(--ui-border)] bg-[var(--ui-soft)] text-sm text-[var(--ui-danger-text)]">
               {chatError}
             </div>
           )}

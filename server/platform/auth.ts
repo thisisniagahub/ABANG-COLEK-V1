@@ -2,7 +2,8 @@ import { createHash, randomBytes, scrypt, timingSafeEqual } from 'node:crypto';
 import { promisify } from 'node:util';
 import type { GoogleIdentity } from './googleIdentity';
 import type { Membership, SessionData, WorkspaceRole } from '../../shared/platform-contracts';
-import { fields, fail, id, now, object, PlatformStore, strings, text, oneOf } from './store';
+import { fields, fail, id, now, object, PlatformStore, strings, text, oneOf, DomainError } from './store';
+import { sessionCookieHeader, sessionCookieHeaders, sessionCookieTokens } from './sessionCookie';
 
 const scryptAsync = promisify(scrypt);
 export const hash = (value: string) => createHash('sha256').update(value).digest('hex');
@@ -28,15 +29,24 @@ export class Auth {
     fail('FORBIDDEN',403,'Rekod ini di luar akses anda.');
   }
   resolve(request: Request): Principal {
-    const token = request.headers.get('cookie')?.split(';').map(v => v.trim()).find(v => v.startsWith('platform_session='))?.slice(17);
-    if (!token) return fail('UNAUTHENTICATED',401,'Sila log masuk.');
-    const session = this.store.db.query<{user_id:string;csrf_hash:string;csrf_token:string;expires_at:string;revoked:number},[string]>('SELECT * FROM sessions WHERE token_hash=?').get(hash(token));
-    if (!session || session.revoked || session.expires_at <= now()) return fail('SESSION_EXPIRED',401,'Sesi telah tamat. Sila log masuk semula.');
-    const row = this.store.db.query<UserRow,[string]>('SELECT id,email,name FROM users WHERE id=?').get(session.user_id);
-    if (!row) return fail('UNAUTHENTICATED',401);
-    const memberships = this.memberships(row.id);
-    if (!memberships.length) return fail('MEMBERSHIP_REVOKED',403);
-    return {user:{id:row.id,email:row.email,name:row.name}, memberships, sessionHash:hash(token),csrfHash:session.csrf_hash,csrfToken:session.csrf_token};
+    const tokens = sessionCookieTokens(request);
+    if (!tokens.length) return fail('UNAUTHENTICATED',401,'Sila log masuk.');
+    // Migrasi skop cookie (BL-14): selepas cookie lama (`Path=/api/platform`)
+    // digantikan oleh cookie baharu (`Path=/`), pelayar boleh menghantar dua
+    // nilai `platform_session` serentak. Setiap nilai disahkan terhadap
+    // baris `sessions`; nilai pertama yang SAH digunakan. Cookie yang sudah
+    // dicabut atau luput tidak pernah memberi akses.
+    let refusal: DomainError | null = null;
+    for (const token of tokens) {
+      const session = this.store.db.query<{user_id:string;csrf_hash:string;csrf_token:string;expires_at:string;revoked:number},[string]>('SELECT * FROM sessions WHERE token_hash=?').get(hash(token));
+      if (!session || session.revoked || session.expires_at <= now()) { refusal ??= new DomainError('SESSION_EXPIRED',401,'Sesi telah tamat. Sila log masuk semula.'); continue; }
+      const row = this.store.db.query<UserRow,[string]>('SELECT id,email,name FROM users WHERE id=?').get(session.user_id);
+      if (!row) { refusal ??= new DomainError('UNAUTHENTICATED',401); continue; }
+      const memberships = this.memberships(row.id);
+      if (!memberships.length) return fail('MEMBERSHIP_REVOKED',403);
+      return {user:{id:row.id,email:row.email,name:row.name}, memberships, sessionHash:hash(token),csrfHash:session.csrf_hash,csrfToken:session.csrf_token};
+    }
+    throw refusal ?? new DomainError('SESSION_EXPIRED',401,'Sesi telah tamat. Sila log masuk semula.');
   }
   csrf(actor: Principal, input: string | null) { if (!input || hash(input) !== actor.csrfHash) fail('CSRF_INVALID',403,'Sesi keselamatan tidak sah. Muat semula halaman.'); }
   revalidate(actor:Principal):Principal {
@@ -49,7 +59,7 @@ export class Auth {
     const roles = actor.memberships.map(m => m.role);
     return {user:actor.user,memberships:actor.memberships,csrfToken,capabilities:[...new Set(roles.flatMap(role => role === 'founder' ? ['business.read','business.write','people.grant','payment.confirm','catalogue.publish','knowledge.publish'] : role === 'staff' ? ['assigned.read','assigned.write'] : role === 'developer' ? ['runtime.read'] : ['own.read','own.write']))]};
   }
-  async authenticate(kind: 'signup' | 'login' | 'bootstrap', raw: unknown): Promise<{data:SessionData;cookie:string}> {
+  async authenticate(kind: 'signup' | 'login' | 'bootstrap', raw: unknown): Promise<{data:SessionData;cookie:string;cookies:string[];actor:Principal}> {
     const input = object(raw);
     fields(input,kind === 'login' ? ['email','password'] : kind === 'bootstrap' ? ['email','password','name','token'] : ['email','password','name']);
     const email = text(input.email,'Email',254).toLowerCase();
@@ -87,9 +97,9 @@ export class Auth {
     const token = opaque(), csrf = opaque();
     this.store.db.query('INSERT INTO sessions(token_hash,user_id,csrf_hash,expires_at,revoked,csrf_token) VALUES(?,?,?,?,0,?)').run(hash(token),user.id,hash(csrf),new Date(Date.now()+12*3600_000).toISOString(),csrf);
     const actor: Principal = {user:{id:user.id,email:user.email,name:user.name},memberships:this.memberships(user.id),sessionHash:hash(token),csrfHash:hash(csrf)};
-    return {data:this.sessionData(actor,csrf),cookie:`platform_session=${token}; HttpOnly; SameSite=Strict; Path=/api/platform; Max-Age=43200`};
+      return {data:this.sessionData(actor,csrf),cookie:sessionCookieHeader(token),cookies:sessionCookieHeaders(token),actor};
   }
-  async authenticateGoogle(identity: GoogleIdentity): Promise<{data:SessionData;cookie:string}> {
+  async authenticateGoogle(identity: GoogleIdentity): Promise<{data:SessionData;cookie:string;cookies:string[];actor:Principal}> {
     // Stable verified identity, never email matching, determines the account binding.
     const binding=`google_identity:${hash(`${identity.issuer}\n${identity.subject}`)}`;
     const token=opaque(),csrf=opaque();
@@ -111,11 +121,33 @@ export class Auth {
       if(!memberships.length)return fail('MEMBERSHIP_REVOKED',403);
       this.store.db.query('INSERT INTO sessions(token_hash,user_id,csrf_hash,expires_at,revoked,csrf_token) VALUES(?,?,?,?,0,?)').run(hash(token),user.id,hash(csrf),new Date(Date.now()+12*3600_000).toISOString(),csrf);
       const actor:Principal={user:{id:user.id,email:user.email,name:user.name},memberships,sessionHash:hash(token),csrfHash:hash(csrf)};
-      return {data:this.sessionData(actor,csrf),cookie:`platform_session=${token}; HttpOnly; SameSite=Strict; Path=/api/platform; Max-Age=43200`};
+    return {data:this.sessionData(actor,csrf),cookie:sessionCookieHeader(token),cookies:sessionCookieHeaders(token),actor};
     });
   }
   refreshCsrf(actor: Principal): SessionData { if(actor.csrfToken)return this.sessionData(actor,actor.csrfToken);const token=opaque();this.store.db.query('UPDATE sessions SET csrf_hash=?,csrf_token=? WHERE token_hash=?').run(hash(token),token,actor.sessionHash);return this.sessionData(actor,token); }
   logout(actor: Principal) { this.store.db.query('UPDATE sessions SET revoked=1 WHERE token_hash=?').run(actor.sessionHash); }
+  /**
+   * Mencabut sesi LAIN yang dikemukakan oleh pelayar yang sama.
+   *
+   * Selepas migrasi skop cookie (BL-14) pelayar boleh masih memegang cookie
+   * lama (`Path=/api/platform`) bersama cookie baharu (`Path=/`). Cookie lama
+   * mendahului cookie baharu dalam permintaan dan, jika ia membawa token sesi
+   * yang berbeza, mismak CSRF akan berlaku. Rotasi ini memastikan hanya sesi
+   * yang baru sah yang boleh digunakan selepas log masuk.
+   *
+   * Ia TIDAK menyentuh sesi pelayan lain: hanya token yang benar-benar
+   * dihantar dalam permintaan ini yang dicabut.
+   */
+  revokePresentedSessions(actor: Principal, request: Request): number {
+    let revoked = 0;
+    for (const token of sessionCookieTokens(request)) {
+      const tokenHash = hash(token);
+      if (tokenHash === actor.sessionHash) continue;
+      const result = this.store.db.query('UPDATE sessions SET revoked=1 WHERE token_hash=?').run(tokenHash);
+      revoked += result.changes;
+    }
+    return revoked;
+  }
   grant(actor: Principal, raw: unknown) {
     this.founder(actor);
     const input=object(raw);fields(input,['userId','role','outletIds','dealerOrgId','expectedVersion']);

@@ -20,13 +20,20 @@ import {
 import { outletAccessCode } from '../scope';
 import { evaluateMarginContribution } from '../../../platform/marginGuardian';
 import { calculateEarnedBenefit } from '../../../platform/dealers';
-import { isValidReferralCode } from '../../../../shared/growth-contracts';
+import { isValidReferralCode, LOYALTY_POINT_VALUE_SEN } from '../../../../shared/growth-contracts';
 import { Loyalty } from '../../../platform/loyalty';
 import { Auth } from '../../../platform/auth';
 import { Commerce } from '../../../platform/commerce';
 import { Work } from '../../../platform/work';
 import { Operations } from '../../../platform/operations';
 import { Reports } from '../../../platform/reports';
+import {
+  computeLoyaltyInvariant,
+  remediateDayClose,
+  remediateLoyaltyLedger,
+  type DayCloseRemediationResult,
+  type LoyaltyRemediationResult,
+} from './advRemediation';
 import type { CommissionTransaction } from '../../../../shared/dealer-contracts';
 
 const FIN01_MINIMUM_MARGIN_PCT = 25;
@@ -202,65 +209,105 @@ export const growthTools: ToolDefinition[] = [
     registrationName: 'audit_loyalty',
     riskClass: 'Q',
     description:
-      'Mengesan lejar kesetiaan sebenar: baki FIFO, mata luput belum direkod, dan sebarang anomali invarian (baca sahaja).',
+      'Mengesan lejar kesetiaan sebenar: baki FIFO, mata luput belum direkod, dan invarian lejar yang lengkap (earned/redeemed/reversed/expired/adjustment); boleh memulihkan dengan remediate.',
     requiredRole: 'staff',
     inputSchema: {
       userId: { required: true, type: 'string', min: 1, max: 120 },
+      /** Opt-in: apply the canonical remedy (expiry materialisation + founder-only adjustment). */
+      remediate: { type: 'boolean' },
+      /** Why the remediation is performed — recorded with the ledger adjustment. */
+      remediationReason: { type: 'string', min: 3, max: 1000 },
     },
     execute: async (input, ctx) => {
       const resolved = resolveContext(ctx);
       if (!resolved.ok) return resolved;
-      const { store } = resolved;
+      const { store, actor } = resolved;
       const userId = input.userId as string;
       const at = ctx.runtime.clock();
       const loyalty = new Loyalty(store);
-      const entries = loyalty.getEntries(userId);
-      const summary = loyalty.getSummary(userId, at);
-      const anomalies: string[] = [];
 
-      const earnedPoints = entries
-        .filter((entry) => entry.eventType === 'earned')
-        .reduce((sum, entry) => sum + entry.pointsDelta, 0);
-      const redeemedPoints = entries
-        .filter((entry) => entry.eventType === 'redeemed')
-        .reduce((sum, entry) => sum + Math.abs(entry.pointsDelta), 0);
-      const reversedPoints = entries
-        .filter((entry) => entry.eventType === 'reversed')
-        .reduce((sum, entry) => sum + entry.pointsDelta, 0);
-      const netPoints = entries.reduce((sum, entry) => sum + entry.pointsDelta, 0);
+      /**
+       * The canonical ledger invariant:
+       *   net = earned - redeemed + reversed - expired + adjustment
+       *
+       * The previous formula ignored `expired` and `adjustment`, so a
+       * correctly recorded expiry looked like a corrupt ledger. The anomaly is
+       * now derived from the real invariant.
+       */
+      const analyse = () => {
+        const entries = loyalty.getEntries(userId);
+        const summary = loyalty.getSummary(userId, at);
+        const invariant = computeLoyaltyInvariant(entries);
+        const anomalies: string[] = [];
+        if (!entries.length) anomalies.push('LEDAR_KOSONG');
+        if (summary.balancePoints < 0) anomalies.push('BAKI_NEGATIF');
+        if (summary.totalExpiredPoints > 0) anomalies.push('MATA_LUPUT_DIREKOD');
+        if (loyalty.getExpiredPoints(userId, at) > 0) anomalies.push('MATA_LUPUT_BELUM_DIREKOD');
+        if (!invariant.balanced) anomalies.push('JUMLAH_MATA_TIDAK_SEIMBANG');
+        if (entries.some((entry) => entry.expiryAt && entry.expiryAt < entry.createdAt)) {
+          anomalies.push('TARIKH_LUPUT_LEBIH_LAMPAU_DARI_PENCIPTAAN');
+        }
+        if (summary.monetaryValueSen !== summary.balancePoints * LOYALTY_POINT_VALUE_SEN) {
+          anomalies.push('NILAI_MONETARI_TIDAK_SEIMBANG');
+        }
+        return { entries, summary, invariant, anomalies };
+      };
 
-      if (!entries.length) anomalies.push('LEDAR_KOSONG');
-      if (summary.balancePoints < 0) anomalies.push('BAKI_NEGATIF');
-      if (summary.totalExpiredPoints > 0) anomalies.push('MATA_LUPUT_DIREKOD');
-      if (loyalty.getExpiredPoints(userId, at) > 0) anomalies.push('MATA_LUPUT_BELUM_DIREKOD');
-      if (netPoints !== earnedPoints - redeemedPoints + reversedPoints) {
-        anomalies.push('JUMLAH_MATA_TIDAK_SEIMBANG');
+      const before = analyse();
+      const remediate = input.remediate === true;
+      const remediationReason =
+        (input.remediationReason as string | undefined) ?? 'Audit kesetiaan oleh operator';
+
+      let remediation: LoyaltyRemediationResult | null = null;
+      if (remediate) {
+        remediation = remediateLoyaltyLedger({
+          store,
+          actor,
+          userId,
+          at,
+          reason: remediationReason,
+        });
       }
-      if (entries.some((entry) => entry.expiryAt && entry.expiryAt < entry.createdAt)) {
-        anomalies.push('TARIKH_LUPUT_LEBIH_LAMPAU_DARI_PENCIPTAAN');
-      }
-      const monetaryValueSen = summary.balancePoints * 1;
-      if (monetaryValueSen !== summary.monetaryValueSen) anomalies.push('NILAI_MONETARI_TIDAK_SEIMBANG');
+
+      const after = remediation ? analyse() : before;
+      const invariant = remediation ? remediation.invariant : after.invariant;
 
       return {
         ok: true,
         userId,
-        balancePoints: summary.balancePoints,
-        totalEarnedPoints: summary.totalEarnedPoints,
-        totalRedeemedPoints: summary.totalRedeemedPoints,
-        totalExpiredPoints: summary.totalExpiredPoints,
-        totalReversedPoints: summary.totalReversedPoints,
-        monetaryValueSen: summary.monetaryValueSen,
-        entriesCount: summary.entriesCount,
+        balancePoints: after.summary.balancePoints,
+        totalEarnedPoints: after.summary.totalEarnedPoints,
+        totalRedeemedPoints: after.summary.totalRedeemedPoints,
+        totalExpiredPoints: after.summary.totalExpiredPoints,
+        totalReversedPoints: after.summary.totalReversedPoints,
+        monetaryValueSen: after.summary.monetaryValueSen,
+        entriesCount: after.summary.entriesCount,
         unrecordedExpiredPoints: loyalty.getExpiredPoints(userId, at),
         byEventType: {
-          earned: earnedPoints,
-          redeemed: redeemedPoints,
-          reversed: reversedPoints,
+          earned: invariant.earnedPoints,
+          redeemed: invariant.redeemedPoints,
+          reversed: invariant.reversedPoints,
+          expired: invariant.expiredPoints,
+          adjustment: invariant.adjustmentPoints,
         },
-        anomalies,
-        status: anomalies.length === 0 ? 'clean' : 'anomalies_detected',
-        provenance: provenance(ctx.runtime, ctx, ['loyalty_ledger'], 'loyalty-ledger-read'),
+        invariant,
+        invariantBalanced: invariant.balanced,
+        anomalies: after.anomalies,
+        anomaliesBeforeRemediation: remediation ? before.anomalies : null,
+        status: after.anomalies.length === 0 ? 'clean' : 'anomalies_detected',
+        remediate,
+        remediationReason: remediation ? remediationReason : null,
+        remediationOutcomes: remediation ? remediation.outcomes : [],
+        remainingUnrecordedExpiredPoints: remediation
+          ? remediation.remainingUnrecordedExpiredPoints
+          : loyalty.getExpiredPoints(userId, at),
+        mutated: remediation ? remediation.mutated : false,
+        provenance: provenance(
+          ctx.runtime,
+          ctx,
+          ['loyalty_ledger'],
+          remediation ? 'loyalty-ledger-remediation' : 'loyalty-ledger-read',
+        ),
       };
     },
   }),
@@ -364,10 +411,14 @@ export const growthTools: ToolDefinition[] = [
     registrationName: 'reconcile_dayclose',
     riskClass: 'S',
     description:
-      'Menyelaraskan rekod day close dengan bayaran tunai sebenar pada hari tersebut dan mengesan drift (baca sahaja).',
+      'Menyelaraskan rekod day close dengan bayaran tunai sebenar pada hari tersebut dan mengesan drift; remediate membetulkan rekod dengan lejar bayaran (variance tunai yang tinggal tetap dilaporkan).',
     requiredRole: 'staff',
     inputSchema: {
       dayCloseId: { required: true, type: 'string', min: 1, max: 120 },
+      /** Opt-in: realign the day close with the recomputed cash from the ledger. */
+      remediate: { type: 'boolean' },
+      /** Why the realignment is performed — recorded on the day close. */
+      remediationReason: { type: 'string', min: 3, max: 1000 },
     },
     execute: async (input, ctx) => {
       const resolved = resolveContext(ctx);
@@ -385,29 +436,74 @@ export const growthTools: ToolDefinition[] = [
       const work = new Work(store, auth, commerce);
       const operations = new Operations(store, auth, commerce, work);
       const cashPayments = operations.cashPayments(record.outletId, record.date);
+      // Jam pelayan untuk cap masa remediasi (bukan `Date.now()` dalam kod).
+      const at = ctx.runtime.clock();
       const expectedCashSen = cashPayments.reduce(
         (sum, payment) => sum + (payment.state === 'confirmed' ? payment.amountSen : -payment.amountSen),
         0,
       );
       const sourceChanged = expectedCashSen !== record.expectedCashSen;
       const discrepancySen = record.countCashSen - expectedCashSen;
+      const baseStatus = sourceChanged ? 'source_changed' : discrepancySen === 0 ? 'matched' : 'variance';
+
+      const remediate = input.remediate === true;
+      const remediationReason =
+        (input.remediationReason as string | undefined) ?? 'Penyelarasan day close oleh operator';
+
+      let remediation: DayCloseRemediationResult | null = null;
+      if (remediate) {
+        remediation = remediateDayClose({
+          store,
+          actor,
+          record,
+          recomputedExpectedCashSen: expectedCashSen,
+          cashPaymentRefs: cashPayments.map((payment) => payment.id),
+          at,
+          reason: remediationReason,
+        });
+      }
+
+      // A surviving cash variance is REPORTED, never invented away: the
+      // remaining discrepancy is always the physical recount difference.
+      const remainingDiscrepancySen = remediation
+        ? remediation.remainingDiscrepancySen
+        : discrepancySen;
+      const status = remediation
+        ? remediation.outcome.code === 'DAY_CLOSE_REALIGNED'
+          ? remainingDiscrepancySen === 0
+            ? 'realigned'
+            : 'variance'
+          : remediation.outcome.code === 'DAY_CLOSE_ALREADY_ALIGNED'
+            ? 'matched'
+            : baseStatus
+        : baseStatus;
 
       return {
         ok: true,
         dayCloseId: record.id,
         outletId: record.outletId,
         date: record.date,
-        recordStatus: record.status,
+        recordStatus: remediation ? remediation.record.status : record.status,
+        recordRevision: remediation ? remediation.record.revision : record.revision,
         recordedExpectedCashSen: record.expectedCashSen,
         recomputedExpectedCashSen: expectedCashSen,
         countCashSen: record.countCashSen,
         discrepancySen,
+        remainingDiscrepancySen,
         sourceChanged,
         cashPaymentCount: cashPayments.length,
         cashPaymentRefs: cashPayments.map((payment) => payment.id),
-        status: sourceChanged ? 'source_changed' : discrepancySen === 0 ? 'matched' : 'variance',
-        mutated: false,
-        provenance: provenance(ctx.runtime, ctx, ['dayclose', 'payments', 'orders'], 'dayclose-cash-evaluator'),
+        status,
+        remediate,
+        remediationReason: remediation ? remediationReason : null,
+        remediationOutcome: remediation ? remediation.outcome : null,
+        mutated: remediation ? remediation.mutated : false,
+        provenance: provenance(
+          ctx.runtime,
+          ctx,
+          ['dayclose', 'payments', 'orders'],
+          remediation ? 'dayclose-cash-remediation' : 'dayclose-cash-evaluator',
+        ),
       };
     },
   }),

@@ -9,6 +9,17 @@ export interface MarginSimulatorCardProps {
   status: 'passed' | 'failed';
 }
 
+/**
+ * Kad simulasi margin sumbangan (FIN-01).
+ *
+ * Penampilan menggunakan token `--ui-*` yang sama seperti seluruh aplikasi
+ * (lihat `src/features/theme/workspace-theme.css`) supaya kad ini mengikut
+ * tema light/dark aplikasi, bukan palet tetap atau varian `dark:` Tailwind
+ * yang tidak dikawal oleh `data-theme` shell.
+ *
+ * NOTE: komponen ini belum dipasang (unmounted) dalam aplikasi — A2UI
+ * `MarginSimulator` dipaparkan melalui `MarginSummaryCard`.
+ */
 export const MarginSimulatorCard: React.FC<MarginSimulatorCardProps> = ({
   netSalesSen,
   cogsSen,
@@ -23,40 +34,40 @@ export const MarginSimulatorCard: React.FC<MarginSimulatorCardProps> = ({
   const contributionRm = (contributionSen / 100).toFixed(2);
 
   return (
-    <div className="p-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm space-y-3 font-sans">
+    <div className="space-y-3 rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-surface)] p-4 text-[var(--ui-text)] shadow-[var(--ui-shadow)]">
       <div className="flex items-center justify-between">
-        <h4 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">
+        <h4 className="text-sm font-semibold uppercase tracking-wider text-[var(--ui-text)]">
           Simulasi Margin Sumbangan (FIN-01)
         </h4>
         <span
-          className={`px-2 py-0.5 text-xs font-bold rounded-full ${
+          className={`rounded-full px-2 py-0.5 text-xs font-bold ${
             status === 'passed'
-              ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
-              : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
+              ? 'bg-[var(--ui-soft)] text-[var(--ui-success-text)]'
+              : 'bg-[var(--ui-soft)] text-[var(--ui-danger-text)]'
           }`}
         >
           {status === 'passed' ? 'LULUS MARGIN' : 'SEKATAN POLISI'}
         </span>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 text-xs">
-        <div>
-          <span className="text-zinc-500">Jualan Bersih (RM):</span>
-          <p className="font-mono text-sm font-bold text-zinc-800 dark:text-zinc-200">
+      <div className="grid grid-cols-2 gap-2 border-t border-[var(--ui-border)] pt-2 text-xs">
+        <div className="rounded-lg bg-[var(--ui-soft)] p-2">
+          <span className="text-[var(--ui-muted)]">Jualan Bersih (RM):</span>
+          <p className="font-mono text-sm font-bold text-[var(--ui-text)]">
             RM {netSalesRm}
           </p>
         </div>
-        <div>
-          <span className="text-zinc-500">Sumbangan Bersih (RM):</span>
-          <p className="font-mono text-sm font-bold text-zinc-800 dark:text-zinc-200">
+        <div className="rounded-lg bg-[var(--ui-soft)] p-2">
+          <span className="text-[var(--ui-muted)]">Sumbangan Bersih (RM):</span>
+          <p className="font-mono text-sm font-bold text-[var(--ui-text)]">
             RM {contributionRm}
           </p>
         </div>
       </div>
 
-      <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 flex justify-between items-center text-xs">
-        <span className="text-zinc-500">Ratio Margin Dicapai:</span>
-        <span className="font-mono font-bold text-zinc-900 dark:text-zinc-100">
+      <div className="flex items-center justify-between border-t border-[var(--ui-border)] pt-2 text-xs">
+        <span className="text-[var(--ui-muted)]">Ratio Margin Dicapai:</span>
+        <span className="font-mono font-bold text-[var(--ui-text)]">
           {marginPct}% (Minima: {minPct}%)
         </span>
       </div>

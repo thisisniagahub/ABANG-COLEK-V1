@@ -1,9 +1,11 @@
 import { randomBytes } from 'node:crypto';
-import type { CatalogueProduct, PublicProduct, InventoryMovement, InventoryReservation, OrderInput, OrderLine, OrderRecord, StockLot, PaymentState, FulfilmentStatus, VersionedQuote, EvidenceRecord, TrackedOrder } from '../../shared/platform-contracts';
+import type { CatalogueProduct, PublicProduct, InventoryMovement, InventoryReservation, OrderInput, OrderLine, OrderRecord, StockLot, PaymentState, FulfilmentStatus, VersionedQuote, EvidenceRecord } from '../../shared/platform-contracts';
 import { REFERRAL_CODE_REGEX } from '../../shared/growth-contracts';
+import type { PublicOrderProjection } from '../../shared/mod-contracts';
 import { Auth, hash, type Principal } from './auth';
 import { fields, fail, id, integer, list, now, object, oneOf, PlatformStore, strings, text, date } from './store';
 import { Loyalty } from './loyalty';
+import { resolvePublicTrackingProjection } from './publicOrderProjection';
 
 export function extractCity(contactRef: string, outletId?: string): string {
   if (!contactRef || typeof contactRef !== 'string') return outletId && outletId !== 'hq' ? outletId : 'Kuala Lumpur';
@@ -225,32 +227,25 @@ export class Commerce {
       return {...order, trackingToken};
     });
   }
-  trackOrder(token: unknown): TrackedOrder {
-    if (typeof token !== 'string' || !token.trim() || token.includes('\0') || token.length > 2048) {
-      fail('INVALID_TOKEN', 400, 'Token penjejakan diperlukan.');
-    }
-    const tokenHash = hash(token.trim());
-    const order = this.store.all<OrderRecord>('orders').find(o => o.trackingTokenHash === tokenHash);
-    if (!order) {
-      fail('ORDER_NOT_FOUND', 404, 'Pesanan tidak ditemui atau token penjejakan tidak sah.');
-    }
-    if (order.trackingTokenExpiresAt && order.trackingTokenExpiresAt <= now()) {
-      fail('TRACKING_TOKEN_EXPIRED', 410, 'Token penjejakan telah luput.');
-    }
-    const city = extractCity(order.contactRef, order.outletId);
-    return {
-      id: order.id,
-      orderId: order.id,
-      status: order.fulfilmentStatus,
-      fulfilmentStatus: order.fulfilmentStatus,
-      outletId: order.outletId,
-      hub: order.outletId,
-      fulfilment: order.fulfilment,
-      deliveryType: order.fulfilment,
-      city,
-      createdAt: order.createdAt,
-      updatedAt: order.updatedAt,
-    };
+  /**
+   * Laluan penjejakan AWAM.
+   *
+   * Hasilnya ialah unjuran awam (server/platform/publicOrderProjection.ts):
+   * TIDAK ada `id`, TIDAK ada `orderId`, tiada PII pelanggan. Yang diberi ialah
+   * `publicRef` yang opaque — prefix hash token penjejakan, yang tidak boleh
+   * diterbalikkan kepada ID pesanan dalaman.
+   *
+   * Kegagalan kekal typed + HTTP mappable: INVALID_TOKEN (400),
+   * ORDER_NOT_FOUND (404), TRACKING_TOKEN_EXPIRED (410),
+   * PUBLIC_PROJECTION_LEAK_BLOCKED (500).
+   */
+  trackOrder(token: unknown): PublicOrderProjection {
+    const outcome = resolvePublicTrackingProjection(token, this.store);
+    if (outcome.ok) return outcome.projection;
+    if (outcome.code === 'INVALID_TOKEN') fail('INVALID_TOKEN', 400, outcome.message);
+    if (outcome.code === 'ORDER_NOT_FOUND') fail('ORDER_NOT_FOUND', 404, outcome.message);
+    if (outcome.code === 'TRACKING_TOKEN_EXPIRED') fail('TRACKING_TOKEN_EXPIRED', 410, outcome.message);
+    fail('PUBLIC_PROJECTION_LEAK_BLOCKED', 500, outcome.message);
   }
   order(actor:Principal,orderId:string) { const order=this.store.require<OrderRecord>('orders',orderId);this.auth.own(actor,order.customerId,order.outletId);return order; }
   orders(actor:Principal) { return this.store.all<OrderRecord>('orders').filter(o=>o.customerId===actor.user.id||this.auth.has(actor,'founder')||actor.memberships.some(m=>m.role==='staff'&&m.outletIds.includes(o.outletId))); }

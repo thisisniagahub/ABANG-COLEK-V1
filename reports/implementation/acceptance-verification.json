@@ -1,20 +1,20 @@
 {
-  "generatedAt": "2026-10-20T17:34:17.519Z",
+  "generatedAt": "2026-10-20T22:22:48.736Z",
   "repoRoot": "D:\\ABANGCOLEK-PLATFORM",
-  "gitCommit": "60311aad5a1695eb2804e830488a3133e182397f",
+  "gitCommit": "6c5b16eda5fd678bf22983f3a6c79b21da40241a",
   "gitBranch": "integrate/blueprint-v23",
   "gitDirty": true,
   "nodeVersion": "v26.3.0",
   "bunVersion": "1.4.2",
   "sourceManifestBefore": {
-    "digest": "c84287d7c98de3475d78c18d2009c9339f2069d4821bff03eac18a154eb96776",
-    "fileCount": 962
+    "digest": "d483a612cc5a29580b590a0fec65f10ed085a8a39243870c7c8a130e92616540",
+    "fileCount": 1010
   },
   "sourceManifestAfter": {
-    "digest": "c84287d7c98de3475d78c18d2009c9339f2069d4821bff03eac18a154eb96776",
-    "fileCount": 962
+    "digest": "66754fb4b784b2d8bcc5114d37562115112a43955c227730a0ba7d01545273f7",
+    "fileCount": 1013
   },
-  "sourceStable": true,
+  "sourceStable": false,
   "suites": [
     {
       "id": "lint",
@@ -22,7 +22,7 @@
       "cwd": "D:\\ABANGCOLEK-PLATFORM",
       "exitCode": 0,
       "status": "pass",
-      "durationMs": 44878,
+      "durationMs": 40789,
       "passCount": null,
       "failCount": null,
       "expectCount": null,
@@ -38,14 +38,14 @@
       "cwd": "D:\\ABANGCOLEK-PLATFORM",
       "exitCode": 0,
       "status": "pass",
-      "durationMs": 15548,
+      "durationMs": 21790,
       "passCount": null,
       "failCount": null,
       "expectCount": null,
       "filesScanned": null,
       "summary": "",
       "fileResults": [],
-      "stdoutTail": "vite v6.4.3 building for production...\ntransforming...\n✓ 1972 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/index.html                                 1.42 kB │ gzip:   0.62 kB\ndist/assets/FlowRenderer-BVt6VmOE.css           4.04 kB │ gzip:   1.14 kB\ndist/assets/PetCompanion-BY0wJOJz.css           7.44 kB │ gzip:   2.08 kB\ndist/assets/LandingPage-DpPRRO9i.css           36.15 kB │ gzip:   7.65 kB\ndist/assets/WorkspaceContent-CcRwvhak.css      37.60 kB │ gzip:   6.91 kB\ndist/assets/index-x68EXpNz.css                 94.00 kB │ gzip:  16.72 kB\ndist/assets/IntegrationWorkspace-DAKFcYiB.js    1.30 kB │ gzip:   0.70 kB\ndist/assets/customer-cart-DkHl5C9w.js           2.66 kB │ gzip:   1.23 kB\ndist/assets/growth-contracts-nYK9cxFw.js        2.70 kB │ gzip:   1.14 kB\ndist/assets/experience-model-LzW9njd3.js        3.23 kB │ gzip:   1.54 kB\ndist/assets/FlowRenderer-GS9nW10Z.js           22.56 kB │ gzip:   7.45 kB\ndist/assets/LandingPage-DZ4LVRUw.js            55.15 kB │ gzip:  17.03 kB\ndist/assets/PetCompanion-D7XxS8tB.js           59.15 kB │ gzip:  19.76 kB\ndist/assets/runIdentity-CPWpNcbc.js           122.97 kB │ gzip:  38.24 kB\ndist/assets/WorkspaceContent-D-aiRspS.js      285.31 kB │ gzip:  76.08 kB\ndist/assets/index-6u3bsw5I.js                 500.06 kB │ gzip: 144.63 kB\n✓ built in 13.79s\nPublic HTML generated: catalogue version 0, 0 published products. Rebuild after catalogue changes.",
+      "stdoutTail": "vite v6.4.3 building for production...\ntransforming...\n✓ 1971 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/index.html                                 1.42 kB │ gzip:   0.62 kB\ndist/assets/FlowRenderer-BVt6VmOE.css           4.04 kB │ gzip:   1.14 kB\ndist/assets/PetCompanion-BY0wJOJz.css           7.44 kB │ gzip:   2.08 kB\ndist/assets/LandingPage-BJGlBZWZ.css           31.83 kB │ gzip:   6.71 kB\ndist/assets/WorkspaceContent-CcRwvhak.css      37.60 kB │ gzip:   6.91 kB\ndist/assets/index-DILZ4MrH.css                 92.12 kB │ gzip:  16.35 kB\ndist/assets/IntegrationWorkspace-C11v1d-H.js    1.30 kB │ gzip:   0.70 kB\ndist/assets/customer-cart-uZ-3gQSO.js           2.66 kB │ gzip:   1.23 kB\ndist/assets/growth-contracts-D7f6x_F9.js        2.70 kB │ gzip:   1.14 kB\ndist/assets/experience-model-dDZw_YiX.js        3.23 kB │ gzip:   1.54 kB\ndist/assets/FlowRenderer-Bpbe3uh1.js           22.56 kB │ gzip:   7.45 kB\ndist/assets/LandingPage-wyCv0ab_.js            41.73 kB │ gzip:  13.40 kB\ndist/assets/PetCompanion-NovYaVN9.js           59.15 kB │ gzip:  19.76 kB\ndist/assets/runIdentity-DKfpdFyS.js           122.97 kB │ gzip:  38.24 kB\ndist/assets/WorkspaceContent-D0t1zk8u.js      296.46 kB │ gzip:  78.98 kB\ndist/assets/index-tYYamreN.js                 500.54 kB │ gzip: 144.77 kB\n✓ built in 20.04s\nPublic HTML generated: catalogue version 0, 0 published products. Rebuild after catalogue changes.",
       "stderrTail": "$ vite build && bun scripts/prerender-public.ts\n(!) Some chunks are larger than 500 kB after minification. Consider:\n- Using dynamic import() to code-split the application\n- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks\n- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit."
     },
     {
@@ -54,12 +54,12 @@
       "cwd": "D:\\ABANGCOLEK-PLATFORM",
       "exitCode": 0,
       "status": "pass",
-      "durationMs": 1243,
-      "passCount": 49,
+      "durationMs": 851,
+      "passCount": 55,
       "failCount": 0,
-      "expectCount": 250,
-      "filesScanned": 7,
-      "summary": "Ran 49 tests across 7 files. [1094.00ms]",
+      "expectCount": 331,
+      "filesScanned": 9,
+      "summary": "Ran 55 tests across 9 files. [698.00ms]",
       "fileResults": [
         {
           "file": "tests\\jev\\api.test.ts",
@@ -295,11 +295,11 @@
         },
         {
           "file": "tests\\jev\\execution-policy.test.ts",
-          "tests": 4,
+          "tests": 5,
           "failures": 0,
           "errors": 0,
           "skipped": 0,
-          "assertions": 18,
+          "assertions": 64,
           "testCases": [
             {
               "name": "high confidence never substitutes for permission or approval",
@@ -315,6 +315,12 @@
             },
             {
               "name": "legacy empty evaluator stays unknown and external actions prepare only",
+              "classname": "JEV action and scope boundary",
+              "file": "tests\\jev\\execution-policy.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "uncomputed dimensions and primitives are null, never 0, false or an empty map",
               "classname": "JEV action and scope boundary",
               "file": "tests\\jev\\execution-policy.test.ts",
               "outcome": "pass"
@@ -351,6 +357,34 @@
               "name": "loading another actor never exposes persisted or unsaved history",
               "classname": "scoped JEV device history",
               "file": "tests\\jev\\history.test.ts",
+              "outcome": "pass"
+            }
+          ]
+        },
+        {
+          "file": "tests\\jev\\null-semantics.test.ts",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "assertions": 21,
+          "testCases": [
+            {
+              "name": "rekod dengan confidence/probabilities null dihydrate semula dan null kekal null",
+              "classname": "JEV — sejarah peranti dengan semantik null",
+              "file": "tests\\jev\\null-semantics.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "nilai dimensi di luar taksonomi TIDAK dihydrate — rekod ditolak sepenuhnya",
+              "classname": "JEV — sejarah peranti dengan semantik null",
+              "file": "tests\\jev\\null-semantics.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "rekod separuh null (confidence null tetapi probabilities diisi) ditolak",
+              "classname": "JEV — sejarah peranti dengan semantik null",
+              "file": "tests\\jev\\null-semantics.test.ts",
               "outcome": "pass"
             }
           ]
@@ -424,11 +458,33 @@
               "outcome": "pass"
             }
           ]
+        },
+        {
+          "file": "tests\\jev\\taxonomy-drift.test.ts",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "assertions": 14,
+          "testCases": [
+            {
+              "name": "nilai di luar taksonomi menjadi UNKNOWN dan direkodkan sebagai taxonomyDrift",
+              "classname": "JEV — drift taksonomi (nilai luar taksonomi tidak pernah diproyek)",
+              "file": "tests\\jev\\taxonomy-drift.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "kawalan: nilai dalam taksonomi kekal sebagai nilai sebenar dan tiada drift",
+              "classname": "JEV — drift taksonomi (nilai luar taksonomi tidak pernah diproyek)",
+              "file": "tests\\jev\\taxonomy-drift.test.ts",
+              "outcome": "pass"
+            }
+          ]
         }
       ],
-      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_jev.27036-mvgylqpu-g7oxnx79.xml",
+      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_jev.24644-mvh8xa9y-qs4ukrvs.xml",
       "stdoutTail": "bun test v1.4.2 (744846f84)",
-      "stderrTail": " 49 pass\n 0 fail\n 250 expect() calls\nRan 49 tests across 7 files. [1094.00ms]"
+      "stderrTail": " 55 pass\n 0 fail\n 331 expect() calls\nRan 55 tests across 9 files. [698.00ms]"
     },
     {
       "id": "test:platform",
@@ -436,12 +492,12 @@
       "cwd": "D:\\ABANGCOLEK-PLATFORM",
       "exitCode": 0,
       "status": "pass",
-      "durationMs": 132158,
-      "passCount": 775,
+      "durationMs": 103869,
+      "passCount": 800,
       "failCount": 0,
-      "expectCount": 5273,
-      "filesScanned": 111,
-      "summary": "Ran 785 tests across 111 files. [131.38s]",
+      "expectCount": 5457,
+      "filesScanned": 115,
+      "summary": "Ran 811 tests across 115 files. [101.82s]",
       "fileResults": [
         {
           "file": "tests\\platform\\acceptance-harness-junit-parser.test.ts",
@@ -819,11 +875,11 @@
         },
         {
           "file": "tests\\platform\\adk-specialists.test.ts",
-          "tests": 7,
+          "tests": 9,
           "failures": 0,
           "errors": 0,
           "skipped": 0,
-          "assertions": 41,
+          "assertions": 49,
           "testCases": [
             {
               "name": "A2UI allowlisted components contain all 6 canonical UI components",
@@ -839,6 +895,18 @@
             },
             {
               "name": "STRICT_FREE_CANDIDATE_SEQUENCE satisfies Zero-New-Paid-Cloud-Spend policy",
+              "classname": "Google ADK Specialists & AG-UI Contracts Conformance",
+              "file": "tests\\platform\\adk-specialists.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "provider base URLs have no trailing slash (URL berganda => HTTP 404)",
+              "classname": "Google ADK Specialists & AG-UI Contracts Conformance",
+              "file": "tests\\platform\\adk-specialists.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "provider failures: 410 (EOL model) and 401 (bad key) are not retryable",
               "classname": "Google ADK Specialists & AG-UI Contracts Conformance",
               "file": "tests\\platform\\adk-specialists.test.ts",
               "outcome": "pass"
@@ -2523,14 +2591,20 @@
         },
         {
           "file": "tests\\platform\\copilot-adk.test.ts",
-          "tests": 5,
+          "tests": 6,
           "failures": 0,
           "errors": 0,
           "skipped": 0,
-          "assertions": 110,
+          "assertions": 126,
           "testCases": [
             {
               "name": "FreeModelRouter manages providers and provides deterministic fallback",
+              "classname": "Google ADK Agent & Free Model Router Integration",
+              "file": "tests\\platform\\copilot-adk.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "Bajet run yang dibekukan menghalang failover dan dilabel LOCAL_RULES_BUDGET_EXHAUSTED",
               "classname": "Google ADK Agent & Free Model Router Integration",
               "file": "tests\\platform\\copilot-adk.test.ts",
               "outcome": "pass"
@@ -2586,6 +2660,52 @@
               "classname": "Fasa 05: CopilotKit Intelligence Policy & Evaluation (CPK-02 / CPK-03)",
               "file": "tests\\platform\\copilot-intelligence.test.ts",
               "outcome": "pass"
+            }
+          ]
+        },
+        {
+          "file": "tests\\platform\\copilot-pending-contracts.test.ts",
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 1,
+          "assertions": 36,
+          "testCases": [
+            {
+              "name": "BL-28 unit: dua id hadir, yang TERPANJANG menang dan tiada AMBIGUOUS",
+              "classname": "BL-28 — id kanonikal terpanjang menang (kontrak sudah diimplementasikan)",
+              "file": "tests\\platform\\copilot-pending-contracts.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "BL-28 unit negatives: token separa TIDAK memuzzykan id, dan pertikaian sama panjang GAGAL TUTUP",
+              "classname": "BL-28 — id kanonikal terpanjang menang (kontrak sudah diimplementasikan)",
+              "file": "tests\\platform\\copilot-pending-contracts.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "BL-28 e2e: dua id disebut => amaun datang daripada id TERPANJANG (7000 sen), bukan 3000",
+              "classname": "BL-28 — longest canonical id wins (permukaan HTTP sebenar)",
+              "file": "tests\\platform\\copilot-pending-contracts.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "BL-28 e2e negative: hanya id pendek disebut => amaun ikut rekod itu (3000 sen)",
+              "classname": "BL-28 — longest canonical id wins (permukaan HTTP sebenar)",
+              "file": "tests\\platform\\copilot-pending-contracts.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "BL-28 e2e negative: pertikaian sama panjang => TIADA pesanan, TIADA jumlah (fail tutup)",
+              "classname": "BL-28 — longest canonical id wins (permukaan HTTP sebenar)",
+              "file": "tests\\platform\\copilot-pending-contracts.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "BL-32 — hasil yang tidak dapat ditentukan dilaporkan sebagai unknown_outcome, tiada resit confirmed, cadangan tidak tinggal approved",
+              "classname": "BL-32 — unknown outcome untuk kesan sisi yang tidak dapat ditentukan (PENDING IMPLEMENTATION)",
+              "file": "tests\\platform\\copilot-pending-contracts.test.ts",
+              "outcome": "skip"
             }
           ]
         },
@@ -2873,6 +2993,70 @@
               "name": "createBudget mengekalkan had 3 panggilan dan log bajet",
               "classname": "Copilot Runtime Pipeline — polisi sifar kos",
               "file": "tests\\platform\\copilot-runtime-pipeline.test.ts",
+              "outcome": "pass"
+            }
+          ]
+        },
+        {
+          "file": "tests\\platform\\copilot-typed-failures.test.ts",
+          "tests": 9,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "assertions": 79,
+          "testCases": [
+            {
+              "name": "Tiada input komersial => MARGIN_INPUTS_NOT_PROVIDED dengan kunci yang hilang",
+              "classname": "BL-29 — kegagalan margin bertyped",
+              "file": "tests\\platform\\copilot-typed-failures.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "Input rosak => MARGIN_INPUTS_INVALID + invalidKeys yang menunjuk key sebenarnya",
+              "classname": "BL-29 — kegagalan margin bertyped",
+              "file": "tests\\platform\\copilot-typed-failures.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "Kawalan: order-id kanonikal yang lengkapi resolve dan jumlah datang daripada rekod",
+              "classname": "BL-29 — resolusi order-id & intent refund (permukaan HTTP sebenar)",
+              "file": "tests\\platform\\copilot-typed-failures.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "Token separa TIDAK boleh menyelesaikan pesanan — tiada jumlah, bukan 0",
+              "classname": "BL-29 — resolusi order-id & intent refund (permukaan HTTP sebenar)",
+              "file": "tests\\platform\\copilot-typed-failures.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "Order-id yang tidak wujud => reason code + TIDAK ADA jumlah (bukan 0, bukan pesanan separa)",
+              "classname": "BL-29 — resolusi order-id & intent refund (permukaan HTTP sebenar)",
+              "file": "tests\\platform\\copilot-typed-failures.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "Intent refund adalah negation-aware — \"jangan/tidak/do not/no refund\" TIDAK refund",
+              "classname": "BL-29 — resolusi order-id & intent refund (permukaan HTTP sebenar)",
+              "file": "tests\\platform\\copilot-typed-failures.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "Kawalan: permintaan refund POSITIF tetap mencetuskan refund",
+              "classname": "BL-29 — resolusi order-id & intent refund (permukaan HTTP sebenar)",
+              "file": "tests\\platform\\copilot-typed-failures.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "Permukaan HTTP tidak bocorkan TypeError/RangeError mentah untuk input margin rosak",
+              "classname": "BL-29 — resolusi order-id & intent refund (permukaan HTTP sebenar)",
+              "file": "tests\\platform\\copilot-typed-failures.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "Permukaan HTTP melaporkan MARGIN_INPUTS_NOT_PROVIDED apabila tiada input komersial",
+              "classname": "BL-29 — resolusi order-id & intent refund (permukaan HTTP sebenar)",
+              "file": "tests\\platform\\copilot-typed-failures.test.ts",
               "outcome": "pass"
             }
           ]
@@ -3324,6 +3508,34 @@
           ]
         },
         {
+          "file": "tests\\platform\\dev-inspector-route.test.ts",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "assertions": 21,
+          "testCases": [
+            {
+              "name": "a production build refuses the inspector before any session is resolved",
+              "classname": "BL-22 — the local inspector route",
+              "file": "tests\\platform\\dev-inspector-route.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "a customer session is refused with 403 FORBIDDEN",
+              "classname": "BL-22 — the local inspector route",
+              "file": "tests\\platform\\dev-inspector-route.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "a founder session receives the real snapshot shape",
+              "classname": "BL-22 — the local inspector route",
+              "file": "tests\\platform\\dev-inspector-route.test.ts",
+              "outcome": "pass"
+            }
+          ]
+        },
+        {
           "file": "tests\\platform\\developer-workspaces.test.ts",
           "tests": 1,
           "failures": 0,
@@ -3345,7 +3557,7 @@
           "failures": 0,
           "errors": 0,
           "skipped": 0,
-          "assertions": 124,
+          "assertions": 126,
           "testCases": [
             {
               "name": "All 10 required domain modules are represented in the registry",
@@ -4039,7 +4251,7 @@
           "failures": 0,
           "errors": 0,
           "skipped": 0,
-          "assertions": 46,
+          "assertions": 47,
           "testCases": [
             {
               "name": "Strict Content-Type enforcement on mutating POST endpoints",
@@ -6034,6 +6246,46 @@
           ]
         },
         {
+          "file": "tests\\platform\\test-all-runner.test.ts",
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "assertions": 21,
+          "testCases": [
+            {
+              "name": "urutan suite adalah tepat seperti yang diminta",
+              "classname": "Pelari aggregate — scripts/test-all.ts",
+              "file": "tests\\platform\\test-all-runner.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "kiraan dibaca daripada output bun test yang sebenar (dengan kod warna ANSI)",
+              "classname": "Pelari aggregate — scripts/test-all.ts",
+              "file": "tests\\platform\\test-all-runner.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "output tanpa ringkasan => tiada kiraan (bukan kiraan rekaan)",
+              "classname": "Pelari aggregate — scripts/test-all.ts",
+              "file": "tests\\platform\\test-all-runner.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "peraturan \"gagal\": fail > 0, kod keluar bukan sifar, atau tiada kiraan",
+              "classname": "Pelari aggregate — scripts/test-all.ts",
+              "file": "tests\\platform\\test-all-runner.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "mekanisme: `bun test` sebenar -> kod keluar, kiraan sebenar, tiada apa-apa disembunyikan",
+              "classname": "Pelari aggregate — scripts/test-all.ts",
+              "file": "tests\\platform\\test-all-runner.test.ts",
+              "outcome": "pass"
+            }
+          ]
+        },
+        {
           "file": "tests\\platform\\upload-limits.test.ts",
           "tests": 2,
           "failures": 0,
@@ -6254,9 +6506,9 @@
           ]
         }
       ],
-      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_platform.27036-mvgylqpu-g7oxnx79.xml",
+      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_platform.24644-mvh8xa9y-qs4ukrvs.xml",
       "stdoutTail": "bun test v1.4.2 (744846f84)\nNOTOK ADV-25 -> EXECUTOR_UNAVAILABLE\nNOTOK ADV-26 -> RECEIPT_NOT_FOUND\n--- MCP protocol transcript (founder) ---\nS->C {\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-11-25\",\"capabilities\":{},\"clientInfo\":{\"name\":\"abangcolek-test-client\",\"version\":\"1.0.0\"}},\"jsonrpc\":\"2.0\",\"id\":0}\nC->S {\"result\":{\"protocolVersion\":\"2025-11-25\",\"capabilities\":{\"tools\":{\"listChanged\":true},\"resources\":{\"listChanged\":true}},\"serverInfo\":{\"name\":\"abangcolek-operations-mcp\",\"version\":\"1.0.0\"},\"instructions\":\"Taklimat operasi AbangColek yang membaca sahaja. Skop setiap panggilan ditentukan oleh sesi server; tiada parameter yang boleh menukar skop.\"},\"jsonrpc\":\"2.0\",\"id\":0}\nS->C {\"method\":\"notifications/initialized\",\"jsonrpc\":\"2.0\"}\nS->C {\"method\":\"tools/list\",\"jsonrpc\":\"2.0\",\"id\":1}\nC->S {\"result\":{\"tools\":[{\"name\":\"get_operations_brief\",\"title\":\"Get Operations Brief\",\"description\":\"Ringkasan operasi harian atau mendesak yang dikira daripada store kanonikal platform. Baca sahaja.\",\"inputSchema\":{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"period\":{\"description\":\"Jenis taklimat. Default \\\"daily\\\".\",\"type\":\"string\",\"enum\":[\"daily\",\"urgent\"]}}},\"annotations\":{\"readOnlyHint\":true,\"destructiveHint\":false,\"idempotentHint\":true},\"execution\":{\"taskSupport\":\"forbidden\"},\"_meta\":{\"ui\":{\"resourceUri\":\"ui://abangcolek/operations-brief.html\",\"visibility\":[\"model\",\"app\"]},\"ui/resourceUri\":\"ui://abangcolek/operations-brief.html\"}},{\"name\":\"get_order_status\",\"title\":\"Get Order Status\",\"description\":\"Status satu pesanan. Pesanan di luar skop outlet, dealer atau akaun pelayar ditolak.\",\"inputSchema\":{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"orderId\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":120,\"description\":\"ID pesanan, contoh ORD-001.\"}},\"required\":[\"orderId\"]},\"annotations\":{\"readOnlyHint\":true,\"destructiveHint\":false,\"idempotentHint\":true},\"execution\":{\"taskSupport\":\"forbidden\"}}]},\"jsonrpc\":\"2.0\",\"id\":1}\nS->C {\"method\":\"tools/call\",\"params\":{\"name\":\"get_operations_brief\",\"arguments\":{\"period\":\"daily\"}},\"jsonrpc\":\"2.0\",\"id\":2}\nC->S {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"{\\n  \\\"title\\\": \\\"Ringkasan Eksekutif Operasi Harian AbangColek\\\",\\n  \\\"briefDate\\\": \\\"2026-10-21\\\",\\n  \\\"metrics\\\": [\\n    {\\n      \\\"label\\\": \\\"Pesanan Hari Ini\\\",\\n      \\\"value\\\": \\\"2\\\"\\n    },\\n    {\\n      \\\"label\\\": \\\"Kutipan Bersih (Sen)\\\",\\n      \\\"value\\\": \\\"4800\\\"\\n    },\\n    {\\n      \\\"label\\\": \\\"Penghantaran Dalam Transit\\\",\\n      \\\"value\\\": \\\"1\\\"\\n    },\\n    {\\n      \\\"label\\\": \\\"SKU Stok Rendah\\\",\\n      \\\"value\\\": \\\"1\\\"\\n    },\\n    {\\n      \\\"label\\\": \\\"Tindakan HITL Menunggu\\\",\\n      \\\"value\\\": \\\"1\\\"\\n    }\\n  ],\\n  \\\"readOnlyNotice\\\": \\\"FIRST_PARTY_RESOURCE_UNRESTRICTED_PROXY_BLOCKED\\\",\\n  \\\"source\\\": \\\"database\\\",\\n  \\\"revision\\\": \\\"store_snapshot\\\",\\n  \\\"observation\\\": \\\"observed\\\",\\n  \\\"highlights\\\": [\\n    \\\"1 penghantaran aktif dalam transit (rekod pesanan sahkan status 'dispatched').\\\",\\n    \\\"1 SKU pada atau bawah paras stok rendah (20 unit).\\\",\\n    \\\"1 tindakan HITL menunggu keputusan Founder: HITL-1.\\\"\\n  ]\\n}\"}],\"structuredContent\":{\"title\":\"Ringkasan Eksekutif Operasi Harian AbangColek\",\"briefDate\":\"2026-10-21\",\"metrics\":[{\"label\":\"Pesanan Hari Ini\",\"value\":\"2\"},{\"label\":\"Kutipan Bersih (Sen)\",\"value\":\"4800\"},{\"label\":\"Penghantaran Dalam Transit\",\"value\":\"1\"},{\"label\":\"SKU Stok Rendah\",\"value\":\"1\"},{\"label\":\"Tindakan HITL Menunggu\",\"value\":\"1\"}],\"readOnlyNotice\":\"FIRST_PARTY_RESOURCE_UNRESTRICTED_PROXY_BLOCKED\",\"source\":\"database\",\"revision\":\"store_snapshot\",\"observation\":\"observed\",\"highlights\":[\"1 penghantaran aktif dalam transit (rekod pesanan sahkan status 'dispatched').\",\"1 SKU pada atau bawah paras stok rendah (20 unit).\",\"1 tindakan HITL menunggu keputusan Founder: HITL-1.\"]}},\"jsonrpc\":\"2.0\",\"id\":2}\nS->C {\"method\":\"resources/list\",\"jsonrpc\":\"2.0\",\"id\":3}\nC->S {\"result\":{\"resources\":[{\"uri\":\"operations://brief/daily\",\"name\":\"Operations Brief (daily)\",\"title\":\"Operations Brief (daily)\",\"description\":\"Unjuran taklimat operasi yang strict: title, briefDate, metrics, readOnlyNotice, source, revision.\",\"mimeType\":\"application/json\"},{\"uri\":\"operations://brief/urgent\",\"name\":\"Operations Brief (urgent)\",\"title\":\"Operations Brief (urgent)\",\"description\":\"Unjuran taklimat operasi yang strict: title, briefDate, metrics, readOnlyNotice, source, revision.\",\"mimeType\":\"application/json\"},{\"uri\":\"ui://abangcolek/operations-brief.html\",\"name\":\"AbangColek Operations Brief App\",\"title\":\"AbangColek Operations Brief App\",\"description\":\"Widget taklimat operasi baca sahaja. Dihos dalam iframe bersandbox dengan CSP ketat.\",\"mimeType\":\"text/html;profile=mcp-app\",\"_meta\":{\"ui\":{\"csp\":{\"connectDomains\":[],\"resourceDomains\":[],\"frameDomains\":[],\"baseUriDomains\":[]},\"prefersBorder\":true}}}]},\"jsonrpc\":\"2.0\",\"id\":3}\nS->C {\"method\":\"resources/read\",\"params\":{\"uri\":\"ui://abangcolek/operations-brief.html\"},\"jsonrpc\":\"2.0\",\"id\":4}\nC->S {\"result\":{\"contents\":[{\"uri\":\"ui://abangcolek/operations-brief.html\",\"mimeType\":\"text/html;profile=mcp-app\",\"text\":\"<!doctype html>\\n<html lang=\\\"ms\\\">\\n<head>\\n<meta charset=\\\"utf-8\\\" />\\n<meta name=\\\"viewport\\\" content=\\\"width=device-width, initial-scale=1\\\" />\\n<meta http-equiv=\\\"Content-Security-Policy\\\" content=\\\"default-src 'none'; img-src data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'\\\" />\\n<title>Ringkasan Eksekutif Operasi Harian AbangColek</title>\\n<style>\\n:root { color-scheme: light dark; }\\n* { box-sizing: border-box; }\\nbody { margin: 0; padding: 16px; font: 14px/1.5 system-ui, -apple-system, \\\"Segoe UI\\\", sans-serif; color: #16181d; background: #ffffff; }\\nheader { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; }\\nh1 { font-size: 15px; font-weight: 600; margin: 0; }\\n.badge { font-size: 11px; border: 1px solid #d5d8de; border-radius: 999px; padding: 2px 8px; color: #5b616b; }\\ndl { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; margin: 12px 0 0; }\\n.metric { background: #f5f6f8; border-radius: 10px; padding: 10px; min-width: 0; }\\ndt { font-size: 11px; color: #5b616b; margin: 0; }\\ndd { margin: 4px 0 0; font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }\\nfooter { margin-top: 12px; font-size: 11px; color: #6b7280; border-top: 1px solid #e4e6ea; padding-top: 8px; }\\n@media (prefers-color-scheme: dark) {\\n  body { color: #e6e8ec; background: #14161a; }\\n  .metric { background: #1d2026; }\\n  .badge { border-color: #333842; color: #9aa3b2; }\\n  footer { border-top-color: #2a2e36; color: #9aa3b2; }\\n}\\n</style>\\n</head>\\n<body>\\n<header>\\n  <h1>Ringkasan Eksekutif Operasi Harian AbangColek</h1>\\n  <span class=\\\"badge\\\">Read only</span>\\n</header>\\n<dl><div class=\\\"metric\\\"><dt>Pesanan Hari Ini</dt><dd>2</dd></div><div class=\\\"metric\\\"><dt>Kutipan Bersih (Sen)</dt><dd>4800</dd></div><div class=\\\"metric\\\"><dt>Penghantaran Dalam Transit</dt><dd>1</dd></div><div class=\\\"metric\\\"><dt>SKU Stok Rendah</dt><dd>1</dd></div><div class=\\\"metric\\\"><dt>Tindakan HITL Menunggu</dt><dd>1</dd></div></dl>\\n<footer>FIRST_PARTY_RESOURCE_UNRESTRICTED_PROXY_BLOCKED · database · rev store_snapshot</footer>\\n<script type=\\\"application/json\\\" id=\\\"mcp-app-brief\\\">{\\\"title\\\":\\\"Ringkasan Eksekutif Operasi Harian AbangColek\\\",\\\"briefDate\\\":\\\"2026-10-21\\\",\\\"metrics\\\":[{\\\"label\\\":\\\"Pesanan Hari Ini\\\",\\\"value\\\":\\\"2\\\"},{\\\"label\\\":\\\"Kutipan Bersih (Sen)\\\",\\\"value\\\":\\\"4800\\\"},{\\\"label\\\":\\\"Penghantaran Dalam Transit\\\",\\\"value\\\":\\\"1\\\"},{\\\"label\\\":\\\"SKU Stok Rendah\\\",\\\"value\\\":\\\"1\\\"},{\\\"label\\\":\\\"Tindakan HITL Menunggu\\\",\\\"value\\\":\\\"1\\\"}],\\\"readOnlyNotice\\\":\\\"FIRST_PARTY_RESOURCE_UNRESTRICTED_PROXY_BLOCKED\\\",\\\"source\\\":\\\"database\\\",\\\"revision\\\":\\\"store_snapshot\\\"}</script>\\n<script>\\n(function () {\\n  'use strict';\\n  var PROTOCOL_VERSION = \\\"2026-01-26\\\";\\n  var APP_INFO = { name: 'abangcolek-operations-brief', version: '1.0.0' };\\n  var TARGET_ORIGIN = '*';\\n  var pending = Object.create(null);\\n\\n  function post(message) {\\n    try { window.parent.postMessage(message, TARGET_ORIGIN); } catch (error) { /* host gone */ }\\n  }\\n\\n  function respond(id, result) {\\n    post({ jsonrpc: '2.0', id: id, result: result });\\n  }\\n\\n  function fail(id, code, message) {\\n    post({ jsonrpc: '2.0', id: id, error: { code: code, message: message } });\\n  }\\n\\n  window.addEventListener('message', function (event) {\\n    if (event.source !== window.parent) return;\\n    var data = event.data;\\n    if (!data || typeof data !== 'object' || data.jsonrpc !== '2.0') return;\\n    if (data.method === 'ui/resource-teardown') {\\n      if (typeof data.id === 'number' || typeof data.id === 'string') respond(data.id, {});\\n      return;\\n    }\\n    if (data.method === 'ui/notifications/host-context-changed') return;\\n  });\\n\\n  function requestInitialize() {\\n    var id = 'ui-init-' + Date.now();\\n    pending[id] = true;\\n    post({\\n      jsonrpc: '2.0',\\n      id: id,\\n      method: 'ui/initialize',\\n      params: {\\n        appInfo: APP_INFO,\\n        appCapabilities: {},\\n        protocolVersion: PROTOCOL_VERSION\\n      }\\n    });\\n    // If the host never answers, the widget stays inert but rendered.\\n    setTimeout(function () { delete pending[id]; }, 10000);\\n  }\\n\\n  function notifySize() {\\n    var doc = document.documentElement;\\n    var height = Math.ceil(doc.getBoundingClientRect().height);\\n    var width = Math.ceil(window.innerWidth);\\n    post({\\n      jsonrpc: '2.0',\\n      method: 'ui/notifications/size-changed',\\n      params: { width: width, height: height }\\n    });\\n  }\\n\\n  function start() {\\n    requestInitialize();\\n    post({ jsonrpc: '2.0', method: 'ui/notifications/initialized' });\\n    if (typeof ResizeObserver === 'function') {\\n      var observer = new ResizeObserver(notifySize);\\n      observer.observe(document.documentElement);\\n      observer.observe(document.body);\\n    } else {\\n      window.addEventListener('resize', notifySize);\\n    }\\n    notifySize();\\n  }\\n\\n  if (document.readyState === 'loading') {\\n    document.addEventListener('DOMContentLoaded', start);\\n  } else {\\n    start();\\n  }\\n}());\\n</script>\\n</body>\\n</html>\",\"_meta\":{\"ui\":{\"csp\":{\"connectDomains\":[],\"resourceDomains\":[],\"frameDomains\":[],\"baseUriDomains\":[]},\"prefersBorder\":true}}}]},\"jsonrpc\":\"2.0\",\"id\":4}\nS->C {\"method\":\"resources/read\",\"params\":{\"uri\":\"operations://brief/daily\"},\"jsonrpc\":\"2.0\",\"id\":5}\nC->S {\"result\":{\"contents\":[{\"uri\":\"operations://brief/daily\",\"mimeType\":\"application/json\",\"text\":\"{\\\"title\\\":\\\"Ringkasan Eksekutif Operasi Harian AbangColek\\\",\\\"briefDate\\\":\\\"2026-10-21\\\",\\\"metrics\\\":[{\\\"label\\\":\\\"Pesanan Hari Ini\\\",\\\"value\\\":\\\"2\\\"},{\\\"label\\\":\\\"Kutipan Bersih (Sen)\\\",\\\"value\\\":\\\"4800\\\"},{\\\"label\\\":\\\"Penghantaran Dalam Transit\\\",\\\"value\\\":\\\"1\\\"},{\\\"label\\\":\\\"SKU Stok Rendah\\\",\\\"value\\\":\\\"1\\\"},{\\\"label\\\":\\\"Tindakan HITL Menunggu\\\",\\\"value\\\":\\\"1\\\"}],\\\"readOnlyNotice\\\":\\\"FIRST_PARTY_RESOURCE_UNRESTRICTED_PROXY_BLOCKED\\\",\\\"source\\\":\\\"database\\\",\\\"revision\\\":\\\"store_snapshot\\\"}\"}]},\"jsonrpc\":\"2.0\",\"id\":5}\n--- end transcript ---",
-      "stderrTail": "{\"component\":\"platform_provider_failure\",\"provider\":\"OpenRouter Free Tier\",\"model\":\"nvidia/nemotron-3-super-120b-a12b:free\",\"status\":404,\"reason\":\"PROVIDER_MODEL_NOT_FOUND\",\"body\":\"{\\\"error\\\":{\\\"message\\\":\\\"Provider returned error\\\",\\\"code\\\":404,\\\"metadata\\\":{\\\"raw\\\":\\\"{\\\\\\\"status\\\\\\\":404,\\\\\\\"title\\\\\\\":\\\\\\\"Not Found\\\\\\\",\\\\\\\"detail\\\\\\\":\\\\\\\"Function '[redacted-id]': Not found for account '[redacted-token]'\\\\\\\"}\\\",\\\"provider_name\\\":\\\"Nvidia\\\",\\\"is_byok\\\":false}},\\\"user_id\\\":\\\"[redacted-token]\\\"}\"}\n{\"component\":\"platform_provider_failure\",\"provider\":\"Google Gemini Flash (AI Studio)\",\"model\":\"gemini-3.6-flash\",\"status\":404,\"reason\":\"PROVIDER_MODEL_NOT_FOUND\",\"body\":\"\"}\n{\"component\":\"platform_provider_failure\",\"provider\":\"Google Gemini Flash (AI Studio)\",\"model\":\"gemini-3.5-flash-lite\",\"status\":404,\"reason\":\"PROVIDER_MODEL_NOT_FOUND\",\"body\":\"\"}\n{\"component\":\"platform_provider_failure\",\"provider\":\"OpenRouter Free Tier\",\"model\":\"nvidia/nemotron-3-super-120b-a12b:free\",\"status\":404,\"reason\":\"PROVIDER_MODEL_NOT_FOUND\",\"body\":\"{\\\"error\\\":{\\\"message\\\":\\\"Provider returned error\\\",\\\"code\\\":404,\\\"metadata\\\":{\\\"raw\\\":\\\"{\\\\\\\"status\\\\\\\":404,\\\\\\\"title\\\\\\\":\\\\\\\"Not Found\\\\\\\",\\\\\\\"detail\\\\\\\":\\\\\\\"Function '[redacted-id]': Not found for account '[redacted-token]'\\\\\\\"}\\\",\\\"provider_name\\\":\\\"Nvidia\\\",\\\"is_byok\\\":false}},\\\"user_id\\\":\\\"[redacted-token]\\\"}\"}\n{\"component\":\"platform_provider_failure\",\"provider\":\"Google Gemini Flash (AI Studio)\",\"model\":\"gemini-3.6-flash\",\"status\":404,\"reason\":\"PROVIDER_MODEL_NOT_FOUND\",\"body\":\"\"}\n{\"component\":\"platform_provider_failure\",\"provider\":\"Google Gemini Flash (AI Studio)\",\"model\":\"gemini-3.5-flash-lite\",\"status\":404,\"reason\":\"PROVIDER_MODEL_NOT_FOUND\",\"body\":\"\"}\n{\"component\":\"platform_provider_failure\",\"provider\":\"OpenRouter Free Tier\",\"model\":\"nvidia/nemotron-3-super-120b-a12b:free\",\"status\":404,\"reason\":\"PROVIDER_MODEL_NOT_FOUND\",\"body\":\"{\\\"error\\\":{\\\"message\\\":\\\"Provider returned error\\\",\\\"code\\\":404,\\\"metadata\\\":{\\\"raw\\\":\\\"{\\\\\\\"status\\\\\\\":404,\\\\\\\"title\\\\\\\":\\\\\\\"Not Found\\\\\\\",\\\\\\\"detail\\\\\\\":\\\\\\\"Function '[redacted-id]': Not found for account '[redacted-token]'\\\\\\\"}\\\",\\\"provider_name\\\":\\\"Nvidia\\\",\\\"is_byok\\\":false}},\\\"user_id\\\":\\\"[redacted-token]\\\"}\"}\ntests\\platform\\copilot-runtime-contract-candidates.test.ts:\n{\"component\":\"copilot_provider_failure\",\"provider\":\"OpenRouter\",\"model\":\"nvidia/nemotron-3-super-120b-a12b:free\",\"status\":404,\"reason\":\"PROVIDER_MODEL_NOT_FOUND\",\"body\":\"{\\\"error\\\":{\\\"message\\\":\\\"Function '[redacted-id]' Not found for account\\\",\\\"code\\\":404}}\"}\ntests\\platform\\copilot-runtime-contract-quota.test.ts:\n{\"component\":\"copilot_provider_failure\",\"provider\":\"OpenRouter\",\"model\":\"nvidia/nemotron-3-super-120b-a12b:free\",\"status\":429,\"reason\":\"PROVIDER_QUOTA_EXHAUSTED\",\"body\":\"Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash. Please retry in 19h3m41s.\"}\ntests\\platform\\copilot-runtime-pipeline.test.ts:\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\ntests\\platform\\copilot.test.ts:\n{\"component\":\"platform_provider_failure\",\"provider\":\"Google Gemini Flash (AI Studio)\",\"model\":\"gemini-3.6-flash\",\"status\":404,\"reason\":\"PROVIDER_MODEL_NOT_FOUND\",\"body\":\"\"}\n{\"component\":\"platform_provider_failure\",\"provider\":\"Google Gemini Flash (AI Studio)\",\"model\":\"gemini-3.5-flash-lite\",\"status\":404,\"reason\":\"PROVIDER_MODEL_NOT_FOUND\",\"body\":\"\"}\n{\"component\":\"platform_provider_failure\",\"provider\":\"OpenRouter Free Tier\",\"model\":\"nvidia/nemotron-3-super-120b-a12b:free\",\"status\":404,\"reason\":\"PROVIDER_MODEL_NOT_FOUND\",\"body\":\"{\\\"error\\\":{\\\"message\\\":\\\"Provider returned error\\\",\\\"code\\\":404,\\\"metadata\\\":{\\\"raw\\\":\\\"{\\\\\\\"status\\\\\\\":404,\\\\\\\"title\\\\\\\":\\\\\\\"Not Found\\\\\\\",\\\\\\\"detail\\\\\\\":\\\\\\\"Function '[redacted-id]': Not found for account '[redacted-token]'\\\\\\\"}\\\",\\\"provider_name\\\":\\\"Nvidia\\\",\\\"is_byok\\\":false}},\\\"user_id\\\":\\\"[redacted-token]\\\"}\"}\n{\"component\":\"platform_provider_failure\",\"provider\":\"Google Gemini Flash (AI Studio)\",\"model\":\"gemini-3.6-flash\",\"status\":404,\"reason\":\"PROVIDER_MODEL_NOT_FOUND\",\"body\":\"\"}\n{\"component\":\"platform_provider_failure\",\"provider\":\"Google Gemini Flash (AI Studio)\",\"model\":\"gemini-3.5-flash-lite\",\"status\":404,\"reason\":\"PROVIDER_MODEL_NOT_FOUND\",\"body\":\"\"}\n{\"component\":\"platform_provider_failure\",\"provider\":\"OpenRouter Free Tier\",\"model\":\"nvidia/nemotron-3-super-120b-a12b:free\",\"status\":404,\"reason\":\"PROVIDER_MODEL_NOT_FOUND\",\"body\":\"{\\\"error\\\":{\\\"message\\\":\\\"Provider returned error\\\",\\\"code\\\":404,\\\"metadata\\\":{\\\"raw\\\":\\\"{\\\\\\\"status\\\\\\\":404,\\\\\\\"title\\\\\\\":\\\\\\\"Not Found\\\\\\\",\\\\\\\"detail\\\\\\\":\\\\\\\"Function '[redacted-id]': Not found for account '[redacted-token]'\\\\\\\"}\\\",\\\"provider_name\\\":\\\"Nvidia\\\",\\\"is_byok\\\":false}},\\\"user_id\\\":\\\"[redacted-token]\\\"}\"}\n{\"component\":\"platform_provider_failure\",\"provider\":\"Google Gemini Flash (AI Studio)\",\"model\":\"gemini-3.6-flash\",\"status\":404,\"reason\":\"PROVIDER_MODEL_NOT_FOUND\",\"body\":\"\"}\n{\"component\":\"platform_provider_failure\",\"provider\":\"Google Gemini Flash (AI Studio)\",\"model\":\"gemini-3.5-flash-lite\",\"status\":404,\"reason\":\"PROVIDER_MODEL_NOT_FOUND\",\"body\":\"\"}\n{\"component\":\"platform_provider_failure\",\"provider\":\"OpenRouter Free Tier\",\"model\":\"nvidia/nemotron-3-super-120b-a12b:free\",\"status\":404,\"reason\":\"PROVIDER_MODEL_NOT_FOUND\",\"body\":\"{\\\"error\\\":{\\\"message\\\":\\\"Provider returned error\\\",\\\"code\\\":404,\\\"metadata\\\":{\\\"raw\\\":\\\"{\\\\\\\"status\\\\\\\":404,\\\\\\\"title\\\\\\\":\\\\\\\"Not Found\\\\\\\",\\\\\\\"detail\\\\\\\":\\\\\\\"Function '[redacted-id]': Not found for account '[redacted-token]'\\\\\\\"}\\\",\\\"provider_name\\\":\\\"Nvidia\\\",\\\"is_byok\\\":false}},\\\"user_id\\\":\\\"[redacted-token]\\\"}\"}\ntests\\platform\\mcp-protocol.test.ts:\ntests\\platform\\supabase-query.test.ts:\nFailed to load plugins from storage: ReferenceError: localStorage is not defined\n      at loadPlugins (D:\\ABANGCOLEK-PLATFORM\\src\\services\\pluginService.ts:407:19)\n      at new PluginManager (D:\\ABANGCOLEK-PLATFORM\\src\\services\\pluginService.ts:402:25)\n      at D:\\ABANGCOLEK-PLATFORM\\src\\services\\pluginService.ts:538:30\nFailed to save plugins to storage: ReferenceError: localStorage is not defined\n      at savePlugins (D:\\ABANGCOLEK-PLATFORM\\src\\services\\pluginService.ts:432:7)\n      at recordUsage (D:\\ABANGCOLEK-PLATFORM\\src\\services\\pluginService.ts:533:12)\n      at executeSupabaseQuery (D:\\ABANGCOLEK-PLATFORM\\src\\services\\pluginExecutors.ts:579:17)\n      at <anonymous> (D:\\ABANGCOLEK-PLATFORM\\tests\\platform\\supabase-query.test.ts:4:24)\n 775 pass\n 10 todo\n 0 fail\n 5273 expect() calls\nRan 785 tests across 111 files. [131.38s]"
+      "stderrTail": "tests\\platform\\adv-tools-capability-coverage.test.ts:\ntests\\platform\\adversarial-m1-integrity.test.ts:\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\ntests\\platform\\copilot-runtime-contract-candidates.test.ts:\n{\"component\":\"copilot_provider_failure\",\"provider\":\"OpenRouter\",\"model\":\"nvidia/nemotron-3-ultra-550b-a55b:free\",\"status\":404,\"reason\":\"PROVIDER_MODEL_NOT_FOUND\",\"body\":\"{\\\"error\\\":{\\\"message\\\":\\\"Function '[redacted-id]' Not found for account\\\",\\\"code\\\":404}}\"}\ntests\\platform\\copilot-runtime-contract-quota.test.ts:\n{\"component\":\"copilot_provider_failure\",\"provider\":\"OpenRouter\",\"model\":\"nvidia/nemotron-3-ultra-550b-a55b:free\",\"status\":429,\"reason\":\"PROVIDER_QUOTA_EXHAUSTED\",\"body\":\"Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash. Please retry in 19h3m41s.\"}\ntests\\platform\\copilot-runtime-pipeline.test.ts:\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\ntests\\platform\\mcp-protocol.test.ts:\n 800 pass\n 11 todo\n 0 fail\n 5457 expect() calls\nRan 811 tests across 115 files. [101.82s]"
     },
     {
       "id": "test:copilot",
@@ -6264,12 +6516,12 @@
       "cwd": "D:\\ABANGCOLEK-PLATFORM",
       "exitCode": 0,
       "status": "pass",
-      "durationMs": 1344,
+      "durationMs": 976,
       "passCount": 124,
       "failCount": 0,
-      "expectCount": 667,
+      "expectCount": 669,
       "filesScanned": 10,
-      "summary": "Ran 124 tests across 10 files. [1106.00ms]",
+      "summary": "Ran 124 tests across 10 files. [625.00ms]",
       "fileResults": [
         {
           "file": "tests\\copilot\\mod-01-storefront.test.ts",
@@ -6341,7 +6593,7 @@
           "failures": 0,
           "errors": 0,
           "skipped": 0,
-          "assertions": 52,
+          "assertions": 54,
           "testCases": [
             {
               "name": "Pelanggan boleh menjejak pesanan sendiri dengan token penjejakan yang sah",
@@ -7116,9 +7368,9 @@
           ]
         }
       ],
-      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_copilot.27036-mvgylqpu-g7oxnx79.xml",
+      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_copilot.24644-mvh8xa9y-qs4ukrvs.xml",
       "stdoutTail": "bun test v1.4.2 (744846f84)",
-      "stderrTail": " 124 pass\n 0 fail\n 667 expect() calls\nRan 124 tests across 10 files. [1106.00ms]"
+      "stderrTail": " 124 pass\n 0 fail\n 669 expect() calls\nRan 124 tests across 10 files. [625.00ms]"
     },
     {
       "id": "test:frontend",
@@ -7126,12 +7378,12 @@
       "cwd": "D:\\ABANGCOLEK-PLATFORM",
       "exitCode": 0,
       "status": "pass",
-      "durationMs": 1888,
-      "passCount": 155,
+      "durationMs": 1459,
+      "passCount": 181,
       "failCount": 0,
-      "expectCount": 848,
-      "filesScanned": 24,
-      "summary": "Ran 155 tests across 24 files. [1.73s]",
+      "expectCount": 1024,
+      "filesScanned": 27,
+      "summary": "Ran 181 tests across 27 files. [1163.00ms]",
       "fileResults": [
         {
           "file": "tests\\frontend\\a2ui-components.test.tsx",
@@ -7163,6 +7415,52 @@
               "name": "Menolak payload yang tidak sah (bukan objek atau tiada props)",
               "classname": "Katalog Komponen A2UI Tetap (Fixed Catalog Allowlist) > GUI-06 A2UI Fixed Schema & Component Validation (Fasa 04)",
               "file": "tests\\frontend\\a2ui-components.test.tsx",
+              "outcome": "pass"
+            }
+          ]
+        },
+        {
+          "file": "tests\\frontend\\abangcolek-discovery-jev-semantics.test.ts",
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "assertions": 66,
+          "testCases": [
+            {
+              "name": "keyakinan yang dikira dipaparkan sebagai peratus sebenar",
+              "classname": "AbangColekDiscoveryView — semantik keyakinan JEV",
+              "file": "tests\\frontend\\abangcolek-discovery-jev-semantics.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "keyakinan null / NaN / di luar julat tidak pernah menjadi 0% atau peratus rekaan",
+              "classname": "AbangColekDiscoveryView — semantik keyakinan JEV",
+              "file": "tests\\frontend\\abangcolek-discovery-jev-semantics.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "noul yang dikira dipaparkan dengan label aplikasi dan peratus sebenar",
+              "classname": "AbangColekDiscoveryView — semantik noul JEV",
+              "file": "tests\\frontend\\abangcolek-discovery-jev-semantics.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "isAffirmative null ialah keadaan \"tidak diketahui\" — bukan \"Tidak\"",
+              "classname": "AbangColekDiscoveryView — semantik noul JEV",
+              "file": "tests\\frontend\\abangcolek-discovery-jev-semantics.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "kebarangkalian null / NaN / di luar julat tidak pernah menjadi 0% atau peratus rekaan",
+              "classname": "AbangColekDiscoveryView — semantik noul JEV",
+              "file": "tests\\frontend\\abangcolek-discovery-jev-semantics.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "noul negatif yang benar-benar dinyatakan oleh pelayan kekal \"Tidak\"",
+              "classname": "AbangColekDiscoveryView — semantik noul JEV",
+              "file": "tests\\frontend\\abangcolek-discovery-jev-semantics.test.ts",
               "outcome": "pass"
             }
           ]
@@ -8270,6 +8568,130 @@
           ]
         },
         {
+          "file": "tests\\frontend\\jev-null-semantics.test.tsx",
+          "tests": 19,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "assertions": 107,
+          "testCases": [
+            {
+              "name": "JevAssessmentCard shows a null confidence as \"Tidak dikira\", never as 0%",
+              "classname": "JEV null-semantics: \"tidak dikira\" / \"tidak diketahui\" (BL-24/BL-27)",
+              "file": "tests\\frontend\\jev-null-semantics.test.tsx",
+              "outcome": "pass"
+            },
+            {
+              "name": "JevPrimitivesCard shows an unknown noul as \"Tidak diketahui\", never as \"Tidak\"",
+              "classname": "JEV null-semantics: \"tidak dikira\" / \"tidak diketahui\" (BL-24/BL-27)",
+              "file": "tests\\frontend\\jev-null-semantics.test.tsx",
+              "outcome": "pass"
+            },
+            {
+              "name": "JevPrimitivesCard negative control: an explicit false noul renders \"Tidak\"",
+              "classname": "JEV null-semantics: \"tidak dikira\" / \"tidak diketahui\" (BL-24/BL-27)",
+              "file": "tests\\frontend\\jev-null-semantics.test.tsx",
+              "outcome": "pass"
+            },
+            {
+              "name": "JevPrimitivesCard reports dimension confidence and probability as not computed",
+              "classname": "JEV null-semantics: \"tidak dikira\" / \"tidak diketahui\" (BL-24/BL-27)",
+              "file": "tests\\frontend\\jev-null-semantics.test.tsx",
+              "outcome": "pass"
+            },
+            {
+              "name": "renders a \"not provided\" failure with its reason code and keys, and no margin",
+              "classname": "MarginSummaryCard typed input failures (BL-24b)",
+              "file": "tests\\frontend\\jev-null-semantics.test.tsx",
+              "outcome": "pass"
+            },
+            {
+              "name": "renders an \"invalid\" failure with its reason code and keys, and no margin",
+              "classname": "MarginSummaryCard typed input failures (BL-24b)",
+              "file": "tests\\frontend\\jev-null-semantics.test.tsx",
+              "outcome": "pass"
+            },
+            {
+              "name": "parseMarginInputFailure maps the flat legacy reason shape onto the typed failure",
+              "classname": "MarginSummaryCard typed input failures (BL-24b)",
+              "file": "tests\\frontend\\jev-null-semantics.test.tsx",
+              "outcome": "pass"
+            },
+            {
+              "name": "parseMarginInputFailure returns null when there is no typed failure",
+              "classname": "MarginSummaryCard typed input failures (BL-24b)",
+              "file": "tests\\frontend\\jev-null-semantics.test.tsx",
+              "outcome": "pass"
+            },
+            {
+              "name": "a JEV payload carrying the legacy incidentType prop still renders its issue class",
+              "classname": "A2UIFixedRenderer: unsupported props are ignored, not fatal",
+              "file": "tests\\frontend\\jev-null-semantics.test.tsx",
+              "outcome": "pass"
+            },
+            {
+              "name": "a MarginSummaryCard payload with a typed failure renders the reason and key",
+              "classname": "A2UIFixedRenderer: unsupported props are ignored, not fatal",
+              "file": "tests\\frontend\\jev-null-semantics.test.tsx",
+              "outcome": "pass"
+            },
+            {
+              "name": "a MarginSummaryCard payload without numbers renders no margin and does not throw",
+              "classname": "A2UIFixedRenderer: unsupported props are ignored, not fatal",
+              "file": "tests\\frontend\\jev-null-semantics.test.tsx",
+              "outcome": "pass"
+            },
+            {
+              "name": "an OrderTrackingCard payload without an order renders \"not found\" and no order id",
+              "classname": "A2UIFixedRenderer: unsupported props are ignored, not fatal",
+              "file": "tests\\frontend\\jev-null-semantics.test.tsx",
+              "outcome": "pass"
+            },
+            {
+              "name": "an OrderTrackingCard payload with a server-supplied order id still shows it",
+              "classname": "A2UIFixedRenderer: unsupported props are ignored, not fatal",
+              "file": "tests\\frontend\\jev-null-semantics.test.tsx",
+              "outcome": "pass"
+            },
+            {
+              "name": "an OperationsBriefCard payload with extra props still renders the brief",
+              "classname": "A2UIFixedRenderer: unsupported props are ignored, not fatal",
+              "file": "tests\\frontend\\jev-null-semantics.test.tsx",
+              "outcome": "pass"
+            },
+            {
+              "name": "a RefundImpactPanel payload shows the resolution reason but not the UNRESOLVED sentinel",
+              "classname": "A2UIFixedRenderer: unsupported props are ignored, not fatal",
+              "file": "tests\\frontend\\jev-null-semantics.test.tsx",
+              "outcome": "pass"
+            },
+            {
+              "name": "projectJevAnswers keeps a local-rules null confidence and null noul honest",
+              "classname": "JEV value projections: unit-level null semantics",
+              "file": "tests\\frontend\\jev-null-semantics.test.tsx",
+              "outcome": "pass"
+            },
+            {
+              "name": "projectJevConfidence rejects non-probability values but keeps a genuine zero",
+              "classname": "JEV value projections: unit-level null semantics",
+              "file": "tests\\frontend\\jev-null-semantics.test.tsx",
+              "outcome": "pass"
+            },
+            {
+              "name": "projectJevNoul reports an unknown noul instead of a false \"Tidak\"",
+              "classname": "JEV value projections: unit-level null semantics",
+              "file": "tests\\frontend\\jev-null-semantics.test.tsx",
+              "outcome": "pass"
+            },
+            {
+              "name": "projectJevProbability, projectJevScore and projectJevProbabilities stay honest on null",
+              "classname": "JEV value projections: unit-level null semantics",
+              "file": "tests\\frontend\\jev-null-semantics.test.tsx",
+              "outcome": "pass"
+            }
+          ]
+        },
+        {
           "file": "tests\\frontend\\landing-share.test.ts",
           "tests": 4,
           "failures": 0,
@@ -8302,11 +8724,27 @@
               "outcome": "pass"
             }
           ]
+        },
+        {
+          "file": "tests\\frontend\\plugin-service-storage.test.ts",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "assertions": 3,
+          "testCases": [
+            {
+              "name": "loading and saving plugins does not throw when localStorage is absent",
+              "classname": "Plugin service runs outside the browser",
+              "file": "tests\\frontend\\plugin-service-storage.test.ts",
+              "outcome": "pass"
+            }
+          ]
         }
       ],
-      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_frontend.27036-mvgylqpu-g7oxnx79.xml",
+      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_frontend.24644-mvh8xa9y-qs4ukrvs.xml",
       "stdoutTail": "bun test v1.4.2 (744846f84)",
-      "stderrTail": " 155 pass\n 0 fail\n 848 expect() calls\nRan 155 tests across 24 files. [1.73s]"
+      "stderrTail": " 181 pass\n 0 fail\n 1024 expect() calls\nRan 181 tests across 27 files. [1163.00ms]"
     },
     {
       "id": "test:architecture",
@@ -8314,12 +8752,12 @@
       "cwd": "D:\\ABANGCOLEK-PLATFORM",
       "exitCode": 0,
       "status": "pass",
-      "durationMs": 12424,
+      "durationMs": 12379,
       "passCount": 29,
       "failCount": 0,
       "expectCount": 216,
       "filesScanned": 3,
-      "summary": "Ran 29 tests across 3 files. [12.25s]",
+      "summary": "Ran 29 tests across 3 files. [12.16s]",
       "fileResults": [
         {
           "file": "tests\\architecture\\dependency-boundaries.test.ts",
@@ -8526,9 +8964,9 @@
           ]
         }
       ],
-      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_architecture.27036-mvgylqpu-g7oxnx79.xml",
+      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_architecture.24644-mvh8xa9y-qs4ukrvs.xml",
       "stdoutTail": "bun test v1.4.2 (744846f84)",
-      "stderrTail": " 29 pass\n 0 fail\n 216 expect() calls\nRan 29 tests across 3 files. [12.25s]"
+      "stderrTail": " 29 pass\n 0 fail\n 216 expect() calls\nRan 29 tests across 3 files. [12.16s]"
     },
     {
       "id": "test:ext",
@@ -8536,12 +8974,12 @@
       "cwd": "D:\\ABANGCOLEK-PLATFORM",
       "exitCode": 0,
       "status": "pass",
-      "durationMs": 166,
+      "durationMs": 212,
       "passCount": 4,
       "failCount": 0,
       "expectCount": 12,
       "filesScanned": 1,
-      "summary": "Ran 4 tests across 1 file. [60.00ms]",
+      "summary": "Ran 4 tests across 1 file. [27.00ms]",
       "fileResults": [
         {
           "file": "tests\\ext\\ext-webmcp-probe.test.ts",
@@ -8578,9 +9016,9 @@
           ]
         }
       ],
-      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_ext.27036-mvgylqpu-g7oxnx79.xml",
+      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_ext.24644-mvh8xa9y-qs4ukrvs.xml",
       "stdoutTail": "bun test v1.4.2 (744846f84)",
-      "stderrTail": " 4 pass\n 0 fail\n 12 expect() calls\nRan 4 tests across 1 file. [60.00ms]"
+      "stderrTail": " 4 pass\n 0 fail\n 12 expect() calls\nRan 4 tests across 1 file. [27.00ms]"
     },
     {
       "id": "test:landing-brand-theme",
@@ -8588,7 +9026,7 @@
       "cwd": "D:\\ABANGCOLEK-PLATFORM",
       "exitCode": 0,
       "status": "pass",
-      "durationMs": 132,
+      "durationMs": 157,
       "passCount": 3,
       "failCount": 0,
       "expectCount": 11,
@@ -8624,7 +9062,7 @@
           ]
         }
       ],
-      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_landing-brand-theme.27036-mvgylqpu-g7oxnx79.xml",
+      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_landing-brand-theme.24644-mvh8xa9y-qs4ukrvs.xml",
       "stdoutTail": "bun test v1.4.2 (744846f84)",
       "stderrTail": " 3 pass\n 0 fail\n 11 expect() calls\nRan 3 tests across 1 file. [27.00ms]"
     },
@@ -8634,12 +9072,12 @@
       "cwd": "D:\\ABANGCOLEK-PLATFORM",
       "exitCode": 0,
       "status": "pass",
-      "durationMs": 140,
+      "durationMs": 194,
       "passCount": 3,
       "failCount": 0,
       "expectCount": 10,
       "filesScanned": 1,
-      "summary": "Ran 3 tests across 1 file. [25.00ms]",
+      "summary": "Ran 3 tests across 1 file. [30.00ms]",
       "fileResults": [
         {
           "file": "tests\\dashboard-model.test.ts",
@@ -8670,36 +9108,35 @@
           ]
         }
       ],
-      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_dashboard-model.27036-mvgylqpu-g7oxnx79.xml",
+      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_dashboard-model.24644-mvh8xa9y-qs4ukrvs.xml",
       "stdoutTail": "bun test v1.4.2 (744846f84)",
-      "stderrTail": " 3 pass\n 0 fail\n 10 expect() calls\nRan 3 tests across 1 file. [25.00ms]"
+      "stderrTail": " 3 pass\n 0 fail\n 10 expect() calls\nRan 3 tests across 1 file. [30.00ms]"
     },
     {
       "id": "test:e2e:list",
       "command": "bun run test:e2e --list",
       "cwd": "D:\\ABANGCOLEK-PLATFORM",
-      "exitCode": null,
-      "status": "unavailable",
-      "durationMs": 0,
+      "exitCode": 0,
+      "status": "pass",
+      "durationMs": 2733,
       "passCount": null,
       "failCount": null,
       "expectCount": null,
       "filesScanned": null,
       "summary": "",
-      "reason": "skipped by --skip-e2e",
       "fileResults": [],
-      "stdoutTail": "",
-      "stderrTail": ""
+      "stdoutTail": "  landing-emons.spec.ts:164:3 › Emons short desktop viewport › uses static chapters rather than clipping the scene controls\n  landing-emons.spec.ts:177:5 › Active chapter layout 1440x900 › active copy and chapter controls fit the viewport\n  landing-emons.spec.ts:177:5 › Active chapter layout 1280x900 › active copy and chapter controls fit the viewport\n  landing-emons.spec.ts:177:5 › Active chapter layout 1024x900 › active copy and chapter controls fit the viewport\n  landing-emons.spec.ts:177:5 › Active chapter layout 390x844 › active copy and chapter controls fit the viewport\n  landing-emons.spec.ts:198:3 › World media resilience › failed film and active still use the world fallback without blocking navigation\n  landing-emons.spec.ts:207:3 › World media resilience › autoplay denial uses still imagery and preserves chapter navigation\n  landing-release.spec.ts:7:1 › six chapters navigate, map film correctly and release to catalogue\n  landing-release.spec.ts:26:1 › failed film and active still retain usable world fallback and dialog\n  landing-release.spec.ts:40:1 › autoplay denial falls back to a still\n  landing-release.spec.ts:50:3 › reduced motion exposes all chapters without overflow at 1440px\n  landing-release.spec.ts:50:3 › reduced motion exposes all chapters without overflow at 390px\n  landing-release.spec.ts:50:3 › reduced motion exposes all chapters without overflow at 320px\n  marketing-operations.spec.ts:44:1 › founder marketing UI stores rights, approves exact revision and downloads real manual caption and asset bundle\n  marketing-operations.spec.ts:102:1 › founder creates approved QA SOP and releases a quarantined QA batch with uploaded evidence through inspection UI\n  marketing-operations.spec.ts:176:1 › founder shift handoff, acknowledgement and zero-cash QA day-close persist through real UI commands\n  onboarding-policy-completion.spec.ts:4:1 › onboarding requires manual policy approval and loads canonical settings version\n  platform-commerce.spec.ts:4:1 › customer guided order creates one persisted receipt and remains private\n  platform-commerce.spec.ts:32:1 › stale cart can be reduced and removed after catalogue stock or packs change\n  platform-commerce.spec.ts:46:1 › catalogue pagination preserves current flow selection and quantity\n  platform-commerce.spec.ts:63:1 › switching flow modes preserves unsaved product, quantity and contact details\n  platform-commerce.spec.ts:85:1 › expired quote is replaced before order submission\n  platform-shell.spec.ts:3:1 › login and portal links are responsive and do not grant roles\n  platform-shell.spec.ts:13:1 › unknown route provides recovery and public landing survives refresh\n  privacy-offline.spec.ts:4:1 › same workspace never retains previous account orders after a browser-session switch\n  privacy-offline.spec.ts:17:1 › offline field draft restores when the existing server flow resumes\n  public-metadata.spec.ts:3:1 › public product metadata is removed when navigating into login\n  record-navigation.spec.ts:3:1 › mobile sidebar is excluded from keyboard focus when closed and Escape returns to opener\n  record-navigation.spec.ts:11:1 › UUID linked calendar task opens its current collaboration and order deep links fetch source directly\n  workspace-experiences.spec.ts:4:1 › public catalogue and mobile landing preserve navigation, language and theme\n  workspace-experiences.spec.ts:19:1 › founder creates assigned work and completion stores actual outcome\n  workspace-experiences.spec.ts:41:1 › founder calendar event persists with MYT boundaries\n  workspace-experiences.spec.ts:58:1 › founder document drafts and approved knowledge share exact source version\n  workspace-experiences.spec.ts:75:1 › staff and developer workspace render scoped actual state\n  workspace-navigation.spec.ts:13:1 › Founder navigation groups twenty destinations and marks the current parent on deep URLs\n  workspace-navigation.spec.ts:31:1 › mobile navigation isolates background, traps both Tab directions and restores focus on Escape\n  workspace-navigation.spec.ts:61:1 › mobile navigation closes from its close control, backdrop and selected destination\n  workspace-navigation.spec.ts:80:3 › dark mobile navigation has readable groups, 44px targets and retains bottom clearance\n  workspace-navigation.spec.ts:80:3 › light mobile navigation has readable groups, 44px targets and retains bottom clearance\nTotal: 61 tests in 17 files",
+      "stderrTail": "$ playwright test -c tests/playwright.config.ts --list"
     }
   ],
   "totals": {
-    "suitesRun": 10,
-    "suitesPassed": 10,
+    "suitesRun": 11,
+    "suitesPassed": 11,
     "suitesFailed": 0,
-    "suitesUnavailable": 1,
-    "suitesSkippedByFlag": 1,
-    "testsPassed": 1142,
+    "suitesUnavailable": 0,
+    "suitesSkippedByFlag": 0,
+    "testsPassed": 1199,
     "testsFailed": 0,
-    "assertions": 7287
+    "assertions": 7730
   }
 }

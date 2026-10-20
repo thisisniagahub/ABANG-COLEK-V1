@@ -1,0 +1,147 @@
+{
+  "generatedAt": "2026-10-21T05:47:39+08:00",
+  "repoRoot": "D:\\ABANGCOLEK-PLATFORM",
+  "gitCommit": "6c5b16e",
+  "gitBranch": "integrate/blueprint-v23",
+  "gitDirty": true,
+  "bunVersion": "1.4.2",
+  "harness": "server/platform/liveProviderProbe.probe.ts",
+  "harnessInvocation": "$env:ABANGCOLEK_LIVE_PROVIDERS='1'; bun test ./server/platform/liveProviderProbe.probe.ts",
+  "pathsUnderTest": [
+    "server/agents/copilot/runtime.ts",
+    "server/agents/providers/model-router.ts",
+    "server/agents/providers/model-adapters.ts",
+    "server/platform/freeModelRouter.ts"
+  ],
+  "noSecrets": true,
+  "quotaUsed": {
+    "gemini_free": "2 requests (20/day free tier)",
+    "openrouter": "2 requests (2 distinct candidates)",
+    "nvidia": "1 request",
+    "ollama": "1 local attempt"
+  },
+  "probes": [
+    {
+      "candidate": "candidate#1",
+      "providerId": "gemini_free",
+      "model": "gemini-3.6-flash",
+      "httpStatus": 200,
+      "reason": "PROVIDER_CALL_SUCCEEDED",
+      "latencyMs": 1440,
+      "transport": "live",
+      "servedBy": "direct_model",
+      "realAnswer": true,
+      "inputTokens": 161,
+      "outputTokens": 29
+    },
+    {
+      "candidate": "candidate#2",
+      "providerId": "gemini_free",
+      "model": "gemini-3.5-flash-lite",
+      "httpStatus": 200,
+      "reason": "PROVIDER_CALL_SUCCEEDED",
+      "latencyMs": 999,
+      "transport": "live",
+      "servedBy": "direct_model",
+      "realAnswer": true,
+      "inputTokens": 161,
+      "outputTokens": 29
+    },
+    {
+      "candidate": "candidate#3",
+      "providerId": "openrouter",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "httpStatus": 200,
+      "reason": "PROVIDER_CALL_SUCCEEDED",
+      "latencyMs": 6042,
+      "transport": "live",
+      "servedBy": "direct_model",
+      "realAnswer": true,
+      "inputTokens": 196,
+      "outputTokens": 167
+    },
+    {
+      "candidate": "register-dead-candidate",
+      "providerId": "openrouter",
+      "model": "nvidia/nemotron-3-super-120b-a12b:free",
+      "httpStatus": 404,
+      "reason": "PROVIDER_MODEL_NOT_FOUND",
+      "candidateState": "unusable",
+      "latencyMs": 563,
+      "realAnswer": false,
+      "routerResult": {
+        "status": "local_rules",
+        "reason": "LOCAL_RULES_NO_PROVIDER_RESPONSE",
+        "blockingReason": "PROVIDER_MODEL_NOT_FOUND"
+      }
+    },
+    {
+      "candidate": "platform-router:nvidia",
+      "providerId": "nvidia",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b",
+      "httpStatus": 200,
+      "reason": "PROVIDER_CALL_SUCCEEDED",
+      "latencyMs": 2084,
+      "realAnswer": true,
+      "routerResult": {
+        "status": "live",
+        "providerId": "nvidia"
+      }
+    },
+    {
+      "candidate": "platform-router:ollama",
+      "providerId": "ollama",
+      "model": "llama3.2:latest",
+      "httpStatus": null,
+      "reason": "PROVIDER_UNAVAILABLE",
+      "latencyMs": 1,
+      "realAnswer": false,
+      "routerResult": {
+        "status": "local_rules",
+        "reason": "LOCAL_RULES_NO_PROVIDER_RESPONSE"
+      }
+    }
+  ],
+  "actorGate": {
+    "serverActor": "absent",
+    "clientSuppliedActorIgnored": true,
+    "status": "unavailable",
+    "reason": "ACTOR_NOT_VERIFIED",
+    "providerCallsMade": 0,
+    "servedBy": "none"
+  },
+  "budget": {
+    "maxModelCalls": 3,
+    "maxObservedModelCallsMade": 1,
+    "deadlineMs": 30000,
+    "maxObservedLatencyMs": 6042,
+    "maxInputTokensPerCall": 8192,
+    "maxOutputTokensPerCall": 1024,
+    "maxCumulativeInputTokens": 24576,
+    "maxCumulativeOutputTokens": 3072
+  },
+  "noEcho": {
+    "promptEchoed": false,
+    "canaryInResponse": false,
+    "assertion": "response !== prompt && !response.includes(prompt)"
+  },
+  "caveats": [
+    "HTTP 429 / PROVIDER_QUOTA_EXHAUSTED was not exercised live: every live candidate answered 200 on the first attempt. It stays unit-proven in tests/platform/copilot-runtime-contract-quota.test.ts and must not be re-proved by deliberately exhausting the 20/day Gemini free tier.",
+    "A live multi-candidate failover did not occur on 2026-10-21 (first candidate answered 200), so the failover branch is unit-proven only.",
+    "Model-behaviour observation, not a platform defect: the NVIDIA NIM answer fabricated a delivery status for the fictional order while Gemini and OpenRouter correctly reported the data as unavailable. The runtime system prompt forbids inventing status (server/agents/copilot/runtime.ts:133-139) but a model can still disobey it; recorded as a truthfulness caveat for CPK-01/AI-02, not as a code fix.",
+    "The probe harness lives at server/platform/liveProviderProbe.probe.ts and is skipped unless ABANGCOLEK_LIVE_PROVIDERS=1, so it can never burn external quota inside the unit suite."
+  ],
+  "ledger": {
+    "CPK-01": {
+      "status": "verified_local",
+      "environment": "local",
+      "integrationStage": "live_verified"
+    },
+    "AI-01": {
+      "status": "verified_local",
+      "environment": "local",
+      "integrationStage": "live_verified",
+      "remainingGap": "HTTP 429 / PROVIDER_QUOTA_EXHAUSTED branch is unit-proven only; not reproducible live without deliberately exhausting the 20/day Gemini quota"
+    }
+  }
+}

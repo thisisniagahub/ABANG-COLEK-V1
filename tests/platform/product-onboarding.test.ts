@@ -1,21 +1,41 @@
-import { describe, expect, test } from 'bun:test';
+import { afterAll, describe, expect, test } from 'bun:test';
 import { createPlatformApp } from '../../server/platform/app';
-import { unlinkSync } from 'node:fs';
+import { existsSync, mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
-function cleanup(dbPath: string) {
-  for (const ext of ['', '-wal', '-shm']) {
-    try { unlinkSync(dbPath + ext); } catch { /* ignore */ }
+/**
+ * Jaring keselamatan fixture.
+ *
+ * Root cause (dikuatkuasakan): laluan `var/lib/qa/product-onboarding-${testId}.sqlite`
+ * mengulang `testId` yang sama pada larian seterusnya. Pada Windows fail
+ * SQLite yang masih dibuka TIDAK boleh dipadam, jadi fail basi dengan baris
+ * `owner_bootstrapped` boleh tinggal dan bootstrap seterusnya membalas 409
+ * `OWNER_ALREADY_BOOTSTRAPPED` — kegagalan palsu, bukan pepijat produk.
+ * `mkdtempSync` memberi direktori unik bagi setiap larian/proses.
+ */
+const directories: string[] = [];
+const opened: Array<ReturnType<typeof createPlatformApp>> = [];
+
+afterAll(() => {
+  for (const app of opened.splice(0)) {
+    try { app.close(); } catch { /* sudah ditutup oleh ujian */ }
   }
-}
+  for (const directory of directories.splice(0)) {
+    try { rmSync(directory, { recursive: true, force: true }); } catch { /* best effort */ }
+  }
+});
 
 async function createTestContext(testId: string) {
-  const testDb = `var/lib/qa/product-onboarding-${testId}.sqlite`;
-  cleanup(testDb);
+  const directory = mkdtempSync(join(tmpdir(), 'abangcolek-product-onboarding-'));
+  directories.push(directory);
+  const testDb = join(directory, `product-onboarding-${testId}.sqlite`);
   const app = createPlatformApp({
     databasePath: testDb,
     bootstrapToken: 'test-bootstrap-token-12345',
     origin: 'http://localhost:3000',
   });
+  opened.push(app);
 
   // Bootstrap founder
   const bootRes = await app.fetch(new Request('http://localhost:3000/api/platform/auth/bootstrap', {
@@ -48,12 +68,12 @@ async function createTestContext(testId: string) {
   const custCookie = custRes.headers.get('set-cookie')!;
   const custCsrf = custData.data.csrfToken;
 
-  return { app, founderCookie, founderCsrf, custCookie, custCsrf, testDb };
+  return { app, founderCookie, founderCsrf, custCookie, custCsrf, testDb, directory };
 }
 
 describe('B05 + D07: Product Truth & Safe Onboarding Flow', () => {
   test('rejects artwork and mascots erroneously submitted as sellable product SKUs', async () => {
-    const { app, founderCookie, founderCsrf, testDb } = await createTestContext('mascot-rejection');
+    const { app, founderCookie, founderCsrf, directory } = await createTestContext('mascot-rejection');
 
     const packet = {
       products: [
@@ -89,11 +109,18 @@ describe('B05 + D07: Product Truth & Safe Onboarding Flow', () => {
     expect(body.data.canCommit).toBe(false);
     expect(body.data.rejectedItems.length).toBe(1);
     expect(body.data.rejectedItems[0].reason).toContain('Artwork dan maskot jenama bukan SKU produk');
-    cleanup(testDb);
+    // Tutup aplikasi SEBELUM memadam fail: pada Windows fail SQLite yang
+    // masih dibuka tidak boleh dipadam, jadi handle yang tertinggal akan
+    // menjadikan larian seterusnya membaca fail basi (409). `rmSync` throw
+    // EBUSY/EPERM jika ada handle yang masih hidup — jadi ia SESUNGGUHNYA
+    // membuktikan aplikasi ditutup, bukan sekadar "membersih tanpa jejas".
+    app.close();
+    rmSync(directory, { recursive: true, force: true });
+    expect(existsSync(directory)).toBe(false);
   });
 
   test('flags historical RM28 claim when owner approval is absent', async () => {
-    const { app, founderCookie, founderCsrf, testDb } = await createTestContext('historical-rm28');
+    const { app, founderCookie, founderCsrf, directory } = await createTestContext('historical-rm28');
 
     const packet = {
       products: [
@@ -125,11 +152,18 @@ describe('B05 + D07: Product Truth & Safe Onboarding Flow', () => {
     expect(res.status).toBe(200);
     const body = await res.json() as any;
     expect(body.data.warnings.some((w: string) => w.includes('RM28'))).toBe(true);
-    cleanup(testDb);
+    // Tutup aplikasi SEBELUM memadam fail: pada Windows fail SQLite yang
+    // masih dibuka tidak boleh dipadam, jadi handle yang tertinggal akan
+    // menjadikan larian seterusnya membaca fail basi (409). `rmSync` throw
+    // EBUSY/EPERM jika ada handle yang masih hidup — jadi ia SESUNGGUHNYA
+    // membuktikan aplikasi ditutup, bukan sekadar "membersih tanpa jejas".
+    app.close();
+    rmSync(directory, { recursive: true, force: true });
+    expect(existsSync(directory)).toBe(false);
   });
 
   test('prevents publishing unapproved product without owner approval', async () => {
-    const { app, founderCookie, founderCsrf, testDb } = await createTestContext('unapproved-publish');
+    const { app, founderCookie, founderCsrf, directory } = await createTestContext('unapproved-publish');
 
     const packet = {
       products: [
@@ -162,11 +196,18 @@ describe('B05 + D07: Product Truth & Safe Onboarding Flow', () => {
     const body = await res.json() as any;
     expect(body.data.canCommit).toBe(false);
     expect(body.data.rejectedItems.some((r: any) => r.reason.includes('kelulusan rasmi pemilik'))).toBe(true);
-    cleanup(testDb);
+    // Tutup aplikasi SEBELUM memadam fail: pada Windows fail SQLite yang
+    // masih dibuka tidak boleh dipadam, jadi handle yang tertinggal akan
+    // menjadikan larian seterusnya membaca fail basi (409). `rmSync` throw
+    // EBUSY/EPERM jika ada handle yang masih hidup — jadi ia SESUNGGUHNYA
+    // membuktikan aplikasi ditutup, bukan sekadar "membersih tanpa jejas".
+    app.close();
+    rmSync(directory, { recursive: true, force: true });
+    expect(existsSync(directory)).toBe(false);
   });
 
   test('commits approved products safely and updates catalogue version', async () => {
-    const { app, founderCookie, founderCsrf, testDb } = await createTestContext('commit-approved');
+    const { app, founderCookie, founderCsrf, directory } = await createTestContext('commit-approved');
 
     const packet = {
       products: [
@@ -223,11 +264,18 @@ describe('B05 + D07: Product Truth & Safe Onboarding Flow', () => {
     expect(catBody.data[0].priceSen).toBe(2500);
     expect(catBody.data[0].availableQuantity).toBe(100);
 
-    cleanup(testDb);
+    // Tutup aplikasi SEBELUM memadam fail: pada Windows fail SQLite yang
+    // masih dibuka tidak boleh dipadam, jadi handle yang tertinggal akan
+    // menjadikan larian seterusnya membaca fail basi (409). `rmSync` throw
+    // EBUSY/EPERM jika ada handle yang masih hidup — jadi ia SESUNGGUHNYA
+    // membuktikan aplikasi ditutup, bukan sekadar "membersih tanpa jejas".
+    app.close();
+    rmSync(directory, { recursive: true, force: true });
+    expect(existsSync(directory)).toBe(false);
   });
 
   test('non-founder actor cannot commit onboarding or access onboarding template', async () => {
-    const { app, custCookie, custCsrf, testDb } = await createTestContext('non-founder-denial');
+    const { app, custCookie, custCsrf, directory } = await createTestContext('non-founder-denial');
 
     const templateRes = await app.fetch(new Request('http://localhost:3000/api/platform/onboarding/template', {
       headers: { 'Cookie': custCookie },
@@ -246,6 +294,13 @@ describe('B05 + D07: Product Truth & Safe Onboarding Flow', () => {
     }));
     expect(commitRes.status).toBe(403);
 
-    cleanup(testDb);
+    // Tutup aplikasi SEBELUM memadam fail: pada Windows fail SQLite yang
+    // masih dibuka tidak boleh dipadam, jadi handle yang tertinggal akan
+    // menjadikan larian seterusnya membaca fail basi (409). `rmSync` throw
+    // EBUSY/EPERM jika ada handle yang masih hidup — jadi ia SESUNGGUHNYA
+    // membuktikan aplikasi ditutup, bukan sekadar "membersih tanpa jejas".
+    app.close();
+    rmSync(directory, { recursive: true, force: true });
+    expect(existsSync(directory)).toBe(false);
   });
 });

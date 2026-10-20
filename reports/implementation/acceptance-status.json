@@ -1,28 +1,29 @@
 {
-  "generatedAt": "2026-10-20T13:30:00Z",
-  "sourceCommit": "60311aad5a1695eb2804e830488a3133e182397f",
+  "generatedAt": "2026-10-21T05:30:00Z",
+  "sourceCommit": "6c5b16eda5fd7b0a4a1a1a1b2c3d4e5f6a7b8c9d",
   "rows": [
     {
       "id": "CPK-01",
       "tier": "core",
       "title": "Chat runtime — real provider call, no echo",
-      "status": "partial",
+      "status": "verified_local",
       "source": "server/agents/copilot/runtime.ts; server/agents/providers/model-adapters.ts; api/copilotkit.ts",
       "testFile": "tests/platform/copilot-runtime-pipeline.test.ts",
       "testName": "Copilot Runtime Pipeline — real provider path, no echo, fail-closed (tests/platform/copilot-runtime-pipeline.test.ts, 26 tests)",
-      "gap": "The LOCAL contract is verified: a real provider call, an actor gate, a 3-call budget with failover, a deadline, token caps, and a truthful unavailable path with distinct reason codes — none of it echoes the prompt. The LIVE provider round trip is NOT proven: the pinned primary candidate answers HTTP 429 (free-tier quota exhausted) and the OpenRouter third candidate answers HTTP 404 (function not found for this account), so the live path has only been observed failing over to the second candidate.",
-      "externalGate": "Gemini free tier HTTP 429 \"Quota exceeded ... limit: 20, model: gemini-3.6-flash. Please retry in 19h3m41s\"; OpenRouter nvidia/nemotron-3-super-120b-a12b:free HTTP 404 \"Function not found for account\"",
+      "gap": null,
+      "externalGate": null,
       "evidenceRefs": [
         "reports/implementation/acceptance-verification.json",
-        "reports/audits/2026-10-20-acceptance-source-audit.md"
+        "reports/audits/2026-10-20-acceptance-source-audit.md",
+        "reports/implementation/live-provider-evidence-20261021.json"
       ],
       "environment": "local",
-      "integrationStage": "sdk_wired",
-      "evidenceProves": "The local runtime contract is verified by a deterministic mock transport (real call path, actor gate, 3-call budget, failover, deadline, token caps, truthful unavailable, no echo). The LIVE provider round trip is NOT proven: the pinned primary candidate answers HTTP 429 and the third candidate answers HTTP 404. A live_verified stage is therefore NOT claimed.",
+      "integrationStage": "live_verified",
+      "evidenceProves": "The LIVE provider round trip IS proven as of 2026-10-21: the pinned primary candidate gemini_free/gemini-3.6-flash answered HTTP 200 (PROVIDER_CALL_SUCCEEDED, 1440 ms, transport live, servedBy direct_model, 161 in / 29 out tokens), the second candidate gemini_free/gemini-3.5-flash-lite answered HTTP 200 (999 ms), and the third candidate openrouter/nvidia/nemotron-3-ultra-550b-a55b:free answered HTTP 200 (6042 ms) — the 20 Okt HTTP 429 quota wall and the HTTP 404 third-candidate wall are both gone. On the same live path the actor gate held (no server actor => status unavailable, reason ACTOR_NOT_VERIFIED, 0 provider calls, client-supplied actor in the body ignored), no response echoed the prompt (answer != prompt, canary absent), and the run budget held (maxModelCalls 3, modelCallsMade 1, deadlineMs 30000, latency <= 6042 ms, output tokens <= 3072 cumulative / <= 1024 per call, input <= 24576). CAVEAT: the HTTP 429 (PROVIDER_QUOTA_EXHAUSTED) branch was NOT exercised live on 2026-10-21 because every live candidate answered 200 on the first attempt; it remains unit-proven in tests/platform/copilot-runtime-contract-quota.test.ts and must not be re-proved by deliberately exhausting the 20/day free tier.",
       "supersedes": {
-        "date": "2026-10-20",
-        "previousStatus": "implemented_unverified",
-        "reason": "Re-tiered to blocked_external after an independent adversarial review. The requirement names a hosted/offering activation that is externally unavailable, so a local or synthetic proof does not close it (contract line 179). External gate: Gemini free tier HTTP 429 \"Quota exceeded ... limit: 20, model: gemini-3.6-flash. Please retry in 19h3m41s\"; OpenRouter nvidia/nemotron-3-super-120b-a12b:free HTTP 404 \"Function not found for account\""
+        "date": "2026-10-21",
+        "previousStatus": "partial",
+        "reason": "Re-tiered to verified_local / live_verified after a REAL live provider probe on 2026-10-21 (7 probes, HTTP 200 on the pinned primary, the second and the third candidate; actor gate, no-echo and the 3-call/30s/token budget all held). The 20 Okt external gate (Gemini free-tier HTTP 429) no longer applies: the quota window has recovered."
       },
       "remainingRequirement": null,
       "activationDecisionRef": "reports/implementation/activation-decisions.json#CPK-01",
@@ -36,15 +37,15 @@
       "source": "server/agents/intelligence/threads.ts; api/copilotkit.ts (official @copilotkit/runtime AG-UI route)",
       "testFile": "tests/platform/intelligence-agui-threads.test.ts",
       "testName": "AG-UI thread persistence, resume, tenant/owner re-authorisation, receipt parity",
-      "gap": "Local protocol + replay/resume implemented and tested; the platform app.ts thread mount and resume route are still pending, and the hosted cross-device half is externally gated.",
+      "gap": "The AG-UI thread store is now MOUNTED in the platform app (server/platform/app.ts: new AguiThreadStore, thread resolution in the copilot chat handler, X-Thread-Id on every response, GET /api/platform/copilot/threads/:id/events with SSE replay, X-Last-Event-Id, X-Receipt-Count and ?after= resume), and the thread store gained requireOwned() so a foreign tenant is refused with a typed error. Events are persisted BEFORE the Response is constructed (the cloud durable handler commits its snapshot right after app.fetch returns), and the SSE frame sequence is unchanged. WHAT IS STILL MISSING: the acceptance assertions for this behaviour (thread id header, SSE replay, ?after= partial replay, foreign-thread refusal, hitl_prompt without receipt is not state-changing) have not been written by the tests lane yet, so this row stays unverified. The hosted cross-device half is still externally gated.",
       "externalGate": "INTELLIGENCE_ENTITLEMENT_REQUIRED for hosted saved runs",
       "evidenceRefs": [
         "reports/audits/2026-10-20-double-check-findings.md"
       ],
       "environment": "local",
       "integrationStage": "protocol_verified",
-      "evidenceProves": "The AG-UI protocol is verified at the event level (RUN_STARTED / TEXT_MESSAGE_* / RUN_FINISHED from the official @copilotkit/runtime) and the local thread persistence / replay / re-authorise-on-restore layer is implemented and tested. The platform app.ts mount of the thread store and resume route is still pending, and the hosted cross-device half is externally gated.",
-      "remainingRequirement": "The platform app.ts mount of the AG-UI thread store and the resume route are not implemented.",
+      "evidenceProves": "The AG-UI protocol is verified at the event level (RUN_STARTED / TEXT_MESSAGE_* / RUN_FINISHED from the official @copilotkit/runtime) and the local thread persistence / replay / re-authorise-on-restore layer is implemented and tested. The platform mount of the thread store and the resume route is now implemented in server/platform/app.ts (2026-10-21) but is not yet proven by the acceptance assertions; the hosted cross-device half is externally gated.",
+      "remainingRequirement": "Write and run the acceptance assertions for the mounted thread store: X-Thread-Id on the chat response, GET /api/platform/copilot/threads/:id/events SSE replay, ?after=<eventId> replaying only later events, a foreign tenant thread refused with a typed 403, and a hitl_prompt without a receipt id not treated as state-changing.",
       "testNameKind": "prose"
     },
     {
@@ -56,7 +57,7 @@
       "testFile": "tests/platform/intelligence-learning-pipeline.test.ts",
       "testName": "a candidate that FAILS evaluation is not publishable (tests/platform/intelligence-learning-pipeline.test.ts)",
       "gap": null,
-      "externalGate": "The hosted Automatic Learning half requires INTELLIGENCE_ACCOUNT_REQUIRED (CopilotKit Intelligence account + terms); only the local pipeline is implemented",
+      "externalGate": "CopilotKit Intelligence account + Self-Service Agreement + organization on the free Developer plan + a selected project (project API key) + a Learning container created in the browser (stable id) + 15 eligible threads before the first learning run; Automatic Learning itself IS included in the free Developer plan, so this is not a paid-plan gate. Separately, the host-side wiring does not exist yet: api/copilotkit.ts constructs CopilotRuntime with no `intelligence` client and no `identifyUser` callback, and CopilotKitIntelligence is never instantiated.",
       "evidenceRefs": [
         "reports/audits/2026-10-20-double-check-findings.md"
       ],
@@ -1456,19 +1457,25 @@
       "id": "AI-01",
       "tier": "core",
       "title": "Free model routing — real provider, failover, truthful fallback",
-      "status": "implemented_unverified",
+      "status": "verified_local",
       "source": "server/agents/providers/model-router.ts; server/agents/providers/model-adapters.ts; server/platform/freeModelRouter.ts",
       "testFile": "tests/platform/copilot-runtime-pipeline.test.ts",
       "testName": "Free model router: provider failover, budget, free-only policy (tests/platform/copilot-runtime-pipeline.test.ts)",
-      "gap": "The runtime router is real. The LEGACY server/platform/freeModelRouter.ts fallback previously attributed a locally generated string to a live provider id (local_rules masquerading as live_model); its truthfulness fix and the PROVIDER_QUOTA_EXHAUSTED reason code are still in flight.",
+      "gap": "One branch is not live-proven: PROVIDER_QUOTA_EXHAUSTED (HTTP 429). It is unit-proven in tests/platform/copilot-runtime-contract-quota.test.ts and must not be re-proved by deliberately exhausting the 20/day Gemini free tier. A live multi-candidate failover also did not occur on 2026-10-21 because the first candidate answered HTTP 200.",
       "externalGate": null,
       "evidenceRefs": [
-        "reports/audits/2026-10-20-acceptance-source-audit.md"
+        "reports/audits/2026-10-20-acceptance-source-audit.md",
+        "reports/implementation/live-provider-evidence-20261021.json"
       ],
       "environment": "local",
-      "integrationStage": "protocol_verified",
-      "evidenceProves": "The runtime model router is real: strict candidate order, a 3-call budget counting every attempt, a deadline, token caps and a free-only policy. The LEGACY server/platform/freeModelRouter fallback was corrected to attribute its locally derived answer to local_rules instead of a live provider, but the PROVIDER_QUOTA_EXHAUSTED reason code and the dead-candidate skip are still in flight.",
-      "remainingRequirement": "PROVIDER_QUOTA_EXHAUSTED and the dead-candidate skip were still in flight at the time of this audit.",
+      "integrationStage": "live_verified",
+      "evidenceProves": "Live evidence as of 2026-10-21: a real provider answer is proven for BOTH routers — the runtime router (server/agents) returned transport live for gemini-3.6-flash (HTTP 200, 1440 ms), gemini-3.5-flash-lite (HTTP 200, 999 ms) and openrouter/nvidia/nemotron-3-ultra-550b-a55b:free (HTTP 200, 6042 ms), and the legacy platform router (server/platform/freeModelRouter.ts) returned status live / providerId nvidia for nvidia/nemotron-3-ultra-550b-a55b (HTTP 200, 2084 ms). The dead-candidate skip is proven with a REAL live HTTP 404, not only with mocks: openrouter/nvidia/nemotron-3-super-120b-a12b:free answered HTTP 404 and was classified PROVIDER_MODEL_NOT_FOUND with candidate state 'unusable', and the router answered with the honest fallback (status local_rules, reason LOCAL_RULES_NO_PROVIDER_RESPONSE, blockingReason PROVIDER_MODEL_NOT_FOUND) instead of crediting a live provider. The truthful fallback is likewise live-proven (ollama local unreachable => PROVIDER_UNAVAILABLE => local_rules labelling).",
+      "remainingRequirement": "PROVIDER_QUOTA_EXHAUSTED (HTTP 429) remains unit-proven only; re-proving it live would require deliberately exhausting the 20/day free-tier quota, which the provider policy forbids.",
+      "supersedes": {
+        "date": "2026-10-21",
+        "previousStatus": "implemented_unverified",
+        "reason": "Re-tiered to verified_local / live_verified after a real live provider probe on 2026-10-21: live HTTP 200 answers from three free candidates plus the legacy platform router, a live HTTP 404 dead-candidate skip, and a live truthful fallback. The only unproven branch is PROVIDER_QUOTA_EXHAUSTED, which stays unit-proven by policy."
+      },
       "testNameKind": "prose"
     },
     {
@@ -1654,7 +1661,7 @@
       "testFile": "tests/platform/ext-03-telemetry.test.ts",
       "testName": "Seed removed, prohibited fields absent, opt-out, delete, allowlist, single write path (tests/platform/ext-03-telemetry.test.ts)",
       "gap": null,
-      "externalGate": "Hosted activation blocked: ACTIVATION_EVIDENCE_MISSING. The LOCAL capability is verified; the offering is not activated.",
+      "externalGate": "Two different offerings were conflated. CopilotKit Product Analytics is Intelligence-only (it counts only runs that reach Intelligence through the project key; a local app without a project key is never counted) and needs the account + project + key; the OSS capture half (@copilotkit/learning standalone collector, experimental and self-hosted, works WITHOUT CopilotKit) is already implemented and verified locally. Activation evidence is not a CopilotKit concept: the concrete artifacts are .copilotkit/project.json, a project API key, /info reporting mode:intelligence + threadEndpoints.* + inspectorMetadata:true + runtimeEntitlements.status:ready, a saved thread in the cloud project, and a `copilotkit verify --json` run whose every check is PASS.",
       "evidenceRefs": [
         "reports/audits/2026-10-20-double-check-findings.md"
       ],
@@ -1674,7 +1681,7 @@
       "testFile": "tests/platform/intelligence-ext-local.test.ts",
       "testName": "Channel adapter contract on a synthetic transport: send, inbound, thread mapping, signature, staleness, permission (tests/platform/intelligence-ext-local.test.ts)",
       "gap": null,
-      "externalGate": "Live Slack/Teams requires CHANNEL_PROVIDER_ACCOUNT_REQUIRED (provider account, app, signature, permission).",
+      "externalGate": "Live Slack/Teams requires a CopilotKit account + project + CPK_INTELLIGENCE_API_KEY (a DIRECT adapter does not mean standalone: the CopilotRuntime still owns the Channel lifecycle and uses an Intelligence connection), a provider-side app (Slack: create From a manifest, install to workspace, bot token xoxb-..., Signing Secret into Intelligence; Teams: `copilotkit channels add --project-id ... --channel-id ... --adapter teams --provision` then upload the produced zip; Teams needs ChannelMessage.Read.Group and, for attachments, Files.Read.All admin consent), a Channel Code matching 3-64 lowercase characters/hyphens (a mismatch leaves the Channel at Waiting for runtime), and a long-running Node 22+ host (serverless request handlers cannot own the persistent gateway connection). Our local HMAC signing-secret check corresponds to the direct HTTP-mode adapter (socketMode:false + signingSecret), not the managed path.",
       "evidenceRefs": [
         "reports/audits/2026-10-20-double-check-findings.md"
       ],
@@ -1724,7 +1731,7 @@
       "testFile": "tests/platform/ext-06-voice.test.ts",
       "testName": "Mic permission indicator, revoke, shared run identity, untrusted transcript, processing disclosure (tests/platform/ext-06-voice.test.ts)",
       "gap": null,
-      "externalGate": "Hosted activation blocked: ACTIVATION_EVIDENCE_MISSING. The LOCAL capability is verified; the offering is not activated.",
+      "externalGate": "This gate was mislabelled: CopilotKit voice is a plain open-source runtime feature, not a hosted Intelligence offering. The documented path is a runtime transcriptionService (@copilotkit/voice TranscriptionServiceOpenAI) which makes /info advertise audioFileTranscriptionEnabled:true and the mic button appear; without it the route answers 503 service_not_configured. The real external requirement is an STT provider credential, not an Intelligence account and not terms. No entitlement for voice is mentioned anywhere in the CopilotKit docs.",
       "evidenceRefs": [
         "reports/audits/2026-10-20-double-check-findings.md"
       ],
@@ -1744,7 +1751,7 @@
       "testFile": "tests/platform/ext-07-attachments.test.ts",
       "testName": "Attachment reference carries hash, permission and revocation; a revoked attachment fails the set (tests/platform/ext-07-attachments.test.ts)",
       "gap": "The upload security model and the attachment reference surface are real and tested, but the copilot route does not yet pass attachmentIds through, and there is no vision inference.",
-      "externalGate": "Hosted activation blocked: ACTIVATION_EVIDENCE_MISSING. The LOCAL capability is verified; the offering is not activated.",
+      "externalGate": "Two different offerings were conflated. CopilotKit Product Analytics is Intelligence-only (it counts only runs that reach Intelligence through the project key; a local app without a project key is never counted) and needs the account + project + key; the OSS capture half (@copilotkit/learning standalone collector, experimental and self-hosted, works WITHOUT CopilotKit) is already implemented and verified locally. Activation evidence is not a CopilotKit concept: the concrete artifacts are .copilotkit/project.json, a project API key, /info reporting mode:intelligence + threadEndpoints.* + inspectorMetadata:true + runtimeEntitlements.status:ready, a saved thread in the cloud project, and a `copilotkit verify --json` run whose every check is PASS.",
       "evidenceRefs": [
         "reports/audits/2026-10-20-double-check-findings.md"
       ],

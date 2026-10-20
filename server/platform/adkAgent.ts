@@ -43,6 +43,13 @@ import {
   type MarginSimulationResult,
   evaluateMarginContribution,
 } from '../../shared/growth-contracts';
+import {
+  detectRefundIntent,
+  resolveCanonicalOrderId,
+  type OrderIdResolutionReasonCode,
+  type RefundIntentDetection,
+} from '../../shared/order-reference-contracts';
+import type { ProviderCandidateOutcome } from '../../shared/provider-run-contracts';
 import type { OrderRecord } from '../../shared/platform-contracts';
 import { parseMarginSimulationInput, type MarginSimulationParseResult } from './marginInputs';
 
@@ -218,56 +225,58 @@ Prinsip Operasi:
    * Cari pesanan sebenar yang boleh dikenal pasti daripada mesej pengguna.
    * Tiada ID pesanan rekaan: hanya rekod yang benar-benar wujud dalam store.
    *
-   * Resolusi adalah TEKAT. Token mesti sama dengan id kanonikal, atau menjadi
-   * segmen akhir id kanonikal (`ord-copilot-trace-01` <-> `copilot-trace-01`).
-   * Padanan substring (`includes`) dilumpuhkan sepenuhnya: `ord-001` akan
-   * memadankan `ord-0010`, dan jumlah wang boleh dilampirkan pada pesanan salah.
-   * Jika lebih satu pesanan sepadan untuk token yang sama, tiada pesanan dipilih
-   * (fails closed) dan tiada jumlah dipaparkan.
+   * Resolusi adalah TEKAT dan berkongsi dengan semua lapisan server:
+   * `resolveCanonicalOrderId` (`shared/order-reference-contracts.ts`) hanya
+   * menerima ID kanonikal yang hadir dalam teks sebagai TOKEN PENUH. Tiada
+   * padanan substring (`ord-001` tidak memadankan `ord-0010`), tiada padanan
+   * prefix, tiada pesanan separuh.
+   *
+   * Tie-break: apabila beberapa ID hadir, ID kanonikal TERPANJANG menang;
+   * jika panjang sama, hasilnya `ORDER_ID_AMBIGUOUS` dan tiada pesanan
+   * dipilih (fail tutup) supaya tiada jumlah dilampirkan pada pesanan salah.
+   *
+   * Nilai pulangan sentiasa membawa reason code yang boleh mesin baca.
    */
   private findOrder(message: string): {
     order: OrderRecord | null;
-    reason: 'RESOLVED' | 'NOT_FOUND' | 'AMBIGUOUS';
+    reason: OrderIdResolutionReasonCode;
   } {
     const orders = this.store.all<OrderRecord>('orders');
-    if (!orders.length) return { order: null, reason: 'NOT_FOUND' };
-    const tokens: string[] = [];
-    for (const match of message.matchAll(/(?:ord|order|pesanan)[-_ ]?([a-z0-9][a-z0-9-_]{2,})/gi)) {
-      tokens.push(match[1].toLowerCase());
-    }
-    for (const match of message.matchAll(/#(\d{3,})/g)) {
-      tokens.push(match[1].toLowerCase());
-    }
-    for (const token of tokens) {
-      const exact = orders.filter((order) => order.id.toLowerCase() === token);
-      if (exact.length === 1) return { order: exact[0], reason: 'RESOLVED' };
-      if (exact.length > 1) return { order: null, reason: 'AMBIGUOUS' };
-
-      const suffix = orders.filter((order) => order.id.toLowerCase().endsWith(`-${token}`));
-      if (suffix.length === 1) return { order: suffix[0], reason: 'RESOLVED' };
-      if (suffix.length > 1) return { order: null, reason: 'AMBIGUOUS' };
-    }
-    return { order: null, reason: 'NOT_FOUND' };
+    if (!orders.length) return { order: null, reason: 'ORDER_ID_NOT_FOUND' };
+    const resolution = resolveCanonicalOrderId(
+      message,
+      orders.map(order => order.id)
+    );
+    if (!resolution.orderId) return { order: null, reason: resolution.reason };
+    const order = orders.find(candidate => candidate.id === resolution.orderId) ?? null;
+    return { order, reason: order ? 'ORDER_ID_RESOLVED' : 'ORDER_ID_NOT_FOUND' };
   }
 
   /**
    * Adakah pengguna MEMINTA ganti rugi?
    *
-   * Padanan kata kunci semata-mata membuka permintaan refund untuk ayat yang
-   * ditolak ("tak ada refund", "bukan ganti rugi"). Kata kunci hanya diterima
-   * dalam klausa yang tiada penanda negasi.
+   * Niat refund ialah keputusan yang boleh=wang, jadi ia dikongsi dengan
+   * lapisan server lain melalui `detectRefundIntent`
+   * (`shared/order-reference-contracts.ts`): hanya klausa AFIRMATIF yang
+   * mencetuskan. Penafian ("do not refund", "not refunded", "no refund",
+   * "jangan refund") dan keadaan yang sudah selesai ("sudah refund",
+   * "already refunded") TIDAK pernah mencetuskan.
    */
-  private requestsRefund(text: string): boolean {
-    const refundTerm = /\brefund\b|\brebate\b|ganti\s*rugi/i;
-    const negation =
-      /\b(tak|tidak|bukan|jangan|belum|tanpa|tiada|no|not|never|without)\b/i;
-    const clauses = text.split(/[.!?;,\n]|\b(?:tetapi|tapi|namun|however|but|although)\b/i);
-    for (const clause of clauses) {
-      if (!refundTerm.test(clause)) continue;
-      if (negation.test(clause)) continue;
-      return true;
-    }
-    return false;
+  private requestsRefund(text: string): RefundIntentDetection {
+    return detectRefundIntent(text);
+  }
+
+  /**
+   * Amaun kesan kewangan (integer sen) daripada pesanan yang DIPERCAYAI.
+   *
+   * Tiada pesanan yang tidak dapat dipercayai -> tiada amaun langsung
+   * (bukan 0). Nilai mesti integer sen yang safe; apa-apa yang lain
+   * ditolak sebagai tidak tersedia.
+   */
+  private trustedImpactSen(order: OrderRecord | null): number | undefined {
+    if (!order) return undefined;
+    if (!Number.isSafeInteger(order.amountSen) || order.amountSen < 0) return undefined;
+    return order.amountSen;
   }
 
   /**
@@ -335,6 +344,18 @@ Prinsip Operasi:
     providerUsed: string;
     modelUsed: string;
     providerStatus: 'live' | 'local_rules';
+    /**
+     * Reason code provider yang paling menentukan bagi run ini (contoh
+     * `PROVIDER_QUOTA_EXHAUSTED`). Nilai ini disalin daripada klasifikasi
+     * sebenar; ia tidak pernah diteka.
+     */
+    providerBlockingReason?: string;
+    /**
+     * Pecahan sebab setiap calon percuma dalam run ini. Setiap entri
+     * membawa reason code yang boleh mesin baca; badan mentah provider
+     * tidak pernah dihantar ke pelayar.
+     */
+    providerCandidates?: ProviderCandidateOutcome[];
     generativeUi?: {
       name: string;
       props: Record<string, any>;
@@ -361,21 +382,22 @@ Prinsip Operasi:
         sopAction: 'Kuarantin batch di cawangan & minta bukti foto penutup botol',
         evaluationState: 'reviewed',
         evidencePhotoRequired: true,
+        // Punca utama belum disahkan secara fizikal, jadi skor keyakinan WAJIB
+        // null — tiada keyakinan yang direka.
+        confidenceScore: null,
       };
-      // Punca utama belum disahkan secara fizikal, jadi skor keyakinan WAJIB
-      // null — tiada keyakinan yang direka. (Kontrak A2UI tidak medan
-      // keyakinan, jadi ia dipaparkan sebagai sifat tambahan.)
-      const jevCardProps = { ...jevProps, confidenceScore: null };
       genUi = {
         name: 'JevAssessmentCard',
-        props: jevCardProps,
+        props: jevProps,
       };
 
-      const { order } = this.findOrder(userMessage);
+      const { order, reason: orderResolution } = this.findOrder(userMessage);
+      const refundIntent = this.requestsRefund(userMessage);
 
-      if (this.requestsRefund(userMessage)) {
-        // Nilai kesan kewangan hanya diisi daripada pesanan yang benar-benar dibaca.
-        const estimatedImpactSen = order ? order.amountSen : undefined;
+      if (refundIntent.requested) {
+        // Nilai kesan kewangan hanya diisi daripada pesanan yang benar-benar
+        // dibaca DAN dipercayai. Tiada pesanan -> TIADA amaun (bukan 0).
+        const estimatedImpactSen = this.trustedImpactSen(order);
         hitl = this.createHitlAction(
           actor,
           'refund',
@@ -387,7 +409,12 @@ Prinsip Operasi:
             reason: 'Aduan kualiti penutup botol bocor semasa pos',
             expiry: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
             message: userMessage,
-            reasonCode: order ? 'ORDER_RESOLVED' : 'ORDER_NOT_IDENTIFIABLE',
+            // Reason code yang boleh mesin baca: RESOLUSI pesanan dan NIAT
+            // refund dilaporkan berasingan supaya pelayar tidak meneka
+            // bahawa "tiada pesanan" bermaksud "tiada permintaan".
+            reasonCode: orderResolution,
+            orderResolutionReason: orderResolution,
+            refundIntentReason: refundIntent.reason,
           }
         );
         const provenanceDetail: ProvenanceDetail = {
@@ -407,6 +434,8 @@ Prinsip Operasi:
             ...(estimatedImpactSen !== undefined ? { estimatedImpactSen } : {}),
             sopAction: 'Kuarantin batch di cawangan & minta bukti foto penutup botol',
             orderId: order ? order.id : 'UNRESOLVED',
+            orderResolutionReason: orderResolution,
+            refundIntentReason: refundIntent.reason,
             provenanceDetail,
           },
           provenance: {
@@ -424,7 +453,7 @@ Prinsip Operasi:
           schemaVersion: 'a2ui.v1',
           component: 'JevAssessmentCard',
           componentName: 'JevAssessmentCard',
-          props: jevCardProps,
+          props: jevProps,
           provenance: {
             source: 'jev_local_rules',
             timestamp: now(),
@@ -516,7 +545,7 @@ Prinsip Operasi:
         };
       }
     } else if (lower.includes('jejak') || lower.includes('tracking')) {
-      const { order } = this.findOrder(userMessage);
+      const { order, reason: orderResolution } = this.findOrder(userMessage);
       if (order) {
         const expiryDaysRemaining = order.trackingTokenExpiresAt
           ? Math.max(
@@ -569,7 +598,10 @@ Prinsip Operasi:
           },
         };
       } else {
-        // Pesanan tidak dapat dikenal pasti: tiada ID rekaan dipaparkan.
+        // Pesanan tidak dapat dikenal pasti: tiada ID rekaan dipaparkan dan
+        // tiada amaun dipaparkan. Reason code memberitahu kenapa --
+        // `ORDER_ID_NOT_FOUND` (tiada ID dalam teks) berbeza daripada
+        // `ORDER_ID_AMBIGUOUS` (lebih daripada satu ID disebut).
         const provenanceDetail: ProvenanceDetail = {
           evaluator: 'none',
           recordIds: [],
@@ -582,8 +614,8 @@ Prinsip Operasi:
           componentName: 'OrderTrackingCard',
           props: {
             found: false,
-            status: 'ORDER_NOT_IDENTIFIABLE',
-            reasonCode: 'ORDER_NOT_IDENTIFIABLE',
+            status: orderResolution,
+            reasonCode: orderResolution,
             provenanceDetail,
           },
           provenance: {
@@ -650,6 +682,8 @@ Prinsip Operasi:
       providerUsed: result.providerId,
       modelUsed: result.model,
       providerStatus: result.status ?? (result.providerId === 'local_rules' ? 'local_rules' : 'live'),
+      ...(result.blockingReason ? { providerBlockingReason: result.blockingReason } : {}),
+      ...(result.candidates ? { providerCandidates: result.candidates } : {}),
       generativeUi: genUi,
       a2ui,
       hitlAction: hitl,

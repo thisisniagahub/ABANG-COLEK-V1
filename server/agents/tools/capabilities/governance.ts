@@ -21,6 +21,15 @@ import { orderAccessCode } from '../scope';
 import { resolveActor } from '../scope';
 import { ApprovalConflictError } from '../../approval/types';
 import { evaluateMarginContribution } from '../../../platform/marginGuardian';
+import {
+  applyVerifiedActionOutcome,
+  inspectActionReceipt,
+  refreshExternalActionStatus,
+} from './advReconciliation';
+import {
+  RECONCILE_OPERATIONS,
+  type ReconcileOperation,
+} from '../../../../shared/adv-contracts';
 
 export const governanceTools: ToolDefinition[] = [
   // ADV-25: execute_approved_action (C/X)
@@ -256,9 +265,14 @@ export const governanceTools: ToolDefinition[] = [
     registrationName: 'reconcile_action',
     riskClass: 'Q',
     description:
-      'Menyelaraskan resit tindakan yang dilaksanakan dengan keadaan platform sebenar (pesanan, bayaran) dan melaporkan drift.',
+      'Menyelaraskan resit tindakan yang dilaksanakan dengan keadaan platform sebenar (pesanan, bayaran) dan melaporkan drift melalui tiga operasi berasingan: periksa resit, segarkan status luaran, dan gunakan hasil yang disahkan.',
     requiredRole: 'founder',
     inputSchema: {
+      /** Reconciliation is three DISTINCT operations, never one blended step. */
+      operation: {
+        type: 'string',
+        enum: ['inspect_action_receipt', 'refresh_external_action_status', 'apply_verified_action_outcome'],
+      },
       proposalId: { type: 'string', min: 1, max: 120 },
       receiptId: { type: 'string', min: 1, max: 120 },
       $oneOf: { type: 'array', items: { type: 'string' } },
@@ -269,6 +283,11 @@ export const governanceTools: ToolDefinition[] = [
       const { store, actor } = resolved;
       if (!actor.isFounder) {
         return fail('FORBIDDEN_FOUNDER_REQUIRED', 'Penyelarasan tindakan memerlukan peranan founder.');
+      }
+      const at = ctx.runtime.clock();
+      const operation = (input.operation as ReconcileOperation | undefined) ?? 'inspect_action_receipt';
+      if (!RECONCILE_OPERATIONS.includes(operation)) {
+        return fail('RECONCILE_OPERATION_INVALID', `Operasi penyelarasan '${operation}' tidak dikenali.`);
       }
       const proposalId = input.proposalId as string | undefined;
       const receiptId = input.receiptId as string | undefined;
@@ -281,31 +300,14 @@ export const governanceTools: ToolDefinition[] = [
         return fail('RECEIPT_NOT_FOUND', 'Tiada resit Pelaksanaan untuk reconciliation tersebut.');
       }
       const proposal = ctx.runtime.approvalService.getProposal(receipt.proposalId);
-      const drifts: string[] = [];
 
-      if (receipt.actionType === 'refund.execute') {
-        const orderId = String(receipt.result.orderId ?? '');
-        const order = orderId ? readOrder(store, orderId) : null;
-        if (!order) {
-          drifts.push('PESANAN_TIDAK_DITEMUI');
-        } else {
-          const refundable = order.paidAmountSen - order.refundAmountSen;
-          if (order.refundAmountSen < receipt.amountSen) {
-            drifts.push(`JUMLAH_PULANGAN_MENJADI_LEBIH_RENDAH: rekod=${order.refundAmountSen} sen < resit=${receipt.amountSen} sen`);
-          }
-          if (refundable < 0) drifts.push('BAKI_PULANGAN_NEGATIF');
-        }
-        const payment = store
-          .all<import('../../../platform/commerce').PaymentRecord>('payments')
-          .find((candidate) => candidate.id === `refund-${receipt.proposalId}`);
-        if (!payment) drifts.push('REKOD_BAYARAN_PULANGAN_TIADA');
-        else if (payment.amountSen !== receipt.amountSen) {
-          drifts.push(`AMAUN_BAYARAN_BEZA: rekod=${payment.amountSen} sen vs resit=${receipt.amountSen} sen`);
-        }
-      }
-
-      return {
-        ok: true,
+      // Operation 1 is always evaluated so `status` / `drifts` stay truthful for
+      // every operation: the receipt is compared against the LIVE platform
+      // state (order / payment), never against a remembered snapshot.
+      const inspection = inspectActionReceipt(store, receipt);
+      const base = {
+        ok: true as const,
+        operation,
         receiptId: receipt.id,
         proposalId: receipt.proposalId,
         actionType: receipt.actionType,
@@ -314,10 +316,78 @@ export const governanceTools: ToolDefinition[] = [
         executedAt: receipt.executedAt,
         proposalStatus: proposal?.status ?? null,
         proposalVersion: proposal?.version ?? null,
-        drifts,
-        status: drifts.length === 0 ? 'consistent' : 'drift_detected',
+        drifts: inspection.drifts,
+        status: inspection.status,
+        inspectedOrderId: inspection.orderId,
+        refundableSen: inspection.refundableSen,
+        paymentId: inspection.paymentId,
         persistence: ctx.runtime.approvalStore.persistence,
-        provenance: provenance(ctx.runtime, ctx, [`receipts:${receipt.id}`], 'execution-reconciliation-read'),
+      };
+
+      if (operation === 'inspect_action_receipt') {
+        return {
+          ...base,
+            mutated: false,
+            provenance: provenance(
+              ctx.runtime,
+              ctx,
+              [`receipts:${receipt.id}`],
+              'execution-reconciliation-read',
+            ),
+        };
+      }
+
+      if (operation === 'refresh_external_action_status') {
+        const refreshed = refreshExternalActionStatus(store, actor, receipt, at);
+        if (!refreshed.reading.ok) {
+          return fail(
+            refreshed.reading.reason ?? 'EXTERNAL_STATUS_UNAVAILABLE',
+            refreshed.reading.message,
+          );
+        }
+        return {
+          ...base,
+          externalStatus: refreshed.reading.status,
+          externalStatusReason: refreshed.reading.reason,
+          externalStatusMessage: refreshed.reading.message,
+          externalStatusEvidence: refreshed.reading.evidence,
+          previousExternalStatus: refreshed.previousStatus,
+          externalStatusChanged: refreshed.changed,
+          observedAt: at,
+          observedBy: actor.principal.user.id,
+          mutated: refreshed.record !== null,
+          provenance: provenance(
+            ctx.runtime,
+            ctx,
+            [`receipts:${receipt.id}`, 'action_status'],
+            'external-action-status-refresh',
+          ),
+        };
+      }
+
+      // apply_verified_action_outcome — applied at most once, and only when the
+      // live state proves the outcome.
+      const applied = applyVerifiedActionOutcome(store, actor, receipt, at);
+      if (!applied.ok) {
+        return fail(applied.reason ?? 'EXTERNAL_OUTCOME_UNVERIFIED', applied.message);
+      }
+      return {
+        ...base,
+        applied: true,
+        replay: applied.replay,
+        applyReason: applied.reason,
+        applyMessage: applied.message,
+        platformStateRepaired: applied.platformStateRepaired,
+        appliedOrderId: applied.orderId,
+        appliedAt: applied.outcome?.appliedAt ?? null,
+        verifiedBy: applied.outcome?.verifiedBy ?? null,
+        mutated: !applied.replay,
+        provenance: provenance(
+          ctx.runtime,
+          ctx,
+          [`receipts:${receipt.id}`, 'action_outcomes'],
+          'verified-action-outcome-apply',
+        ),
       };
     },
   }),

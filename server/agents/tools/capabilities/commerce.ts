@@ -26,6 +26,8 @@ import {
   allocateCumulativeRefundAcrossLines,
   calculateCumulativeReversal,
 } from '../../../platform/paymentReconciliation';
+import { Loyalty } from '../../../platform/loyalty';
+import { detectCheckoutConflicts, summariseCheckoutConflicts } from './advCheckoutConflicts';
 import type { OrderRecord, StockLot } from '../../../../shared/platform-contracts';
 
 const availableUnits = (
@@ -71,7 +73,7 @@ export const commerceTools: ToolDefinition[] = [
     registrationName: 'diagnose_checkout',
     riskClass: 'S',
     description:
-      'Mendiagnos checkout sebenar: sama ada satu pesanan (orderId) atau satu bakul (lines), dengan menyemak baki stor fizikal, versi katalog dan status bayaran (tanpa reservasi baharu).',
+      'Mendiagnos checkout sebenar: sama ada satu pesanan (orderId) atau satu bakul (lines), dengan menyemak baki stor fizikal, versi katalog, status bayaran dan lima kelas konflik checkout (tanpa reservasi baharu).',
     requiredRole: 'customer',
     inputSchema: {
       orderId: { type: 'string', min: 1, max: 120 },
@@ -82,12 +84,22 @@ export const commerceTools: ToolDefinition[] = [
           type: 'object',
           fields: {
             productId: { required: true, type: 'string', min: 1, max: 120 },
-            quantity: { required: true, type: 'integer', min: 1, max: 1_000_000 },
+            /**
+             * Relaxed from `integer` on purpose: a fractional / negative / zero
+             * quantity must REACH the conflict detector so it can be reported as
+             * a typed conflict instead of being swallowed by the schema.
+             */
+            quantity: { required: true, type: 'number', min: -1_000_000, max: 1_000_000 },
           },
         },
       },
       /** Catalogue version the draft was priced against. Absent => no reprice evidence. */
       catalogueVersion: { type: 'integer', min: 0 },
+      /** Fulfilment mode claimed by the cart. A value outside the canonical
+       *  modes is reported as CHECKOUT_INVALID_FULFILMENT, never accepted. */
+      fulfilment: { type: 'string', min: 1, max: 40 },
+      /** Loyalty points the cart claims to redeem (cart mode). */
+      redeemPoints: { type: 'integer', min: 0, max: 10_000_000 },
       $oneOf: { type: 'array', items: { type: 'string' } },
     },
     execute: async (input, ctx) => {
@@ -100,12 +112,18 @@ export const commerceTools: ToolDefinition[] = [
         (reservation) => reservation.expiresAt > at,
       );
       const currentCatalogueVersion = catalogueVersion(store);
+      const catalogue = catalogueProducts(store);
+      const loyalty = new Loyalty(store);
+      const catalogueEntries = catalogue.map((product) => ({
+        id: product.id,
+        priceSen: product.priceSen,
+        publishedVersion: product.publishedVersion,
+      }));
 
       // --- Cart diagnosis: no order exists yet, price and stock come from the
       //     canonical catalogue and the live inventory ledger.
       if (!input.orderId) {
         const requestedLines = (input.lines as Array<{ productId: string; quantity: number }>) ?? [];
-        const catalogue = catalogueProducts(store);
         const issues: string[] = [];
         const lines = requestedLines.map((line) => {
           const product = catalogue.find((candidate) => candidate.id === line.productId) ?? null;
@@ -150,22 +168,74 @@ export const commerceTools: ToolDefinition[] = [
             `KATALOG_UFUK: draf pada versi ${draftedCatalogueVersion} vs semasa ${currentCatalogueVersion}`,
           );
         }
+        // Money stays integer Sen. A line whose quantity is not a valid
+        // non-negative integer cannot contribute a whole-sen amount, so it is
+        // excluded here and reported as a conflict instead of being rounded.
+        const estimatedTotalSen = lines.reduce((sum, line) => {
+          if (line.priceSen === null) return sum;
+          if (!Number.isInteger(line.requestedQuantity) || line.requestedQuantity < 0) return sum;
+          return sum + line.priceSen * line.requestedQuantity;
+        }, 0);
+        const hasInvalidQuantity = lines.some(
+          (line) => !Number.isInteger(line.requestedQuantity) || line.requestedQuantity < 0,
+        );
+
+        // A cart has no customer record of its own: the loyalty claim is
+        // attributed to the calling actor (the cart's owner) and is only
+        // evaluated when the caller actually claims points.
+        const claimedPoints = (input.redeemPoints as number | undefined) ?? 0;
+        const cartOwnerId = actor.principal.user.id;
+        const cartOwnerEntries = loyalty.getEntries(cartOwnerId);
+        const conflicts = detectCheckoutConflicts({
+          mode: 'cart',
+          lines: requestedLines.map((line) => ({
+            productId: line.productId,
+            quantity: line.quantity,
+          })),
+          catalogueVersion: currentCatalogueVersion,
+          catalogue: catalogueEntries,
+          draftCatalogueVersion: draftedCatalogueVersion ?? null,
+          orderAmountSen: estimatedTotalSen,
+          fulfilment: (input.fulfilment as string | undefined) ?? null,
+          loyalty:
+            claimedPoints > 0
+              ? {
+                  claimedPoints,
+                  claimedDiscountSen: loyalty.pointsToDiscountSen(claimedPoints),
+                  balancePoints: cartOwnerEntries.length
+                    ? loyalty.getBalance(cartOwnerId, at)
+                    : null,
+                }
+              : null,
+        });
+        const summary = summariseCheckoutConflicts(conflicts);
+        const blockingConflicts = conflicts.filter((conflict) => conflict.blocking);
+
         return {
           ok: true,
           mode: 'cart',
-          valid: blocking.length === 0,
+          valid: blocking.length === 0 && blockingConflicts.length === 0,
           requiresReprice,
           itemCount: lines.length,
           lines,
-          estimatedTotalSen: lines.reduce(
-            (sum, line) => sum + (line.priceSen ?? 0) * line.requestedQuantity,
-            0,
-          ),
+          estimatedTotalSen,
+          estimatedTotalExcludesInvalidQuantityLines: hasInvalidQuantity,
           catalogueVersion: currentCatalogueVersion,
           issues,
+          conflicts,
+          conflictCount: summary.conflictCount,
+          conflictClasses: summary.classes,
+          blockingConflictCount: summary.blockingCount,
+          blockingConflictClasses: [...new Set(blockingConflicts.map((c) => c.class))].sort(),
+          blockingConflictCodes: [...new Set(blockingConflicts.map((c) => c.code))].sort(),
           mutated: false,
           diagnosedAt: at,
-          provenance: provenance(ctx.runtime, ctx, ['catalogue', 'lots', 'reservations'], 'inventory-availability-read'),
+          provenance: provenance(
+            ctx.runtime,
+            ctx,
+            ['catalogue', 'lots', 'reservations', 'loyalty_ledger'],
+            'checkout-conflict-detector',
+          ),
         };
       }
 
@@ -209,11 +279,45 @@ export const commerceTools: ToolDefinition[] = [
         (issue) => issue.startsWith('STOK_MENCUKUPI') || issue.startsWith('BAYARAN_DITOLAK') || issue.startsWith('PESANAN_DIBATALKAN'),
       );
 
+      // The canonical order state is the only source of the loyalty claim.
+      const claimedPoints = order.redeemPoints ?? 0;
+      const claimedDiscountSen = order.loyaltyDiscountSen ?? 0;
+      const customerEntries = loyalty.getEntries(order.customerId);
+      const conflicts = detectCheckoutConflicts({
+        mode: 'order',
+        lines: order.lines.map((line) => ({
+          productId: line.productId,
+          quantity: line.quantity,
+          priceSen: line.priceSen,
+          publishedVersion: line.publishedVersion,
+        })),
+        catalogueVersion: currentCatalogueVersion,
+        catalogue: catalogueEntries,
+        orderAmountSen: order.amountSen,
+        fulfilment: order.fulfilment,
+        fulfilmentStatus: order.fulfilmentStatus,
+        paymentState: order.paymentState,
+        paidAmountSen: order.paidAmountSen,
+        refundAmountSen: order.refundAmountSen,
+        loyalty:
+          claimedPoints > 0 || claimedDiscountSen > 0
+            ? {
+                claimedPoints,
+                claimedDiscountSen,
+                balancePoints: customerEntries.length
+                  ? loyalty.getBalance(order.customerId, at)
+                  : null,
+              }
+            : null,
+      });
+      const summary = summariseCheckoutConflicts(conflicts);
+      const blockingConflicts = conflicts.filter((conflict) => conflict.blocking);
+
       return {
         ok: true,
         mode: 'order',
         orderId: order.id,
-        valid: blocking.length === 0,
+        valid: blocking.length === 0 && blockingConflicts.length === 0,
         requiresReprice: issues.some((issue) => issue.startsWith('KATALOG_UFUK')),
         itemCount: order.lines.length,
         lines,
@@ -221,9 +325,20 @@ export const commerceTools: ToolDefinition[] = [
         fulfilmentStatus: order.fulfilmentStatus,
         catalogueVersion: currentCatalogueVersion,
         issues,
+        conflicts,
+        conflictCount: summary.conflictCount,
+        conflictClasses: summary.classes,
+        blockingConflictCount: summary.blockingCount,
+        blockingConflictClasses: [...new Set(blockingConflicts.map((c) => c.class))].sort(),
+        blockingConflictCodes: [...new Set(blockingConflicts.map((c) => c.code))].sort(),
         mutated: false,
         diagnosedAt: at,
-        provenance: provenance(ctx.runtime, ctx, ['orders', 'lots', 'reservations', 'catalogue'], 'inventory-availability-read'),
+        provenance: provenance(
+          ctx.runtime,
+          ctx,
+          ['orders', 'lots', 'reservations', 'catalogue', 'loyalty_ledger'],
+          'checkout-conflict-detector',
+        ),
       };
     },
   }),

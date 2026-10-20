@@ -29,6 +29,34 @@ describe('JEV action and scope boundary', () => {
     expect(action.preview?.status).toBe('PREPARED');
     expect(action.message).toContain('Tiada emel dihantar');
   });
+  test('uncomputed dimensions and primitives are null, never 0, false or an empty map', async () => {
+    setJevHistoryScope(null);
+    const result = await evaluateWithJev('Botol bocor');
+    // "Tiada apa-apa dikira" mesti expressed sebagai `null` untuk SETIAP
+    // primitif dan dimensi. `0`, `false` dan `{}` semuanya ialah bilangan
+    // yang SALAH: ia mendakwa pengiraan berlaku dan nilainya sifar.
+    for (const dimension of Object.values(result.dimensions)) {
+      expect(dimension.confidence).toBeNull();
+      expect(dimension.probabilities).toBeNull();
+      expect(dimension.confidence).not.toBe(0);
+      expect(dimension.probabilities).not.toEqual({});
+    }
+    for (const score of [result.primitives.urgencyScore, result.primitives.customerSatisfactionScore]) {
+      expect(score.score).toBeNull();
+      expect(score.confidence).toBeNull();
+      expect(score.score).not.toBe(0);
+    }
+    for (const noul of [
+      result.primitives.requiresImmediateIntervention,
+      result.primitives.isRefundEligible,
+      result.primitives.isHighValueAgentOpportunity,
+    ]) {
+      expect(noul.probability).toBeNull();
+      expect(noul.isAffirmative).toBeNull();
+      expect(noul.probability).not.toBe(0);
+      expect(noul.isAffirmative).not.toBe(false);
+    }
+  });
   test('unverified history is volatile and clears with identity changes', async () => {
     setJevHistoryScope(null);
     await evaluateWithJev('Botol bocor');

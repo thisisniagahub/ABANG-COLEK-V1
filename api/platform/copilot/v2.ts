@@ -23,6 +23,7 @@
 
 import { copilotRuntime, PUBLIC_ORIGIN_ACTOR } from '../../../server/agents/copilot/runtime-instance';
 import type { CopilotChatResponse } from '../../../server/agents/copilot/runtime';
+import { visionInferenceAvailability } from '../../../server/agents/intelligence/availability';
 
 const JSON_HEADERS = {
   'Content-Type': 'application/json',
@@ -55,6 +56,24 @@ function failure(
   );
 }
 
+/**
+ * Membaca `attachmentIds` daripada badan permintaan tanpa mengubah badan
+ * asal (badan diklon). Badan bukan JSON dikembalikan sebagai senarai kosong
+ * supaya kontrak sedia ada runtime tidak berubah.
+ */
+async function readAttachmentIds(request: Request): Promise<string[]> {
+  let payload: unknown;
+  try {
+    payload = await request.clone().json();
+  } catch {
+    return [];
+  }
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return [];
+  const ids = (payload as { attachmentIds?: unknown }).attachmentIds;
+  if (!Array.isArray(ids)) return [];
+  return ids.filter((value): value is string => typeof value === 'string');
+}
+
 export default async function handler(req: Request): Promise<Response> {
   if (req.method === 'GET' || req.method === 'HEAD') {
     return Response.json(
@@ -69,6 +88,34 @@ export default async function handler(req: Request): Promise<Response> {
       'METHOD_NOT_ALLOWED',
       'Permintaan Copilot hanya menerima kaedah GET atau POST.',
       'copilot-v2'
+    );
+  }
+
+  // BL-21 / EXT-07 — penjaga lampiran. Laluan ini tiada kuasa sesi server,
+  // jadi rujukan lampiran tidak boleh diselesaikan (hash fail tidak boleh
+  // dibaca tanpa sesi yang disahkan) DAN tiada model vision layak
+  // dikonfigurasi. Mana-mana `attachmentIds` ditolak secara jujur: tiada
+  // vision reka, tiada hash reka.
+  const attachmentIds = await readAttachmentIds(req);
+  if (attachmentIds.length) {
+    const vision = visionInferenceAvailability();
+    return Response.json(
+      {
+        ok: false,
+        error: 'VISION_INFERENCE_UNAVAILABLE',
+        code: 'VISION_INFERENCE_UNAVAILABLE',
+        reasonCode: vision.reasonCode,
+        requestId: 'copilot-v2',
+        message: vision.reason,
+        data: {
+          reasonCode: vision.reasonCode,
+          reason: vision.reason,
+          attachmentIds,
+          attachments: [],
+          attachmentResolution: 'NO_SESSION_AUTHORITY',
+        },
+      },
+      { status: 409, headers: JSON_HEADERS }
     );
   }
 

@@ -6,7 +6,10 @@ import {
 import type { DealerCommissionSummary } from '../../../../shared/growth-contracts';
 import { CommissionSummaryCard } from '../cards/CommissionSummaryCard';
 import { JevAssessmentCard } from '../cards/JevAssessmentCard';
-import { MarginSummaryCard } from '../cards/MarginSummaryCard';
+import {
+  MarginSummaryCard,
+  parseMarginInputFailure,
+} from '../cards/MarginSummaryCard';
 import { OrderSummaryCard } from '../cards/OrderSummaryCard';
 import { OperationsBriefApp, OPERATIONS_BRIEF_READ_ONLY_NOTICE, parseOperationsBrief } from '../mcp-apps/OperationsBriefApp';
 
@@ -62,6 +65,84 @@ const marginStatuses = [
 ] as const;
 const trackingStages = ['draft', 'accepted', 'packing', 'dispatched', 'received'] as const;
 const jevEvaluationStates = ['reviewed', 'pending_quarantine'] as const;
+
+/**
+ * Senarai prop yang boleh dipaparkan bagi setiap komponen.
+ *
+ * Medan yang TIDAK berada dalam senarai ini diabaikan sepenuhnya dan tidak
+ * pernah dipaparkan. Senarai ini ialah satu-satunya gate: renderer hanya
+ * mem projecting medan yang dibenarkan.
+ */
+const JEV_ASSESSMENT_PROPS = [
+  'issueClass',
+  'rootCause',
+  'sopAction',
+  'evaluationState',
+  'evidencePhotoRequired',
+  'confidenceScore',
+] as const;
+
+const MARGIN_SIMULATOR_PROPS = [
+  'contributionSen',
+  'contributionMarginPct',
+  'requiredContributionSen',
+  'requiredMarginPct',
+  'status',
+  'minMarginSen',
+  'minMarginPercent',
+] as const;
+
+const MARGIN_SUMMARY_PROPS = [
+  'contributionSen',
+  'contributionMarginPct',
+  'requiredContributionSen',
+  'requiredMarginPct',
+  'status',
+  'simulationPerformed',
+  'reason',
+  'reasonCode',
+  'invalidKeys',
+  'missingInputKeys',
+  'requiredInputKeys',
+  'failure',
+  'marginFailure',
+  'inputFailure',
+  'error',
+] as const;
+
+const OPERATIONS_BRIEF_PROPS = ['title', 'briefDate', 'metrics', 'readOnlyNotice'] as const;
+
+/**
+ * Prop RefundImpactPanel yang dipaparkan.
+ *
+ * `orderId`, `orderResolutionReason`, `refundIntentReason` dan
+ * `provenanceDetail` dihantar oleh pelayan sebagai konteks kanonik. Ia
+ * TIDAK pernah menjadikan kad lebih berkuasa — amaun kewangan tetap
+ * withholding sehingga ada resit kanonik — tetapi ia mesti tidak menjatuhkan
+ * kad kepada "malformed".
+ */
+const REFUND_IMPACT_PROPS = [
+  'issueClass',
+  'rootCause',
+  'hitlRequired',
+  'estimatedImpactSen',
+  'sopAction',
+  'orderId',
+  'orderResolutionReason',
+  'refundIntentReason',
+  'provenanceDetail',
+] as const;
+
+const TRACKING_BADGE_PROPS = [
+  'orderId',
+  'stage',
+  'trackingTokenRedactedHash',
+  'expiryDaysRemaining',
+] as const;
+
+const ORDER_TRACKING_CARD_PROPS = ['orderId', 'consignmentNo', 'found', 'status', 'reasonCode'] as const;
+
+const COMMISSION_PROPS = ['summary'] as const;
 const commissionAmountKeys = [
   'totalEarnedSen',
   'pendingSen',
@@ -218,6 +299,33 @@ function isAllowedProps(props: Record<string, unknown>, allowed: readonly string
   return Object.keys(props).every((key) => allowed.includes(key));
 }
 
+/**
+ * Memilih HANYA prop yang berada dalam senarai allowlist.
+ *
+ * Medan yang tidak disokong oleh kontrak (contoh `evaluator`,
+ * `incidentType` atau `provenanceDetail` yang dihantar oleh versi pelayan
+ * yang lebih lama) DIABAIKAN — ia tidak pernah dipaparkan, tetapi ia juga
+ * tidak lagi menjatuhkan keseluruhan kad. "Insufficient data" muncul hanya
+ * apabila medan yang benar-benar diperlukan tiada.
+ */
+function pickAllowedProps(
+  props: Record<string, unknown>,
+  allowed: readonly string[],
+): Record<string, unknown> {
+  const picked: Record<string, unknown> = {};
+  for (const key of allowed) {
+    if (Object.hasOwn(props, key)) picked[key] = props[key];
+  }
+  return picked;
+}
+
+function readStringList(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((entry): entry is string => typeof entry === 'string' && entry.length > 0 && entry.length <= 100)
+    .slice(0, 40);
+}
+
 function safeLabel<T extends string>(value: unknown, values: readonly T[]): value is T {
   return typeof value === 'string' && (values as readonly string[]).includes(value);
 }
@@ -262,7 +370,6 @@ function isTrackingProps(props: Record<string, unknown>): props is Record<string
     && safeInteger(props.expiryDaysRemaining)
     && props.expiryDaysRemaining >= 0;
 }
-
 function sourceProps(envelope: FixedA2UIEnvelope) {
   return {
     source: envelope.provenance.source,
@@ -271,7 +378,7 @@ function sourceProps(envelope: FixedA2UIEnvelope) {
 }
 
 function TrackingProjection({ envelope }: { envelope: FixedA2UIEnvelope }) {
-  const props = envelope.props;
+  const props = pickAllowedProps(envelope.props, TRACKING_BADGE_PROPS);
   if (!isTrackingProps(props)) {
     return <OrderSummaryCard projectionState="insufficient-data" {...sourceProps(envelope)} />;
   }
@@ -293,21 +400,33 @@ function TrackingProjection({ envelope }: { envelope: FixedA2UIEnvelope }) {
 }
 
 function RefundImpactPanel({ envelope }: { envelope: FixedA2UIEnvelope }) {
-  const props = envelope.props;
-  const valid = isAllowedProps(props, [
-    'issueClass',
-    'rootCause',
-    'hitlRequired',
-    'estimatedImpactSen',
-    'sopAction',
-  ])
-    && safeLabel(props.issueClass, jevIssueClasses)
+  // Allowlist "pilih sahaja": prop yang tidak disokong (contoh `evaluator`
+  // atau `provenanceDetail` versi lama) diabaikan — ia tidak lagi menjatuhkan
+  // kad kepada "malformed" apabila data yang diperlukan memang ada.
+  const props = pickAllowedProps(envelope.props, REFUND_IMPACT_PROPS);
+  const valid = safeLabel(props.issueClass, jevIssueClasses)
     && safeLabel(props.rootCause, jevRootCauses)
     && props.hitlRequired === true
     && (props.estimatedImpactSen === undefined
       || (safeInteger(props.estimatedImpactSen) && props.estimatedImpactSen >= 0))
     && (props.sopAction === undefined
       || (typeof props.sopAction === 'string' && props.sopAction.length <= 500));
+
+  // Konteks pesanan hanya dipaparkan apabila pelayan benar-benar resolved
+  // satu pesanan. `UNRESOLVED` ialah sentinel pelayan — ia TIDAK dipaparkan
+  // sebagai ID pesanan.
+  const orderId = typeof props.orderId === 'string' && props.orderId.trim().length > 0
+    && props.orderId !== 'UNRESOLVED'
+    ? props.orderId
+    : null;
+  const orderResolutionReason = typeof props.orderResolutionReason === 'string'
+    && props.orderResolutionReason.trim().length > 0
+    ? props.orderResolutionReason.slice(0, 64)
+    : null;
+  const refundIntentReason = typeof props.refundIntentReason === 'string'
+    && props.refundIntentReason.trim().length > 0
+    ? props.refundIntentReason.slice(0, 64)
+    : null;
 
   return (
     <article className="rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-surface)] p-4 text-[var(--ui-text)]">
@@ -317,6 +436,28 @@ function RefundImpactPanel({ envelope }: { envelope: FixedA2UIEnvelope }) {
           ? 'Financial impact is withheld until a canonical receipt is available. Approval and execution are not provided by this renderer.'
           : 'Refund impact data is malformed or incomplete; no amount or action is shown.'}
       </p>
+      {valid && (orderId || orderResolutionReason || refundIntentReason) && (
+        <dl className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+          {orderId && (
+            <div>
+              <dt className="text-xs text-[var(--ui-muted)]">Pesanan dirujuk</dt>
+              <dd className="break-all text-sm">{orderId}</dd>
+            </div>
+          )}
+          {orderResolutionReason && (
+            <div>
+              <dt className="text-xs text-[var(--ui-muted)]">Sebab penemu pesanan</dt>
+              <dd className="font-mono text-sm">{orderResolutionReason}</dd>
+            </div>
+          )}
+          {refundIntentReason && (
+            <div>
+              <dt className="text-xs text-[var(--ui-muted)]">Sebab niat bayaran balik</dt>
+              <dd className="font-mono text-sm">{refundIntentReason}</dd>
+            </div>
+          )}
+        </dl>
+      )}
       <p className="mt-2 text-xs text-[var(--ui-muted)]">
         Source: {envelope.provenance.source} · Revision: {String(sourceProps(envelope).revision)}
       </p>
@@ -356,11 +497,9 @@ export function A2UIFixedRenderer({ payload }: A2UIFixedRendererProps) {
 
   switch (envelope.component) {
     case 'OperationsBriefCard': {
-      if (!isAllowedProps(props, ['title', 'briefDate', 'metrics', 'readOnlyNotice'])) {
-        return <OperationsBriefApp state={{ status: 'insufficient_data' }} />;
-      }
+      const selected = pickAllowedProps(props, OPERATIONS_BRIEF_PROPS);
       const parsedBrief = parseOperationsBrief({
-        ...props,
+        ...selected,
         readOnlyNotice: OPERATIONS_BRIEF_READ_ONLY_NOTICE,
         ...provenance,
       });
@@ -374,62 +513,106 @@ export function A2UIFixedRenderer({ payload }: A2UIFixedRendererProps) {
     }
     case 'RefundImpactPanel':
       return <RefundImpactPanel envelope={envelope} />;
-    case 'JevAssessmentCard':
-      if (!isAllowedProps(props, [
-        'issueClass',
-        'rootCause',
-        'sopAction',
-        'evaluationState',
-        'evidencePhotoRequired',
-        'confidenceScore',
-      ])) return <JevAssessmentCard projectionState="insufficient-data" {...provenance} />;
+    case 'JevAssessmentCard': {
+      // BL-26: `issueClass` mesti dipaparkan apabila dihantar, dan medan
+      // yang tidak disokong (contoh `incidentType` versi lama) hanya
+      // diabaikan — ia tidak lagi menjatuhkan kad kepada "insufficient data"
+      // apabila data yang diperlukan memang ada.
+      const selected = pickAllowedProps(props, JEV_ASSESSMENT_PROPS);
       return (
         <JevAssessmentCard
-          issueClass={safeLabel(props.issueClass, jevIssueClasses)
-            ? props.issueClass : undefined}
-          rootCause={safeLabel(props.rootCause, jevRootCauses) ? props.rootCause : undefined}
-          sopAction={typeof props.sopAction === 'string' && props.sopAction.length <= 500 ? props.sopAction : undefined}
-          evaluationState={safeLabel(props.evaluationState, jevEvaluationStates)
-            ? props.evaluationState : undefined}
-          evidencePhotoRequired={typeof props.evidencePhotoRequired === 'boolean'
-            ? props.evidencePhotoRequired : undefined}
-          confidenceScore={safeConfidence(props.confidenceScore)}
+          issueClass={safeLabel(selected.issueClass, jevIssueClasses)
+            ? selected.issueClass : undefined}
+          rootCause={safeLabel(selected.rootCause, jevRootCauses) ? selected.rootCause : undefined}
+          sopAction={typeof selected.sopAction === 'string' && selected.sopAction.length <= 500
+            ? selected.sopAction : undefined}
+          evaluationState={safeLabel(selected.evaluationState, jevEvaluationStates)
+            ? selected.evaluationState : undefined}
+          evidencePhotoRequired={typeof selected.evidencePhotoRequired === 'boolean'
+            ? selected.evidencePhotoRequired : undefined}
+          confidenceScore={safeConfidence(selected.confidenceScore)}
           {...provenance}
         />
       );
+    }
     case 'MarginSimulator': {
-      if (!isAllowedProps(props, [
-        'contributionSen',
-        'contributionMarginPct',
-        'requiredContributionSen',
-        'requiredMarginPct',
-        'status',
-      ])) return <MarginSummaryCard projectionState="insufficient-data" {...provenance} />;
+      const selected = pickAllowedProps(props, MARGIN_SIMULATOR_PROPS);
+      // Alias kanonikal daripada kontrak shared: `minMarginSen` /
+      // `minMarginPercent` ialah nama yang sama seperti ambang tunai dan
+      // ambang peratusan.
+      const requiredContributionSen = safeInteger(selected.requiredContributionSen)
+        ? selected.requiredContributionSen
+        : (safeInteger(selected.minMarginSen) ? selected.minMarginSen : undefined);
+      const requiredMarginPct = typeof selected.requiredMarginPct === 'number'
+        && Number.isFinite(selected.requiredMarginPct)
+        ? selected.requiredMarginPct
+        : (typeof selected.minMarginPercent === 'number' && Number.isFinite(selected.minMarginPercent)
+          ? selected.minMarginPercent : undefined);
       return (
         <MarginSummaryCard
-          contributionSen={safeInteger(props.contributionSen) ? props.contributionSen : undefined}
-          contributionMarginPct={typeof props.contributionMarginPct === 'number'
-            && Number.isFinite(props.contributionMarginPct) ? props.contributionMarginPct : undefined}
-          requiredContributionSen={safeInteger(props.requiredContributionSen)
-            ? props.requiredContributionSen : undefined}
-          requiredMarginPct={typeof props.requiredMarginPct === 'number'
-            && Number.isFinite(props.requiredMarginPct) ? props.requiredMarginPct : undefined}
-          status={safeLabel(props.status, marginStatuses) ? props.status : undefined}
+          contributionSen={safeInteger(selected.contributionSen) ? selected.contributionSen : undefined}
+          contributionMarginPct={typeof selected.contributionMarginPct === 'number'
+            && Number.isFinite(selected.contributionMarginPct) ? selected.contributionMarginPct : undefined}
+          requiredContributionSen={requiredContributionSen}
+          requiredMarginPct={requiredMarginPct}
+          status={safeLabel(selected.status, marginStatuses) ? selected.status : undefined}
+          {...provenance}
+        />
+      );
+    }
+    case 'MarginSummaryCard': {
+      // BL-24b: komponen ini membawa kegagalan input yang berjenis. Ia mesti
+      // dipaparkan sebagai "input tidak disediakan" / "input tidak sah"
+      // together with the invalid keys — never a 0% margin.
+      const selected = pickAllowedProps(props, MARGIN_SUMMARY_PROPS);
+      const failure = parseMarginInputFailure(selected);
+      const simulationPerformed = selected.simulationPerformed === true
+        ? true
+        : selected.simulationPerformed === false
+          ? false
+          : undefined;
+      return (
+        <MarginSummaryCard
+          contributionSen={safeInteger(selected.contributionSen) ? selected.contributionSen : undefined}
+          contributionMarginPct={typeof selected.contributionMarginPct === 'number'
+            && Number.isFinite(selected.contributionMarginPct) ? selected.contributionMarginPct : undefined}
+          requiredContributionSen={safeInteger(selected.requiredContributionSen)
+            ? selected.requiredContributionSen : undefined}
+          requiredMarginPct={typeof selected.requiredMarginPct === 'number'
+            && Number.isFinite(selected.requiredMarginPct) ? selected.requiredMarginPct : undefined}
+          status={safeLabel(selected.status, marginStatuses) ? selected.status : undefined}
+          failure={failure ?? undefined}
+          simulationPerformed={simulationPerformed}
+          requiredInputKeys={readStringList(selected.requiredInputKeys)}
           {...provenance}
         />
       );
     }
     case 'OrderTrackingBadge':
       return <TrackingProjection envelope={envelope} />;
+    case 'OrderTrackingCard': {
+      // Kad ini hanya membawa "tidak dijumpai" — pelayan tidak menghantar
+      // unjuran pesanan, jadi kad tidak boleh menunjukkan pesanan rekaan.
+      const selected = pickAllowedProps(props, ORDER_TRACKING_CARD_PROPS);
+      const reasonCode = typeof selected.reasonCode === 'string' && selected.reasonCode.length > 0
+        ? selected.reasonCode.slice(0, 64)
+        : 'RECORD_NOT_FOUND';
+      const reference = typeof selected.orderId === 'string' && selected.orderId.length > 0
+        ? selected.orderId
+        : (typeof selected.consignmentNo === 'string' && selected.consignmentNo.length > 0
+          ? selected.consignmentNo : undefined);
+      return (
+        <OrderSummaryCard
+          projectionState="empty"
+          message={`Pesanan tidak dijumpai (${reasonCode})${reference ? ` · ${reference}` : ''}. Tiada unjuran pesanan untuk dipaparkan.`}
+          {...provenance}
+        />
+      );
+    }
     case 'CommissionCard': {
-      if (!isAllowedProps(props, ['summary'])) {
-        return <CommissionSummaryCard projectionState="insufficient-data" {...provenance} />;
-      }
-      const summary = props.summary;
-      if (!isRecord(summary)) {
-        return <CommissionSummaryCard projectionState="insufficient-data" {...provenance} />;
-      }
-      if (!isCommissionSummary(summary)) {
+      const selected = pickAllowedProps(props, COMMISSION_PROPS);
+      const summary = selected.summary;
+      if (!isRecord(summary) || !isCommissionSummary(summary)) {
         return <CommissionSummaryCard projectionState="insufficient-data" {...provenance} />;
       }
       return (

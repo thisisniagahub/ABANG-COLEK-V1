@@ -1,23 +1,40 @@
-import { describe, expect, test } from 'bun:test';
+import { afterAll, describe, expect, test } from 'bun:test';
 import { createPlatformApp } from '../../server/platform/app';
-import { unlinkSync } from 'node:fs';
-
-function cleanup(dbPath: string) {
-  for (const ext of ['', '-wal', '-shm']) {
-    try { unlinkSync(dbPath + ext); } catch { /* ignore */ }
-  }
-}
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 describe('C05: Multi-Role End-to-End Business Journeys', () => {
-  const dbPath = 'var/lib/qa/business-journeys.sqlite';
+  /**
+   * Laluan tetap `var/lib/qa/business-journeys.sqlite` dikongsi antara larian
+   * DAN antara proses `bun test` yang berjalan serentak. Pada Windows fail
+   * SQLite yang masih dibuka TIDAK boleh dipadam, jadi baris
+   * `owner_bootstrapped` daripada larian sebelumnya boleh tinggal di dalam
+   * fail dan bootstrap seterusnya membalas 409 `OWNER_ALREADY_BOOTSTRAPPED` —
+   * kegagalan palsu, bukan pepijat produk.
+   *
+   * `mkdtempSync` memberi direktori unik bagi setiap larian/proses, jadi dua
+   * larian tidak mungkin pernah meminta fail SQLite yang sama.
+   */
+  const directory = mkdtempSync(join(tmpdir(), 'abangcolek-business-journeys-'));
+  const dbPath = join(directory, 'business-journeys.sqlite');
+  /** Jaring keselamatan: aplikasi ditutup walaupun ujian gagal di tengah. */
+  const opened: Array<ReturnType<typeof createPlatformApp>> = [];
+
+  afterAll(() => {
+    for (const app of opened.splice(0)) {
+      try { app.close(); } catch { /* sudah ditutup oleh ujian */ }
+    }
+    try { rmSync(directory, { recursive: true, force: true }); } catch { /* best effort */ }
+  });
 
   test('All four platform roles successfully complete their end-to-end commercial journeys', async () => {
-    cleanup(dbPath);
     const app = createPlatformApp({
       databasePath: dbPath,
       bootstrapToken: 'journey-token-77777',
       origin: 'http://localhost:3000',
     });
+    opened.push(app);
 
     // ==========================================
     // 1. SETUP: Bootstrap Founder
@@ -446,7 +463,10 @@ describe('C05: Multi-Role End-to-End Business Journeys', () => {
     const dryRunData = await dryRunRes.json() as { data: { validCandidatesCount: number } };
     expect(dryRunData.data.validCandidatesCount).toBe(1);
 
+    // Tutup aplikasi SEBELUM memadam fail: pada Windows fail SQLite yang
+    // masih dibuka tidak boleh dipadam, jadi handle yang tertinggal akan
+    // menjadikan larian seterusnya membaca fail basi (409).
     app.close();
-    cleanup(dbPath);
+    rmSync(directory, { recursive: true, force: true });
   });
 });

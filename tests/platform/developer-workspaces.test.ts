@@ -1,19 +1,37 @@
-import { describe, expect, test } from 'bun:test';
+import { afterAll, describe, expect, test } from 'bun:test';
 import { createPlatformApp } from '../../server/platform/app';
-import { unlinkSync } from 'node:fs';
+import { existsSync, mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
-const testDb = 'var/lib/qa/developer-workspaces-test.sqlite';
+/**
+ * Jaring keselamatan fixture.
+ *
+ * Root cause (dikuatkuasakan): laluan tetap `var/lib/qa/developer-workspaces-test.sqlite`
+ * dikongsi antara larian DAN antara proses `bun test` yang berjalan serentak.
+ * Pada Windows fail SQLite yang masih dibuka TIDAK boleh dipadam, jadi baris
+ * `owner_bootstrapped` daripada larian sebelumnya boleh tinggal dan bootstrap
+ * seterusnya membalas 409 `OWNER_ALREADY_BOOTSTRAPPED` — kegagalan palsu.
+ * `mkdtempSync` memberi direktori unik bagi setiap larian/proses.
+ */
+let directory: string | undefined;
+const opened: Array<ReturnType<typeof createPlatformApp>> = [];
 
-function cleanup() {
-  for (const ext of ['', '-wal', '-shm']) {
-    try { unlinkSync(testDb + ext); } catch { /* ignore */ }
+afterAll(() => {
+  for (const app of opened.splice(0)) {
+    try { app.close(); } catch { /* sudah ditutup oleh ujian */ }
   }
-}
+  if (directory) {
+    try { rmSync(directory, { recursive: true, force: true }); } catch { /* best effort */ }
+  }
+});
 
 describe('D03: Distinct Scoped Developer Reports and Settings', () => {
   test('developer can access telemetry and health without financial escalation', async () => {
-    cleanup();
+    directory = mkdtempSync(join(tmpdir(), 'abangcolek-developer-workspaces-'));
+    const testDb = join(directory, 'developer-workspaces-test.sqlite');
     const app = createPlatformApp({ databasePath: testDb, bootstrapToken: 'dev-ws-bootstrap-token' });
+    opened.push(app);
 
     // Bootstrap founder
     const bootRes = await app.fetch(new Request('http://localhost:3000/api/platform/auth/bootstrap', {
@@ -118,6 +136,14 @@ describe('D03: Distinct Scoped Developer Reports and Settings', () => {
     }));
     expect(founderOverview.status).toBe(403);
 
-    cleanup();
+    // Tutup aplikasi SEBELUM memadam fail: pada Windows fail SQLite yang
+    // masih dibuka tidak boleh dipadam, jadi handle yang tertinggal akan
+    // menjadikan larian seterusnya membaca fail basi (409). `rmSync` akan
+    // throw EBUSY/EPERM jika ada handle yang masih hidup — jadi lompong ini
+    // SESUNGGUHNYA membuktikan aplikasi ditutup.
+    app.close();
+    rmSync(directory, { recursive: true, force: true });
+    expect(existsSync(directory)).toBe(false);
+    directory = undefined;
   });
 });
