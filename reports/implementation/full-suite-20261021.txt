@@ -1,0 +1,114 @@
+bun test v1.4.2 (744846f84)
+
+tests\architecture\dependency-boundaries.test.ts:
+(fail) ARC-01 architecture boundary checker — real repository tree > the real repository has no unauthorized cross-boundary import [10388.54ms]
+  ^ this test timed out after 5000ms.
+(fail) ARC-01 architecture boundary checker — real repository tree > every violation the real tree produces is covered by a registered exception [7114.02ms]
+  ^ this test timed out after 5000ms.
+
+tests\architecture\legacy-exception-register.test.ts:
+(fail) ARC-01 legacy exception register — the register itself is guarded > the register holds no stale promise: every registered edge still exists in the real tree [5797.64ms]
+  ^ this test timed out after 5000ms.
+
+tests\jev\api.test.ts:
+(fail) JEV API keeps zero-spend typed packs, evaluation history and developer scope behind session/CSRF [5534.86ms]
+  ^ this test timed out after 5000ms.
+
+tests\platform\adv-tools-capability-coverage.test.ts:
+NOTOK ADV-25 -> EXECUTOR_UNAVAILABLE
+NOTOK ADV-26 -> RECEIPT_NOT_FOUND
+
+tests\platform\adversarial-m1-integrity.test.ts:
+Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+
+tests\platform\agent-runtime.test.ts:
+(fail) E02c: Fixture lifecycle never leaves a stale bootstrap owner marker > cleanup clears the owner marker when the database is held open, so the next bootstrap is not a 409 [6346.47ms]
+  ^ this test timed out after 5000ms.
+
+tests\platform\agent-storefront-referral.test.ts:
+(fail) Agent Storefront & Referral System > 3. Flow Submission & Commission Attribution End-to-End > submits order flow with referralCode and stores it deterministically [9725.17ms]
+  ^ this test timed out after 5000ms.
+
+# Unhandled error between tests
+-------------------------------
+57 |     email: `${name}@example.test`,
+58 |     name,
+59 |     password: 'secure test password 123',
+60 |     ...(founder ? { token: 'referral-bootstrap-token' } : {})
+61 |   });
+62 |   expect(result.response.status).toBe(200);
+                                      ^
+error: expect(received).toBe(expected)
+
+Expected: 200
+Received: 500
+
+      at createUser (D:\ABANGCOLEK-PLATFORM\tests\platform\agent-storefront-referral.test.ts:62:34)
+      at async <anonymous> (D:\ABANGCOLEK-PLATFORM\tests\platform\agent-storefront-referral.test.ts:181:36)
+-------------------------------
+
+
+tests\platform\copilot-runtime-contract-candidates.test.ts:
+{"component":"copilot_provider_failure","provider":"OpenRouter","model":"nvidia/nemotron-3-ultra-550b-a55b:free","status":404,"reason":"PROVIDER_MODEL_NOT_FOUND","body":"{\"error\":{\"message\":\"Function '[redacted-id]' Not found for account\",\"code\":404}}"}
+
+tests\platform\copilot-runtime-contract-quota.test.ts:
+{"component":"copilot_provider_failure","provider":"OpenRouter","model":"nvidia/nemotron-3-ultra-550b-a55b:free","status":429,"reason":"PROVIDER_QUOTA_EXHAUSTED","body":"Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash. Please retry in 19h3m41s."}
+
+tests\platform\copilot-runtime-pipeline.test.ts:
+Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+
+tests\platform\copilot.test.ts:
+(fail) Copilot ADK & Free Model Router Integration > Menghalang capaian awam tanpa log masuk ke endpoint copilot (401) [14481.22ms]
+  ^ this test timed out after 5000ms.
+
+tests\platform\dealer-completion.test.ts:
+(fail) sell-through, settlement, immutable receipt and idempotency survive database restart [11002.70ms]
+  ^ this test timed out after 5000ms.
+
+--- MCP protocol transcript (founder) ---
+tests\platform\mcp-protocol.test.ts:
+S->C {"method":"initialize","params":{"protocolVersion":"2025-11-25","capabilities":{},"clientInfo":{"name":"abangcolek-test-client","version":"1.0.0"}},"jsonrpc":"2.0","id":0}
+C->S {"result":{"protocolVersion":"2025-11-25","capabilities":{"tools":{"listChanged":true},"resources":{"listChanged":true}},"serverInfo":{"name":"abangcolek-operations-mcp","version":"1.0.0"},"instructions":"Taklimat operasi AbangColek yang membaca sahaja. Skop setiap panggilan ditentukan oleh sesi server; tiada parameter yang boleh menukar skop."},"jsonrpc":"2.0","id":0}
+S->C {"method":"notifications/initialized","jsonrpc":"2.0"}
+S->C {"method":"tools/list","jsonrpc":"2.0","id":1}
+C->S {"result":{"tools":[{"name":"get_operations_brief","title":"Get Operations Brief","description":"Ringkasan operasi harian atau mendesak yang dikira daripada store kanonikal platform. Baca sahaja.","inputSchema":{"$schema":"http://json-schema.org/draft-07/schema#","type":"object","properties":{"period":{"description":"Jenis taklimat. Default \"daily\".","type":"string","enum":["daily","urgent"]}}},"annotations":{"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true},"execution":{"taskSupport":"forbidden"},"_meta":{"ui":{"resourceUri":"ui://abangcolek/operations-brief.html","visibility":["model","app"]},"ui/resourceUri":"ui://abangcolek/operations-brief.html"}},{"name":"get_order_status","title":"Get Order Status","description":"Status satu pesanan. Pesanan di luar skop outlet, dealer atau akaun pelayar ditolak.","inputSchema":{"$schema":"http://json-schema.org/draft-07/schema#","type":"object","properties":{"orderId":{"type":"string","minLength":1,"maxLength":120,"description":"ID pesanan, contoh ORD-001."}},"required":["orderId"]},"annotations":{"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true},"execution":{"taskSupport":"forbidden"}}]},"jsonrpc":"2.0","id":1}
+S->C {"method":"tools/call","params":{"name":"get_operations_brief","arguments":{"period":"daily"}},"jsonrpc":"2.0","id":2}
+C->S {"result":{"content":[{"type":"text","text":"{\n  \"title\": \"Ringkasan Eksekutif Operasi Harian AbangColek\",\n  \"briefDate\": \"2026-10-21\",\n  \"metrics\": [\n    {\n      \"label\": \"Pesanan Hari Ini\",\n      \"value\": \"2\"\n    },\n    {\n      \"label\": \"Kutipan Bersih (Sen)\",\n      \"value\": \"4800\"\n    },\n    {\n      \"label\": \"Penghantaran Dalam Transit\",\n      \"value\": \"1\"\n    },\n    {\n      \"label\": \"SKU Stok Rendah\",\n      \"value\": \"1\"\n    },\n    {\n      \"label\": \"Tindakan HITL Menunggu\",\n      \"value\": \"1\"\n    }\n  ],\n  \"readOnlyNotice\": \"FIRST_PARTY_RESOURCE_UNRESTRICTED_PROXY_BLOCKED\",\n  \"source\": \"database\",\n  \"revision\": \"store_snapshot\",\n  \"observation\": \"observed\",\n  \"highlights\": [\n    \"1 penghantaran aktif dalam transit (rekod pesanan sahkan status 'dispatched').\",\n    \"1 SKU pada atau bawah paras stok rendah (20 unit).\",\n    \"1 tindakan HITL menunggu keputusan Founder: HITL-1.\"\n  ]\n}"}],"structuredContent":{"title":"Ringkasan Eksekutif Operasi Harian AbangColek","briefDate":"2026-10-21","metrics":[{"label":"Pesanan Hari Ini","value":"2"},{"label":"Kutipan Bersih (Sen)","value":"4800"},{"label":"Penghantaran Dalam Transit","value":"1"},{"label":"SKU Stok Rendah","value":"1"},{"label":"Tindakan HITL Menunggu","value":"1"}],"readOnlyNotice":"FIRST_PARTY_RESOURCE_UNRESTRICTED_PROXY_BLOCKED","source":"database","revision":"store_snapshot","observation":"observed","highlights":["1 penghantaran aktif dalam transit (rekod pesanan sahkan status 'dispatched').","1 SKU pada atau bawah paras stok rendah (20 unit).","1 tindakan HITL menunggu keputusan Founder: HITL-1."]}},"jsonrpc":"2.0","id":2}
+S->C {"method":"resources/list","jsonrpc":"2.0","id":3}
+C->S {"result":{"resources":[{"uri":"operations://brief/daily","name":"Operations Brief (daily)","title":"Operations Brief (daily)","description":"Unjuran taklimat operasi yang strict: title, briefDate, metrics, readOnlyNotice, source, revision.","mimeType":"application/json"},{"uri":"operations://brief/urgent","name":"Operations Brief (urgent)","title":"Operations Brief (urgent)","description":"Unjuran taklimat operasi yang strict: title, briefDate, metrics, readOnlyNotice, source, revision.","mimeType":"application/json"},{"uri":"ui://abangcolek/operations-brief.html","name":"AbangColek Operations Brief App","title":"AbangColek Operations Brief App","description":"Widget taklimat operasi baca sahaja. Dihos dalam iframe bersandbox dengan CSP ketat.","mimeType":"text/html;profile=mcp-app","_meta":{"ui":{"csp":{"connectDomains":[],"resourceDomains":[],"frameDomains":[],"baseUriDomains":[]},"prefersBorder":true}}}]},"jsonrpc":"2.0","id":3}
+S->C {"method":"resources/read","params":{"uri":"ui://abangcolek/operations-brief.html"},"jsonrpc":"2.0","id":4}
+C->S {"result":{"contents":[{"uri":"ui://abangcolek/operations-brief.html","mimeType":"text/html;profile=mcp-app","text":"<!doctype html>\n<html lang=\"ms\">\n<head>\n<meta charset=\"utf-8\" />\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; img-src data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'\" />\n<title>Ringkasan Eksekutif Operasi Harian AbangColek</title>\n<style>\n:root { color-scheme: light dark; }\n* { box-sizing: border-box; }\nbody { margin: 0; padding: 16px; font: 14px/1.5 system-ui, -apple-system, \"Segoe UI\", sans-serif; color: #16181d; background: #ffffff; }\nheader { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; }\nh1 { font-size: 15px; font-weight: 600; margin: 0; }\n.badge { font-size: 11px; border: 1px solid #d5d8de; border-radius: 999px; padding: 2px 8px; color: #5b616b; }\ndl { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; margin: 12px 0 0; }\n.metric { background: #f5f6f8; border-radius: 10px; padding: 10px; min-width: 0; }\ndt { font-size: 11px; color: #5b616b; margin: 0; }\ndd { margin: 4px 0 0; font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }\nfooter { margin-top: 12px; font-size: 11px; color: #6b7280; border-top: 1px solid #e4e6ea; padding-top: 8px; }\n@media (prefers-color-scheme: dark) {\n  body { color: #e6e8ec; background: #14161a; }\n  .metric { background: #1d2026; }\n  .badge { border-color: #333842; color: #9aa3b2; }\n  footer { border-top-color: #2a2e36; color: #9aa3b2; }\n}\n</style>\n</head>\n<body>\n<header>\n  <h1>Ringkasan Eksekutif Operasi Harian AbangColek</h1>\n  <span class=\"badge\">Read only</span>\n</header>\n<dl><div class=\"metric\"><dt>Pesanan Hari Ini</dt><dd>2</dd></div><div class=\"metric\"><dt>Kutipan Bersih (Sen)</dt><dd>4800</dd></div><div class=\"metric\"><dt>Penghantaran Dalam Transit</dt><dd>1</dd></div><div class=\"metric\"><dt>SKU Stok Rendah</dt><dd>1</dd></div><div class=\"metric\"><dt>Tindakan HITL Menunggu</dt><dd>1</dd></div></dl>\n<footer>FIRST_PARTY_RESOURCE_UNRESTRICTED_PROXY_BLOCKED · database · rev store_snapshot</footer>\n<script type=\"application/json\" id=\"mcp-app-brief\">{\"title\":\"Ringkasan Eksekutif Operasi Harian AbangColek\",\"briefDate\":\"2026-10-21\",\"metrics\":[{\"label\":\"Pesanan Hari Ini\",\"value\":\"2\"},{\"label\":\"Kutipan Bersih (Sen)\",\"value\":\"4800\"},{\"label\":\"Penghantaran Dalam Transit\",\"value\":\"1\"},{\"label\":\"SKU Stok Rendah\",\"value\":\"1\"},{\"label\":\"Tindakan HITL Menunggu\",\"value\":\"1\"}],\"readOnlyNotice\":\"FIRST_PARTY_RESOURCE_UNRESTRICTED_PROXY_BLOCKED\",\"source\":\"database\",\"revision\":\"store_snapshot\"}</script>\n<script>\n(function () {\n  'use strict';\n  var PROTOCOL_VERSION = \"2026-01-26\";\n  var APP_INFO = { name: 'abangcolek-operations-brief', version: '1.0.0' };\n  var TARGET_ORIGIN = '*';\n  var pending = Object.create(null);\n\n  function post(message) {\n    try { window.parent.postMessage(message, TARGET_ORIGIN); } catch (error) { /* host gone */ }\n  }\n\n  function respond(id, result) {\n    post({ jsonrpc: '2.0', id: id, result: result });\n  }\n\n  function fail(id, code, message) {\n    post({ jsonrpc: '2.0', id: id, error: { code: code, message: message } });\n  }\n\n  window.addEventListener('message', function (event) {\n    if (event.source !== window.parent) return;\n    var data = event.data;\n    if (!data || typeof data !== 'object' || data.jsonrpc !== '2.0') return;\n    if (data.method === 'ui/resource-teardown') {\n      if (typeof data.id === 'number' || typeof data.id === 'string') respond(data.id, {});\n      return;\n    }\n    if (data.method === 'ui/notifications/host-context-changed') return;\n  });\n\n  function requestInitialize() {\n    var id = 'ui-init-' + Date.now();\n    pending[id] = true;\n    post({\n      jsonrpc: '2.0',\n      id: id,\n      method: 'ui/initialize',\n      params: {\n        appInfo: APP_INFO,\n        appCapabilities: {},\n        protocolVersion: PROTOCOL_VERSION\n      }\n    });\n    // If the host never answers, the widget stays inert but rendered.\n    setTimeout(function () { delete pending[id]; }, 10000);\n  }\n\n  function notifySize() {\n    var doc = document.documentElement;\n    var height = Math.ceil(doc.getBoundingClientRect().height);\n    var width = Math.ceil(window.innerWidth);\n    post({\n      jsonrpc: '2.0',\n      method: 'ui/notifications/size-changed',\n      params: { width: width, height: height }\n    });\n  }\n\n  function start() {\n    requestInitialize();\n    post({ jsonrpc: '2.0', method: 'ui/notifications/initialized' });\n    if (typeof ResizeObserver === 'function') {\n      var observer = new ResizeObserver(notifySize);\n      observer.observe(document.documentElement);\n      observer.observe(document.body);\n    } else {\n      window.addEventListener('resize', notifySize);\n    }\n    notifySize();\n  }\n\n  if (document.readyState === 'loading') {\n    document.addEventListener('DOMContentLoaded', start);\n  } else {\n    start();\n  }\n}());\n</script>\n</body>\n</html>","_meta":{"ui":{"csp":{"connectDomains":[],"resourceDomains":[],"frameDomains":[],"baseUriDomains":[]},"prefersBorder":true}}}]},"jsonrpc":"2.0","id":4}
+S->C {"method":"resources/read","params":{"uri":"operations://brief/daily"},"jsonrpc":"2.0","id":5}
+C->S {"result":{"contents":[{"uri":"operations://brief/daily","mimeType":"application/json","text":"{\"title\":\"Ringkasan Eksekutif Operasi Harian AbangColek\",\"briefDate\":\"2026-10-21\",\"metrics\":[{\"label\":\"Pesanan Hari Ini\",\"value\":\"2\"},{\"label\":\"Kutipan Bersih (Sen)\",\"value\":\"4800\"},{\"label\":\"Penghantaran Dalam Transit\",\"value\":\"1\"},{\"label\":\"SKU Stok Rendah\",\"value\":\"1\"},{\"label\":\"Tindakan HITL Menunggu\",\"value\":\"1\"}],\"readOnlyNotice\":\"FIRST_PARTY_RESOURCE_UNRESTRICTED_PROXY_BLOCKED\",\"source\":\"database\",\"revision\":\"store_snapshot\"}"}]},"jsonrpc":"2.0","id":5}
+--- end transcript ---
+
+tests\platform\runtime-launcher.integration.test.ts:
+75 | 
+76 | test('new owned API is verified and cleaned after successful or failed UI exit',async()=>{
+77 |   for(const uiExit of [0,7]){
+78 |     const f=fixture(uiExit),port=sparePort();
+79 |     try{
+80 |       const result=await runLauncher(f,port);expect(result.code).toBe(uiExit);expect(existsSync(f.marker)).toBe(true);
+                                                                      ^
+error: expect(received).toBe(expected)
+
+Expected: 0
+Received: 1
+
+      at <anonymous> (D:\ABANGCOLEK-PLATFORM\tests\platform\runtime-launcher.integration.test.ts:80:66)
+(fail) new owned API is verified and cleaned after successful or failed UI exit [8115.47ms]
+
+ 1238 pass
+ 11 todo
+ 9 fail
+ 1 error
+ 8069 expect() calls
+Ran 1258 tests across 174 files. [519.11s]
