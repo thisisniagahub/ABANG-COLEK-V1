@@ -1,0 +1,21 @@
+{
+  "requirementId": "MOD-08",
+  "status": "verified_local",
+  "environment": "local_test",
+  "timestamp": "2026-10-20T21:00:00Z",
+  "sourceCommit": "1fc218e5784efb890641bba1e46ac97f617639a3",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "testName": "MOD-08: asas kos kanonikal daripada rekod sebenar (integer sen, margin basis points), 24.996% tidak dilaporkan sebagai 25%, tanpa store/tiada kos/tiada jualan/sumber berubah => unavailable dengan detail",
+  "testPath": "tests/copilot/mod-08-cost-basis.test.ts",
+  "command": "bun test ./tests/copilot/mod-08-cost-basis.test.ts",
+  "exitCode": 0,
+  "result": "6 pass / 0 fail / 28 expect() calls",
+  "artifactRefs": [
+    "server/platform/costLedger.ts",
+    "server/platform/domainTools.ts",
+    "shared/mod-contracts.ts"
+  ],
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "integrator-2026-10-21",
+  "limitations": "COGS tidak direkod dalam domain, jadi ia sentiasa null + COGS_NOT_RECORDED (tidak pernah dianggak). Asas kos diuji dengan rekod yang disemai (payments/expenses/reconciliations), bukan lejar produksi. The KPI tool get_operational_kpi mengeksekusi bacaan yang sama."
+}

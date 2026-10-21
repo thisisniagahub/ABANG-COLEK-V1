@@ -1,0 +1,21 @@
+{
+  "requirementId": "DR-01",
+  "status": "verified_local",
+  "environment": "local_test",
+  "timestamp": "2026-10-20T21:00:00Z",
+  "sourceCommit": "1fc218e5784efb890641bba1e46ac97f617639a3",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "testName": "RTO: sasaran tidak dipenuhi => not_met + RTO_TARGET_NOT_MET; anti-fake: masa sebenar, marker disahkan terhadap fail dipulihkan, integrity_check ok, hash bukan-null",
+  "testPath": "tests/platform/backup-restore-rto.test.ts",
+  "command": "bun test ./tests/platform/backup-restore-rto.test.ts",
+  "exitCode": 0,
+  "result": "3 pass / 0 fail / 61 expect() calls",
+  "artifactRefs": [
+    "server/platform/recovery/drill.ts",
+    "server/platform/recovery/service.ts",
+    "shared/recovery-contracts.ts"
+  ],
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "integrator-2026-10-21",
+  "limitations": "Latihan dijalankan pada store in-memory/disposable dan TIDAK menyentuh DB operasi. Sasaran RTO 30 minit tidak diukur dalam environment ini (harness diuji dengan targetMs=1 untuk mengesahkan laluan kegagalan). Pemotongan (cutover) kekal langkah operator luar talian dan tidak diotomatikkan."
+}

@@ -1,0 +1,21 @@
+{
+  "requirementId": "MOD-01",
+  "status": "verified_local",
+  "environment": "local_test",
+  "timestamp": "2026-10-20T21:00:00Z",
+  "sourceCommit": "1fc218e5784efb890641bba1e46ac97f617639a3",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "testName": "MOD-01: draf BELUM dihantar (tiada pesanan, tiada tempahan, integer sen), requiresReprice bila versi katalog bergerak, produk tidak diterbitkan => CART_DRAFT_UNKNOWN_PRODUCT",
+  "testPath": "tests/copilot/mod-01-cart-draft.test.ts",
+  "command": "bun test ./tests/copilot/mod-01-cart-draft.test.ts",
+  "exitCode": 0,
+  "result": "3 pass / 0 fail / 14 expect() calls",
+  "artifactRefs": [
+    "server/platform/cartDraft.ts",
+    "server/platform/domainTools.ts",
+    "shared/mod-contracts.ts"
+  ],
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "integrator-2026-10-21",
+  "limitations": "Katalog yang digunakan dalam ujian ialah rekod yang disemai; katalog produksi masih 0 produk yang diterbitkan (data perniagaan belum diluluskan). Draf tidak pernah dihantar ke luar."
+}

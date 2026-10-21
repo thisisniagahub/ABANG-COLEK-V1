@@ -1,0 +1,20 @@
+{
+  "requirementId": "CPK-02",
+  "status": "verified_local",
+  "environment": "local_test",
+  "timestamp": "2026-10-20T21:00:00Z",
+  "sourceCommit": "1fc218e5784efb890641bba1e46ac97f617639a3",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "testName": "BL-15: X-Thread-Id pada respons chat, replay SSE dengan X-Last-Event-Id + X-Receipt-Count, ?after= hanya event selepas kursor, thread tenant lain => 403, hitl_prompt tanpa resit bukan state-changing",
+  "testPath": "tests/platform/intelligence-agui-threads-mount.test.ts",
+  "command": "bun test ./tests/platform/intelligence-agui-threads-mount.test.ts",
+  "exitCode": 0,
+  "result": "6 pass / 0 fail / 49 expect() calls",
+  "artifactRefs": [
+    "server/platform/aguiThreads.ts",
+    "server/platform/app.ts"
+  ],
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "integrator-2026-10-21",
+  "limitations": "Bukti ini meliputi thread store LOKAL yang di-mount pada laluan platform. Separuh hosted (AG-UI Streams: saved UI, resumable runs, realtime sync, cross-device) memerlukan akaun CopilotKit Intelligence dan kekal blocked_external. Sesi ini juga belum mengesahkan laluan produksi /api/copilotkit/agent/:id/run kerana VERCEL_TOKEN dalam environment ini tidak sah."
+}

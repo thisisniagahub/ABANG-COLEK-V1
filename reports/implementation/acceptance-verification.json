@@ -1,18 +1,18 @@
 {
-  "generatedAt": "2026-10-21T00:42:28.425Z",
+  "generatedAt": "2026-10-21T04:59:11.548Z",
   "repoRoot": "D:\\ABANGCOLEK-PLATFORM",
-  "gitCommit": "9ffcbb24da55468ae075855700ecc0bf226cc05e",
+  "gitCommit": "1fc218e5784efb890641bba1e46ac97f617639a3",
   "gitBranch": "integrate/blueprint-v23",
   "gitDirty": true,
   "nodeVersion": "v26.3.0",
   "bunVersion": "1.4.2",
   "sourceManifestBefore": {
-    "digest": "107ffb7f5261d5ddf5647b4db29ef5bd74f223485e99f992be915bca9e6bc50d",
-    "fileCount": 1037
+    "digest": "b254097982beae20df5b4f4667509d2fecd4e0129e4f8ee176fb9e25d3e426c6",
+    "fileCount": 1038
   },
   "sourceManifestAfter": {
-    "digest": "107ffb7f5261d5ddf5647b4db29ef5bd74f223485e99f992be915bca9e6bc50d",
-    "fileCount": 1037
+    "digest": "b254097982beae20df5b4f4667509d2fecd4e0129e4f8ee176fb9e25d3e426c6",
+    "fileCount": 1038
   },
   "sourceStable": true,
   "suites": [
@@ -22,7 +22,7 @@
       "cwd": "D:\\ABANGCOLEK-PLATFORM",
       "exitCode": 0,
       "status": "pass",
-      "durationMs": 23121,
+      "durationMs": 39571,
       "passCount": null,
       "failCount": null,
       "expectCount": null,
@@ -38,14 +38,14 @@
       "cwd": "D:\\ABANGCOLEK-PLATFORM",
       "exitCode": 0,
       "status": "pass",
-      "durationMs": 8416,
+      "durationMs": 11819,
       "passCount": null,
       "failCount": null,
       "expectCount": null,
       "filesScanned": null,
       "summary": "",
       "fileResults": [],
-      "stdoutTail": "vite v6.4.3 building for production...\ntransforming...\n✓ 1971 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/index.html                                 1.42 kB │ gzip:   0.62 kB\ndist/assets/FlowRenderer-BVt6VmOE.css           4.04 kB │ gzip:   1.14 kB\ndist/assets/PetCompanion-BY0wJOJz.css           7.44 kB │ gzip:   2.08 kB\ndist/assets/LandingPage-BJGlBZWZ.css           31.83 kB │ gzip:   6.71 kB\ndist/assets/WorkspaceContent-CcRwvhak.css      37.60 kB │ gzip:   6.91 kB\ndist/assets/index-DILZ4MrH.css                 92.12 kB │ gzip:  16.35 kB\ndist/assets/IntegrationWorkspace-D1fminuT.js    1.30 kB │ gzip:   0.71 kB\ndist/assets/customer-cart-C1rNnEoF.js           2.66 kB │ gzip:   1.23 kB\ndist/assets/growth-contracts-Dp6nPzcr.js        2.70 kB │ gzip:   1.14 kB\ndist/assets/experience-model-BAnGPeA5.js        3.23 kB │ gzip:   1.54 kB\ndist/assets/FlowRenderer-odUrXd4B.js           22.56 kB │ gzip:   7.45 kB\ndist/assets/LandingPage-CR02Kqqq.js            41.73 kB │ gzip:  13.40 kB\ndist/assets/PetCompanion-zflAye4F.js           59.15 kB │ gzip:  19.76 kB\ndist/assets/runIdentity-CAfzVGSH.js           122.97 kB │ gzip:  38.24 kB\ndist/assets/WorkspaceContent-DwXlXcrD.js      296.53 kB │ gzip:  78.98 kB\ndist/assets/index-DsF-KFN6.js                 500.54 kB │ gzip: 144.77 kB\n✓ built in 7.54s\nPublic HTML generated: catalogue version 0, 0 published products. Rebuild after catalogue changes.",
+      "stdoutTail": "vite v6.4.3 building for production...\ntransforming...\n✓ 1971 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/index.html                                 1.42 kB │ gzip:   0.62 kB\ndist/assets/FlowRenderer-BVt6VmOE.css           4.04 kB │ gzip:   1.14 kB\ndist/assets/PetCompanion-BY0wJOJz.css           7.44 kB │ gzip:   2.08 kB\ndist/assets/LandingPage-BJGlBZWZ.css           31.83 kB │ gzip:   6.71 kB\ndist/assets/WorkspaceContent-CcRwvhak.css      37.60 kB │ gzip:   6.91 kB\ndist/assets/index-B1EmXjff.css                 87.73 kB │ gzip:  15.69 kB\ndist/assets/IntegrationWorkspace-D1NoIO9i.js    1.30 kB │ gzip:   0.71 kB\ndist/assets/customer-cart-dV3JkMAH.js           2.66 kB │ gzip:   1.23 kB\ndist/assets/growth-contracts-Dn9oHo6b.js        2.70 kB │ gzip:   1.14 kB\ndist/assets/experience-model-CRJlhOCD.js        3.23 kB │ gzip:   1.54 kB\ndist/assets/FlowRenderer-DKiqzMFt.js           22.56 kB │ gzip:   7.45 kB\ndist/assets/LandingPage-C17Q2fZb.js            41.73 kB │ gzip:  13.40 kB\ndist/assets/PetCompanion-Bhmv0jMO.js           59.15 kB │ gzip:  19.76 kB\ndist/assets/runIdentity-BNJfZkcr.js           122.97 kB │ gzip:  38.24 kB\ndist/assets/WorkspaceContent-B7T5Y2CJ.js      296.53 kB │ gzip:  78.98 kB\ndist/assets/index-HLVI_y1L.js                 500.54 kB │ gzip: 144.77 kB\n✓ built in 10.66s\nPublic HTML generated: catalogue version 0, 0 published products. Rebuild after catalogue changes.",
       "stderrTail": "$ vite build && bun scripts/prerender-public.ts\n(!) Some chunks are larger than 500 kB after minification. Consider:\n- Using dynamic import() to code-split the application\n- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks\n- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit."
     },
     {
@@ -54,12 +54,12 @@
       "cwd": "D:\\ABANGCOLEK-PLATFORM",
       "exitCode": 0,
       "status": "pass",
-      "durationMs": 511,
+      "durationMs": 467,
       "passCount": 55,
       "failCount": 0,
       "expectCount": 331,
       "filesScanned": 9,
-      "summary": "Ran 55 tests across 9 files. [407.00ms]",
+      "summary": "Ran 55 tests across 9 files. [397.00ms]",
       "fileResults": [
         {
           "file": "tests\\jev\\api.test.ts",
@@ -482,9 +482,9 @@
           ]
         }
       ],
-      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_jev.30408-mvhdyspr-x6bsid7f.xml",
+      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_jev.31596-mvhn42pm-u9y1e8yl.xml",
       "stdoutTail": "bun test v1.4.2 (744846f84)",
-      "stderrTail": " 55 pass\n 0 fail\n 331 expect() calls\nRan 55 tests across 9 files. [407.00ms]"
+      "stderrTail": " 55 pass\n 0 fail\n 331 expect() calls\nRan 55 tests across 9 files. [397.00ms]"
     },
     {
       "id": "test:platform",
@@ -492,12 +492,12 @@
       "cwd": "D:\\ABANGCOLEK-PLATFORM",
       "exitCode": 0,
       "status": "pass",
-      "durationMs": 60617,
-      "passCount": 833,
+      "durationMs": 75024,
+      "passCount": 839,
       "failCount": 0,
-      "expectCount": 5771,
-      "filesScanned": 121,
-      "summary": "Ran 844 tests across 121 files. [60.36s]",
+      "expectCount": 5782,
+      "filesScanned": 122,
+      "summary": "Ran 850 tests across 122 files. [74.72s]",
       "fileResults": [
         {
           "file": "tests\\platform\\acceptance-harness-junit-parser.test.ts",
@@ -4131,7 +4131,7 @@
           "failures": 0,
           "errors": 0,
           "skipped": 0,
-          "assertions": 27,
+          "assertions": 26,
           "testCases": [
             {
               "name": "finance summary includes every canonical row beyond the page cap and excludes drafts/manual receipts",
@@ -5449,7 +5449,7 @@
           "failures": 0,
           "errors": 0,
           "skipped": 0,
-          "assertions": 43,
+          "assertions": 42,
           "testCases": [
             {
               "name": "posted expense net includes reversals beyond page one and has complete source count",
@@ -5847,6 +5847,52 @@
               "name": "Database backup integrity check",
               "classname": "C04: Production Persistence & Worker Recovery",
               "file": "tests\\platform\\production-persistence.test.ts",
+              "outcome": "pass"
+            }
+          ]
+        },
+        {
+          "file": "tests\\platform\\production-route-restore.test.ts",
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "assertions": 13,
+          "testCases": [
+            {
+              "name": "vercel.json menghantar semula laluan berbahagian segmen ke fungsi platform",
+              "classname": "Laluan API platform pada Vercel",
+              "file": "tests\\platform\\production-route-restore.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "POSITIF laluan berbahagian segmen dipulihkan ke pathname sebenar",
+              "classname": "Laluan API platform pada Vercel",
+              "file": "tests\\platform\\production-route-restore.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "POSITIF query asal dikekalkan semasa pemulihan",
+              "classname": "Laluan API platform pada Vercel",
+              "file": "tests\\platform\\production-route-restore.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "NEGATIF laluan tanpa __route tidak diubah",
+              "classname": "Laluan API platform pada Vercel",
+              "file": "tests\\platform\\production-route-restore.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "NEGATIF laluan keluar daripada /api/platform ditolak",
+              "classname": "Laluan API platform pada Vercel",
+              "file": "tests\\platform\\production-route-restore.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "NEGATIF laluan di luar /api/platform tidak dipulihkan",
+              "classname": "Laluan API platform pada Vercel",
+              "file": "tests\\platform\\production-route-restore.test.ts",
               "outcome": "pass"
             }
           ]
@@ -6764,9 +6810,9 @@
           ]
         }
       ],
-      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_platform.30408-mvhdyspr-x6bsid7f.xml",
+      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_platform.31596-mvhn42pm-u9y1e8yl.xml",
       "stdoutTail": "bun test v1.4.2 (744846f84)\nNOTOK ADV-25 -> EXECUTOR_UNAVAILABLE\nNOTOK ADV-26 -> RECEIPT_NOT_FOUND\n--- MCP protocol transcript (founder) ---\nS->C {\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-11-25\",\"capabilities\":{},\"clientInfo\":{\"name\":\"abangcolek-test-client\",\"version\":\"1.0.0\"}},\"jsonrpc\":\"2.0\",\"id\":0}\nC->S {\"result\":{\"protocolVersion\":\"2025-11-25\",\"capabilities\":{\"tools\":{\"listChanged\":true},\"resources\":{\"listChanged\":true}},\"serverInfo\":{\"name\":\"abangcolek-operations-mcp\",\"version\":\"1.0.0\"},\"instructions\":\"Taklimat operasi AbangColek yang membaca sahaja. Skop setiap panggilan ditentukan oleh sesi server; tiada parameter yang boleh menukar skop.\"},\"jsonrpc\":\"2.0\",\"id\":0}\nS->C {\"method\":\"notifications/initialized\",\"jsonrpc\":\"2.0\"}\nS->C {\"method\":\"tools/list\",\"jsonrpc\":\"2.0\",\"id\":1}\nC->S {\"result\":{\"tools\":[{\"name\":\"get_operations_brief\",\"title\":\"Get Operations Brief\",\"description\":\"Ringkasan operasi harian atau mendesak yang dikira daripada store kanonikal platform. Baca sahaja.\",\"inputSchema\":{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"period\":{\"description\":\"Jenis taklimat. Default \\\"daily\\\".\",\"type\":\"string\",\"enum\":[\"daily\",\"urgent\"]}}},\"annotations\":{\"readOnlyHint\":true,\"destructiveHint\":false,\"idempotentHint\":true},\"execution\":{\"taskSupport\":\"forbidden\"},\"_meta\":{\"ui\":{\"resourceUri\":\"ui://abangcolek/operations-brief.html\",\"visibility\":[\"model\",\"app\"]},\"ui/resourceUri\":\"ui://abangcolek/operations-brief.html\"}},{\"name\":\"get_order_status\",\"title\":\"Get Order Status\",\"description\":\"Status satu pesanan. Pesanan di luar skop outlet, dealer atau akaun pelayar ditolak.\",\"inputSchema\":{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"orderId\":{\"type\":\"string\",\"minLength\":1,\"maxLength\":120,\"description\":\"ID pesanan, contoh ORD-001.\"}},\"required\":[\"orderId\"]},\"annotations\":{\"readOnlyHint\":true,\"destructiveHint\":false,\"idempotentHint\":true},\"execution\":{\"taskSupport\":\"forbidden\"}}]},\"jsonrpc\":\"2.0\",\"id\":1}\nS->C {\"method\":\"tools/call\",\"params\":{\"name\":\"get_operations_brief\",\"arguments\":{\"period\":\"daily\"}},\"jsonrpc\":\"2.0\",\"id\":2}\nC->S {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"{\\n  \\\"title\\\": \\\"Ringkasan Eksekutif Operasi Harian AbangColek\\\",\\n  \\\"briefDate\\\": \\\"2026-10-21\\\",\\n  \\\"metrics\\\": [\\n    {\\n      \\\"label\\\": \\\"Pesanan Hari Ini\\\",\\n      \\\"value\\\": \\\"2\\\"\\n    },\\n    {\\n      \\\"label\\\": \\\"Kutipan Bersih (Sen)\\\",\\n      \\\"value\\\": \\\"4800\\\"\\n    },\\n    {\\n      \\\"label\\\": \\\"Penghantaran Dalam Transit\\\",\\n      \\\"value\\\": \\\"1\\\"\\n    },\\n    {\\n      \\\"label\\\": \\\"SKU Stok Rendah\\\",\\n      \\\"value\\\": \\\"1\\\"\\n    },\\n    {\\n      \\\"label\\\": \\\"Tindakan HITL Menunggu\\\",\\n      \\\"value\\\": \\\"1\\\"\\n    }\\n  ],\\n  \\\"readOnlyNotice\\\": \\\"FIRST_PARTY_RESOURCE_UNRESTRICTED_PROXY_BLOCKED\\\",\\n  \\\"source\\\": \\\"database\\\",\\n  \\\"revision\\\": \\\"store_snapshot\\\",\\n  \\\"observation\\\": \\\"observed\\\",\\n  \\\"highlights\\\": [\\n    \\\"1 penghantaran aktif dalam transit (rekod pesanan sahkan status 'dispatched').\\\",\\n    \\\"1 SKU pada atau bawah paras stok rendah (20 unit).\\\",\\n    \\\"1 tindakan HITL menunggu keputusan Founder: HITL-1.\\\"\\n  ]\\n}\"}],\"structuredContent\":{\"title\":\"Ringkasan Eksekutif Operasi Harian AbangColek\",\"briefDate\":\"2026-10-21\",\"metrics\":[{\"label\":\"Pesanan Hari Ini\",\"value\":\"2\"},{\"label\":\"Kutipan Bersih (Sen)\",\"value\":\"4800\"},{\"label\":\"Penghantaran Dalam Transit\",\"value\":\"1\"},{\"label\":\"SKU Stok Rendah\",\"value\":\"1\"},{\"label\":\"Tindakan HITL Menunggu\",\"value\":\"1\"}],\"readOnlyNotice\":\"FIRST_PARTY_RESOURCE_UNRESTRICTED_PROXY_BLOCKED\",\"source\":\"database\",\"revision\":\"store_snapshot\",\"observation\":\"observed\",\"highlights\":[\"1 penghantaran aktif dalam transit (rekod pesanan sahkan status 'dispatched').\",\"1 SKU pada atau bawah paras stok rendah (20 unit).\",\"1 tindakan HITL menunggu keputusan Founder: HITL-1.\"]}},\"jsonrpc\":\"2.0\",\"id\":2}\nS->C {\"method\":\"resources/list\",\"jsonrpc\":\"2.0\",\"id\":3}\nC->S {\"result\":{\"resources\":[{\"uri\":\"operations://brief/daily\",\"name\":\"Operations Brief (daily)\",\"title\":\"Operations Brief (daily)\",\"description\":\"Unjuran taklimat operasi yang strict: title, briefDate, metrics, readOnlyNotice, source, revision.\",\"mimeType\":\"application/json\"},{\"uri\":\"operations://brief/urgent\",\"name\":\"Operations Brief (urgent)\",\"title\":\"Operations Brief (urgent)\",\"description\":\"Unjuran taklimat operasi yang strict: title, briefDate, metrics, readOnlyNotice, source, revision.\",\"mimeType\":\"application/json\"},{\"uri\":\"ui://abangcolek/operations-brief.html\",\"name\":\"AbangColek Operations Brief App\",\"title\":\"AbangColek Operations Brief App\",\"description\":\"Widget taklimat operasi baca sahaja. Dihos dalam iframe bersandbox dengan CSP ketat.\",\"mimeType\":\"text/html;profile=mcp-app\",\"_meta\":{\"ui\":{\"csp\":{\"connectDomains\":[],\"resourceDomains\":[],\"frameDomains\":[],\"baseUriDomains\":[]},\"prefersBorder\":true}}}]},\"jsonrpc\":\"2.0\",\"id\":3}\nS->C {\"method\":\"resources/read\",\"params\":{\"uri\":\"ui://abangcolek/operations-brief.html\"},\"jsonrpc\":\"2.0\",\"id\":4}\nC->S {\"result\":{\"contents\":[{\"uri\":\"ui://abangcolek/operations-brief.html\",\"mimeType\":\"text/html;profile=mcp-app\",\"text\":\"<!doctype html>\\n<html lang=\\\"ms\\\">\\n<head>\\n<meta charset=\\\"utf-8\\\" />\\n<meta name=\\\"viewport\\\" content=\\\"width=device-width, initial-scale=1\\\" />\\n<meta http-equiv=\\\"Content-Security-Policy\\\" content=\\\"default-src 'none'; img-src data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'\\\" />\\n<title>Ringkasan Eksekutif Operasi Harian AbangColek</title>\\n<style>\\n:root { color-scheme: light dark; }\\n* { box-sizing: border-box; }\\nbody { margin: 0; padding: 16px; font: 14px/1.5 system-ui, -apple-system, \\\"Segoe UI\\\", sans-serif; color: #16181d; background: #ffffff; }\\nheader { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; }\\nh1 { font-size: 15px; font-weight: 600; margin: 0; }\\n.badge { font-size: 11px; border: 1px solid #d5d8de; border-radius: 999px; padding: 2px 8px; color: #5b616b; }\\ndl { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; margin: 12px 0 0; }\\n.metric { background: #f5f6f8; border-radius: 10px; padding: 10px; min-width: 0; }\\ndt { font-size: 11px; color: #5b616b; margin: 0; }\\ndd { margin: 4px 0 0; font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }\\nfooter { margin-top: 12px; font-size: 11px; color: #6b7280; border-top: 1px solid #e4e6ea; padding-top: 8px; }\\n@media (prefers-color-scheme: dark) {\\n  body { color: #e6e8ec; background: #14161a; }\\n  .metric { background: #1d2026; }\\n  .badge { border-color: #333842; color: #9aa3b2; }\\n  footer { border-top-color: #2a2e36; color: #9aa3b2; }\\n}\\n</style>\\n</head>\\n<body>\\n<header>\\n  <h1>Ringkasan Eksekutif Operasi Harian AbangColek</h1>\\n  <span class=\\\"badge\\\">Read only</span>\\n</header>\\n<dl><div class=\\\"metric\\\"><dt>Pesanan Hari Ini</dt><dd>2</dd></div><div class=\\\"metric\\\"><dt>Kutipan Bersih (Sen)</dt><dd>4800</dd></div><div class=\\\"metric\\\"><dt>Penghantaran Dalam Transit</dt><dd>1</dd></div><div class=\\\"metric\\\"><dt>SKU Stok Rendah</dt><dd>1</dd></div><div class=\\\"metric\\\"><dt>Tindakan HITL Menunggu</dt><dd>1</dd></div></dl>\\n<footer>FIRST_PARTY_RESOURCE_UNRESTRICTED_PROXY_BLOCKED · database · rev store_snapshot</footer>\\n<script type=\\\"application/json\\\" id=\\\"mcp-app-brief\\\">{\\\"title\\\":\\\"Ringkasan Eksekutif Operasi Harian AbangColek\\\",\\\"briefDate\\\":\\\"2026-10-21\\\",\\\"metrics\\\":[{\\\"label\\\":\\\"Pesanan Hari Ini\\\",\\\"value\\\":\\\"2\\\"},{\\\"label\\\":\\\"Kutipan Bersih (Sen)\\\",\\\"value\\\":\\\"4800\\\"},{\\\"label\\\":\\\"Penghantaran Dalam Transit\\\",\\\"value\\\":\\\"1\\\"},{\\\"label\\\":\\\"SKU Stok Rendah\\\",\\\"value\\\":\\\"1\\\"},{\\\"label\\\":\\\"Tindakan HITL Menunggu\\\",\\\"value\\\":\\\"1\\\"}],\\\"readOnlyNotice\\\":\\\"FIRST_PARTY_RESOURCE_UNRESTRICTED_PROXY_BLOCKED\\\",\\\"source\\\":\\\"database\\\",\\\"revision\\\":\\\"store_snapshot\\\"}</script>\\n<script>\\n(function () {\\n  'use strict';\\n  var PROTOCOL_VERSION = \\\"2026-01-26\\\";\\n  var APP_INFO = { name: 'abangcolek-operations-brief', version: '1.0.0' };\\n  var TARGET_ORIGIN = '*';\\n  var pending = Object.create(null);\\n\\n  function post(message) {\\n    try { window.parent.postMessage(message, TARGET_ORIGIN); } catch (error) { /* host gone */ }\\n  }\\n\\n  function respond(id, result) {\\n    post({ jsonrpc: '2.0', id: id, result: result });\\n  }\\n\\n  function fail(id, code, message) {\\n    post({ jsonrpc: '2.0', id: id, error: { code: code, message: message } });\\n  }\\n\\n  window.addEventListener('message', function (event) {\\n    if (event.source !== window.parent) return;\\n    var data = event.data;\\n    if (!data || typeof data !== 'object' || data.jsonrpc !== '2.0') return;\\n    if (data.method === 'ui/resource-teardown') {\\n      if (typeof data.id === 'number' || typeof data.id === 'string') respond(data.id, {});\\n      return;\\n    }\\n    if (data.method === 'ui/notifications/host-context-changed') return;\\n  });\\n\\n  function requestInitialize() {\\n    var id = 'ui-init-' + Date.now();\\n    pending[id] = true;\\n    post({\\n      jsonrpc: '2.0',\\n      id: id,\\n      method: 'ui/initialize',\\n      params: {\\n        appInfo: APP_INFO,\\n        appCapabilities: {},\\n        protocolVersion: PROTOCOL_VERSION\\n      }\\n    });\\n    // If the host never answers, the widget stays inert but rendered.\\n    setTimeout(function () { delete pending[id]; }, 10000);\\n  }\\n\\n  function notifySize() {\\n    var doc = document.documentElement;\\n    var height = Math.ceil(doc.getBoundingClientRect().height);\\n    var width = Math.ceil(window.innerWidth);\\n    post({\\n      jsonrpc: '2.0',\\n      method: 'ui/notifications/size-changed',\\n      params: { width: width, height: height }\\n    });\\n  }\\n\\n  function start() {\\n    requestInitialize();\\n    post({ jsonrpc: '2.0', method: 'ui/notifications/initialized' });\\n    if (typeof ResizeObserver === 'function') {\\n      var observer = new ResizeObserver(notifySize);\\n      observer.observe(document.documentElement);\\n      observer.observe(document.body);\\n    } else {\\n      window.addEventListener('resize', notifySize);\\n    }\\n    notifySize();\\n  }\\n\\n  if (document.readyState === 'loading') {\\n    document.addEventListener('DOMContentLoaded', start);\\n  } else {\\n    start();\\n  }\\n}());\\n</script>\\n</body>\\n</html>\",\"_meta\":{\"ui\":{\"csp\":{\"connectDomains\":[],\"resourceDomains\":[],\"frameDomains\":[],\"baseUriDomains\":[]},\"prefersBorder\":true}}}]},\"jsonrpc\":\"2.0\",\"id\":4}\nS->C {\"method\":\"resources/read\",\"params\":{\"uri\":\"operations://brief/daily\"},\"jsonrpc\":\"2.0\",\"id\":5}\nC->S {\"result\":{\"contents\":[{\"uri\":\"operations://brief/daily\",\"mimeType\":\"application/json\",\"text\":\"{\\\"title\\\":\\\"Ringkasan Eksekutif Operasi Harian AbangColek\\\",\\\"briefDate\\\":\\\"2026-10-21\\\",\\\"metrics\\\":[{\\\"label\\\":\\\"Pesanan Hari Ini\\\",\\\"value\\\":\\\"2\\\"},{\\\"label\\\":\\\"Kutipan Bersih (Sen)\\\",\\\"value\\\":\\\"4800\\\"},{\\\"label\\\":\\\"Penghantaran Dalam Transit\\\",\\\"value\\\":\\\"1\\\"},{\\\"label\\\":\\\"SKU Stok Rendah\\\",\\\"value\\\":\\\"1\\\"},{\\\"label\\\":\\\"Tindakan HITL Menunggu\\\",\\\"value\\\":\\\"1\\\"}],\\\"readOnlyNotice\\\":\\\"FIRST_PARTY_RESOURCE_UNRESTRICTED_PROXY_BLOCKED\\\",\\\"source\\\":\\\"database\\\",\\\"revision\\\":\\\"store_snapshot\\\"}\"}]},\"jsonrpc\":\"2.0\",\"id\":5}\n--- end transcript ---",
-      "stderrTail": "tests\\platform\\adv-tools-capability-coverage.test.ts:\ntests\\platform\\adversarial-m1-integrity.test.ts:\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\ntests\\platform\\copilot-runtime-contract-candidates.test.ts:\n{\"component\":\"copilot_provider_failure\",\"provider\":\"OpenRouter\",\"model\":\"nvidia/nemotron-3-ultra-550b-a55b:free\",\"status\":404,\"reason\":\"PROVIDER_MODEL_NOT_FOUND\",\"body\":\"{\\\"error\\\":{\\\"message\\\":\\\"Function '[redacted-id]' Not found for account\\\",\\\"code\\\":404}}\"}\ntests\\platform\\copilot-runtime-contract-quota.test.ts:\n{\"component\":\"copilot_provider_failure\",\"provider\":\"OpenRouter\",\"model\":\"nvidia/nemotron-3-ultra-550b-a55b:free\",\"status\":429,\"reason\":\"PROVIDER_QUOTA_EXHAUSTED\",\"body\":\"Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash. Please retry in 19h3m41s.\"}\ntests\\platform\\copilot-runtime-pipeline.test.ts:\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\ntests\\platform\\mcp-protocol.test.ts:\n 833 pass\n 11 todo\n 0 fail\n 5771 expect() calls\nRan 844 tests across 121 files. [60.36s]"
+      "stderrTail": "tests\\platform\\adv-tools-capability-coverage.test.ts:\ntests\\platform\\adversarial-m1-integrity.test.ts:\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\ntests\\platform\\copilot-runtime-contract-candidates.test.ts:\n{\"component\":\"copilot_provider_failure\",\"provider\":\"OpenRouter\",\"model\":\"nvidia/nemotron-3-ultra-550b-a55b:free\",\"status\":404,\"reason\":\"PROVIDER_MODEL_NOT_FOUND\",\"body\":\"{\\\"error\\\":{\\\"message\\\":\\\"Function '[redacted-id]' Not found for account\\\",\\\"code\\\":404}}\"}\ntests\\platform\\copilot-runtime-contract-quota.test.ts:\n{\"component\":\"copilot_provider_failure\",\"provider\":\"OpenRouter\",\"model\":\"nvidia/nemotron-3-ultra-550b-a55b:free\",\"status\":429,\"reason\":\"PROVIDER_QUOTA_EXHAUSTED\",\"body\":\"Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash. Please retry in 19h3m41s.\"}\ntests\\platform\\copilot-runtime-pipeline.test.ts:\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\nBoth GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.\ntests\\platform\\mcp-protocol.test.ts:\n 839 pass\n 11 todo\n 0 fail\n 5782 expect() calls\nRan 850 tests across 122 files. [74.72s]"
     },
     {
       "id": "test:copilot",
@@ -6774,12 +6820,12 @@
       "cwd": "D:\\ABANGCOLEK-PLATFORM",
       "exitCode": 0,
       "status": "pass",
-      "durationMs": 341,
+      "durationMs": 559,
       "passCount": 139,
       "failCount": 0,
       "expectCount": 734,
       "filesScanned": 13,
-      "summary": "Ran 139 tests across 13 files. [260.00ms]",
+      "summary": "Ran 139 tests across 13 files. [458.00ms]",
       "fileResults": [
         {
           "file": "tests\\copilot\\mod-01-cart-draft.test.ts",
@@ -7746,9 +7792,9 @@
           ]
         }
       ],
-      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_copilot.30408-mvhdyspr-x6bsid7f.xml",
+      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_copilot.31596-mvhn42pm-u9y1e8yl.xml",
       "stdoutTail": "bun test v1.4.2 (744846f84)",
-      "stderrTail": " 139 pass\n 0 fail\n 734 expect() calls\nRan 139 tests across 13 files. [260.00ms]"
+      "stderrTail": " 139 pass\n 0 fail\n 734 expect() calls\nRan 139 tests across 13 files. [458.00ms]"
     },
     {
       "id": "test:frontend",
@@ -7756,12 +7802,12 @@
       "cwd": "D:\\ABANGCOLEK-PLATFORM",
       "exitCode": 0,
       "status": "pass",
-      "durationMs": 616,
-      "passCount": 181,
+      "durationMs": 900,
+      "passCount": 185,
       "failCount": 0,
-      "expectCount": 1024,
-      "filesScanned": 27,
-      "summary": "Ran 181 tests across 27 files. [529.00ms]",
+      "expectCount": 1029,
+      "filesScanned": 28,
+      "summary": "Ran 185 tests across 28 files. [810.00ms]",
       "fileResults": [
         {
           "file": "tests\\frontend\\a2ui-components.test.tsx",
@@ -7951,6 +7997,40 @@
               "name": "MarginSimulatorForm renders to static HTML without crashing",
               "classname": "3.3 MarginSimulatorForm Input Parsing & Concurrency Resilience > 3. Frontend Component Crash Resistance on Malformed/Invalid Payloads > Adversarial Verification Suite M1-2: Frontend A2UI & Forms (Challenger M1-2)",
               "file": "tests\\frontend\\adversarial-m1-2-a2ui.test.tsx",
+              "outcome": "pass"
+            }
+          ]
+        },
+        {
+          "file": "tests\\frontend\\app-entrypoint.test.ts",
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "assertions": 5,
+          "testCases": [
+            {
+              "name": "index.html memuat SATU entrypoint: /src/main.tsx",
+              "classname": "Pagar entrypoint aplikasi",
+              "file": "tests\\frontend\\app-entrypoint.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "main.tsx merender AppRouter (bukan laluan aplikasi kedua)",
+              "classname": "Pagar entrypoint aplikasi",
+              "file": "tests\\frontend\\app-entrypoint.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "TIDAK ADA fail src/ yang mengimport App.tsx yang mati",
+              "classname": "Pagar entrypoint aplikasi",
+              "file": "tests\\frontend\\app-entrypoint.test.ts",
+              "outcome": "pass"
+            },
+            {
+              "name": "fail App.tsx yang mati tidak wujud dalam src/",
+              "classname": "Pagar entrypoint aplikasi",
+              "file": "tests\\frontend\\app-entrypoint.test.ts",
               "outcome": "pass"
             }
           ]
@@ -9120,9 +9200,9 @@
           ]
         }
       ],
-      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_frontend.30408-mvhdyspr-x6bsid7f.xml",
+      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_frontend.31596-mvhn42pm-u9y1e8yl.xml",
       "stdoutTail": "bun test v1.4.2 (744846f84)",
-      "stderrTail": " 181 pass\n 0 fail\n 1024 expect() calls\nRan 181 tests across 27 files. [529.00ms]"
+      "stderrTail": " 185 pass\n 0 fail\n 1029 expect() calls\nRan 185 tests across 28 files. [810.00ms]"
     },
     {
       "id": "test:architecture",
@@ -9130,12 +9210,12 @@
       "cwd": "D:\\ABANGCOLEK-PLATFORM",
       "exitCode": 0,
       "status": "pass",
-      "durationMs": 5419,
+      "durationMs": 9521,
       "passCount": 29,
       "failCount": 0,
       "expectCount": 216,
       "filesScanned": 3,
-      "summary": "Ran 29 tests across 3 files. [5.32s]",
+      "summary": "Ran 29 tests across 3 files. [9.42s]",
       "fileResults": [
         {
           "file": "tests\\architecture\\dependency-boundaries.test.ts",
@@ -9342,9 +9422,9 @@
           ]
         }
       ],
-      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_architecture.30408-mvhdyspr-x6bsid7f.xml",
+      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_architecture.31596-mvhn42pm-u9y1e8yl.xml",
       "stdoutTail": "bun test v1.4.2 (744846f84)",
-      "stderrTail": " 29 pass\n 0 fail\n 216 expect() calls\nRan 29 tests across 3 files. [5.32s]"
+      "stderrTail": " 29 pass\n 0 fail\n 216 expect() calls\nRan 29 tests across 3 files. [9.42s]"
     },
     {
       "id": "test:ext",
@@ -9352,12 +9432,12 @@
       "cwd": "D:\\ABANGCOLEK-PLATFORM",
       "exitCode": 0,
       "status": "pass",
-      "durationMs": 82,
+      "durationMs": 91,
       "passCount": 4,
       "failCount": 0,
       "expectCount": 12,
       "filesScanned": 1,
-      "summary": "Ran 4 tests across 1 file. [14.00ms]",
+      "summary": "Ran 4 tests across 1 file. [19.00ms]",
       "fileResults": [
         {
           "file": "tests\\ext\\ext-webmcp-probe.test.ts",
@@ -9394,9 +9474,9 @@
           ]
         }
       ],
-      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_ext.30408-mvhdyspr-x6bsid7f.xml",
+      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_ext.31596-mvhn42pm-u9y1e8yl.xml",
       "stdoutTail": "bun test v1.4.2 (744846f84)",
-      "stderrTail": " 4 pass\n 0 fail\n 12 expect() calls\nRan 4 tests across 1 file. [14.00ms]"
+      "stderrTail": " 4 pass\n 0 fail\n 12 expect() calls\nRan 4 tests across 1 file. [19.00ms]"
     },
     {
       "id": "test:landing-brand-theme",
@@ -9404,12 +9484,12 @@
       "cwd": "D:\\ABANGCOLEK-PLATFORM",
       "exitCode": 0,
       "status": "pass",
-      "durationMs": 84,
+      "durationMs": 94,
       "passCount": 3,
       "failCount": 0,
       "expectCount": 11,
       "filesScanned": 1,
-      "summary": "Ran 3 tests across 1 file. [15.00ms]",
+      "summary": "Ran 3 tests across 1 file. [22.00ms]",
       "fileResults": [
         {
           "file": "tests\\landing-brand-theme.test.ts",
@@ -9440,9 +9520,9 @@
           ]
         }
       ],
-      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_landing-brand-theme.30408-mvhdyspr-x6bsid7f.xml",
+      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_landing-brand-theme.31596-mvhn42pm-u9y1e8yl.xml",
       "stdoutTail": "bun test v1.4.2 (744846f84)",
-      "stderrTail": " 3 pass\n 0 fail\n 11 expect() calls\nRan 3 tests across 1 file. [15.00ms]"
+      "stderrTail": " 3 pass\n 0 fail\n 11 expect() calls\nRan 3 tests across 1 file. [22.00ms]"
     },
     {
       "id": "test:dashboard-model",
@@ -9450,12 +9530,12 @@
       "cwd": "D:\\ABANGCOLEK-PLATFORM",
       "exitCode": 0,
       "status": "pass",
-      "durationMs": 84,
+      "durationMs": 90,
       "passCount": 3,
       "failCount": 0,
       "expectCount": 10,
       "filesScanned": 1,
-      "summary": "Ran 3 tests across 1 file. [15.00ms]",
+      "summary": "Ran 3 tests across 1 file. [16.00ms]",
       "fileResults": [
         {
           "file": "tests\\dashboard-model.test.ts",
@@ -9486,9 +9566,9 @@
           ]
         }
       ],
-      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_dashboard-model.30408-mvhdyspr-x6bsid7f.xml",
+      "junitOutFile": "C:\\Users\\megat\\AppData\\Local\\Temp\\kilo-acceptance-junit\\test_dashboard-model.31596-mvhn42pm-u9y1e8yl.xml",
       "stdoutTail": "bun test v1.4.2 (744846f84)",
-      "stderrTail": " 3 pass\n 0 fail\n 10 expect() calls\nRan 3 tests across 1 file. [15.00ms]"
+      "stderrTail": " 3 pass\n 0 fail\n 10 expect() calls\nRan 3 tests across 1 file. [16.00ms]"
     },
     {
       "id": "test:e2e:list",
@@ -9496,7 +9576,7 @@
       "cwd": "D:\\ABANGCOLEK-PLATFORM",
       "exitCode": 0,
       "status": "pass",
-      "durationMs": 1125,
+      "durationMs": 1793,
       "passCount": null,
       "failCount": null,
       "expectCount": null,
@@ -9513,8 +9593,8 @@
     "suitesFailed": 0,
     "suitesUnavailable": 0,
     "suitesSkippedByFlag": 0,
-    "testsPassed": 1247,
+    "testsPassed": 1257,
     "testsFailed": 0,
-    "assertions": 8109
+    "assertions": 8125
   }
 }

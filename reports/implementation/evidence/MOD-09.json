@@ -1,0 +1,20 @@
+{
+  "requirementId": "MOD-09",
+  "status": "verified_local",
+  "environment": "local_test",
+  "timestamp": "2026-10-20T21:00:00Z",
+  "sourceCommit": "1fc218e5784efb890641bba1e46ac97f617639a3",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "testName": "MOD-09: setiap rekod search_records/build_context_bundle membawa sitiran; tiada luput direkod => null + EXPIRY_NOT_RECORDED; tiada versi => version null",
+  "testPath": "tests/copilot/mod-09-citations.test.ts",
+  "command": "bun test ./tests/copilot/mod-09-citations.test.ts",
+  "exitCode": 0,
+  "result": "6 pass / 0 fail / 23 expect() calls",
+  "artifactRefs": [
+    "server/agents/tools/capabilities/discovery.ts",
+    "shared/mod-contracts.ts"
+  ],
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "integrator-2026-10-21",
+  "limitations": "Sitiran dibina daripada rekod store sebenar yang disemai dalam ujian. Dua alat lain (search_sop, propose_task) berada dalam capabilities/governance.ts yang dimiliki lane lain dan belum dipanggil dalam ujian ini."
+}

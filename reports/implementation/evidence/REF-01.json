@@ -1,0 +1,23 @@
+{
+  "requirementId": "REF-01",
+  "status": "verified_local",
+  "environment": "local_test",
+  "timestamp": "2026-10-20T21:00:00Z",
+  "sourceCommit": "1fc218e5784efb890641bba1e46ac97f617639a3",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "testName": "Isyarat peranti yang hilang => unknown + reason code, tiada value 0/false; Tiada provider OTP => unavailable + OTP_PROVIDER_UNAVAILABLE + tiada cabaran disimpan; Submit => submitted + event pertama, transitions disahkan, transition haram => 409",
+  "testPath": "tests/platform/loyalty-redemption-risk.test.ts",
+  "command": "bun test ./tests/platform/loyalty-redemption-risk.test.ts",
+  "exitCode": 0,
+  "result": "7 pass / 0 fail / 87 expect() calls",
+  "artifactRefs": [
+    "server/platform/risk/engine.ts",
+    "server/platform/risk/otp.ts",
+    "server/platform/risk/appeals.ts",
+    "server/platform/risk/service.ts",
+    "shared/risk-contracts.ts"
+  ],
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "integrator-2026-10-21",
+  "limitations": "Tiada provider OTP sebenar dalam environment ini, jadi cabaran OTP diuji melalui jalur unavailable (OTP_PROVIDER_UNAVAILABLE) dan bukannya hantaran OTP sebenar. Isyarat risiko asal (device/velocity/age) datang daripada rekod yang disemai dalam ujian, bukan daripada pengesanan peranti sebenar. Bahagian hosted (tandatangan provider) kekal external gate."
+}

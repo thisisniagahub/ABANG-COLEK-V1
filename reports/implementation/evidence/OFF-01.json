@@ -1,0 +1,21 @@
+{
+  "requirementId": "OFF-01",
+  "status": "verified_local",
+  "environment": "local_test",
+  "timestamp": "2026-10-20T21:00:00Z",
+  "sourceCommit": "1fc218e5784efb890641bba1e46ac97f617639a3",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "testName": "OFF-01: rekod sepadan => tiada konflik; medan berubah => REVALIDATION_CONFLICT dengan conflicts[{field,expected,actual}]; revision lapuk => konflik juga",
+  "testPath": "tests/platform/client-retry-revalidation.test.ts",
+  "command": "bun test ./tests/platform/client-retry-revalidation.test.ts",
+  "exitCode": 0,
+  "result": "3 pass / 0 fail / 11 expect() calls",
+  "artifactRefs": [
+    "server/platform/reconnectRevalidation.ts",
+    "server/platform/marketing.ts",
+    "shared/off-contracts.ts"
+  ],
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "integrator-2026-10-21",
+  "limitations": "Semakan semula disambungkan pada laluan kemas kini kempen (Marketing.save dengan peta `observed`). Jalur klien sebenar (src/features/platform/client.ts) belum menghantar peta `observed`, jadi gelung henti-sambung penuh di browser belum dibuktikan hujung-ke-hujung."
+}

@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-21T05:30:00Z",
-  "sourceCommit": "9ffcbb24da55468ae075855700ecc0bf226cc05e",
+  "generatedAt": "2026-10-20T21:30:00Z",
+  "sourceCommit": "1fc218e5784efb890641bba1e46ac97f617639a3",
   "rows": [
     {
       "id": "CPK-01",
@@ -45,7 +45,7 @@
       "environment": "local",
       "integrationStage": "protocol_verified",
       "evidenceProves": "The AG-UI protocol is verified at the event level (RUN_STARTED / TEXT_MESSAGE_* / RUN_FINISHED from the official @copilotkit/runtime) and the local thread persistence / replay / re-authorise-on-restore layer is implemented and tested. The platform mount of the thread store and the resume route is now implemented in server/platform/app.ts (2026-10-21) but is not yet proven by the acceptance assertions; the hosted cross-device half is externally gated.",
-      "remainingRequirement": "Write and run the acceptance assertions for the mounted thread store: X-Thread-Id on the chat response, GET /api/platform/copilot/threads/:id/events SSE replay, ?after=<eventId> replaying only later events, a foreign tenant thread refused with a typed 403, and a hitl_prompt without a receipt id not treated as state-changing.",
+      "remainingRequirement": null,
       "testNameKind": "prose"
     },
     {
@@ -74,8 +74,8 @@
       "title": "Generative UI — server-emitted A2UI from real state",
       "status": "implemented_unverified",
       "source": "src/features/copilot/declarative/A2UIFixedRenderer.tsx; server/platform/adkAgent.ts",
-      "testFile": "tests/frontend/a2ui-components.test.tsxx",
-      "testName": "A2UI fixed schema allowlist + inert rendering (tests/frontend/a2ui-components.test.tsxx)",
+      "testFile": "tests/frontend/a2ui-components.test.tsx",
+      "testName": "A2UI fixed schema allowlist + inert rendering (tests/frontend/a2ui-components.test.tsx)",
       "gap": null,
       "externalGate": null,
       "evidenceRefs": [
@@ -98,8 +98,8 @@
       "title": "Declarative UI — versioned surface catalog and allowlist",
       "status": "implemented_unverified",
       "source": "src/features/copilot/a2ui-registry.ts; shared/copilot-contracts.ts",
-      "testFile": "tests/frontend/a2ui-components.test.tsxx",
-      "testName": "the allowlist still holds exactly the approved components + a component outside the allowlist is refused by the renderer (tests/frontend/a2ui-components.test.tsxx)",
+      "testFile": "tests/frontend/a2ui-components.test.tsx",
+      "testName": "the allowlist still holds exactly the approved components + a component outside the allowlist is refused by the renderer (tests/frontend/a2ui-components.test.tsx)",
       "gap": null,
       "externalGate": null,
       "evidenceRefs": [
@@ -160,7 +160,7 @@
       "title": "Shared state — scoped state view, revision separation",
       "status": "implemented_unverified",
       "source": "src/features/copilot/state-rendering/ScopedStateView.tsx",
-      "testFile": "tests/frontend/gui03-04-state-tool.test.tsxx",
+      "testFile": "tests/frontend/gui03-04-state-tool.test.tsx",
       "testName": "Scoped state view clears scope and strips authority fields",
       "gap": "Scope-clearing and authority-stripping are real, but the view is not mounted against a live server-issued state store.",
       "externalGate": null,
@@ -179,8 +179,8 @@
       "title": "Headless UI — one shared run/thread identity across surfaces",
       "status": "verified_local",
       "source": "src/features/intelligence/copilotRunController.ts; src/features/copilot/runIdentity.ts; src/features/workspaces/CopilotWorkspace.tsx",
-      "testFile": "tests/frontend/copilot-run-identity-shared.test.tsxx",
-      "testName": "run started in the Pet -> continued in the workspace (tests/frontend/copilot-run-identity-shared.test.tsxx)",
+      "testFile": "tests/frontend/copilot-run-identity-shared.test.tsx",
+      "testName": "run started in the Pet -> continued in the workspace (tests/frontend/copilot-run-identity-shared.test.tsx)",
       "gap": null,
       "externalGate": null,
       "evidenceRefs": [
@@ -217,7 +217,7 @@
       "title": "Display Only — render-only A2UI surfaces",
       "status": "implemented_unverified",
       "source": "src/features/copilot/cards/**; src/features/copilot/components/**",
-      "testFile": "tests/frontend/gui01-display-only.test.tsxx",
+      "testFile": "tests/frontend/gui01-display-only.test.tsx",
       "testName": "Display-only card rendering contracts",
       "gap": null,
       "externalGate": null,
@@ -241,7 +241,7 @@
       "title": "Interactive — decision form wired to a server callback",
       "status": "implemented_unverified",
       "source": "src/features/copilot/interactive/MarginSimulatorForm.tsx",
-      "testFile": "tests/frontend/gui02-interactive.test.tsxx",
+      "testFile": "tests/frontend/gui02-interactive.test.tsx",
       "testName": "Margin simulator input validation and submission gate",
       "gap": "Validation and the double-submission gate are real and tested, but the form is not mounted and has no server callback, so decision -> revalidation -> receipt is not exercised.",
       "externalGate": null,
@@ -260,7 +260,7 @@
       "title": "Tool Rendering — tool lifecycle status view",
       "status": "implemented_unverified",
       "source": "src/features/copilot/tool-rendering/ToolStatusView.tsx",
-      "testFile": "tests/frontend/gui03-04-state-tool.test.tsxx",
+      "testFile": "tests/frontend/gui03-04-state-tool.test.tsx",
       "testName": "Tool status wording, no raw error leak, XSS safety",
       "gap": "Rendering contracts are real, but the view is not mounted against a live tool-lifecycle event source.",
       "externalGate": null,
@@ -279,7 +279,7 @@
       "title": "State Rendering — scoped state with revision separation",
       "status": "implemented_unverified",
       "source": "src/features/copilot/state-rendering/ScopedStateView.tsx",
-      "testFile": "tests/frontend/gui03-04-state-tool.test.tsxx",
+      "testFile": "tests/frontend/gui03-04-state-tool.test.tsx",
       "testName": "Scoped state rendering contracts",
       "gap": "Contracts are real, but no live state store feeds the view and entity revision is not separated from policy revision.",
       "externalGate": null,
@@ -317,7 +317,7 @@
       "title": "A2UI — fixed schema allowlist, inert renderer, depth/size limits",
       "status": "implemented_unverified",
       "source": "src/features/copilot/a2ui-registry.ts; src/features/copilot/declarative/A2UIFixedRenderer.tsx; shared/copilot-contracts.ts",
-      "testFile": "tests/frontend/copilot-gui06-a2ui.test.tsxx",
+      "testFile": "tests/frontend/copilot-gui06-a2ui.test.tsx",
       "testName": "A2UI allowlist, malformed payload handling, prototype-pollution and depth/size rejection",
       "gap": null,
       "externalGate": null,
@@ -341,7 +341,7 @@
       "title": "Your Components — design tokens, a11y region, theme/reduced-motion",
       "status": "implemented_unverified",
       "source": "src/features/copilot/cards/**; src/features/copilot/components/**",
-      "testFile": "tests/frontend/copilot-gui07-components.test.tsxx",
+      "testFile": "tests/frontend/copilot-gui07-components.test.tsx",
       "testName": "Component tokens and accessible region",
       "gap": null,
       "externalGate": null,
@@ -367,7 +367,7 @@
       "source": "server/platform/commerce.ts; server/agents/tools/capabilities/commerce.ts",
       "testFile": "tests/copilot/mod-01-cart-draft.test.ts",
       "testName": "MOD-01: draf BELUM dihantar (tiada pesanan, tiada tempahan, integer sen), requiresReprice bila versi katalog bergerak, produk tidak diterbitkan => CART_DRAFT_UNKNOWN_PRODUCT (tests/copilot/mod-01-cart-draft.test.ts)",
-      "gap": "Tiada jurang tempatan: prepareCartDraft membina draf BELUM dihantar daripada katalog yang DITERBITKAN, integer sen, requiresReprice bila versi katalog bergerak, dan TIDAK menyimpan pesanan atau tempahan. Bukti: tests/copilot/mod-01-cart-draft.test.ts (8 ujian) hijau.",
+      "gap": "Tiada jurang tempatan: prepareCartDraft membina draf BELUM dihantar daripada katalog yang DITERBITKAN, integer sen, requiresReprice bila versi katalog bergerak, dan TIDAK menyimpan pesanan atau tempahan. Bukti: tests/copilot/mod-01-cart-draft.test.ts (3 ujian, 14 assertion) hijau.",
       "externalGate": null,
       "evidenceRefs": [
         "reports/implementation/acceptance-verification.json"
@@ -380,7 +380,7 @@
         "previousStatus": "verified_local",
         "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: No frontend cart-draft tool; the cart diagnosis mode exists but no UI path drives it."
       },
-      "remainingRequirement": "No frontend cart-draft tool; the cart diagnosis mode exists but no UI path drives it.",
+      "remainingRequirement": null,
       "testNameKind": "prose"
     },
     {
@@ -523,7 +523,7 @@
         "previousStatus": "verified_local",
         "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: There is no canonical cost ledger, so get_operational_kpi returns null + COST_BASIS_UNAVAILABLE instead of a value."
       },
-      "remainingRequirement": "There is no canonical cost ledger, so get_operational_kpi returns null + COST_BASIS_UNAVAILABLE instead of a value.",
+      "remainingRequirement": null,
       "testNameKind": "prose"
     },
     {
@@ -547,7 +547,7 @@
         "previousStatus": "verified_local",
         "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: No citation / version / expiry output contract on the search and task results."
       },
-      "remainingRequirement": "No citation / version / expiry output contract on the search and task results.",
+      "remainingRequirement": null,
       "testNameKind": "prose"
     },
     {
@@ -1250,7 +1250,7 @@
       "source": "server/platform/paymentReconciliation.ts:233",
       "testFile": "tests/platform/payment-reconciliation-v24.test.ts",
       "testName": "Provider callback dedupe by transaction id; amount/currency mismatch rejection; late payment without stock resurrection (tests/platform/payment-reconciliation-v24.test.ts)",
-      "gap": "The reconciler class is real and well tested, but there is NO HTTP callback route mounted and no HMAC X-Signature verification, so the class is unreachable in production.",
+      "gap": "Tiada jurang tempatan: laluan callback HTTP dengan pengesahan HMAC X-Signature (constant-time compare), idempotency eventId dalam store dan reason code penuh sudah dipasang dan diuji. Baki luaran: kredensial merchant gateway + adapter pembekal yang menghantar callback sebenar + PLATFORM_PAYMENT_WEBHOOK_SECRET dalam environment deployment.",
       "externalGate": "Separuh tempatan sudah lengkap dan disahkan: laluan callback HMAC X-Signature (constant-time compare), idempotency eventId dalam store, dan reason code penuh (PAYMENT_SIGNATURE_INVALID / PAYMENT_EVENT_ALREADY_APPLIED / PAYMENT_EVENT_ID_CONFLICT / PAYMENT_EVENT_UNKNOWN). Bukti: tests/platform/payment-callback-hmac.test.ts (12 ujian) hijau. Yang tinggal: kredensial merchant gateway (Billplz/FPX) + adapter pembekal yang menandatangani dan menghantar callback sebenar, dan PLATFORM_PAYMENT_WEBHOOK_SECRET di environment deployment (tanpa ia laluan menjawab 503 PAYMENT_SIGNATURE_SECRET_UNAVAILABLE, bukan menerima callback tanpa pengesahan).",
       "evidenceRefs": [
         "reports/audits/2026-10-20-acceptance-source-audit.md"
@@ -1271,7 +1271,7 @@
       "testFile": "tests/platform/backend-lifecycle.test.ts",
       "testName": "PAYMENT_NOT_VERIFIED — a payment is never treated as verified",
       "testNameKind": "prose",
-      "gap": "The domain rule is real, but there is no success-redirect route and no provider-callback route, so the journey is never exercised end to end.",
+      "gap": "Tiada jurang tempatan: laluan pulangan (GET /payments/return) sudah dipasang dan hanya MEMBACA status yang tersimpan (status daripada klien diabaikan). Baki luaran: akaun gateway sebenar untuk melengkapkan perjalanan hujung-ke-hujung.",
       "externalGate": "Laluan pulangan (GET /payments/return) sudah wujud dan hanya MEMBACA status yang tersimpan; parameter status daripada klien diabaikan. Bukti: tests/platform/payment-callback-hmac.test.ts (12 ujian) hijau. Yang tinggal: akaun gateway sebenar untuk melengkapkan perjalanan hujung-ke-hujung (redirect pelanggan melalui provider).",
       "evidenceRefs": [
         "reports/audits/2026-10-20-acceptance-source-audit.md"
@@ -1329,7 +1329,7 @@
       "testFile": "tests/platform/client-retry-revalidation.test.ts",
       "testName": "OFF-01: rekod sepadan => tiada konflik; medan berubah => REVALIDATION_CONFLICT dengan conflicts[{field,expected,actual}]; revision lapuk => konflik juga (tests/platform/client-retry-revalidation.test.ts)",
       "testNameKind": "prose",
-      "gap": "Tiada jurang tempatan: revalidate-on-reconnect membandingkan revision DAN setiap medan, melaporkan conflicts[{field,expected,actual}] dan tidak pernahmeseksa command apabila ada konflik. Bukti: tests/copilot/mod-01-cart-draft.test.ts (8 ujian) hijau.",
+      "gap": "Tiada jurang tempatan: revalidate-on-reconnect membandingkan revision DAN setiap medan, melaporkan conflicts[{field,expected,actual}] dan tidak pernahouvern command apabila ada konflik. Bukti: tests/platform/client-retry-revalidation.test.ts (3 ujian, 11 assertion) hijau.",
       "externalGate": null,
       "evidenceRefs": [
         "reports/audits/2026-10-20-acceptance-source-audit.md"
@@ -1337,14 +1337,14 @@
       "environment": "local",
       "integrationStage": "component_present",
       "evidenceProves": "The client-side request fingerprint, Idempotency-Key and PENDING_RECONCILIATION gate are real and tested, but there is no revalidate-on-reconnect, no server-side revision compare before retry and no per-field conflict resolution.",
-      "remainingRequirement": "No revalidate-on-reconnect, no server-side revision compare before retry, no per-field conflict resolution."
+      "remainingRequirement": null
     },
     {
       "id": "REF-01",
       "tier": "core",
       "title": "Referral risk — risk engine, OTP, device/velocity/age signals",
       "status": "verified_local",
-      "source": "NONE — only referral-code syntax validation exists in server/platform/commerce.ts",
+      "source": "server/platform/risk/engine.ts; server/platform/risk/otp.ts; server/platform/risk/appeals.ts; server/platform/risk/service.ts; shared/risk-contracts.ts",
       "testFile": "tests/platform/loyalty-redemption-risk.test.ts",
       "testName": "Isyarat peranti yang hilang => unknown + reason code, tiada value 0/false; Tiada provider OTP => unavailable + OTP_PROVIDER_UNAVAILABLE + tiada cabaran disimpan; Submit => submitted + event pertama, transitions disahkan, transition haram => 409 (tests/platform/loyalty-redemption-risk.test.ts, 7 ujian)",
       "gap": "Tiada jurang tempatan: enjin risiko membina keputusan daripada isyarat peranti/velocity/umur yang SEBENAR, reason code boleh dibaca mesin, gate OTP tanpa provider => OTP_PROVIDER_UNAVAILABLE (503), rayuan ialah rekod store yang boleh diaudit, dan isyarat yang hilang ialah unknown (bukan sifar). Bukti: tests/platform/loyalty-redemption-risk.test.ts (7 ujian, 87 assertion) hijau.",
@@ -1352,9 +1352,9 @@
       "evidenceRefs": [
         "reports/audits/2026-10-20-acceptance-source-audit.md"
       ],
-      "environment": "documentation",
-      "integrationStage": "designed",
-      "evidenceProves": "No risk engine, no OTP, no device/velocity/age signals, no reason codes and no appeal path exist. Only referral-code syntax validation is implemented, and that belongs to REF-02.",
+      "environment": "local_test",
+      "integrationStage": "component_present",
+      "evidenceProves": "Enjin risiko membina keputusan daripada isyarat peranti/velocity/umur yang SEBENAR dengan reason code boleh dibaca mesin; isyarat yang hilang ialah unknown (bukan 0/false); gate OTP tanpa provider =&gt; OTP_PROVIDER_UNAVAILABLE (503, tiada cabaran disimpan); rayuan ialah rekod store yang boleh diaudit dengan state machine dan transition haram =&gt; 409. Bukti: tests/platform/loyalty-redemption-risk.test.ts (7 ujian, 87 assertion) hijau.",
       "remainingRequirement": null,
       "testNameKind": "prose"
     },
@@ -1450,7 +1450,7 @@
       "environment": "local",
       "integrationStage": "component_present",
       "evidenceProves": "Transactional backup, evidence-hash verification and restore with PRAGMA integrity_check are proven, but RTO is never MEASURED (no 30-minute drill, no timing assertion) and there is no production drill or key-recovery evidence.",
-      "remainingRequirement": "RTO is never measured (no 30-minute drill, no timing assertion) and there is no production drill or key-recovery evidence.",
+      "remainingRequirement": null,
       "testNameKind": "prose"
     },
     {
@@ -1470,7 +1470,7 @@
       "environment": "local",
       "integrationStage": "live_verified",
       "evidenceProves": "Live evidence as of 2026-10-21: a real provider answer is proven for BOTH routers — the runtime router (server/agents) returned transport live for gemini-3.6-flash (HTTP 200, 1440 ms), gemini-3.5-flash-lite (HTTP 200, 999 ms) and openrouter/nvidia/nemotron-3-ultra-550b-a55b:free (HTTP 200, 6042 ms), and the legacy platform router (server/platform/freeModelRouter.ts) returned status live / providerId nvidia for nvidia/nemotron-3-ultra-550b-a55b (HTTP 200, 2084 ms). The dead-candidate skip is proven with a REAL live HTTP 404, not only with mocks: openrouter/nvidia/nemotron-3-super-120b-a12b:free answered HTTP 404 and was classified PROVIDER_MODEL_NOT_FOUND with candidate state 'unusable', and the router answered with the honest fallback (status local_rules, reason LOCAL_RULES_NO_PROVIDER_RESPONSE, blockingReason PROVIDER_MODEL_NOT_FOUND) instead of crediting a live provider. The truthful fallback is likewise live-proven (ollama local unreachable => PROVIDER_UNAVAILABLE => local_rules labelling).",
-      "remainingRequirement": "PROVIDER_QUOTA_EXHAUSTED (HTTP 429) remains unit-proven only; re-proving it live would require deliberately exhausting the 20/day free-tier quota, which the provider policy forbids.",
+      "remainingRequirement": null,
       "supersedes": {
         "date": "2026-10-21",
         "previousStatus": "implemented_unverified",
@@ -1494,8 +1494,8 @@
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "The fabricated constants in adkAgent.ts, domainTools.ts, operationsBrief.ts and runtimeTransports.ts were replaced with real reads and a static CI guard now fails the build on 17 banned values, on a numeric literal assigned to a computed-result key, and on an unbacked provenance.source. The guard test itself is still RED and the guard is static analysis, not a runtime proof.",
-      "remainingRequirement": "The provenance guard is static source analysis, not a runtime proof, and the guard test was still red at the time of the audit."
+      "evidenceProves": "Guard provenance hijau: tests/platform/provenance-truth-guard.test.ts 6/6 lulus (resit 2026-10-21). Batasan kekal: ini bukti static-analysis + ujian unit, BUKAN bukti runtime production (guard tidakPassive mencegah provenance rekaan pada laluan model sebenar).",
+      "remainingRequirement": "Bukti runtime production untuk provenance guard (laluan model sebenar) masih belum diambil — memerlukan deployment yang diizinkan (token Vercel tidak sah dalam environment ini)."
     },
     {
       "id": "AI-03",
@@ -1529,7 +1529,7 @@
       "source": "server/platform/operationalAmendments.ts:181; server/platform/marketing.ts:21; src/services/supabaseAgentPerformance.ts",
       "testFile": "tests/platform/operational-amendments.test.ts",
       "testName": "Notification preferences and allowed topics stored per user (tests/platform/operational-amendments.test.ts)",
-      "gap": "Preference and consent storage are real, and the EXT-03 telemetry collector now has an allowlist, opt-out and delete. But there is NO opt-out gate at dispatch (publish is blocked outright, so no dispatch path exists to gate) and the asset consent field is still free text rather than a consent record.",
+      "gap": "Separuh tempatan sudah wujud dan diuji: konsen berstruktur (server/platform/dispatchConsent.ts, rekod `asset_consents`), gate `ASSET_CONSENT_NOT_GRANTED` pada asset tanpa konsen granted, laluan `POST /campaigns/consent` untuk mencatat konsen, dan gate `DISPATCH_OPTED_OUT` pada preferensi opt-out penerima. Baki yang BELUM ada ujian: kes opted-out (DISPATCH_OPTED_OUT) dan integration pemacross hantar beratur. Bukti: tests/platform/operational-amendments-consent.test.ts (2 ujian, 4 assertion) hijau.",
       "externalGate": null,
       "evidenceRefs": [
         "reports/audits/2026-10-20-acceptance-source-audit.md"
@@ -1537,7 +1537,7 @@
       "environment": "local",
       "integrationStage": "component_present",
       "evidenceProves": "Preference and consent storage are real, and the telemetry collector now has an allowlist, opt-out and delete. But there is NO opt-out gate at dispatch (publish is blocked outright, so no dispatch path exists to gate) and the asset consent field is still free text.",
-      "remainingRequirement": "No opt-out gate at dispatch (publish is blocked outright, so no dispatch path exists to gate) and the asset consent field is still free text.",
+      "remainingRequirement": "Tambah ujian negatif untuk DISPATCH_OPTED_OUT (penerima opted-out ⇒ tiada penghantaran) dan uji lintasan dispatch queue/asset consent pada masa hantar, bukan hanya pada gate asset.",
       "testNameKind": "prose"
     },
     {
@@ -1592,7 +1592,7 @@
       "source": "vercel.json; api/platform.ts; server/runtime-config.ts; server/runtime-identity.ts",
       "testFile": "tests/platform/vercel-entry.test.ts",
       "testName": "Vercel entry, fail-closed runtime config and runtime identity (tests/platform/vercel-entry.test.ts)",
-      "gap": "The build, the fail-closed runtime config and the Vercel entry are real and tested, but there is NO deployment receipt: no preview/production artifact id, no deployment URL, and the Playwright browser suite has never been run against a live server.",
+      "gap": "Playwright e2e SUDAH dijalankan terhadap pelayan hidup tempatan (reports/implementation/playwright-e2e-20261021.log: 61 spec, 23 lulus / 38 gagal — 29 kegagalan daripadanya satu punca akar: fixture log masuk tidak mengembalikan respons OK). Yang BELUM pernah dijalankan ialah e2e terhadap preview/production, dan deployment receipt tidak boleh diambil kerana VERCEL_TOKEN dalam environment ini tidak sah.",
       "externalGate": "VERCEL_TOKEN dalam environment TIDAK SAH (CLI: \"The token provided via VERCEL_TOKEN environment variable is not valid\") => tiada deployment boleh dibuat atau resept deployment diambil. Selain itu skrip e2e Playwright (tests/e2e/**) perlukan pelayan hidup + Chrome (Chrome ada, ms-playwright chromium-1228 ada), dan 38 spec e2e masih gagal atas punca sebenar yang sedang diklaster.",
       "evidenceRefs": [
         "reports/implementation/evidence/REL-01.json"
@@ -1751,7 +1751,7 @@
       "testFile": "tests/platform/ext-07-attachments.test.ts",
       "testName": "Attachment reference carries hash, permission and revocation; a revoked attachment fails the set (tests/platform/ext-07-attachments.test.ts)",
       "gap": "The upload security model and the attachment reference surface are real and tested, but the copilot route does not yet pass attachmentIds through, and there is no vision inference.",
-      "externalGate": "Two different offerings were conflated. CopilotKit Product Analytics is Intelligence-only (it counts only runs that reach Intelligence through the project key; a local app without a project key is never counted) and needs the account + project + key; the OSS capture half (@copilotkit/learning standalone collector, experimental and self-hosted, works WITHOUT CopilotKit) is already implemented and verified locally. Activation evidence is not a CopilotKit concept: the concrete artifacts are .copilotkit/project.json, a project API key, /info reporting mode:intelligence + threadEndpoints.* + inspectorMetadata:true + runtimeEntitlements.status:ready, a saved thread in the cloud project, and a `copilotkit verify --json` run whose every check is PASS.",
+      "externalGate": "Gate sebenar: model vision yang LAYAK untuk memahami imej (data scope diluluskan) — BUKAN akaun CopilotKit Intelijen. Bukti live 2026-10-21: `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning` menjawab HTTP 200 (2821 ms) dan membaca imej dengan betul; `gemini_free/gemini-3.8-flash` HTTP 200 dengan imej ditelan (1104 token input). Batasan: kuota provider (20 permintaan/hari) dan terma provider semasa. Refusal 409 QUALIFIED_VISION_MODEL_REQUIRED kekal sebagai laluan felloh apabila model tidak layak — bukan \"tiada model\".",
       "evidenceRefs": [
         "reports/audits/2026-10-20-double-check-findings.md"
       ],

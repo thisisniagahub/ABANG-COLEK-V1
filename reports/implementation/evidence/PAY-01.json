@@ -1,20 +1,35 @@
 {
   "requirementId": "PAY-01",
-  "status": "verified_local",
+  "status": "blocked_external",
   "environment": "local_test",
-  "timestamp": "2026-10-20T05:25:00Z",
-  "sourceCommit": "HEAD",
+  "timestamp": "2026-10-20T21:00:00Z",
+  "sourceCommit": "1fc218e5784efb890641bba1e46ac97f617639a3",
   "worktree": "D:\\ABANGCOLEK-PLATFORM",
-  "testName": "Payment gateway webhook deduplication",
-  "testPath": "tests/platform/payment-reconciliation-v24.test.ts",
-  "command": "bun test ./tests/platform/payment-reconciliation-v24.test.ts",
+  "testName": "PAY-01 (separuh tempatan): HMAC X-Signature sah => applied; replay eventId => PAYMENT_EVENT_ALREADY_APPLIED; eventId sama + body lain => PAYMENT_EVENT_ID_CONFLICT; order tiada => PAYMENT_EVENT_UNKNOWN; tandatangan salah => 401 + tiada state change",
+  "testPath": "tests/platform/payment-callback-hmac.test.ts",
+  "command": "bun test ./tests/platform/payment-callback-hmac.test.ts",
   "exitCode": 0,
-  "result": "2 pass, 0 fail, 8 expect() calls",
+  "result": "12 pass / 0 fail / 79 expect() calls",
   "artifactRefs": [
-    "server/platform/paymentReconciliation.ts"
+    "server/platform/paymentCallbacks.ts",
+    "server/platform/paymentCallbackRoutes.ts",
+    "server/platform/paymentReconciliation.ts",
+    "shared/payment-contracts.ts"
   ],
   "actualProviderModel": "deterministic_local",
-  "reviewer": "integrator",
-  "limitations": "Strict transactionId indexing prevents duplicate credit."
+  "reviewer": "integrator-2026-10-21",
+  "limitations": "Hanya separuh TEMPATAN yang ditutup. Yang tinggal (external gate): kredensial merchant gateway (Billplz/FPX), adapter pembekal yang menandatangani dan menghantar callback sebenar, dan PLATFORM_PAYMENT_WEBHOOK_SECRET di environment deployment. Tanpa rahsia itu laluan menjawab 503 PAYMENT_SIGNATURE_SECRET_UNAVAILABLE. Tiada transaksi sebenar diluluskan.",
+  "superseded": {
+    "date": "2026-10-20",
+    "previousStatus": "verified_local",
+    "previousTestName": "Payment gateway webhook deduplication",
+    "previousTestPath": "tests/platform/payment-reconciliation-v24.test.ts",
+    "previousResult": "2 pass, 0 fail, 8 expect() calls",
+    "previousArtifactRefs": [
+      "server/platform/paymentReconciliation.ts"
+    ],
+    "previousLimitations": "Strict transactionId indexing prevents duplicate credit.",
+    "previousSourceCommit": "HEAD",
+    "reason": "Bukti lama hanya mendeduplikasi webhook pada reconciliation helper (2 ujian). Bukti 21 Okt menggantikan dengan laluan callback HTTP sebenar: HMAC X-Signature, idempotency eventId dalam store, dan reason code penuh. Status diturunkan kepada blocked_external kerana separuh tempatan sudah lengkap tetapi kredensial merchant gateway masih tiada."
+  }
 }
-
