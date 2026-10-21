@@ -1,3 +1,7 @@
+> **SUPERSEDED — 21 Oktober 2026:** salinan ini LAGUP. Autoriti tunggal ialah
+> [`docs/AI-PROVIDER-FREE-MODELS-REGISTER.md`](../AI-PROVIDER-FREE-MODELS-REGISTER.md)
+> (mengandungi rekod pengesahan live 21 Okt 2026). Jangan kemas kini salinan ini.
+
 # ABANGCOLEK — AI provider dan free-model activation register
 
 <!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
@@ -8,7 +12,11 @@
 
 Diselaraskan: **19 Oktober 2026**. Status: **RESEARCH / ACTIVATION_PENDING**. [Free-only policy dan calon](../research/2026-10-19-free-model-policy.md) menentukan pemilihan; register ini tidak mengesahkan akaun/quota/model terbaik atau kos runtime sekarang.
 
-## Polisi
+#> **SUPERSEDED — 21 Oktober 2026:** salinan ini LAGUP. Autoriti tunggal ialah
+> [`docs/AI-PROVIDER-FREE-MODELS-REGISTER.md`](../AI-PROVIDER-FREE-MODELS-REGISTER.md)
+> (mengandungi rekod pengesahan live 21 Okt 2026). Jangan kemas kini salinan ini.
+
+# Polisi
 
 Semua inference free-only: chat/tools/subagents/evaluator/title/summary/embedding/vision/STT/TTS/learning. Tiada paid fallback, billable overflow atau langganan baharu. BYOK ialah auth, bukan bukti percuma; local model masih mempunyai kos hardware/elektrik. CopilotKit Intelligence mempunyai gate servis/kos/data berasingan.
 
@@ -24,7 +32,11 @@ Semua inference free-only: chat/tools/subagents/evaluator/title/summary/embeddin
 
 Nama calon/URL primer berada dalam policy. Tiada ranking pemenang tanpa benchmark. TTL verification maksimum 24 jam atau lebih awal jika promosi tamat.
 
-## Record per exact provider/model/endpoint
+#> **SUPERSEDED — 21 Oktober 2026:** salinan ini LAGUP. Autoriti tunggal ialah
+> [`docs/AI-PROVIDER-FREE-MODELS-REGISTER.md`](../AI-PROVIDER-FREE-MODELS-REGISTER.md)
+> (mengandungi rekod pengesahan live 21 Okt 2026). Jangan kemas kini salinan ini.
+
+# Record per exact provider/model/endpoint
 
 ```text
 providerId, modelId, endpoint, adapterVersion, environment
@@ -40,7 +52,11 @@ observedProvider, observedModel, usageReceiptRef
 
 Trial/unknown tidak diluluskan hanya kerana credit positif. Tiada key dalam register/prompt/browser/Markdown; server-side secret reference sahaja.
 
-## Routing dan verification
+#> **SUPERSEDED — 21 Oktober 2026:** salinan ini LAGUP. Autoriti tunggal ialah
+> [`docs/AI-PROVIDER-FREE-MODELS-REGISTER.md`](../AI-PROVIDER-FREE-MODELS-REGISTER.md)
+> (mengandungi rekod pengesahan live 21 Okt 2026). Jangan kemas kini salinan ini.
+
+# Routing dan verification
 
 Hard gate cost/account/data/capability mendahului task accuracy, BM/English dan p95 latency. Minimum 60 kes sintetik seperti policy; safety failure tidak boleh diimbangi kelajuan. Quota habis -> bounded cooldown -> compatible qualified free fallback -> local_rules/unavailable. Retry tidak mengulangi domain effects. Unknown usage bukan RM0; mock fixture mesti dilabel. Jangan menambah akaun untuk mengelak limits.
 

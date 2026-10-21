@@ -4,7 +4,7 @@
 > **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Rekod historical; pemerhatian, angka ujian, tick dan executor dalam badan asal merujuk sesi asal sahaja. Arahan launch/delegation lama tidak aktif. Status semasa dan bukti release ditentukan oleh rujukan di atas; kandungan asal dipelihara untuk provenance.
 <!-- ABANGCOLEK-CURRENT-STATUS:END -->
 
-Authority semasa: [master blueprint v2.3](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md), [ADR-0003](../decisions/0003-blueprint-v23-execution-contract.md), [prompt utama](../prompts/IMPLEMENT-ABANGCOLEK.md).
+Authority semasa: [master blueprint v2.4](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md), [ADR-0003](../decisions/0003-blueprint-v23-execution-contract.md), [prompt utama](../prompts/IMPLEMENT-ABANGCOLEK.md).
 
 Inventori awal sesi ini: **356 Markdown = 120 dokumen projek + 236 skill-library files**. Semua disenaraikan mengikut path/hash/category dalam [register per-file](MARKDOWN-INVENTORY-20261019.md). Kiraan akhir termasuk dokumen/prompt baharu direkod selepas verification; jangan guna kiraan sejarah di bawah sebagai denominator semasa.
 

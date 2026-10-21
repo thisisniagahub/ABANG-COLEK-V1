@@ -4,7 +4,7 @@
 > **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Rekod historical; pemerhatian, angka ujian, tick dan executor dalam badan asal merujuk sesi asal sahaja. Arahan launch/delegation lama tidak aktif. Status semasa dan bukti release ditentukan oleh rujukan di atas; kandungan asal dipelihara untuk provenance.
 <!-- ABANGCOLEK-CURRENT-STATUS:END -->
 
-> **Alignment 19 Oktober 2026:** Research/reference di bawah [master blueprint v2.3](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md). Pilihan pelaksanaan telah ditetapkan dalam [ADR-0003](../decisions/0003-blueprint-v23-execution-contract.md); perbandingan alternatif dalam kajian ini bukan permintaan kepada agent untuk memilih semula stack. Tiada migrasi disahkan oleh research ini.
+> **Alignment 19 Oktober 2026:** Research/reference di bawah [master blueprint v2.4](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md). Pilihan pelaksanaan telah ditetapkan dalam [ADR-0003](../decisions/0003-blueprint-v23-execution-contract.md); perbandingan alternatif dalam kajian ini bukan permintaan kepada agent untuk memilih semula stack. Tiada migrasi disahkan oleh research ini.
 
 Tarikh: 19 Oktober 2026. Skop: sumber primer GitHub, dokumentasi maintainer dan pemeriksaan struktur source tempatan. Hasil: cadangan reka bentuk, bukan migrasi yang sudah dilaksanakan.
 

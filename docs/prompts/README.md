@@ -1,16 +1,18 @@
 # ABANGCOLEK — Deterministic Implementation Prompt Pack v2.4
 
+**Entry Kilo Code, 21 Oktober 2026:** [Prompt penyelesaian projek](KILO-COMPLETE-PROJECT-20261021.md) + [matriks semua 85 requirement](KILO-TASK-MATRIX-20261021.md). Gunakan kedua-duanya untuk implementasi baharu yang diminta pengguna: preflight keadaan sebenar, 12 dapatan audit, lane ownership, runtime/GUI/domain/EXT, bukti dan release gates. Prompt tidak melancarkan semula agent lama atau memberikan status siap. Rujukan candidate/model/baseline bertarikh 20 Oktober di bawah ialah konteks sejarah dan perlu revalidation; susunan model semasa menggunakan export sebenar `STRICT_FREE_CANDIDATE_SEQUENCE` dan provider register. Jangan memilih candidate lama sebagai working tree secara automatik.
+
 <!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
 > **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Panduan aktif mengikut skop fail ini. Fakta source/runtime dan ownership semasa dirujuk di atas; arahan atau baseline bertarikh lama memerlukan revalidation. Tiada acceptance aplikasi ditutup oleh alignment dokumentasi.
 <!-- ABANGCOLEK-CURRENT-STATUS:END -->
 
-**Sambung sesi semasa — Codex inline:** baca [CURRENT-STATUS](../CURRENT-STATUS.md), [checklist](../../PROJECT-CHECKLIST.md) dan [IMPLEMENT-ABANGCOLEK.md](IMPLEMENT-ABANGCOLEK.md). Candidate `codex-completion-20261020` ialah lane pembetulan; prompt CONTINUE-AGY/MULTI-CLI dikekalkan sebagai sejarah dan tidak boleh digunakan untuk melancarkan semula implementation agents yang dihentikan pengguna.
+**Konteks sesi 20 Oktober — sejarah:** ketika itu kerja disambung Codex inline pada candidate `codex-completion-20261020`. Nilai ini bukan working-tree instruction semasa. Baca [CURRENT-STATUS](../CURRENT-STATUS.md), [checklist](../../PROJECT-CHECKLIST.md), actual Git/source dan entry Kilo 21 Oktober di atas sebelum menyambung. Prompt CONTINUE-AGY/MULTI-CLI tidak membenarkan pelancaran semula implementation agents lama yang dihentikan pengguna.
 
 **Lihat kemajuan dahulu:** [PROJECT-CHECKLIST.md](../../PROJECT-CHECKLIST.md). Setiap prompt fasa mewajibkan integrator mengemas kini checkbox selepas task dengan actual evidence, environment dan reviewer. `implemented_unverified`/blocked/failed/not-run kekal unchecked; komponen siap tidak terus menutup parent feature. Ikut execution contract§10 dan sync register/checkpoint sebelum handoff.
 
 Tarikh:20Oktober2026. Authority: [master blueprint](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) dan [ADR-0003](../decisions/0003-blueprint-v23-execution-contract.md). Semua fail ini ialah arahan implementasi masa hadapan. Penulisan dokumen, komponen yang telah wujud atau report lama tidak membuktikan SDK/protocol/provider/production verified.
 
-**Mula dengan [IMPLEMENT-ABANGCOLEK.md](IMPLEMENT-ABANGCOLEK.md).** Ia copy-ready entry bagi coding agent. [AGENT-EXECUTION-CONTRACT.md](AGENT-EXECUTION-CONTRACT.md) menetapkan architecture, current/target paths, source/worktree safety, budgets, skills/plugins/MCP/fallbacks, policy activation, status dan evidence. [ACCEPTANCE-REGISTER.md](ACCEPTANCE-REGISTER.md) menetapkan semua requirement IDs, phase ownership dan receipts. Baca ketiga-tiganya bersama, bukan prompt fasa secara terasing.
+**Entry umum:** [IMPLEMENT-ABANGCOLEK.md](IMPLEMENT-ABANGCOLEK.md). Untuk arahan pengguna melengkapkan projek dengan Kilo, mula dengan entry Kilo 21 Oktober di atas. [AGENT-EXECUTION-CONTRACT.md](AGENT-EXECUTION-CONTRACT.md) menetapkan architecture, current/target paths, source/worktree safety, budgets, skills/plugins/MCP/fallbacks, policy activation, status dan evidence. [ACCEPTANCE-REGISTER.md](ACCEPTANCE-REGISTER.md) menetapkan requirement IDs, phase ownership dan receipts. Baca bersama ledger/source semasa, bukan prompt fasa secara terasing.
 
 ## Urutan pelaksanaan wajib
 
@@ -30,7 +32,7 @@ Tarikh:20Oktober2026. Authority: [master blueprint](../ABANGCOLEK-MASTER-GROWTH-
 ## Cara menggunakan prompt tanpa membuat keputusan baharu
 
 1. Berikan master prompt kepada pelaksana yang mempunyai existing repo; jangan clone/recreate. Agent membaca source dan SKILL.md sebenar mengikut task, discovers actual tools, lalu merekod availability. Installed plugin name/config sahaja bukan callable/authenticated MCP.
-2. Mulakan00. Setiap batch menerima exact owned paths, shared interface snapshot, prerequisite, behavior test, implementation task, command/expected result, reviewer dan continuation. Sesi semasa dijalankan inline; background implementation workers kekal dihentikan. Read-only review selepas diff stabil memelihara semua edit pihak lain.
+2. Mulakan00. Setiap batch menerima exact owned paths, shared interface snapshot, prerequisite, behavior test, implementation task, command/expected result, reviewer dan continuation. Agent lama kekal dihentikan; delegation baharu hanya mengikut arahan pengguna, current AGENTS dan ownership prompt semasa. Read-only review selepas diff stabil memelihara semua edit pihak lain.
 3. Gunakan TDD bagi business/security behavior: test assertion red -> canonical implementation -> green -> independent review -> per-ID receipts/checkpoint. Fail application paths/tests yang dilabel **PLANNED** mesti diwujudkan dalam phase berkenaan sebelum command dijalankan; file **EXISTING** masih perlu reverify kerana dirty worktree berubah.
 4. Bagi missing account/provider/hosting/privacy/commercial policy, disable capability tepat dengan reason/evidence dan teruskan synthetic/local tasks yang bebas. Jangan signup/login/pay/install alternatives atau menukar model order untuk mengelak blocker.
 5. Setelah code/tests/reviews selesai, only authorized owned commit/push/deploy. Source/runtime/preview/production masing-masing memerlukan evidence sendiri; rootHTTP200, local fixture, import smoke atau Git push bukan release receipt.
@@ -39,7 +41,7 @@ Tarikh:20Oktober2026. Authority: [master blueprint](../ABANGCOLEK-MASTER-GROWTH-
 
 Core register mempunyai **78 logical requirements**:10CPK+7GUI+10MOD+32ADV+19master. Registered functions boleh melebihi32 kerana fixed specialization dan ADV-26 Q/X/C separation;78 bukan test count. Adjacent7EXT capabilities (Inspector, User Memories, Analytics, Channels, WebMCP, Voice, Attachments) mempunyai separate gates; tiada auto-enable kerana SDK dipasang.
 
-Runtime budgets authoritative dalam execution contract:30s,6tool dispatches,3model calls total parent/children/retry/failover,8192input/1024output per request,24576/3072total, depth1/concurrency2/max3specialist upper bound. Candidate model order tetap tiga calon ADR sahaja; eval boleh reject, tidak auto-promote primary atau menambah model. No paid/hidden title/vision/evaluation/memory/voice route.
+Runtime budgets authoritative dalam execution contract:30s,6tool dispatches,3model calls total parent/children/retry/failover,8192input/1024output per request,24576/3072total, depth1/concurrency2/max3specialist upper bound. Candidate model order mengikuti export sebenar `STRICT_FREE_CANDIDATE_SEQUENCE` dalam `shared/copilot-contracts.ts` dan eligibility register semasa; jangan menghidupkan semula model ADR lama yang sudah diganti. Eval boleh reject, tidak auto-promote primary atau menambah model. No paid/hidden title/vision/evaluation/memory/voice route.
 
 MCP ext-apps2.0.3 host/core/client/server2.0.0 diasingkan melalui HTTP daripada runtime MCP SDK1.32.1; actual imports/initialize/tools/resources/iframe mesti diuji. A2UI Fixed Schema panels read-only; real approval controls GUI-02 berasingan dan memerlukan durable canonical receipt. SDK metadata/JSON component tidak melengkapkan integration.
 

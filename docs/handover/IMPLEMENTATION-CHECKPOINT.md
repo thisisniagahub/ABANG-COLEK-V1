@@ -4,6 +4,20 @@
 > **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Checkpoint semasa berada di bahagian atas; badan historical dilabel secara eksplisit. Jangan mewarisi tick, ownership atau dakwaan lengkap daripada rekod lama.
 <!-- ABANGCOLEK-CURRENT-STATUS:END -->
 
+## Checkpoint semasa — 21 Oktober 2026 (Kilo Code completion, sesi KILO-COMPLETE-PROJECT)
+
+Authority fakta: [CURRENT-STATUS](../CURRENT-STATUS.md) · [checklist](../../PROJECT-CHECKLIST.md) · [preflight KILO-00](../reports/implementation/kilo-completion-preflight-20261021.md) · [pelan implementasi](../docs/superpowers/plans/2026-10-21-kilo-completion-implementation.md)
+
+- HEAD `1fc218e` pada `integrate/blueprint-v23`; `origin/main` masih `be45a84` (2 commit di belakang). **Tiada commit/push/deploy dalam sesi ini** (prompt §1).
+- **Punca 500 production** (bukti `var/log/whole-project-audit-20261021/vercel-errors.jsonl`, deployment `dpl_5kj1wZ2bGi5hnPqQprzGoXMi58AL`): `Cannot find package 'uuid' imported from @ag-ui/client/dist/index.mjs` → `/api/copilotkit` 500; `Cannot find package 'pkce-challenge' imported from @modelcontextprotocol/client/dist/index.mjs` → `/api/mcp` 500. Kedua-duanya hanya *transitive* ⇒ **fix KILO-01b** landed: `uuid@11.1.1` + `pkce-challenge@5.0.1` kini direct dependencies, `vercel.json` ada `includeFiles` untuk kedua-duanya, `bun.lock` dikemas kini, dan `vite` diduplikasi dalam package.json dibuang.
+- Route parity audit: `/api/copilot-mcp` **belum wujud** (first-party MCP canonical) → KILO-01 lane `api/copilot-mcp.ts`; `/api/copilotkit/info` 404 → descriptor rasmi + run route mesti resolve **verified principal** (bukan `PUBLIC_ORIGIN_ACTOR`).
+- Gate tempatan semasa: `bun run lint` 0 · `bun run build` 0 · `check-boundaries` 0 · `bun test --isolate ./tests` **1327 pass / 11 todo / 0 fail** · `verify-acceptance.ts` **11/11 suite, 1247 ujian, 0 fail**, `sourceStable: true` · `render-acceptance-register.ts` masih exit 1 (register belum boleh ditulis).
+- Ledger semasa: 85 ID = **47 verified_local + 30 implemented_unverified + 8 blocked_external**. Tujuh baris `verified_local` baru (REF-01, DR-01, CPK-02, MOD-01, MOD-08, MOD-09, OFF-01) diikat kepada fail ujian sebenar dalam acceptance-area yang diminta renderer.
+- Audit blueprint (4 auditor read-only) sedang berjalan: backend, frontend, tests/evidence, docs.
+- External gates (tidak dicuba): VERCEL_TOKEN **tidak sah** (tiada deploy/receipt) · GitHub Actions billing lock · CopilotKit Intelligence (account+terms+project+key) · OpenCode Zen kunci mati · payment gateway credential · katalog production kosong (data perniagaan perlu kelulusan pengguna).
+- Worker aktif sesi ini: `BE-KILO01` (`api/copilot-mcp.ts`), `BE-KILO01B` (`api/copilotkit.ts`), 4 auditor read-only. Fail milik lane lain: jangan disentuh.
+
+
 ## Checkpoint semasa — 20 Oktober 2026
 
 Authority fakta: [CURRENT-STATUS](../CURRENT-STATUS.md), [checklist](../../PROJECT-CHECKLIST.md), [register snapshot](../prompts/ACCEPTANCE-REGISTER.md). **Codex inline** ialah integrator/pelaksana semasa; external/background implementation agents dihentikan. Bounded read-only review bukan permission melancarkan swarm.

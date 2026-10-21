@@ -59,12 +59,12 @@
 
 | Item | Status | Bukti |
 |---|---|---|
-| REF-01 risk engine | **verified_local** | `tests/platform/ref-01-risk-engine.test.ts` — 7 ujian / 87 assertion (isyarat hilang ⇒ unknown, bukan 0; OTP tanpa provider ⇒ 503 `OTP_PROVIDER_UNAVAILABLE`; rayuan ⇒ state machine + `INVALID_APPEAL_TRANSITION`; gate persetujuan umur) |
-| DR-01 RTO | **verified_local** | `tests/platform/dr-01-recovery-rto.test.ts` — 3 ujian / 61 assertion (anti-fake: masa sebenar, marker disahkan terhadap fail SQLite dipulihkan, `not_met` ⇒ `RTO_TARGET_NOT_MET`) |
-| CPK-02 thread store | **verified_local** (separuh hosted kekal gated) | `tests/platform/thread-store-mount.test.ts` — 6 ujian |
+| REF-01 risk engine | **verified_local** | `tests/platform/loyalty-redemption-risk.test.ts` — 7 ujian / 87 assertion (isyarat hilang ⇒ unknown, bukan 0; OTP tanpa provider ⇒ 503 `OTP_PROVIDER_UNAVAILABLE`; rayuan ⇒ state machine + `INVALID_APPEAL_TRANSITION`; gate persetujuan umur) |
+| DR-01 RTO | **verified_local** | `tests/platform/backup-restore-rto.test.ts` — 3 ujian / 61 assertion (anti-fake: masa sebenar, marker disahkan terhadap fail SQLite dipulihkan, `not_met` ⇒ `RTO_TARGET_NOT_MET`) |
+| CPK-02 thread store | **verified_local** (separuh hosted kekal gated) | `tests/platform/intelligence-agui-threads-mount.test.ts` — 6 ujian |
 | MOD-01 cart draft | **verified_local** | `tests/platform/cart-revalidate-consent.test.ts` — draf unsent, tiada order/tempahan, `requiresReprice` |
-| MOD-08 cost basis | **verified_local** | `tests/platform/mod-08-cost-basis.test.ts` — 6 ujian (integer sen, basis points, 24.996% ≠ 25%, `COST_BASIS_SOURCE_CHANGED`) |
-| MOD-09 citations | **verified_local** | `tests/platform/mod-09-citations.test.ts` — 6 ujian (tiada luput ⇒ `EXPIRY_NOT_RECORDED`) |
+| MOD-08 cost basis | **verified_local** | `tests/copilot/mod-08-cost-basis.test.ts` — 6 ujian (integer sen, basis points, 24.996% ≠ 25%, `COST_BASIS_SOURCE_CHANGED`) |
+| MOD-09 citations | **verified_local** | `tests/copilot/mod-09-citations.test.ts` — 6 ujian (tiada luput ⇒ `EXPIRY_NOT_RECORDED`) |
 | OFF-01 revalidation | **verified_local** | `tests/platform/cart-revalidate-consent.test.ts` — konflik medan ⇒ `REVALIDATION_CONFLICT`, command tak dijalankan |
 | PD-01 consent | implemented_unverified | Gate `ASSET_CONSENT_NOT_GRANTED` + laluan `POST /campaigns/consent` sudah selesai dan diuji (rekod hilang ⇒ ditolak); **kes opted-out (`DISPATCH_OPTED_OUT`) belum ada ujian** |
 | PAY-01/02 | blocked_external (gate tepat) | 12 ujian hijau untuk separuh tempatan (HMAC, idempotency, redirect baca-sahaja); baki = kredensial merchant gateway + `PLATFORM_PAYMENT_WEBHOOK_SECRET` |
@@ -84,7 +84,7 @@
 | W4 — Bina baharu + gate pengguna | 8 | Perlu akaun/krediti/zarf |
 | **Jumlah item** | **50** | — |
 
-Ledger: 47 rekod belum ditutup (37 implemented_unverified, 8 blocked_external, 1 not_run, 1 partial) + 3 item proses/housekeeping yang tiada dalam ledger.
+Ledger (21 Okt 2026, selepas wave 1 + evidence): **38 rekod belum ditutup** (30 implemented_unverified, 8 blocked_external, 0 not_run, 0 partial) — 47 verified_local. Lihat `reports/implementation/acceptance-status.json` sebagai sumber kebenaran tunggal..
 
 ---
 

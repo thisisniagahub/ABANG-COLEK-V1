@@ -1,22 +1,24 @@
 # ABANGCOLEK — Status Semasa dan Baki Kerja
 
-Diselaraskan berdasarkan receipt bertarikh **20 Oktober 2026**. Dokumen ini ialah indeks fakta pelaksanaan semasa; blueprint v2.4 kekal kontrak sasaran. Dokumen ini tidak mengaktifkan fungsi atau menutup acceptance melalui penulisan sahaja.
+Diselaraskan berdasarkan receipt bertarikh **21 Oktober 2026**. Dokumen ini ialah indeks fakta pelaksanaan semasa; blueprint v2.4 kekal kontrak sasaran. Dokumen ini tidak mengaktifkan fungsi atau menutup acceptance melalui penulisan sahaja.
 
 ## Pakej sintesis & backlog — 21 Oktober 2026
 
 | Dokumen | Kegunaan | Status |
 |---|---|---|
 | [Sintesis chat log](../reports/chat-log-synthesis-20261021.md) | Rekonstruksi kerja 18–21 Okt 2026 daripada `kilo.db` (127 sessions): kronologi, claim vs verified, 9 subagent mati pada had step | analisis fakta |
-| [Backlog tersusun](../reports/open-task-backlog-20261021.md) | 60 item belum siap (W0 evidence → W1 core runtime → W2 domain → W3 closure → W4 bina baharu + gate pengguna), dependency-ordered dengan owner lane dan Definition of Done | plan kerja |
+| [Backlog tersusun](../reports/open-task-backlog-20261021.md) | 50 item belum siap (W0 evidence → W1 core runtime → W2 domain → W3 closure → W4 bina baharu) + 8 gate akaun, dependency-ordered dengan owner lane dan Definition of Done | plan kerja |
+| [Wave 1 checkpoint](../reports/wave1-checkpoint-20261021.md) | Bukti wave 1: gate, senarai fail, baki | checkpoint |
+| [Preflight KILO-00](../reports/implementation/kilo-completion-preflight-20261021.md) + [pelan](../docs/superpowers/plans/2026-10-21-kilo-completion-implementation.md) | Jejak punca 500 production, peta assignment + skill setiap assignment, external gates | pelan pelaksanaan |
 
-Nota: seksyen di bawah masihsnapshot `60311aa`; working tree kini `6c5b16e` dengan satu fail belum commit (`tests/playwright.config.ts`). Refresh dokumen ini ialah item **BL-11** dalam backlog.
+Nota: seksyen di bawah disegarkan ke HEAD `1fc218e` bagi ledger, gate dan bukti provider. Working tree masih mempunyai kerja dalamVy (lihat `git status`) yang **belum** commit.
 
 ## Authority dan lokasi kerja
 
 | Lane | Identiti | Makna |
 |---|---|---|
-| Projek asal | `D:/ABANGCOLEK-PLATFORM`; `integrate/blueprint-v23` pada `6c5b16e` (working tree: `tests/playwright.config.ts` belum commit + 2 report baru) | Source integrasi asal dipelihara; tidak sama dengan main |
-| Route integrasi | `main` / `origin/main`: `18c69b3deb7acbd5134da6dea548823a041a614` | Patch release kecil sahaja (11 fail konfigurasi/editor). `integrate/blueprint-v23` berbeza daripada `main` sebanyak **707 fail (+117,606 / −2,867)** — bulk integrasi **belum** ada dalam `main` |
+| Projek asal | `D:/ABANGCOLEK-PLATFORM`; `integrate/blueprint-v23` pada `1fc218e` | Source integrasi asal dipelihara; tidak sama dengan main |
+| Route integrasi | `main` / `origin/main`: `be45a84` (wave 1+2 sudah push 21 Okt) | `integrate/blueprint-v23` berada **2 commit** di hadapan `origin/main`; kerja selepas itu (wave 2/KILO) belum commit |
 | Candidate lane | `D:/ABANGCOLEK-WORKTREES/codex-completion-20261020`, branch `work/codex-completion-20261020` | **290 fail berubah belum commit** pada 21 Okt 12:31 — jangan `git add -A` di situ; worktree itu dirty dan bercampur |
 
 AGY, Kilo, Copilot CLI dan Hermes bukan executor aktif untuk sambungan ini. Pengguna menghentikan background implementation agents. Jangan melancarkan swarm atau sesi implementation luar daripada prompt lama. Bounded read-only review selepas diff stabil dibenarkan untuk semakan; ia bukan pengaktifan semula implementer. Extension backend `kilo serve` pernah respawn; jangan mendakwa semua proses latar telah hilang tanpa pemeriksaan baharu.
@@ -25,9 +27,9 @@ AGY, Kilo, Copilot CLI dan Hermes bukan executor aktif untuk sambungan ini. Peng
 
 | Pemeriksaan | Keputusan dan scope |
 |---|---|
-| Lint / build | Exit 0 / exit 0 pada patch release |
-| Platform tests | **Measured 20 Oktober 2026 pada working tree integration (bukan patch release main): 1122 ujian / 1120 lulus / 2 gagal / 7,200 assertions / 156 fail.** Angka "305 pass, 0 fail; 1,778 assertions" dalam receipt release `18c69b3` hanya meliputi 11 fail konfigurasi sahaja dan **bukan** ukuran suite penuh semasa. |
-| Browser tempatan | 16 pass, 0 fail; landing, commerce/shell, privacy/offline dan metadata yang dipilih |
+| Lint / build | Exit 0 / exit 0 pada patch release; **21 Okt 2026 pada branch integrasi: lint 0, build 0, boundaries 0** |
+| Platform tests | **Measured 21 Oktober 2026 pada branch integrasi: 1193 pass / 11 todo / 0 fail** (suite penuh `--isolate`, 1204 ujian, 165 fail) dan **resit acceptance 11/11 suite, 1253 ujian, 0 fail, 8122 assertion, `sourceStable: true`**. Angka "1122 ujian / 1120 lulus / 2 gagal" ialah ukuran 20 Okt (kini lapuk). |
+| Browser tempatan | 16 pass, 0 fail (20 Okt); larian e2e penuh 21 Okt: **61 spec, 23 lulus / 38 gagal** — 29 kegagalan satu punca akar (fixture log masuk), 7 spec Emons, 1 katalog kosong, 1 mismatch tajuk. |
 | Browser production | 8 pass, 0 fail; public landing/login/access denial/route recovery; bukan transaksi founder sebenar |
 | HTTP production | `/` 200; `/login` 200; `/api/platform/catalogue` 200 JSON; `/api/platform/session` 401 JSON untuk request tanpa sesi |
 | Vercel Git autodeploy | READY, production, deployment `dpl_PYt7aW43nmPKT5Q6rkpqMaxG1KcC`, SHA tepat `18c69b3`, domain [abangcolek.gangniaga.my](https://abangcolek.gangniaga.my) |
@@ -43,19 +45,19 @@ Ralat HTTP yang muncul dalam suite telah dibetulkan pada source (bukti live dala
 
 Suite ujian kini berjalan **offline** (`ABANGCOLEK_DISABLE_LIVE_PROVIDERS=1` dimuat melalui `bunfig.toml`): ujian unit tidak bergantung pada akaun orang lain dan tidak memakan kuota free tier produksi (Gemini: 20 permintaan/hari). Pengesahan live provider ialah gate berasingan, bukan sebahagian suite unit.
 
-Gate luar yang masih terbuka: kuota free tier Gemini (pulih ~19 jam selepas probe 20 Oktober 2026) dan `OPENCODE_ZEN_API_KEY` yang telah tamat tempoh (401 `api_key_expired`) — kunci baharu diperlukan daripada pengguna.
+Gate luar yang masih terbuka: `OPENCODE_ZEN_API_KEY` yang telah tamat tempoh (401 `api_key_expired`) — kunci baharu diperlukan daripada pengguna. **Kuota Gemini pula pulih**: probe live 21 Okt menunjukkan `gemini-3.6-flash` dan `gemini-3.5-flash-lite` HTTP 200 (bukti: [live-provider-evidence-20261021.json](../reports/implementation/live-provider-evidence-20261021.json)). `VERCEL_TOKEN` dalam environment ini **tidak sah** ⇒ tiada deployment receipt boleh diambil.
 
 ## Ledger 85 requirement: rekod tempatan, bukan certification baharu
 
-Snapshot [acceptance-status.json](../reports/implementation/acceptance-status.json) dijana pada `2026-10-20T13:30:00Z`, source commit `60311aad5a1695eb2804e830488a3133e182397f`. Hash/receipt source itu tidak diperbaharui oleh alignment Markdown ini. Renderer acceptance mesti terus menolak publish jika verification stale/gagal; jangan melangkau gate untuk menghasilkan tick.
+Ledger [acceptance-status.json](../reports/implementation/acceptance-status.json) disunting pada `2026-10-21T05:30:00Z` (source commit `1fc218e`). Renderer acceptance mesti terus menolak publish jika verification stale/gagal; jangan melangkau gate untuk menghasilkan tick.
 
-| Status snapshot | Bilangan | Tafsiran |
+| Status semasa | Bilangan | Tafsiran |
 |---|---:|---|
-| verified_local | 38 | Label tempatan dalam snapshot; bukan 38 ciri production dan bukan fresh final-source certification |
-| implemented_unverified | 37 | Ada implementasi separa atau requirement bernama masih belum selesai |
-| blocked_external | 9 | Prasyarat luar belum dipenuhi; kerja tempatan yang bebas masih perlu dibuat |
-| not_run | 1 | REF-01: risk engine belum dibuktikan |
-| Jumlah | 85 | 78 teras + 7 ekstensi; 47 rekod belum ditutup dalam snapshot |
+| verified_local | 47 | Label tempatan; bukan 47 ciri production dan bukan fresh final-source certification |
+| implemented_unverified | 30 | Ada implementasi separa atau requirement bernama masih belum selesai |
+| blocked_external | 8 | Prasyarat luar belum dipenuhi; kerja tempatan yang bebas sudah dibuat |
+| not_run / partial | 0 | Tiada baris `not_run` (REF-01 kini `verified_local`) |
+| **Jumlah** | **85** | 78 teras + 7 ekstensi; **38 rekod belum ditutup** |
 
 **Tiada certification penuh Copilot pada preview/production.** [Checklist](../PROJECT-CHECKLIST.md) menggunakan checkbox untuk final integration acceptance: label tempatan lama tidak ditukar secara automatik menjadi tick penuh. [Register](prompts/ACCEPTANCE-REGISTER.md) memaparkan status snapshot dan phase asal setiap ID.
 
@@ -81,58 +83,48 @@ Tiada pilihan stack/model/protocol baharu diperlukan. Gunakan [master prompt](pr
 
 ## Semua rekod belum selesai dalam snapshot
 
-Gap berikut ialah teks rekod bertarikh di atas; ia bukan diagnosis live baharu bagi quota atau account. Jurang tambahan hasil source review dinyatakan sebelum jadual ini.
+Jadual ini **dijana** daripada `reports/implementation/acceptance-status.json` (21 Okt 2026) — jangan edit tangan; edit ledger, kemudian jana semula. Teks "Baki" ialah gabungan medan `gap` / `externalGate` / `remainingRequirement` daripada ledger.
 
-| ID | Status snapshot | Baki requirement / gate yang direkod |
+| ID | Status | Baki requirement / gate yang direkod (dijana daripada ledger 21 Okt 2026) |
 |---|---|---|
-| CPK-01 | verified_local (integrationStage `live_verified`, 21 Okt 2026) | Tiada gap: bukti live sebenar — `gemini_free/gemini-3.6-flash` HTTP 200 (1440 ms), `gemini-3.5-flash-lite` HTTP 200 (999 ms), `openrouter/nvidia/nemotron-3-ultra-550b-a55b:free` HTTP 200 (6042 ms); actor gate, no-echo, bajet 3-panggilan/30s/token kekal. Rujukan: `reports/implementation/live-provider-evidence-20261021.json` |
-| CPK-02 | implemented_unverified | Thread store AG-UI sudah di-mount dalam `server/platform/app.ts` (21 Okt): `X-Thread-Id` pada setiap respons chat, `GET /api/platform/copilot/threads/:id/events` (SSE replay + `X-Last-Event-Id` + `X-Receipt-Count` + `?after=`), `requireOwned()` menolak thread tenant lain dengan reason code. Yang **belum** ada: assertion acceptance untuk semua itu (lanes tests belum tulis) — itu sebabnya baris ini belum `verified_local`. |
-| CPK-03 | blocked_external | The hosted Automatic Learning offering requires INTELLIGENCE_ACCOUNT_REQUIRED (CopilotKit Intelligence account + terms). |
-| CPK-04 | implemented_unverified | The startup-loaded versioned declarative surface catalog and the AG-UI -> renderer middleware path are not implemented. |
-| CPK-05 | implemented_unverified | The versioned surface catalog, the depth/cyclic-tree limits and the AG-UI middleware path are not implemented. |
-| CPK-06 | implemented_unverified | Only ONE executor is registered (refund.execute); other approved action types still return EXECUTOR_UNAVAILABLE, so the HITL path is not universal. |
-| CPK-07 | implemented_unverified | The adapter is never instantiated by a live agent run, so no server round-trip drives it. |
-| CPK-08 | implemented_unverified | The view is not mounted against a live server-issued state store, and entity revision is not separated from policy revision. |
-| CPK-10 | implemented_unverified | The TypeScript runtime has no parent-to-child delegation, no trace propagation and no budget inheritance. |
-| GUI-01 | implemented_unverified | Cards other than the A2UI-rendered ones are still never mounted against a live data path. |
-| GUI-02 | implemented_unverified | The form is not mounted and has no server callback, so decision -> revalidation -> receipt is not exercised. |
-| GUI-03 | implemented_unverified | The view is not mounted against a live tool-lifecycle event source. |
-| GUI-04 | implemented_unverified | No live state store feeds the view, and entity revision is not separated from policy revision. |
-| GUI-05 | implemented_unverified | The browser cannot reach /api/mcp (session cookie scoped to Path=/api/platform returns 401) and the client host frame is not mounted. |
-| GUI-06 | implemented_unverified | The startup-loaded versioned surface catalog and the AG-UI middleware path are not implemented. |
-| GUI-07 | implemented_unverified | The components are not on the same API data path as the rest of the workspace, and theme/reduced-motion coverage on the copilot surface is not proven. |
-| MOD-01 | implemented_unverified | No frontend cart-draft tool; the cart diagnosis mode exists but no UI path drives it. |
-| MOD-02 | implemented_unverified | Public-token projection is not separated from the private order inside the copilot path. |
-| MOD-08 | implemented_unverified | There is no canonical cost ledger, so get_operational_kpi returns null + COST_BASIS_UNAVAILABLE instead of a value. |
-| MOD-09 | implemented_unverified | No citation / version / expiry output contract on the search and task results. |
-| ADV-05 | implemented_unverified | Not every required conflict class is detected: stale price, ineligible loyalty, fractional/negative quantity, duplicate line and invalid fulfilment are not all implemented. |
-| ADV-07 | implemented_unverified | No preview reference hash, revisions or expiry on the preview result. |
-| ADV-15 | implemented_unverified | Detects and explains anomalies but does not remediate them. |
-| ADV-17 | implemented_unverified | Recomputes variance but does not remediate it. |
-| ADV-20 | implemented_unverified | No quota on exports and no download-time re-authorization contract. |
-| ADV-21 | implemented_unverified | Scores priority but does not remediate the case. |
-| ADV-23 | implemented_unverified | No outbound-send consent guard on the draft. |
-| ADV-24 | implemented_unverified | Steps are bound to capability ids but are not grant-aware. |
-| ADV-26 | implemented_unverified | Implemented as one reconciliation tool; the three separately-required operations (inspect_action_receipt, refresh_external_action_status, apply_verified_action_outcome) are not all present. |
-| PAY-01 | blocked_external | No HTTP callback route is mounted and there is no HMAC X-Signature verification. |
-| PAY-02 | blocked_external | No success-redirect route and no provider-callback route exist, so the journey is never exercised end to end. |
-| OFF-01 | implemented_unverified | No revalidate-on-reconnect, no server-side revision compare before retry, no per-field conflict resolution. |
-| REF-01 | not_run | No risk engine, no OTP, no device/velocity/age signals, no reason codes, no appeal path. |
-| SEC-01 | implemented_unverified | No revocation path, and the expiry is creation-time only rather than handover-based. |
-| DR-01 | implemented_unverified | RTO is never measured (no 30-minute drill, no timing assertion) and there is no production drill or key-recovery evidence. |
-| AI-01 | verified_local (integrationStage `live_verified`, 21 Okt 2026) | Dead-candidate skip kini terbukti dengan HTTP 404 LIVE (`nvidia/nemotron-3-super-120b-a12b:free` ⇒ `PROVIDER_MODEL_NOT_FOUND`, state `unusable`, fallback `local_rules` yang jujur) dan jawapan live dari 4 calon. Branch `PROVIDER_QUOTA_EXHAUSTED` (429) kekal unit-proven sahaja — jangan burn kuota 20/hari untuk membuktikannya. |
-| AI-02 | implemented_unverified | The provenance guard is static source analysis, not a runtime proof, and the guard test was still red at the time of the audit. |
-| AI-03 | implemented_unverified | No unknown_outcome state when the outcome of an execution cannot be determined. |
-| PD-01 | implemented_unverified | No opt-out gate at dispatch (publish is blocked outright, so no dispatch path exists to gate) and the asset consent field is still free text. |
-| REL-01 | implemented_unverified | No deployment receipt: no preview/production artifact id, no deployment URL, and the Playwright browser suite has never been run against a live server. |
-| EXT-01 | implemented_unverified | The dev-only inspector route is not mounted in the platform app. |
-| EXT-02 | blocked_external | Hosted User Memories requires INTELLIGENCE_ACCOUNT_AND_TERMS_REQUIRED. |
-| EXT-03 | blocked_external | Hosted activation blocked: ACTIVATION_EVIDENCE_MISSING. The LOCAL telemetry collector is verified (seed removed, prohibited fields absent, allowlist, opt-out, delete, single write path); the offering is not activated. |
-| EXT-04 | blocked_external | Live Slack/Teams requires CHANNEL_PROVIDER_ACCOUNT_REQUIRED (provider account, app, signature, permission). |
-| EXT-05 | blocked_external | The browser-side MCP client API and the live own-app registration are not available in this environment. |
-| EXT-06 | blocked_external | Hosted activation blocked: ACTIVATION_EVIDENCE_MISSING. The LOCAL voice capability is verified (mic permission indicator, one-click revoke, shared run identity, untrusted transcript, processing-location disclosure); the offering is not activated. |
-| EXT-07 | implemented_unverified | The copilot route does not yet pass attachmentIds through, and there is no vision inference. |
-
+| CPK-03 | blocked_external (`protocol_verified`) | CopilotKit Intelligence account + Self-Service Agreement + organization on the free Developer plan + a selected project (project API key) + a Learning container created in the browser (stable id) + 15 eligible threads before the first learning run; Automatic Learning itself IS included in the free … |
+| CPK-04 | implemented_unverified (`component_present`) | The startup-loaded versioned declarative surface catalog and the AG-UI -> renderer middleware path are not implemented. |
+| CPK-05 | implemented_unverified (`component_present`) | The versioned surface catalog, the depth/cyclic-tree limits and the AG-UI middleware path are not implemented. |
+| CPK-06 | implemented_unverified (`protocol_verified`) | The approval/executor/receipt chain is real, but only ONE executor is registered (refund.execute). Other approved action types still return EXECUTOR_UNAVAILABLE, so the HITL path is not universal. | Only ONE executor is registered (refund.execute); other approved action types still return EXECUTOR_… |
+| CPK-07 | implemented_unverified (`component_present`) | Adapter logic is real and tested, but the adapter is never instantiated by a live agent run — no server round-trip drives it. | The adapter is never instantiated by a live agent run, so no server round-trip drives it. |
+| CPK-08 | implemented_unverified (`component_present`) | Scope-clearing and authority-stripping are real, but the view is not mounted against a live server-issued state store. | The view is not mounted against a live server-issued state store, and entity revision is not separated from policy revision. |
+| CPK-10 | implemented_unverified (`protocol_verified`) | Real ADK delegation exists on the Python side, but the cited Python test does not assert a delegation transcript and is executed by no npm script or CI job, and the TypeScript evidence replays a hardcoded transcript fixture. The TypeScript runtime has no parent-to-child delegation, no trace propaga… |
+| GUI-01 | implemented_unverified (`component_present`) | Cards other than the A2UI-rendered ones are still never mounted against a live data path. |
+| GUI-02 | implemented_unverified (`component_present`) | Validation and the double-submission gate are real and tested, but the form is not mounted and has no server callback, so decision -> revalidation -> receipt is not exercised. | The form is not mounted and has no server callback, so decision -> revalidation -> receipt is not exercised. |
+| GUI-03 | implemented_unverified (`component_present`) | Rendering contracts are real, but the view is not mounted against a live tool-lifecycle event source. | The view is not mounted against a live tool-lifecycle event source. |
+| GUI-04 | implemented_unverified (`component_present`) | Contracts are real, but no live state store feeds the view and entity revision is not separated from policy revision. | No live state store feeds the view, and entity revision is not separated from policy revision. |
+| GUI-05 | implemented_unverified (`protocol_verified`) | The MCP server and the sandboxed UI resource are real and proven by a live protocol transcript, but the browser cannot reach it: the session cookie is scoped to Path=/api/platform, so /api/mcp returns 401, and the client host frame is not mounted yet. | The browser cannot reach /api/mcp (session co… |
+| GUI-06 | implemented_unverified (`component_present`) | The startup-loaded versioned surface catalog and the AG-UI middleware path are not implemented. |
+| GUI-07 | implemented_unverified (`component_present`) | The components are not on the same API data path as the rest of the workspace, and theme/reduced-motion coverage on the copilot surface is not proven. |
+| MOD-02 | implemented_unverified (`component_present`) | Public-token projection is not separated from the private order inside the copilot path. |
+| ADV-05 | implemented_unverified (`component_present`) | Not every required conflict class is detected: stale price, ineligible loyalty, fractional/negative quantity, duplicate line and invalid fulfilment are not all implemented. |
+| ADV-07 | implemented_unverified (`component_present`) | No preview reference hash, revisions or expiry on the preview result. |
+| ADV-15 | implemented_unverified (`component_present`) | Detects and explains anomalies but does not remediate them. |
+| ADV-17 | implemented_unverified (`component_present`) | Recomputes variance but does not remediate it. |
+| ADV-20 | implemented_unverified (`component_present`) | No quota on exports and no download-time re-authorization contract. |
+| ADV-21 | implemented_unverified (`component_present`) | Scores priority but does not remediate the case. |
+| ADV-23 | implemented_unverified (`component_present`) | No outbound-send consent guard on the draft. |
+| ADV-24 | implemented_unverified (`component_present`) | Steps are bound to capability ids but are not grant-aware. |
+| ADV-26 | implemented_unverified (`component_present`) | Implemented as one reconciliation tool; the three separately-required operations (inspect_action_receipt, refresh_external_action_status, apply_verified_action_outcome) are not all present. |
+| PAY-01 | blocked_external (`component_present`) | Tiada jurang tempatan: laluan callback HTTP dengan pengesahan HMAC X-Signature (constant-time compare), idempotency eventId dalam store dan reason code penuh sudah dipasang dan diuji. Baki luaran: kredensial merchant gateway + adapter pembekal yang menghantar callback sebenar + PLATFORM_PAYMENT_WEB… |
+| PAY-02 | blocked_external (`component_present`) | Tiada jurang tempatan: laluan pulangan (GET /payments/return) sudah dipasang dan hanya MEMBACA status yang tersimpan (status daripada klien diabaikan). Baki luaran: akaun gateway sebenar untuk melengkapkan perjalanan hujung-ke-hujung. | Laluan pulangan (GET /payments/return) sudah wujud dan hanya M… |
+| SEC-01 | implemented_unverified (`component_present`) | Token generation, hashing and expiry are real and tested, but there is NO revocation path, and the expiry is creation-time only rather than handover-based. | No revocation path, and the expiry is creation-time only rather than handover-based. |
+| AI-02 | implemented_unverified (`component_present`) | The fabricated constants in adkAgent.ts, domainTools.ts, operationsBrief.ts and runtimeTransports.ts have been removed and a static CI guard added; the guard test is green, but the guard is static source analysis only (no runtime proof against a real record) and the legacy freeModelRouter fallback … |
+| AI-03 | implemented_unverified (`protocol_verified`) | No unknown_outcome state when the outcome of an execution cannot be determined. |
+| PD-01 | implemented_unverified (`component_present`) | Separuh tempatan sudah wujud dan diuji: konsen berstruktur (server/platform/dispatchConsent.ts, rekod `asset_consents`), gate `ASSET_CONSENT_NOT_GRANTED` pada asset tanpa konsen granted, laluan `POST /campaigns/consent` untuk mencatat konsen, dan gate `DISPATCH_OPTED_OUT` pada preferensi opt-out pe… |
+| REL-01 | implemented_unverified (`component_present`) | Playwright e2e SUDAH dijalankan terhadap pelayan hidup tempatan (reports/implementation/playwright-e2e-20261021.log: 61 spec, 23 lulus / 38 gagal — 29 kegagalan daripadanya satu punca akar: fixture log masuk tidak mengembalikan respons OK). Yang BELUM pernah dijalankan ialah e2e terhadap preview/pr… |
+| EXT-01 | implemented_unverified (`component_present`) | The inspector, its 8 redaction rules and its production refusal are implemented and tested, but the dev-only route is not mounted in the platform app. | The dev-only inspector route is not mounted in the platform app. |
+| EXT-02 | blocked_external (`component_present`) | Hosted User Memories requires INTELLIGENCE_ACCOUNT_AND_TERMS_REQUIRED. |
+| EXT-03 | blocked_external (`component_present`) | Two different offerings were conflated. CopilotKit Product Analytics is Intelligence-only (it counts only runs that reach Intelligence through the project key; a local app without a project key is never counted) and needs the account + project + key; the OSS capture half (@copilotkit/learning stand… |
+| EXT-04 | blocked_external | Live Slack/Teams requires a CopilotKit account + project + CPK_INTELLIGENCE_API_KEY (a DIRECT adapter does not mean standalone: the CopilotRuntime still owns the Channel lifecycle and uses an Intelligence connection), a provider-side app (Slack: create From a manifest, install to workspace, bot tok… |
+| EXT-05 | blocked_external (`component_present`) | The probe, the typed WEBMCP_BROWSER_UNSUPPORTED outcome and the grant model are implemented and tested, but the browser MCP client API and the tool registration against the own-app surface are not yet wired. | The browser-side MCP client API and the live own-app registration are not available in th… |
+| EXT-06 | blocked_external (`component_present`) | This gate was mislabelled: CopilotKit voice is a plain open-source runtime feature, not a hosted Intelligence offering. The documented path is a runtime transcriptionService (@copilotkit/voice TranscriptionServiceOpenAI) which makes /info advertise audioFileTranscriptionEnabled:true and the mic but… |
+| EXT-07 | implemented_unverified (`component_present`) | The upload security model and the attachment reference surface are real and tested, but the copilot route does not yet pass attachmentIds through, and there is no vision inference. | Gate sebenar: model vision yang LAYAK untuk memahami imej (data scope diluluskan) — BUKAN akaun CopilotKit Intelijen… |
 ## Scope alignment Markdown
 
 Semua dokumen projek termasuk `outputs` proposal/research, nota REA `.work` dan empat roster `.kilo/agents` diperiksa. Vendor skills, agent coordination, cache, transkrip peribadi dan nested worktree berasingan dipelihara dengan hash. [Inventori per fail](handover/MARKDOWN-INVENTORY-20261020.md) dan [laporan alignment](../reports/documentation-alignment-20261020.md) merekod skop sebenar; tiada perubahan aplikasi atau cloud dibuat dalam task ini.

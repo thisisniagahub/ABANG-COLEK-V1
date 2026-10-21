@@ -9,7 +9,7 @@
 ```bash
 bun run lint                                    # tsc --noEmit && tsc --noEmit -p tsconfig.platform.json
 bun run build                                   # vite build + prerender (regenerate dist/, gitignored)
-bun run test:platform                           # suite penuh (jev+platform+copilot+frontend+architecture+ext)
+bun run test:platform                           # suite penuh (jev+platform+copilot+frontend+architecture+ext+dashboard-model+landing-brand-theme)
 bun scripts/maintenance/check-boundaries.ts     # gate architecture (cycle + exception register)
 bun scripts/maintenance/verify-acceptance.ts    # gate acceptance sebenar (85 baris ledger)
 bun scripts/maintenance/render-acceptance-register.ts   # register + checklist daripada ledger
@@ -73,7 +73,7 @@ agent — had langkah akan memotongnya separuh jalan dan mewarisi kod separuh si
 | Topik | Fail |
 |---|---|
 | Status 85 requirement | `reports/implementation/acceptance-status.json` (ledger) |
-| Register + checklist | dijana daripada ledger — `bun scripts/maintenance/render-acceptance-register.ts` |
+| Register + checklist | dijana daripada ledger — `bun scripts/maintenance/render-acceptance-register.ts`. Fail yang DIHASILKAN ialah `docs/prompts/ACCEPTANCE-REGISTER.md` + `PROJECT-CHECKLIST.md`; jika ia masih memaparkan snapshot lama, ia belum di-render (semak tarikh render therein). |
 | Bukti verifikasi | `reports/implementation/acceptance-verification.json` (dijana) |
 | Indeks status | `docs/CURRENT-STATUS.md` |
 | Backlog kerja | `reports/open-task-backlog-20261021.md` |

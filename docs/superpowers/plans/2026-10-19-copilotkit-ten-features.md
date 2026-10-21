@@ -14,7 +14,7 @@
 
 **Spec:** [Ten-feature design](../../design/copilotkit-ten-features.md); [master blueprint](../../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md); [repository structure](../../design/repository-structure.md).
 
-**Status:** Target plan under blueprint v2.3. [ADR-0003](../../decisions/0003-blueprint-v23-execution-contract.md) fixes implementation decisions; [canonical execution prompt](../../prompts/IMPLEMENT-ABANGCOLEK.md) resolves sequencing and capability fallbacks. No implementation tasks have been executed through this document. Intelligence cost/availability and production Python hosting remain external gates.
+**Status:** Target plan under blueprint v2.4. [ADR-0003](../../decisions/0003-blueprint-v23-execution-contract.md) fixes implementation decisions; [canonical execution prompt](../../prompts/IMPLEMENT-ABANGCOLEK.md) resolves sequencing and capability fallbacks. No implementation tasks have been executed through this document. Intelligence cost/availability and production Python hosting remain external gates.
 
 ## Global Constraints
 
