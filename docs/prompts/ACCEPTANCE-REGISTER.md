@@ -7,9 +7,9 @@
 
 - Generated: `2026-10-20T21:30:00Z`
 - Source commit: `1fc218e5784efb890641bba1e46ac97f617639a3`
-- Verification run: `2026-10-21T04:59:11.548Z` @ `1fc218e5784efb890641bba1e46ac97f617639a3` (branch `integrate/blueprint-v23`, dirty=true)
-- Observed totals: **1257 tests pass, 0 fail, 8125 assertions** across 11 suites (0 failed, 0 unavailable).
-- Source binding: manifest before `b254097982beae20df5b4f4667509d2fecd4e0129e4f8ee176fb9e25d3e426c6`, after `b254097982beae20df5b4f4667509d2fecd4e0129e4f8ee176fb9e25d3e426c6`, **sourceStable=true** (1038 source files).
+- Verification run: `2026-10-21T06:07:50.995Z` @ `f5fad2ac6f9ecd839a15e3e34d3877e286a59840` (branch `integrate/blueprint-v23`, dirty=true)
+- Observed totals: **1258 tests pass, 0 fail, 8127 assertions** across 11 suites (0 failed, 0 unavailable).
+- Source binding: manifest before `7a224dca38f93a5bfca008ec595b12553f7bbe3172cc36d3a484ba937a876234`, after `7a224dca38f93a5bfca008ec595b12553f7bbe3172cc36d3a484ba937a876234`, **sourceStable=true** (1058 source files).
 
 ## Status tiers
 
@@ -38,7 +38,7 @@ Test-name evidence: **35** row(s) cite a verbatim testcase title (resolved again
 | `lint` | `bun run lint` | pass (exit 0) |
 | `build` | `bun run build` | pass (exit 0) |
 | `test:jev` | `bun test ./tests/jev` | pass (exit 0) — 55 pass / 0 fail / 331 expect |
-| `test:platform` | `bun test ./tests/platform` | pass (exit 0) — 839 pass / 0 fail / 5782 expect |
+| `test:platform` | `bun test ./tests/platform` | pass (exit 0) — 840 pass / 0 fail / 5784 expect |
 | `test:copilot` | `bun test ./tests/copilot` | pass (exit 0) — 139 pass / 0 fail / 734 expect |
 | `test:frontend` | `bun test ./tests/frontend` | pass (exit 0) — 185 pass / 0 fail / 1029 expect |
 | `test:architecture` | `bun test ./tests/architecture` | pass (exit 0) — 29 pass / 0 fail / 216 expect |
@@ -144,7 +144,9 @@ Test-name evidence: **35** row(s) cite a verbatim testcase title (resolved again
 
 ## Validation
 
-All renderer rules pass: every ID present, every `implemented_verified` row cites a test file that was observed green in a suite, every `testNameKind: "title"` row names a testcase that actually ran, every `testNameKind: "prose"` row cites a file that exists on disk, every row without a `testNameKind` is treated as a strict title, every cited test file is inside the acceptance area for that ID, every `evidenceRef` exists, the receipt is bound to one stable source tree, every `partial` row names a gap, every `blocked_external` row names an external gate.
+| ID | Severity | Problem | Required action |
+|---|---|---|---|
+| (verification) | warning | the register was written for commit 1fc218e5784e… but the receipt observed f5fad2ac6f9e… | confirm the register matches the tree it claims to describe |
 
 ## Correction history
 

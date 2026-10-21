@@ -3,7 +3,7 @@
  *
  * The browser talks to the OFFICIAL AG-UI run route:
  *
- *   POST /api/copilotkit/agent/abangcolek/run
+ *   POST /api/copilotkit/agent/abangcolek_ops/run
  *
  * The route is served by `api/copilotkit.ts` (`createCopilotKitRoute()`),
  * which is the SAME handler the local dev server mounts on
@@ -44,7 +44,7 @@ import { parseAguiEvent, type AguiEvent } from './aguiEvents';
 import type { ClientIdentityAuthority } from '../runIdentity';
 
 /** ID ejen AG-UI rasmi yang dilayani oleh `api/copilotkit.ts`. */
-export const COPILOTKIT_AGENT_ID = 'abangcolek';
+export const COPILOTKIT_AGENT_ID = 'abangcolek_ops';
 
 /** Laluan AG-UI rasmi yang sama dengan descriptor pelayan (`aguiRunRoute`). */
 export const COPILOT_AGUI_RUN_ENDPOINT = `/api/copilotkit/agent/${COPILOTKIT_AGENT_ID}/run`;

@@ -44,7 +44,7 @@ export const OFFICIAL_RUNTIME_DESCRIPTOR = {
   aguiProtocolImplemented: true,
   copilotkitRuntimeImplemented: true,
   copilotkitRuntimeVersion: '1.79.1',
-  aguiRunRoute: '/api/copilotkit/agent/abangcolek/run',
+  aguiRunRoute: '/api/copilotkit/agent/abangcolek_ops/run',
   platformRunRoute: '/api/copilotkit',
   platformRunContract: 'server/agents/copilot/runtime.ts#CopilotV2Runtime',
   providerReachability: 'verified-per-run-only',

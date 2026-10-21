@@ -200,7 +200,7 @@ test('the client publishes the official AG-UI event names it accepts', () => {
     'RUN_FINISHED',
     'RUN_ERROR',
   ]);
-  expect(COPILOT_AGUI_RUN_ENDPOINT).toBe('/api/copilotkit/agent/abangcolek/run');
+  expect(COPILOT_AGUI_RUN_ENDPOINT).toBe('/api/copilotkit/agent/abangcolek_ops/run');
 });
 
 test('official AG-UI SSE framing is accepted and translated to the internal lifecycle', async () => {
@@ -328,7 +328,7 @@ test('the streaming client posts the official AG-UI run request', async () => {
   });
 
   expect(events.map((event) => event.type)).toEqual(['start', 'text_delta', 'done']);
-  expect(calls[0].url).toBe('/api/copilotkit/agent/abangcolek/run');
+  expect(calls[0].url).toBe('/api/copilotkit/agent/abangcolek_ops/run');
   expect(calls[0].init?.method).toBe('POST');
   const headers = calls[0].init?.headers as Record<string, string>;
   expect(headers.Accept).toBe('text/event-stream');

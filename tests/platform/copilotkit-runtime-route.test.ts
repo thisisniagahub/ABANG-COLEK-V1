@@ -16,6 +16,8 @@
 import { describe, expect, test } from 'bun:test';
 import { createCopilotKitRoute } from '../../api/copilotkit';
 import { CopilotV2Runtime } from '../../server/agents/copilot/runtime';
+import { PlatformStore, id, now } from '../../server/platform/store';
+import { hash } from '../../server/platform/auth';
 import type {
   ModelAdapter,
   ModelAdapterRegistry,
@@ -159,34 +161,94 @@ describe('/api/copilotkit — GET (descriptor)', () => {
     expect(descriptor.paidFallbackAllowed).toBe(false);
     expect(descriptor.aguiProtocolImplemented).toBe(true);
     expect(descriptor.copilotkitRuntimeImplemented).toBe(true);
-    expect(descriptor.aguiRunRoute).toBe('/api/copilotkit/agent/abangcolek/run');
+    expect(descriptor.aguiRunRoute).toBe('/api/copilotkit/agent/abangcolek_ops/run');
   });
 });
 
 describe('/api/copilotkit — AG-UI route (official @copilotkit/runtime)', () => {
-  test('menyayani event AG-UI melalui laluan ejen', async () => {
-    const response = await route()(new Request(
-      'http://localhost/api/copilotkit/agent/abangcolek/run',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' },
-        body: JSON.stringify({
-          threadId: 'thread-1',
-          runId: 'run-1',
-          messages: [{ id: 'u1', role: 'user', content: 'Status ORD-001?' }],
-          state: {},
-          tools: [],
-          context: [],
-        }),
-      },
-    ));
+  /**
+   * Laluan ejen (run/connect/suggest) MEWAJIBKAN sesi yang disahkan:
+   * ADR-0003 "tiada public unrestricted Copilot" + contract §3:69. Tanpa
+   * sesi, tiada panggilan provider boleh berlaku.
+   */
+  function sessionFixture(): { store: PlatformStore; cookie: string } {
+    const store = new PlatformStore(':memory:');
+    const userId = 'user-copilotkit';
+    store.db
+      .query('INSERT OR IGNORE INTO users(id,email,name,password_hash,created_at) VALUES(?,?,?,?,?)')
+      .run(userId, `${userId}@example.test`, userId, 'hash', now());
+    store.db
+      .query('INSERT OR IGNORE INTO memberships(id,user_id,role,outlets,dealer_org_id,status,version) VALUES(?,?,?,?,?,?,?)')
+      .run(id(), userId, 'founder', JSON.stringify(['hq']), null, 'active', 1);
+    const token = 'token-copilotkit-route';
+    store.db
+      .query('INSERT INTO sessions(token_hash,user_id,csrf_hash,expires_at,revoked,csrf_token) VALUES(?,?,?,?,0,?)')
+      .run(hash(token), userId, hash('csrf'), new Date(Date.now() + 3_600_000).toISOString(), 'csrf');
+    return { store, cookie: `platform_session=${token}` };
+  }
 
-    expect(response.status).toBe(200);
-    expect(response.headers.get('content-type')).toContain('text/event-stream');
-    const stream = await response.text();
-    expect(stream).toContain('RUN_STARTED');
-    expect(stream).toContain('TEXT_MESSAGE_CONTENT');
-    expect(stream).toContain('RUN_FINISHED');
-    expect(stream).toContain('gemini-3.6-flash');
+  function agentRoute(store: PlatformStore): (req: Request) => Promise<Response> {
+    return createCopilotKitRoute({ runtime: new CopilotV2Runtime({ adapters: registry }), store });
+  }
+
+  test('NEGATIF tanpa sesi ⇒ 401 dan tiada panggilan provider', async () => {
+    const { store } = sessionFixture();
+    try {
+      const response = await agentRoute(store)(new Request(
+        'http://localhost/api/copilotkit/agent/abangcolek_ops/run',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' },
+          body: JSON.stringify({
+            threadId: 'thread-1',
+            runId: 'run-1',
+            messages: [{ id: 'u1', role: 'user', content: 'Status ORD-001?' }],
+            state: {},
+            tools: [],
+            context: [],
+          }),
+        },
+      ));
+      expect(response.status).toBe(401);
+      const text = await response.text();
+      expect(text).not.toContain('RUN_STARTED');
+    } finally {
+      store.close();
+    }
+  });
+
+  test('menyayani event AG-UI melalui laluan ejen', async () => {
+    const { store, cookie } = sessionFixture();
+    try {
+      const response = await agentRoute(store)(new Request(
+        'http://localhost/api/copilotkit/agent/abangcolek_ops/run',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'text/event-stream',
+            Cookie: cookie,
+          },
+          body: JSON.stringify({
+            threadId: 'thread-1',
+            runId: 'run-1',
+            messages: [{ id: 'u1', role: 'user', content: 'Status ORD-001?' }],
+            state: {},
+            tools: [],
+            context: [],
+          }),
+        },
+      ));
+
+      expect(response.status).toBe(200);
+      expect(response.headers.get('content-type')).toContain('text/event-stream');
+      const stream = await response.text();
+      expect(stream).toContain('RUN_STARTED');
+      expect(stream).toContain('TEXT_MESSAGE_CONTENT');
+      expect(stream).toContain('RUN_FINISHED');
+      expect(stream).toContain('gemini-3.6-flash');
+    } finally {
+      store.close();
+    }
   });
 });

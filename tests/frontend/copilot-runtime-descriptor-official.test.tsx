@@ -99,7 +99,7 @@ describe('the official runtime descriptor is accepted with the real field names'
     expect(html).not.toMatch(SUBMIT_DISABLED);
     expect(html).toContain('Runtime descriptor confirmed the official CopilotKit runtime');
     expect(html).toContain('CopilotKit /v2 runtime disahkan oleh pelayan dan sedia menerima arahan');
-    expect(html).toContain('/api/copilotkit/agent/abangcolek/run');
+    expect(html).toContain('/api/copilotkit/agent/abangcolek_ops/run');
   });
 
   test('the enabled workspace does not present a fake provider', () => {
