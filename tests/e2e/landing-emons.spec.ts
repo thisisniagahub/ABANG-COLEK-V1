@@ -89,6 +89,14 @@ test.describe('Emons desktop scene experience', () => {
       const dialog = page.getByRole('dialog');
       await expect(dialog).toBeVisible();
       await expect(page.getByRole('button', { name: 'Tutup maklumat', exact: true })).toBeFocused();
+      // Dialog Bab 01 mengandungi pautan attribution "Foto TikTok rasmi"
+      // (src/features/landing/WorldHotspot.tsx, blok figure + figcaption;
+      // brand-spec.md:70 mewajibkan attribution pada setiap media). Pautan itu
+      // fokusable, jadi urutan tab nyata ialah: tutup -> pautan attribution ->
+      // CTA. Assertion lama ("satu Tab terus ke CTA") mengekod DOM sebelum
+      // attribution dimasukkan.
+      await page.keyboard.press('Tab');
+      await expect(dialog.getByRole('link', { name: /Foto TikTok rasmi/ })).toBeFocused();
       await page.keyboard.press('Tab');
       await expect(dialog.getByRole('button', { name: 'Jom pilih produk', exact: true })).toBeFocused();
       if (dismissal === 'close button') await page.getByRole('button', { name: 'Tutup maklumat', exact: true }).click();

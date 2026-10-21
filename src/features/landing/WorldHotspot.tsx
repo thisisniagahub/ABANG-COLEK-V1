@@ -3,22 +3,28 @@ import { ArrowUpRight, Plus, X } from 'lucide-react';
 import { BRAND_ASSETS } from '../brand/brand-assets';
 
 /**
- * Butiran hotspot mengikut BAB (bukan satu senarai umum).
+ * Butiran hotspot mengikut BAB.
  *
  * Sumber: `docs/design/landing-page.md` §Bab 01–06 (baris "Hotspot", "Copy
- * sasaran" dan "Route"). Sebelum ini hanya 4 butiran wujud ⇒ Bab 05 dan Bab 06
- * jatuh balik kepada butiran Bab 01 (audit frontend V-M1), dan pemetaan
- * Bab 02–04 tidak sepadan dengan reka bentuk yang diluluskan.
+ * sasaran", "Route") dan copy yang konsisten dengan e2e spec
+ * (`tests/e2e/landing-emons.spec.ts`).
+ *
+ * REVISI 21 Okt 2026: senarai 4-generik yang diperkenalkan dalam wave 1
+ * dipulihkan kepada 6 bab yang asal (commit 6edbdd2) — audit frontend V-M1:
+ * Bab 05 dan Bab 06 jatuh balik kepada butiran Bab 01, dan copy Bab 01
+ * ("Terokai dunia" / "Selamat datang ke dunia kami.") hilang walaupun design
+ * menyetORKAN copy sasaran "Dunia ABANGCOLEK" dan spec assert copy itu.
  */
 const details = [
   {
-    // Bab 01 — Dunia ABANGCOLEK. Hotspot: (1) packaging Jerux → butiran
+    // Bab 01 — Dunia ABANGCOLEK. Copy: "Dunia ABANGCOLEK" + "Colek, stabil
+    // eksis dan digoreng oleh kami." Hotspot: (1) packaging Jerux → butiran
     // produk; (2) gerai → story jenama ringkas. Route: `/`.
-    title: 'Kenali colek anda.',
-    label: 'Terokai produk',
-    text: 'Lihat foto asal Sambal Colek dan buka katalog untuk pilihan, harga serta ketersediaan yang disahkan.',
-    points: ['Foto daripada TikTok rasmi ABANG COLEK.', 'Harga dan stok mengikut katalog semasa.'],
-    action: 'Buka katalog',
+    title: 'Selamat datang ke dunia kami.',
+    label: 'Terokai dunia',
+    text: 'Colek buah, jeruk dan sambal dibuat dengan tangan. Packaging dan produk dipaparkan daripada sumber terkawal.',
+    points: ['Jerux aktif dipesan melalui pra-tempahan mengikut rekod yang disahkan.', 'Paparan stok sentiasa dari katalog semasa.'],
+    action: 'Jom pilih produk',
     path: '/products',
   },
   {
@@ -26,19 +32,19 @@ const details = [
     // (maks 3), mengikut katalog server. Route: `/products`.
     title: 'Pilih buah anda.',
     label: 'Terokai varian',
-    text: 'Senarai varian daripada katalog semasa. Setiap varian ada status dan harga yang disahkan server.',
-    points: ['Varian mengikut katalog yang semasa.', 'Tiada harga atau stok yang tidak disahkan.'],
+    text: 'Mangga, jambu, kedondong dan varian lain mengikut katalog aktif — bukan katalog penuh dan bukan pengesahan stok.',
+    points: ['Nama, harga dan stok dari katalog semasa.', 'Varian media sosial dipaparkan sebagai editorial sahaja.'],
     action: 'Buka katalog',
     path: '/products',
   },
   {
     // Bab 03 — Rasa & Reaksi. Hotspot: 1 — skrin media → galeri reaksi.
     // Route: `/products`; galeri media = NOT_IMPLEMENTED (landing-page.md:163).
-    title: 'Rasa sekali, jatuh cinta selamanya.',
-    label: 'Terokai galeri',
-    text: 'Reaksi pelanggan disimpan sebagai media. Galeri penuh belum tersedia, jadi kami tunjukkan katalog dulu.',
-    points: ['Kandungan hanya daripada bahan yang dibenarkan.', 'Galeri media penuh belum-hospitaliti.'],
-    action: 'Buka katalog',
+    title: 'Rasa sekali, jatuh cinta.',
+    label: 'Terokai rasa & reaksi',
+    text: 'Close-up kuah colek yang likat melekat dan reaksi pelanggan sebenar dari kandungan yang diberi kebenaran.',
+    points: ['Setiap media ada attribution.', 'Kebenaran owner direkod sebelum digunakan.'],
+    action: 'Lihat katalog',
     path: '/products',
   },
   {
@@ -46,29 +52,29 @@ const details = [
     // Route: External TikTok (landing-page.md:186).
     title: 'Kenal founder.',
     label: 'Terokai founder',
-    text: 'Kenal founder ABANG COLEK dan perjalanan jenama ini — cerita pendek daripada fakta yang diluluskan.',
-    points: ['Peranan: Founder | Motivator.', 'Sumber asal: TikTok rasmi ABANG COLEK.'],
-    action: 'Buka profil rasmi',
+    text: 'Founder | Motivator — wajah, suara dan komuniti jenama. Nama dan cerita dipaparkan hanya dengan kelulusan founder.',
+    points: ['Tiada biodata atau pengiktirafan yang direka.', 'Ikuti kandungan rasmi di TikTok.'],
+    action: 'Ikuti di TikTok',
     path: 'https://www.tiktok.com/@styloairpool',
   },
   {
     // Bab 05 — Dapatkan Jerux Anda. Hotspot: 2 — (1) lokasi pickup → senarai
     // lokasi; (2) kenderaan → cara order. Route: `/flows/order`, `/locations`.
     title: 'Dapatkan Jerux anda.',
-    label: 'Terokai penghantaran',
-    text: 'Sebab cara order mengikut rekod yang disahkan, dan di mana anda boleh ambil pesanan.',
-    points: ['Pra-tempahan atau made-to-order mengikut rekod disahkan.', 'Lokasi pickup daripada `/public-info` sahaja.'],
-    action: 'Lihat lokasi pickup',
+    label: 'Terokai pickup',
+    text: 'Cara order, lokasi pickup dan fulfillment mengikut rekod yang disahkan.',
+    points: ['Lokasi dipaparkan dari data /public-info.', 'Status order datang dari server, bukan redirect.'],
+    action: 'Semak lokasi pickup',
     path: '/locations',
   },
   {
     // Bab 06 — Pilihan & Pesanan. Hotspot: 1 — rak → katalog penuh.
     // Route: `/flows/order`, `/become-dealer`.
     title: 'Pilihan & pesanan.',
-    label: 'Terokai lineup',
-    text: 'Lineup aktif mengikut katalog semasa, dan terus ke laluan pembelian yang sebenar.',
-    points: ['Katalog aktif penuh, mengikut data server.', 'Tiada barangan tanpa status disahkan.'],
-    action: 'Buka katalog',
+    label: 'Terokai pesanan',
+    text: 'Lineup aktif, harga dan stok mengikut katalog semasa; ejen dan stokis mempunyai laluan berasingan.',
+    points: ['Pesan melalui flow order yang sama.', 'Pendaftaran ejen melalui /become-dealer.'],
+    action: 'Pesan sekarang',
     path: '/products',
   },
 ] as const;
