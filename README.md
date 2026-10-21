@@ -42,9 +42,11 @@ ABANGCOLEK Platform menyatukan operasi harian dalam satu workspace yang boleh di
 - **Staff** — assigned orders, tasks, QC, shifts, documents dan SOP.
 - **Founder** — overview, approvals, stock/batch, dealers, marketing, finance, people dan settings.
 - **Developer** — readiness, jobs, runtime identity, evaluations, reports dan platform settings.
-- **Dealer/stokis** — approved organisation scope yang terikat kepada customer membership, bukan auth role bebas.
+- **Dealer/stokis** — baseline source menggunakan approved organisation scope pada customer membership. **TARGET_DESIGN 21 Oktober:** setiap Agent/Stokis aktif menerima Online Store public sendiri yang ABANGCOLEK sediakan dan Dealer Workspace private dengan navigasi/identiti dealer, menggunakan membership/grants canonical. Pendaftaran terus tidak memerlukan pembelian terdahulu; empat auth roles semasa tidak mengehadkan pengalaman dealer wajib ini.
 - **JEV/evidence** — local rules, policy, evidence, revision, receipt dan evaluation boundaries.
 - **Automation** — typed contracts, adapters, local job state dan mock provider state tanpa mendakwa provider luar sudah aktif.
+
+[Spesifikasi Commerce & Growth](docs/design/commerce-growth.md) memperincikan sasaran `/kedai/:slug`, anonymous published browsing, server-bound store/dealer/referrer/fulfiller dan referral pelanggan satu peringkat dua hala mengikut polisi approved. P0 ordering, P1 rewards dan P2 retention ialah urutan dalam domain ini; runtime, integriti dan release gates projek tetap wajib. Share biasa tidak memberi reward; kadar lima tingkat Ahmad’s ialah research sahaja. Wallet top-up, cash withdrawal dan native app wajib kekal deferred. Ini skop pembangunan, bukan bukti provisioning atau transaksi sudah berfungsi; lihat [handover](docs/prompts/COMMERCE-GROWTH-HANDOVER-20261021.md).
 
 ## Visual overview
 

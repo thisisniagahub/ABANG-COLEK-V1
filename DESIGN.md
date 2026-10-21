@@ -18,7 +18,8 @@ Disusun: **19 Oktober 2026** · Sumber bukti: pakej bukti reka bentuk kongsi (co
 
 - `DESIGN.md` (root, dokumen ini) — panduan bersama aplikasi.
 - [docs/design/landing-page.md](docs/design/landing-page.md) — landing public (spesifikasi pengalaman dunia miniature, storyboard enam bab sasaran).
-- [docs/design/workspaces.md](docs/design/workspaces.md) — workspace operations (spesifikasi pengalaman Founder, Staff, Developer, Customer).
+- [docs/design/workspaces.md](docs/design/workspaces.md) — workspace operations (Founder, Staff, Developer, Customer serta dedicated Dealer Workspace berasaskan membership/grants).
+- [docs/design/commerce-growth.md](docs/design/commerce-growth.md) — target public store setiap Agent/Stokis, private workspace, ordering, rewards dan retention. Gunakan tokens/komponen/a11y bersama di sini; spesifikasi produk tersebut tidak membuktikan surface sudah tersedia.
 - [docs/design/brand-spec.md](docs/design/brand-spec.md) — aset & identiti landing (sedia ada, v0 basis 2026-10-17, dalam proses kemas kini).
 
 **Konteks strategi & sumber kebenaran:**

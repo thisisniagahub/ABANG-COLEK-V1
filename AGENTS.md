@@ -106,3 +106,11 @@ akaun/krediti; kerja tempatan yang masih boleh dilakukan **mesti** tetap dilakuk
   yang menyentuh CopilotKit/AG-UI.
 - Skill repo: `.agents/skills/copilotkit` (ada `verify` CLI yang menyelesaikan 11 perkara
   pendawaian dalam satu arahan: `npx copilotkit@latest verify --json`).
+
+## 8. Amendment Commerce & Growth — 21 Oktober 2026
+
+- Kontrak produk terperinci: `docs/design/commerce-growth.md`; handover: `docs/prompts/COMMERCE-GROWTH-HANDOVER-20261021.md`. Baca bersama blueprint canonical root dan Kilo matrix, bukan sebagai pengganti baki projek.
+- Setiap Agent/Stokis aktif mendapat public Online Store sendiri dan private Dealer Workspace; daftar terus tanpa syarat pembelian terdahulu. Store owner, buyer, fulfiller dan customer referrer diselesaikan server secara berasingan.
+- Customer referral satu peringkat dua hala; wholesale margin, dealer commission, referral reward dan loyalty points berasingan. Kadar/eligibility/hold/expiry/stacking memerlukan approved policy; lima tingkat/kadar competitor hanya research. Share/signup sahaja tidak memberi reward.
+- P0 store/checkout/reconciliation/tracking → P1 rewards/ledger/reversal → P2 reorder/consented retention berada dalam domain phase; jangan melangkau runtime/integrity/release. Wallet top-up/cashout/native wajib tidak diaktifkan.
+- CG-01..12 ialah subcriteria di bawah 85 ID, bukan denominator baharu. Tick hanya dengan evidence; generated checklist/register mesti melalui ledger → verifier → renderer. Nota Markdown tidak memberi certification.

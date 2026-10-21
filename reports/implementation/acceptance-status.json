@@ -1567,7 +1567,7 @@
       "source": "scripts/maintenance/check-boundaries.ts",
       "testFile": "tests/architecture/dependency-boundaries.test.ts",
       "testName": "reports a multiline import statement at the statement, not at the \"from\" line (tests/architecture/dependency-boundaries.test.ts, fixture-driven)",
-      "gap": null,
+      "gap": "Separuh daripada peraturan sempadan yang didokumentasikan sudah implemented sahaja. Yang belum: (1) pengesanan cycle antara module interface TIDAK implemented walaupun komentar di scripts/maintenance/check-boundaries.ts:87-88 menjanjikannya dan server/modules/ tiada; (2) tiada negative fixture yang benar-benar memanggil checker - tests/architecture/dependency-boundaries.test.ts:27-35 hanya evaluates LEGACY_EXCEPTIONS.some(...) terhadap path rekaan dan tidak membuktikan apa-apa tentang detector; (3) checker tidak boleh dipacu dengan tree rekaan (hanya walk real directories), jadi negative test mustahil buat masa ini; (4) multiline imports, dynamic import() dan deep relative paths tidak dikesan oleh scanner line-based; (5) Fasa 01 belum implemented: server/modules/ tiada, references/ tiada, 246 fail media produk masih di repo root.",
       "externalGate": null,
       "evidenceRefs": [
         "reports/implementation/acceptance-verification.json",
