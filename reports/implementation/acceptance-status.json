@@ -456,11 +456,13 @@
       "gap": null,
       "externalGate": null,
       "evidenceRefs": [
-        "reports/implementation/acceptance-verification.json"
+        "reports/implementation/acceptance-verification.json",
+        "reports/implementation/evidence-cg/CG-01.json",
+        "reports/implementation/evidence-cg/CG-02.json"
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "Commission summary is COMPUTED from a seeded ledger including a contra-reversal, and the other org is proven not to leak.",
+      "evidenceProves": "Commission summary is COMPUTED from a seeded ledger including a contra-reversal, and the other org is proven not to leak. Tambahan CG-01/CG-02: store awam per dealer diprovision secara atomik bersama kelulusan (server/platform/dealerStores.ts), public store dibaca tanpa sesi di /api/platform/kedai/:slug, dan dealer workspace hanya senaraikan store sendiri (bukti: reports/implementation/evidence-cg/CG-01.json + CG-02.json, 8 ujian hijau).",
       "remainingRequirement": null,
       "testNameKind": "prose"
     },
@@ -1427,11 +1429,13 @@
       "gap": null,
       "externalGate": null,
       "evidenceRefs": [
-        "reports/audits/2026-10-20-acceptance-source-audit.md"
+        "reports/audits/2026-10-20-acceptance-source-audit.md",
+        "reports/implementation/evidence-cg/CG-01.json",
+        "reports/implementation/evidence-cg/CG-02.json"
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "Per-org dealer scoping is proven, and the revoked-membership gate is now enforced (membership.status === \"active\") with a regression test.",
+      "evidenceProves": "Per-org dealer scoping is proven, and the revoked-membership gate is now enforced (membership.status === \"active\") with a regression test. Tambahan CG-01/CG-02: store awam per dealer diprovision secara atomik bersama kelulusan (server/platform/dealerStores.ts), public store dibaca tanpa sesi di /api/platform/kedai/:slug, dan dealer workspace hanya senaraikan store sendiri (bukti: reports/implementation/evidence-cg/CG-01.json + CG-02.json, 8 ujian hijau).",
       "remainingRequirement": null
     },
     {

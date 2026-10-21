@@ -1,0 +1,21 @@
+{
+  "environment": "local_test",
+  "timestamp": "2026-10-21T08:52:15.853Z",
+  "sourceCommit": "1fc218e5784efb890641bba1e46ac97f617639a3",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "command": "bun test ./tests/platform/dealer-store-provisioning.test.ts",
+  "exitCode": 0,
+  "result": "8 pass / 0 fail",
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "integrator-2026-10-21",
+  "requirementId": "CG-01",
+  "title": "Aktivasi/provision unik store awam",
+  "testName": "CG-01: kelulusan menghasilkan SATU store dengan store ID stabil; retry ⇒ TIDAK store kedua; slug collision ⇒ DEALER_STORE_SLUG_TAKEN; slug terpelihara ⇒ DEALER_STORE_SLUG_RESERVED; input tidak sah ⇒ DEALER_STORE_INPUT_INVALID",
+  "testPath": "tests/platform/dealer-store-provisioning.test.ts",
+  "artifactRefs": [
+    "server/platform/dealerStores.ts",
+    "server/platform/dealers.ts",
+    "shared/dealer-store-contracts.ts"
+  ],
+  "limitations": "Provisioning berlaku dalam blok atomik kelulusan yang sama, jadi retry/kelulusan serentak tidak menghasilkan dua store. Bukti ini TIDAK meliputi: store peribadi (private catalogue overrides), lifecycle suspend/revoke store, atau pengalihan slug yang mengubah redirect laluan lama (belum ada laluan redirect). Store ID kekal stabil apabila slug ditukar; itu disahkan oleh re-provision store yang sama."
+}

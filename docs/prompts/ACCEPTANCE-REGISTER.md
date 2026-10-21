@@ -7,9 +7,9 @@
 
 - Generated: `2026-10-20T21:30:00Z`
 - Source commit: `1fc218e5784efb890641bba1e46ac97f617639a3`
-- Verification run: `2026-10-21T06:07:50.995Z` @ `f5fad2ac6f9ecd839a15e3e34d3877e286a59840` (branch `integrate/blueprint-v23`, dirty=true)
-- Observed totals: **1258 tests pass, 0 fail, 8127 assertions** across 11 suites (0 failed, 0 unavailable).
-- Source binding: manifest before `7a224dca38f93a5bfca008ec595b12553f7bbe3172cc36d3a484ba937a876234`, after `7a224dca38f93a5bfca008ec595b12553f7bbe3172cc36d3a484ba937a876234`, **sourceStable=true** (1058 source files).
+- Verification run: `2026-10-21T08:54:37.332Z` @ `344175395c10028043b479d941117ff3a53e1089` (branch `integrate/blueprint-v23`, dirty=true)
+- Observed totals: **1266 tests pass, 0 fail, 8193 assertions** across 11 suites (0 failed, 0 unavailable).
+- Source binding: manifest before `d52d74a254121cf6d7d3893854e13b279ef375a32cb82402481e89ebb5b695d4`, after `d52d74a254121cf6d7d3893854e13b279ef375a32cb82402481e89ebb5b695d4`, **sourceStable=true** (1106 source files).
 
 ## Status tiers
 
@@ -25,9 +25,9 @@
 
 | Scope | verified | unverified | partial | not_run | blocked_external | total |
 |---|---|---|---|---|---|---|
-| Core (78) | 47 | 28 | 0 | 0 | 3 | 78 |
+| Core (78) | 46 | 27 | 2 | 0 | 3 | 78 |
 | Extensions (7) | 0 | 2 | 0 | 0 | 5 | 7 |
-| **All (85)** | **47** | **30** | **0** | **0** | **8** | **85** |
+| **All (85)** | **46** | **29** | **2** | **0** | **8** | **85** |
 
 Test-name evidence: **35** row(s) cite a verbatim testcase title (resolved against an observed testcase), **50** row(s) cite a prose summary (the cited file is the evidence and must exist on disk), **0** row(s) declare no `testNameKind` and are therefore treated as strict titles.
 
@@ -38,7 +38,7 @@ Test-name evidence: **35** row(s) cite a verbatim testcase title (resolved again
 | `lint` | `bun run lint` | pass (exit 0) |
 | `build` | `bun run build` | pass (exit 0) |
 | `test:jev` | `bun test ./tests/jev` | pass (exit 0) — 55 pass / 0 fail / 331 expect |
-| `test:platform` | `bun test ./tests/platform` | pass (exit 0) — 840 pass / 0 fail / 5784 expect |
+| `test:platform` | `bun test ./tests/platform` | pass (exit 0) — 848 pass / 0 fail / 5850 expect |
 | `test:copilot` | `bun test ./tests/copilot` | pass (exit 0) — 139 pass / 0 fail / 734 expect |
 | `test:frontend` | `bun test ./tests/frontend` | pass (exit 0) — 185 pass / 0 fail / 1029 expect |
 | `test:architecture` | `bun test ./tests/architecture` | pass (exit 0) — 29 pass / 0 fail / 216 expect |
@@ -127,8 +127,8 @@ Test-name evidence: **35** row(s) cite a verbatim testcase title (resolved again
 | AI-03 | Human approval — expiry, already decided, role, no fabricated receipt | `implemented_unverified` | local / protocol_verified | server/platform/adkAgent.ts:131; server/agents/approval/** | `tests/platform/hitl-execution-v24.test.ts` — HITL expiry, double decision, non-founder denial, no fabricated receipt (tests/platform/hitl-execution-v24.test.ts) _(testKind: none, testNameKind: prose (human summary — NOT a resolved testcase))_ | — |
 | PD-01 | Privacy — consent, preference, opt-out at dispatch | `implemented_unverified` | local / component_present | server/platform/operationalAmendments.ts:181; server/platform/marketing.ts:21; src/services/supabaseAgentPerformance.ts | `tests/platform/operational-amendments.test.ts` — Notification preferences and allowed topics stored per user (tests/platform/operational-amendments.test.ts) _(testKind: none, testNameKind: prose (human summary — NOT a resolved testcase))_ | Separuh tempatan sudah wujud dan diuji: konsen berstruktur (server/platform/dispatchConsent.ts, rekod `asset_consents`), gate `ASSET_CONSENT_NOT_GRANTED` pada asset tanpa konsen granted, laluan `POST /campaigns/consent` untuk mencatat konsen, dan gate `DISPATCH_OPTED_OUT` pada preferensi opt-out penerima. Baki yang BELUM ada ujian: kes opted-out (DISPATCH_OPTED_OUT) dan integration pemacross hantar beratur. Bukti: tests/platform/operational-amendments-consent.test.ts (2 ujian, 4 assertion) hijau. |
 | OPS-01 | Operations — quarantine excludes saleable stock, movements recorded | `implemented_verified _(raw: verified_local)_` | local / component_present | server/platform/commerce.ts:270; server/platform/dealers.ts | `tests/copilot/mod-03-inventory.test.ts` — Quarantine never reduces saleable stock from another batch; return moves to HQ quarantine (tests/copilot/mod-03-inventory.test.ts) _(testKind: none, testNameKind: prose (human summary — NOT a resolved testcase))_ | — |
-| ARC-01 | Architectural boundaries — import rules and cycle rejection | `implemented_verified _(raw: verified_local)_` | local / protocol_verified | scripts/maintenance/check-boundaries.ts | `tests/architecture/dependency-boundaries.test.ts` — reports a multiline import statement at the statement, not at the "from" line (tests/architecture/dependency-boundaries.test.ts, fixture-driven) _(testKind: none, testNameKind: title (resolved testcase))_ | — |
-| REL-01 | Release — build, runtime config, deployment evidence | `implemented_unverified` | local / component_present | vercel.json; api/platform.ts; server/runtime-config.ts; server/runtime-identity.ts | `tests/platform/vercel-entry.test.ts` — Vercel entry, fail-closed runtime config and runtime identity (tests/platform/vercel-entry.test.ts) _(testKind: none, testNameKind: prose (human summary — NOT a resolved testcase))_ | Playwright e2e SUDAH dijalankan terhadap pelayan hidup tempatan (reports/implementation/playwright-e2e-20261021.log: 61 spec, 23 lulus / 38 gagal — 29 kegagalan daripadanya satu punca akar: fixture log masuk tidak mengembalikan respons OK). Yang BELUM pernah dijalankan ialah e2e terhadap preview/production, dan deployment receipt tidak boleh diambil kerana VERCEL_TOKEN dalam environment ini tidak sah. |
+| ARC-01 | Architectural boundaries — import rules and cycle rejection | `partial` | local / protocol_verified | scripts/maintenance/check-boundaries.ts | `tests/architecture/dependency-boundaries.test.ts` — reports a multiline import statement at the statement, not at the "from" line (tests/architecture/dependency-boundaries.test.ts, fixture-driven) _(testKind: none, testNameKind: title (resolved testcase))_ | Separuh daripada peraturan sempadan yang didokumentasikan sudah implemented sahaja. Yang belum: (1) pengesanan cycle antara module interface TIDAK implemented walaupun komentar di scripts/maintenance/check-boundaries.ts:87-88 menjanjikannya dan server/modules/ tiada; (2) tiada negative fixture yang benar-benar memanggil checker - tests/architecture/dependency-boundaries.test.ts:27-35 hanya evaluates LEGACY_EXCEPTIONS.some(...) terhadap path rekaan dan tidak membuktikan apa-apa tentang detector; (3) checker tidak boleh dipacu dengan tree rekaan (hanya walk real directories), jadi negative test mustahil buat masa ini; (4) multiline imports, dynamic import() dan deep relative paths tidak dikesan oleh scanner line-based; (5) Fasa 01 belum implemented: server/modules/ tiada, references/ tiada, 246 fail media produk masih di repo root. |
+| REL-01 | Release — build, runtime config, deployment evidence | `partial` | local / component_present | vercel.json; api/platform.ts; server/runtime-config.ts; server/runtime-identity.ts | `tests/platform/vercel-entry.test.ts` — Vercel entry, fail-closed runtime config and runtime identity (tests/platform/vercel-entry.test.ts) _(testKind: none, testNameKind: prose (human summary — NOT a resolved testcase))_ | Playwright e2e SUDAH dijalankan terhadap pelayan hidup tempatan (reports/implementation/playwright-e2e-20261021.log: 61 spec, 23 lulus / 38 gagal — 29 kegagalan daripadanya satu punca akar: fixture log masuk tidak mengembalikan respons OK). Yang BELUM pernah dijalankan ialah e2e terhadap preview/production, dan deployment receipt tidak boleh diambil kerana VERCEL_TOKEN dalam environment ini tidak sah. |
 
 ## Extension gates (7)
 
@@ -146,7 +146,7 @@ Test-name evidence: **35** row(s) cite a verbatim testcase title (resolved again
 
 | ID | Severity | Problem | Required action |
 |---|---|---|---|
-| (verification) | warning | the register was written for commit 1fc218e5784e… but the receipt observed f5fad2ac6f9e… | confirm the register matches the tree it claims to describe |
+| (verification) | warning | the register was written for commit 1fc218e5784e… but the receipt observed 344175395c10… | confirm the register matches the tree it claims to describe |
 
 ## Correction history
 

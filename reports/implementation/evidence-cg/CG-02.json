@@ -1,0 +1,21 @@
+{
+  "environment": "local_test",
+  "timestamp": "2026-10-21T08:52:15.853Z",
+  "sourceCommit": "1fc218e5784efb890641bba1e46ac97f617639a3",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "command": "bun test ./tests/platform/dealer-store-provisioning.test.ts",
+  "exitCode": 0,
+  "result": "8 pass / 0 fail",
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "integrator-2026-10-21",
+  "requirementId": "CG-02",
+  "title": "Public store / private workspace",
+  "testName": "CG-02: public store dibaca TANPA sesi (slug ⇒ 404 STORE_NOT_FOUND); dealer workspace senarai store sendiri sahaja; pelanggan lain nampak kosong",
+  "testPath": "tests/platform/dealer-store-provisioning.test.ts",
+  "artifactRefs": [
+    "server/platform/app.ts",
+    "server/platform/dealerStores.ts",
+    "shared/dealer-store-contracts.ts"
+  ],
+  "limitations": "API public store mengembalikan projek store + katalog yang diterbitkan dengan availability; UI public store (`/kedai/:slug`) dan navigasi dealer workspace yang berbeza BELUM dibina — ini kerja frontend (lane frontend). Projek awam mengandungi 4 medan sahaja (storeId, slug, displayName, status); tiada data peribadi owner."
+}

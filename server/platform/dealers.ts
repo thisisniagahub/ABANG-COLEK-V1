@@ -1,3 +1,4 @@
+import { DealerStores } from './dealerStores';
 import type { BusinessSettings, DealerApplication, DealerTerms, RestockRecord, VersionedQuote, InventoryReservation, InventoryMovement, StockLot, StockReceipt, EligiblePaidOrder, CommissionPolicy, EarnedBenefit, OrderRecord } from '../../shared/platform-contracts';
 import { Auth, type Principal } from './auth';
 import { Commerce, type PaymentRecord } from './commerce';
@@ -18,7 +19,8 @@ export function calculateEarnedBenefit(order:EligiblePaidOrder,policy:Commission
   return {orderId:order.orderId,policyVersion:policy.version,amountSen:valid?Number(BigInt(order.paidAmountSen-order.refundAmountSen)*BigInt(policy.rateBasisPoints)/10000n):0,reasonCode:valid?'CONFIRMED_ELIGIBLE_NET_PAYMENT':'PAYMENT_OR_POLICY_UNCONFIRMED'};
 }
 export class Dealers {
-  constructor(readonly store:PlatformStore,readonly auth:Auth,readonly commerce:Commerce) {}
+  private readonly stores: DealerStores;
+  constructor(readonly store:PlatformStore,readonly auth:Auth,readonly commerce:Commerce){this.stores=new DealerStores(this.store);}
   saveCommissionPolicy(actor:Principal,raw:unknown){this.auth.founder(actor);const input=object(raw);fields(input,['expectedVersion','eligibleProductIds','rateBasisPoints']);const policies=this.store.all<CommissionPolicy>('commission_policies'),version=Math.max(0,...policies.map(p=>p.version));this.store.revision(version,input.expectedVersion);const eligibleProductIds=strings(input.eligibleProductIds);if(!eligibleProductIds.length)fail('ELIGIBLE_PRODUCTS_REQUIRED');for(const productId of eligibleProductIds)if(!this.commerce.catalogue().some(p=>p.id===productId))fail('PRODUCT_UNAVAILABLE',409);const policy:CommissionPolicy={id:id(),version:version+1,eligibleProductIds,rateBasisPoints:integer(input.rateBasisPoints,'Commission basis points',0,10000),approvedAt:now()};this.store.save('commission_policies',policy);this.store.audit(actor.user.id,'commission.policy_approve',policy.id,policy.version);return policy;}
   private organizations(actor: Principal): Set<string> {
     return new Set(actor.memberships.filter(member => member.status === 'active' && member.role === 'customer' && member.dealerOrgId).map(member => member.dealerOrgId!));
@@ -484,7 +486,7 @@ export class Dealers {
   }
   terms():DealerTerms{return this.store.get<BusinessSettings>('settings','business')?.approvedPolicies.dealer??fail('DEALER_POLICY_UNAVAILABLE',409,'Polisi dealer belum diluluskan.');}
   applications(actor:Principal){return this.store.all<DealerApplication>('dealer_applications').filter(a=>a.customerId===actor.user.id||this.auth.has(actor,'founder'));}
-  apply(actor:Principal,raw:unknown){const input=object(raw);fields(input,['organization','description']);if(this.applications(actor).some(a=>a.customerId===actor.user.id&&a.status==='pending'))fail('APPLICATION_PENDING',409);const record:DealerApplication={id:id(),customerId:actor.user.id,organization:text(input.organization,'Organisasi',200),description:text(input.description,'Penerangan',6000),status:'pending',revision:1,createdAt:now()};this.store.save('dealer_applications',record);this.store.audit(actor.user.id,'dealer.apply',record.id);return record;}
+  apply(actor:Principal,raw:unknown){const input=object(raw);fields(input,['organization','description','slug']);if(this.applications(actor).some(a=>a.customerId===actor.user.id&&a.status==='pending'))fail('APPLICATION_PENDING',409);const record:DealerApplication={id:id(),customerId:actor.user.id,organization:text(input.organization,'Organisasi',200),description:text(input.description,'Penerangan',6000),...(input.slug===undefined?{}:{slug:text(input.slug,'Slug store',64)}),status:'pending',revision:1,createdAt:now()};this.store.save('dealer_applications',record);this.store.audit(actor.user.id,'dealer.apply',record.id);return record;}
   decide(actor: Principal, applicationId: string, raw: unknown, approve: boolean): DealerApplication {
     this.auth.founder(actor);
     const input = object(raw);
@@ -510,6 +512,9 @@ export class Dealers {
       };
       this.store.save('dealer_applications', updated);
       if (organizationId && current) {
+        // CG-01: store awam diprovision dalam blok atomik YANG SAMA dengan
+        // kelulusan, jadi retry atau kelulusan serentak tidak menghasilkan dua store.
+        this.stores.provision(organizationId, record.customerId, { slug: record.slug ?? record.organization, displayName: record.organization });
         this.auth.grant(actor, {
           userId: record.customerId,
           role: 'customer',

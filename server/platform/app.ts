@@ -1,3 +1,4 @@
+import { DealerStores } from './dealerStores';
 import { randomUUID } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
@@ -100,7 +101,7 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
     ...(typeof options.backupScheduler==='object'?options.backupScheduler:{}),
   });
   const auth=new Auth(store,options.bootstrapToken),loyalty=new Loyalty(store,auth),commerce=new Commerce(store,auth,loyalty),work=new Work(store,auth,commerce);
-  const dealers=new Dealers(store,auth,commerce),marketing=new Marketing(store,auth,commerce,work),operations=new Operations(store,auth,commerce,work);
+  const dealerStores=new DealerStores(store),dealers=new Dealers(store,auth,commerce),marketing=new Marketing(store,auth,commerce,work),operations=new Operations(store,auth,commerce,work);
   const flows=new Flows(store,auth,commerce,work,dealers),jobs=new Jobs(store,auth,commerce,work),automationDefinitions=new AutomationDefinitions(store,auth),evidenceFiles=new EvidenceFiles(store,work,options.databasePath??'var/lib/platform/platform.sqlite',options.evidenceStorage);
   const runtimeControls=new RuntimeControlCommands(store,auth);
   const automation=new Automation(store,auth,commerce,work,marketing,options.automationOptions),jevEvaluations=new JevEvaluations(store,auth,commerce,work);
@@ -304,6 +305,8 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
       if(path==='/session')return auth.refreshCsrf(actor);
       if(path==='/catalogue/admin'){auth.founder(actor);return store.all<CatalogueProduct>('catalogue').map(p=>({...p,availableQuantity:commerce.available(p.id)}));}
       if(path==='/orders')return commerce.orders(actor);
+      // CG-02 — Dealer Workspace: senarai store milik actor (grant dealer sahaja).
+      if(path==='/dealer/stores')return dealerStores.forActor(actor);
       if(path==='/orders/track'){const token=url.searchParams.get('token');if(!token)fail('INVALID_TOKEN',400,'Token penjejakan diperlukan.');return commerce.trackOrder(token);}
       if(segments[0]==='orders'&&recordId&&!command)return commerce.order(actor,recordId);
       if(path==='/cases')return work.cases(actor);
@@ -600,6 +603,15 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
         // hanya membaca status yang tersimpan.
         if(request.method==='POST'&&path==='/payments/callback')return paymentCallbackRoute(request);
         if(request.method==='GET'&&path==='/payments/return')return paymentReturnRoute(request);
+        // CG-02 — public Online Store per Agent/Stokis. Pelawat boleh browse
+        // TANPA log masuk; projek yang dikembalikan tidak mengandungi data
+        // peribadi owner (lihat DealerStores.publicBySlug).
+        const kedaiMatch=request.method==='GET'?/^\/kedai\/([a-z0-9-]+)$/.exec(path):null;
+        if(kedaiMatch){
+          const projection=dealerStores.publicBySlug(kedaiMatch[1]);
+          if(!projection)fail('STORE_NOT_FOUND',404,'Kedai tidak dijumpai.');
+          return json({ok:true,data:{store:projection,catalogue:store.all<CatalogueProduct>('catalogue').filter(product=>product.status==='published').map(product=>({...product,availableQuantity:commerce.available(product.id)}))}});
+        }
         if(request.method==='POST'&&!allowedOrigins.includes(request.headers.get('origin')??''))fail('ORIGIN_DENIED',403,'Asal permintaan tidak dibenarkan.');
         if(request.method==='POST'&&path==='/evidence/upload'){const actor=auth.resolve(request);store.rate(`upload:${actor.user.id}`,12);auth.csrf(actor,request.headers.get('x-csrf-token'));if(runtimeControls.current().activeRelease==='platform-local-readonly-v1')fail('RELEASE_READ_ONLY',409);if(!request.headers.get('content-type')?.startsWith('multipart/form-data;'))fail('CONTENT_TYPE',415);return json({ok:true,data:await evidenceFiles.upload(actor,request)});}
         let input:unknown=undefined;

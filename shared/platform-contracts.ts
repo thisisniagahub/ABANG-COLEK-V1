@@ -55,7 +55,7 @@ export interface MembershipChange { userId: string; workspaceId: string; role: W
 export interface SettingChange { key: string; value: unknown; expectedVersion: number }
 export interface BusinessSettings { id: string; version: number; approvedPolicies: { dealer?: DealerTerms; paymentInstructions?: string; locations?: { id: string; name: string; address: string; hours: string; verifiedAt: string }[]; contact?: string }; locale: 'ms-MY'; timezone: 'Asia/Kuala_Lumpur' }
 export interface DealerTerms { version: number; minimumQuantity: number; packMultiple: number; priceBasisPoints: number; ownership: 'owned' | 'consigned'; returnRules: string; approvedAt: string }
-export interface DealerApplication { id: string; customerId: string; organization: string; description: string; status: 'pending' | 'approved' | 'rejected'; revision: number; dealerOrgId?: string; createdAt: string }
+export interface DealerApplication { id: string; customerId: string; organization: string; description: string; /** Slug store awam yang dicadangkan pemohon (CG-01). */ slug?: string; status: 'pending' | 'approved' | 'rejected'; revision: number; dealerOrgId?: string; createdAt: string }
 export interface RestockInput { dealerOrgId: string; lines: { productId: string; quantity: number }[]; priceVersion: number }
 export interface VersionedQuote { id: string; priceVersion: number; catalogueVersion: number; lines: OrderLine[]; totalSen: number; expiresAt: string; dealerOrgId?: string; ownerId: string; subtotalSen?: number; redeemPoints?: number; discountSen?: number; estimatedPointsEarned?: number }
 export interface ReceiptInput { shipmentId: string; lines: { productId: string; quantity: number }[]; expectedRevision: number }
