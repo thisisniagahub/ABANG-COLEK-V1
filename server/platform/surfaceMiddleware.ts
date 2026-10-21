@@ -22,7 +22,7 @@
  * root.
  */
 
-import { A2UI_ALLOWLISTED_COMPONENTS } from '../../../shared/copilot-contracts';
+import { A2UI_ALLOWLISTED_COMPONENTS } from '../../shared/copilot-contracts';
 import {
   findSurfaceDefinition,
   type SurfaceCatalog,
@@ -30,7 +30,7 @@ import {
   type SurfaceRenderNode,
   type SurfaceRenderOutcome,
   type SurfaceRenderPlan,
-} from '../../../shared/surface-contracts';
+} from '../../shared/surface-contracts';
 
 const ALLOWLISTED = new Set<string>(A2UI_ALLOWLISTED_COMPONENTS);
 
@@ -93,8 +93,35 @@ export function renderSurfacePayload(
     return refuse('SURFACE_PAYLOAD_INVALID', 'Payload permukaan memerlukan schemaVersion.');
   }
 
+  // Fixed-schema flat payload ({ schemaVersion, component, props }) ialah
+  // permukaan SATU nod. Ia ditukar kepada bentuk nod yang dexpects middleware
+  // (surfaceId + id), dengan surfaceId daripada deklarasi catalog untuk
+  // komponen tersebut — jadi had struktur (depth / bilangan nod / komponen
+  // dibenarkan) tetap dikuatkuasakan untuk payload hari ini.
+  let rootPayload: unknown = payload;
+  if (typeof (payload as { surfaceId?: unknown }).surfaceId !== 'string') {
+    const component = (payload as { component?: unknown }).component;
+    if (typeof component !== 'string' || !component.trim()) {
+      return refuse('SURFACE_PAYLOAD_INVALID', 'Payload permukaan memerlukan surfaceId atau component.');
+    }
+    const declaration = catalog.surfaces.find((candidate) => candidate.component === component);
+    if (!declaration) {
+      return refuse(
+        'SURFACE_UNKNOWN_SURFACE_ID',
+        `Permukaan komponen '${component}' tiada dalam katalog versi ${catalog.catalogVersion}.`,
+        { component, catalogVersion: catalog.catalogVersion },
+      );
+    }
+    const identifier = (payload as { id?: unknown }).id;
+    rootPayload = {
+      ...payload,
+      surfaceId: declaration.surfaceId,
+      id: typeof identifier === 'string' && identifier.trim() ? identifier : component,
+    };
+  }
+
   const stack: Frame[] = [
-    { node: payload, pathIds: [], pathObjects: [], depth: 0, parentKey: null },
+    { node: rootPayload, pathIds: [], pathObjects: [], depth: 0, parentKey: null },
   ];
   const rendered = new Map<string, SurfaceRenderNode>();
   let nodeCount = 0;

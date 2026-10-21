@@ -1,0 +1,281 @@
+- generic [active] [ref=e1]:
+  - link "Langkau ke diagram" [ref=e2] [cursor=pointer]:
+    - /url: "#atlas"
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: ABANGCOLEK
+      - generic [ref=e6]: Sovereign GrowthOS & Orbit
+      - heading "Satu bisnes. Workflow yang bersambung." [level=1] [ref=e7]: Satu bisnes.Workflow yang bersambung.
+      - paragraph [ref=e8]: Peta perjalanan pelanggan, keputusan founder, kerja pasukan dan bantuan AI — daripada produk ditemui sehingga transaksi serta penyelesaian direkodkan.
+      - generic [ref=e9]:
+        - generic [ref=e10]: 4 role dalam kod semasa
+        - generic [ref=e11]: Dealer Workspace + Online Store wajib
+        - generic [ref=e12]: 10 peta workflow
+        - generic [ref=e13]: Blueprint v2.4
+        - generic [ref=e14]: 21 Oktober 2026
+  - main [ref=e15]:
+    - complementary [ref=e16]:
+      - strong [ref=e17]: Peta sasaran, bukan pengesahan semua fungsi sudah siap.
+      - paragraph [ref=e18]: Aliran ini mengikut blueprint dan taxonomy source. Sebahagian integrasi Copilot, pembayaran serta servis luar masih mempunyai jurang atau activation gates. Status sebenar dirujuk pada ledger acceptance.
+    - navigation "Pilih workflow" [ref=e19]:
+      - link "01 · Ekosistem" [ref=e20] [cursor=pointer]:
+        - /url: "#ecosystem"
+      - link "02 · Customer" [ref=e21] [cursor=pointer]:
+        - /url: "#customer"
+      - link "03 · Founder" [ref=e22] [cursor=pointer]:
+        - /url: "#founder"
+      - link "04 · Staff" [ref=e23] [cursor=pointer]:
+        - /url: "#staff"
+      - link "05 · Dealer" [ref=e24] [cursor=pointer]:
+        - /url: "#dealer"
+      - link "06 · Developer" [ref=e25] [cursor=pointer]:
+        - /url: "#developer"
+      - link "07 · AI Copilot" [ref=e26] [cursor=pointer]:
+        - /url: "#copilot"
+      - link "08 · Payment & refund" [ref=e27] [cursor=pointer]:
+        - /url: "#payment"
+      - link "09 · Stok & QC" [ref=e28] [cursor=pointer]:
+        - /url: "#quality"
+      - link "10 · Growth" [ref=e29] [cursor=pointer]:
+        - /url: "#growth"
+    - paragraph [ref=e30]: Klik tajuk untuk buka atau tutup setiap peta. Anak panah dibaca dari atas ke bawah; cabang dibaca mengikut labelnya.
+    - generic [ref=e31]:
+      - generic [ref=e32]: Langkah / authority yang ditetapkan
+      - generic [ref=e33]: Keputusan atau gate
+      - generic [ref=e34]: Konflik / outcome belum diketahui
+    - group [ref=e35]:
+      - generic "01 Peta keseluruhan ekosistem Empat role semasa + sasaran wajib Dealer Workspace dan Online Store sendiri −" [ref=e36] [cursor=pointer]:
+        - generic [ref=e37]: "01"
+        - generic [ref=e38]:
+          - text: Peta keseluruhan ekosistem
+          - generic [ref=e39]: Empat role semasa + sasaran wajib Dealer Workspace dan Online Store sendiri
+        - text: −
+      - generic [ref=e40]:
+        - paragraph [ref=e41]: Pelawat bermula di landing dan katalog. Selepas login, menu serta rekod ditentukan oleh membership dan capability sebenar pada server.
+        - generic [ref=e42]:
+          - generic [ref=e43]:
+            - generic [ref=e44]: Workspace dalam source semasa
+            - link "Customer" [ref=e45] [cursor=pointer]:
+              - /url: "#customer"
+            - paragraph [ref=e46]: Beli produk, jejak order, buka aduan dan mohon dealer.
+          - generic [ref=e47]:
+            - generic [ref=e48]: Workspace dalam source semasa
+            - link "Founder" [ref=e49] [cursor=pointer]:
+              - /url: "#founder"
+            - paragraph [ref=e50]: Pantau bisnes, buat keputusan, urus stok, wang dan pasukan.
+          - generic [ref=e51]:
+            - generic [ref=e52]: Workspace dalam source semasa
+            - link "Staff" [ref=e53] [cursor=pointer]:
+              - /url: "#staff"
+            - paragraph [ref=e54]: Tugas assigned, fulfilment, QC, shift dan SOP.
+          - generic [ref=e55]:
+            - generic [ref=e56]: Workspace dalam source semasa
+            - link "Developer" [ref=e57] [cursor=pointer]:
+              - /url: "#developer"
+            - paragraph [ref=e58]: Health, jobs, diagnostics, evaluation dan readiness.
+        - generic [aria-hidden] [ref=e59]: ↓
+        - generic [ref=e60]:
+          - strong [ref=e61]: Server mengesahkan sesi, capability dan scope
+          - paragraph [ref=e62]: Identiti, organisasi, outlet, ownership serta revision disemak semula sebelum tindakan.
+        - generic [aria-hidden] [ref=e63]: ↓
+        - generic [ref=e64]:
+          - strong [ref=e65]: Canonical platform → durable outcome
+          - paragraph [ref=e66]: Orders · inventory · payments · commissions · loyalty · cases · tasks · audit & receipts
+        - generic [ref=e67]:
+          - generic [ref=e68]:
+            - generic [ref=e69]: Mandat pengguna · sasaran wajib
+            - link "Dealer Workspace + Online Store" [ref=e70] [cursor=pointer]:
+              - /url: "#dealer"
+            - paragraph [ref=e71]: Setiap Agent/Stokis mendapat ruang pengurusan private dan kedai public sendiri yang ABANGCOLEK sediakan. Belum dibuktikan lengkap dalam source.
+          - generic [ref=e72]:
+            - generic [ref=e73]: Lapisan bantuan
+            - link "Operations Copilot / Pet" [ref=e74] [cursor=pointer]:
+              - /url: "#copilot"
+            - paragraph [ref=e75]: Semak rekod, terangkan, simulasikan dan sediakan cadangan mengikut akses. AI tidak memberi kuasa transaksi tambahan.
+        - paragraph [ref=e76]: "Rules Own The Money: model tidak menentukan harga, paid status, stok, komisen atau kejayaan refund. Server dan rekod canonical menentukan hasilnya."
+    - group [ref=e77]:
+      - generic "02 Customer workflow Ditemui → dibeli → diterima → dibantu −" [ref=e78] [cursor=pointer]:
+        - generic [ref=e79]: "02"
+        - generic [ref=e80]:
+          - text: Customer workflow
+          - generic [ref=e81]: Ditemui → dibeli → diterima → dibantu
+        - text: −
+      - generic [ref=e82]:
+        - generic [ref=e83]:
+          - generic [ref=e84]:
+            - generic [ref=e85]: Penemuan
+            - strong [ref=e86]: Landing → katalog produk published
+            - paragraph [ref=e87]: Teroka cerita jenama, produk sebenar, maklumat dan CTA.
+          - generic [aria-hidden] [ref=e88]: ↓
+          - generic [ref=e89]:
+            - strong [ref=e90]: Pilih SKU, kuantiti dan fulfilment
+            - paragraph [ref=e91]: Daftar/login apabila sesi diperlukan; semak cart, harga dan ganjaran yang layak.
+          - generic [aria-hidden] [ref=e92]: ↓
+          - generic [ref=e93]:
+            - strong [ref=e94]: Harga, stok dan kelayakan masih sah?
+            - paragraph [ref=e95]: Server menyemak semula; perubahan total memerlukan semakan pelanggan.
+          - generic [aria-hidden] [ref=e96]: ↓
+          - generic [ref=e97]:
+            - generic [ref=e98]:
+              - generic [ref=e99]: Konflik
+              - generic [ref=e100]:
+                - strong [ref=e101]: Semak perubahan
+                - paragraph [ref=e102]: Betulkan cart dan sahkan semula; tiada submission senyap.
+            - generic [ref=e103]:
+              - generic [ref=e104]: Sah
+              - generic [ref=e105]:
+                - strong [ref=e106]: Hantar order → payment pending
+                - paragraph [ref=e107]: Idempotency menghalang duplicate submit.
+          - generic [ref=e108]:
+            - generic [aria-hidden] [ref=e109]: ↓
+            - generic [ref=e110]: laluan order sah
+          - generic [ref=e111]:
+            - strong [ref=e112]: Pembayaran mesti disahkan server
+            - paragraph [ref=e113]: Pending/gagal kekal jelas. Redirect browser sahaja tidak mengesahkan paid. Merchant/gateway live proof diperlukan.
+          - generic [ref=e114]:
+            - generic [aria-hidden] [ref=e115]: ↓
+            - generic [ref=e116]: selepas pengesahan
+          - generic [ref=e117]:
+            - strong [ref=e118]: Order diterima → packing → dispatch / pickup
+            - paragraph [ref=e119]: Tracking berizin dan penerimaan direkod; ganjaran diberi hanya jika layak mengikut polisi.
+          - generic [aria-hidden] [ref=e120]: ↓
+          - generic [ref=e121]:
+            - generic [ref=e122]:
+              - generic [ref=e123]: Ada masalah
+              - generic [ref=e124]:
+                - strong [ref=e125]: Buka kes dan lampirkan evidence
+                - paragraph [ref=e126]: Staff/founder semak dan rekod penyelesaian.
+            - generic [ref=e127]:
+              - generic [ref=e128]: Selesai
+              - generic [ref=e129]:
+                - strong [ref=e130]: Beli semula / share sendiri
+                - paragraph [ref=e131]: Share atas tindakan pengguna, tanpa reward rekaan.
+        - paragraph [ref=e132]:
+          - strong [ref=e133]: "Hasil:"
+          - text: pelanggan melihat status order dan penyelesaian sebenar, bukan sekadar mesej “berjaya”.
+    - group [ref=e134]:
+      - generic "03 Founder workflow Pantau → semak → putuskan → rekonsiliasi −" [ref=e135] [cursor=pointer]:
+        - generic [ref=e136]: "03"
+        - generic [ref=e137]:
+          - text: Founder workflow
+          - generic [ref=e138]: Pantau → semak → putuskan → rekonsiliasi
+        - text: −
+      - generic [ref=e139]:
+        - generic [ref=e140]:
+          - generic [ref=e141]:
+            - strong [ref=e142]: Login founder → overview bisnes
+            - paragraph [ref=e143]: Pending approvals, order, aduan, stok dan kewangan daripada rekod sebenar.
+          - generic [ref=e144]:
+            - generic [aria-hidden] [ref=e145]: ↓
+            - generic [ref=e146]: pilih tugas
+          - generic [ref=e147]:
+            - generic [ref=e148]:
+              - strong [ref=e149]: Operasi
+              - paragraph [ref=e150]: Orders, batch, restock, dealer, QC dan pasukan.
+            - generic [ref=e151]:
+              - strong [ref=e152]: Wang & risiko
+              - paragraph [ref=e153]: Refund, expenses, commission, variance dan day-close.
+            - generic [ref=e154]:
+              - strong [ref=e155]: Pertumbuhan
+              - paragraph [ref=e156]: Marketing, SOP, automations dan integrasi.
+          - generic [aria-hidden] [ref=e157]: ↓
+          - generic [ref=e158]:
+            - strong [ref=e159]: Semak source, scope, polisi dan revision
+            - paragraph [ref=e160]: Copilot boleh ringkaskan dan menyediakan preview; keputusan kekal pada pihak berkuasa.
+          - generic [aria-hidden] [ref=e161]: ↓
+          - generic [ref=e162]:
+            - strong [ref=e163]: Perlu approval atau hanya read / draf?
+            - paragraph [ref=e164]: Setiap domain menggunakan polisi sendiri; tiada satu approval generik yang memberi semua kuasa.
+          - generic [aria-hidden] [ref=e165]: ↓
+          - generic [ref=e166]:
+            - generic [ref=e167]:
+              - generic [ref=e168]: Read / draf
+              - generic [ref=e169]:
+                - strong [ref=e170]: Paparkan hasil atau simpan draf berizin
+                - paragraph [ref=e171]: Tiada financial/stock effect; aliran ini berakhir di sini.
+            - generic [ref=e172]:
+              - generic [ref=e173]: Perlu approval
+              - generic [ref=e174]:
+                - strong [ref=e175]: Lulus / tolak dengan sebab
+                - paragraph [ref=e176]: "Ditolak, expired atau stale: berhenti tanpa execution."
+          - generic [ref=e177]:
+            - generic [aria-hidden] [ref=e178]: ↓
+            - generic [ref=e179]: hanya approval diluluskan dan masih sah
+          - generic [ref=e180]:
+            - strong [ref=e181]: Keputusan → revalidation server → execution
+            - paragraph [ref=e182]: Role, scope, expiry, payload, revision dan idempotency disahkan semula.
+          - generic [aria-hidden] [ref=e183]: ↓
+          - generic [ref=e184]:
+            - generic [ref=e185]:
+              - generic [ref=e186]: Committed
+              - generic [ref=e187]:
+                - strong [ref=e188]: Receipt + audit + rekod baharu
+                - paragraph [ref=e189]: Semak outcome dan tindakan berikutnya.
+            - generic [ref=e190]:
+              - generic [ref=e191]: Unknown outcome
+              - generic [ref=e192]:
+                - strong [ref=e193]: Reconcile dahulu
+                - paragraph [ref=e194]: Jangan retry effect tanpa mengetahui hasil asal.
+        - paragraph [ref=e195]:
+          - strong [ref=e196]: "Hasil:"
+          - text: founder mendapat kawalan bisnes dan jejak keputusan, dengan tindakan wang/stok yang boleh diperiksa.
+    - group [ref=e197]:
+      - generic "04 Staff workflow Assigned work → SOP → fulfilment → shift handover +" [ref=e198] [cursor=pointer]:
+        - generic [ref=e199]: "04"
+        - generic [ref=e200]:
+          - text: Staff workflow
+          - generic [ref=e201]: Assigned work → SOP → fulfilment → shift handover
+        - text: +
+    - group [ref=e202]:
+      - 'generic "05 Agent/Stokis: kedai sendiri + workspace Dua surface wajib yang ABANGCOLEK sediakan untuk setiap rakan niaga aktif +" [ref=e203] [cursor=pointer]':
+        - generic [ref=e204]: "05"
+        - generic [ref=e205]:
+          - text: "Agent/Stokis: kedai sendiri + workspace"
+          - generic [ref=e206]: Dua surface wajib yang ABANGCOLEK sediakan untuk setiap rakan niaga aktif
+        - text: +
+    - group [ref=e207]:
+      - generic "06 Developer workflow Observe → reproduce → fix melalui authority pembangunan +" [ref=e208] [cursor=pointer]:
+        - generic [ref=e209]: "06"
+        - generic [ref=e210]:
+          - text: Developer workflow
+          - generic [ref=e211]: Observe → reproduce → fix melalui authority pembangunan
+        - text: +
+    - group [ref=e212]:
+      - generic "07 Operations Copilot & Pet Tanya → tools → kad / state → keputusan manusia +" [ref=e213] [cursor=pointer]:
+        - generic [ref=e214]: "07"
+        - generic [ref=e215]:
+          - text: Operations Copilot & Pet
+          - generic [ref=e216]: Tanya → tools → kad / state → keputusan manusia
+        - text: +
+    - group [ref=e217]:
+      - generic "08 Payment & refund workflow Wang integer sen, exactly-once dan receipt +" [ref=e218] [cursor=pointer]:
+        - generic [ref=e219]: "08"
+        - generic [ref=e220]:
+          - text: Payment & refund workflow
+          - generic [ref=e221]: Wang integer sen, exactly-once dan receipt
+        - text: +
+    - group [ref=e222]:
+      - generic "09 Inventory, QC & aduan Lot trace → evidence → tindakan → case closure +" [ref=e223] [cursor=pointer]:
+        - generic [ref=e224]: "09"
+        - generic [ref=e225]:
+          - text: Inventory, QC & aduan
+          - generic [ref=e226]: Lot trace → evidence → tindakan → case closure
+        - text: +
+    - group [ref=e227]:
+      - generic "10 Marketing, learning & automations Fakta → margin → draf → consent → outcome +" [ref=e228] [cursor=pointer]:
+        - generic [ref=e229]: "10"
+        - generic [ref=e230]:
+          - text: Marketing, learning & automations
+          - generic [ref=e231]: Fakta → margin → draf → consent → outcome
+        - text: +
+    - link "↑ Kembali ke peta" [ref=e232] [cursor=pointer]:
+      - /url: "#top"
+  - contentinfo [ref=e233]:
+    - paragraph [ref=e234]:
+      - strong [ref=e235]: "Sumber:"
+      - text: master blueprint v2.4, design/workspaces, role contracts, route menus dan domain dealer. Diagram sasaran tidak menggantikan acceptance ledger.
+    - paragraph [ref=e236]:
+      - text: "Fail ini standalone, tanpa API, credential, external script atau analytics. Versi Mermaid dan rujukan lanjut:"
+      - link "user-workflows.md" [ref=e237] [cursor=pointer]:
+        - /url: user-workflows.md
+      - text: .

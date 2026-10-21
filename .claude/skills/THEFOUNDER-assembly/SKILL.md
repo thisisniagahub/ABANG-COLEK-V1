@@ -48,6 +48,7 @@ STAGE 7 OPERATE    workshop         - day-one routines, suppliers, SOPs
 STAGE 8 MEASURE    radar            - the five numbers, one weekly decision
 STAGE 9 GROW       flywheel         - the loop that compounds
                    -> back to STAGE 1 with what the radar saw
+STAGE 10 COMPILE   masterplan       - the whole story, one computed plan
 META               skill-creator    - extend the pack without clashes
 ```
 

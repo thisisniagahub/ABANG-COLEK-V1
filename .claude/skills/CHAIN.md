@@ -32,6 +32,7 @@ link; no two skills share a purpose.
 | 7 OPERATE | THEFOUNDER-workshop | Day-one routines, suppliers, SOPs, permits | not metrics (radar) |
 | 8 MEASURE | THEFOUNDER-radar | The five numbers that matter; one weekly decision | not growth loops (flywheel) |
 | 9 GROW | THEFOUNDER-flywheel | Retention/referral/output loops that compound | not measurement (radar) |
+| 10 COMPILE | THEFOUNDER-masterplan | Compiled business plan with a computed verdict | not orchestration (assembly) |
 | META | THEFOUNDER-assembly | Orchestrates the chain, places the user, hands off | never does a sibling's work |
 | META | THEFOUNDER-skill-creator | The gate for adding or changing pack skills | never bypasses its own gates |
 

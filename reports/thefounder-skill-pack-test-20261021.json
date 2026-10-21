@@ -1,0 +1,1672 @@
+{
+  "counts": {
+    "skills": 27,
+    "checks": 166,
+    "pass": 121,
+    "fail": 0,
+    "uncomputed": 45,
+    "clashes": 0
+  },
+  "ledger": [
+    {
+      "skill": "THEFOUNDER-assembly",
+      "check": "C01_nama_frontmatter",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "name: THEFOUNDER-assembly == folder"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-assembly",
+      "check": "C02_description",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "description 564 aksara, ada \"Use when the user says\""
+      }
+    },
+    {
+      "skill": "THEFOUNDER-assembly",
+      "check": "C03_trigger_phrases",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "5 trigger phrase"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-assembly",
+      "check": "C04_fence",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "rantai pengasas tanpa fence - semakan tidak terpakai"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-assembly",
+      "check": "C05_tiada_nama_lama",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "bersih daripada nama lama"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-assembly",
+      "check": "C06_python_stdlib",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-backend",
+      "check": "C01_nama_frontmatter",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "name: THEFOUNDER-backend == folder"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-backend",
+      "check": "C02_description",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "description 308 aksara, ada \"Use when the user says\""
+      }
+    },
+    {
+      "skill": "THEFOUNDER-backend",
+      "check": "C03_trigger_phrases",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "4 trigger phrase"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-backend",
+      "check": "C04_fence",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "rantai pengasas tanpa fence - semakan tidak terpakai"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-backend",
+      "check": "C05_tiada_nama_lama",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "bersih daripada nama lama"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-backend",
+      "check": "C06_python_stdlib",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-battlefield",
+      "check": "C01_nama_frontmatter",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "name: THEFOUNDER-battlefield == folder"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-battlefield",
+      "check": "C02_description",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "description 550 aksara, ada \"Use when the user says\""
+      }
+    },
+    {
+      "skill": "THEFOUNDER-battlefield",
+      "check": "C03_trigger_phrases",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "6 trigger phrase"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-battlefield",
+      "check": "C04_fence",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "rantai pengasas tanpa fence - semakan tidak terpakai"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-battlefield",
+      "check": "C05_tiada_nama_lama",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "bersih daripada nama lama"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-battlefield",
+      "check": "C06_python_stdlib",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-blueprint",
+      "check": "C01_nama_frontmatter",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "name: THEFOUNDER-blueprint == folder"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-blueprint",
+      "check": "C02_description",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "description 332 aksara, ada \"Use when the user says\""
+      }
+    },
+    {
+      "skill": "THEFOUNDER-blueprint",
+      "check": "C03_trigger_phrases",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "4 trigger phrase"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-blueprint",
+      "check": "C04_fence",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "rantai pengasas tanpa fence - semakan tidak terpakai"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-blueprint",
+      "check": "C05_tiada_nama_lama",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "bersih daripada nama lama"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-blueprint",
+      "check": "C06_python_stdlib",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-council",
+      "check": "C01_nama_frontmatter",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "name: THEFOUNDER-council == folder"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-council",
+      "check": "C02_description",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "description 615 aksara, ada \"Use when the user says\""
+      }
+    },
+    {
+      "skill": "THEFOUNDER-council",
+      "check": "C03_trigger_phrases",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "5 trigger phrase"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-council",
+      "check": "C04_fence",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "rantai pengasas tanpa fence - semakan tidak terpakai"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-council",
+      "check": "C05_tiada_nama_lama",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "bersih daripada nama lama"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-council",
+      "check": "C06_python_stdlib",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-crowd",
+      "check": "C01_nama_frontmatter",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "name: THEFOUNDER-crowd == folder"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-crowd",
+      "check": "C02_description",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "description 630 aksara, ada \"Use when the user says\""
+      }
+    },
+    {
+      "skill": "THEFOUNDER-crowd",
+      "check": "C03_trigger_phrases",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "6 trigger phrase"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-crowd",
+      "check": "C04_fence",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "rantai pengasas tanpa fence - semakan tidak terpakai"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-crowd",
+      "check": "C05_tiada_nama_lama",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "bersih daripada nama lama"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-crowd",
+      "check": "C06_python_stdlib",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "1 skrip, stdlib sahaja, tiada eval/exec"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-flywheel",
+      "check": "C01_nama_frontmatter",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "name: THEFOUNDER-flywheel == folder"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-flywheel",
+      "check": "C02_description",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "description 510 aksara, ada \"Use when the user says\""
+      }
+    },
+    {
+      "skill": "THEFOUNDER-flywheel",
+      "check": "C03_trigger_phrases",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "5 trigger phrase"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-flywheel",
+      "check": "C04_fence",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "rantai pengasas tanpa fence - semakan tidak terpakai"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-flywheel",
+      "check": "C05_tiada_nama_lama",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "bersih daripada nama lama"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-flywheel",
+      "check": "C06_python_stdlib",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-identity",
+      "check": "C01_nama_frontmatter",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "name: THEFOUNDER-identity == folder"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-identity",
+      "check": "C02_description",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "description 460 aksara, ada \"Use when the user says\""
+      }
+    },
+    {
+      "skill": "THEFOUNDER-identity",
+      "check": "C03_trigger_phrases",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "7 trigger phrase"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-identity",
+      "check": "C04_fence",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "rantai pengasas tanpa fence - semakan tidak terpakai"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-identity",
+      "check": "C05_tiada_nama_lama",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "bersih daripada nama lama"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-identity",
+      "check": "C06_python_stdlib",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-interface",
+      "check": "C01_nama_frontmatter",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "name: THEFOUNDER-interface == folder"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-interface",
+      "check": "C02_description",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "description 398 aksara, ada \"Use when the user says\""
+      }
+    },
+    {
+      "skill": "THEFOUNDER-interface",
+      "check": "C03_trigger_phrases",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "4 trigger phrase"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-interface",
+      "check": "C04_fence",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "rantai pengasas tanpa fence - semakan tidak terpakai"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-interface",
+      "check": "C05_tiada_nama_lama",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "bersih daripada nama lama"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-interface",
+      "check": "C06_python_stdlib",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "1 skrip, stdlib sahaja, tiada eval/exec"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-magnet",
+      "check": "C01_nama_frontmatter",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "name: THEFOUNDER-magnet == folder"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-magnet",
+      "check": "C02_description",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "description 582 aksara, ada \"Use when the user says\""
+      }
+    },
+    {
+      "skill": "THEFOUNDER-magnet",
+      "check": "C03_trigger_phrases",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "6 trigger phrase"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-magnet",
+      "check": "C04_fence",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "rantai pengasas tanpa fence - semakan tidak terpakai"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-magnet",
+      "check": "C05_tiada_nama_lama",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "bersih daripada nama lama"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-magnet",
+      "check": "C06_python_stdlib",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-masterplan",
+      "check": "C01_nama_frontmatter",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "name: THEFOUNDER-masterplan == folder"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-masterplan",
+      "check": "C02_description",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "description 618 aksara, ada \"Use when the user says\""
+      }
+    },
+    {
+      "skill": "THEFOUNDER-masterplan",
+      "check": "C03_trigger_phrases",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "4 trigger phrase"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-masterplan",
+      "check": "C04_fence",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "rantai pengasas tanpa fence - semakan tidak terpakai"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-masterplan",
+      "check": "C05_tiada_nama_lama",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "bersih daripada nama lama"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-masterplan",
+      "check": "C06_python_stdlib",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "1 skrip, stdlib sahaja, tiada eval/exec"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-megaphone",
+      "check": "C01_nama_frontmatter",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "name: THEFOUNDER-megaphone == folder"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-megaphone",
+      "check": "C02_description",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "description 484 aksara, ada \"Use when the user says\""
+      }
+    },
+    {
+      "skill": "THEFOUNDER-megaphone",
+      "check": "C03_trigger_phrases",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "7 trigger phrase"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-megaphone",
+      "check": "C04_fence",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "rantai pengasas tanpa fence - semakan tidak terpakai"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-megaphone",
+      "check": "C05_tiada_nama_lama",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "bersih daripada nama lama"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-megaphone",
+      "check": "C06_python_stdlib",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-numbers",
+      "check": "C01_nama_frontmatter",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "name: THEFOUNDER-numbers == folder"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-numbers",
+      "check": "C02_description",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "description 605 aksara, ada \"Use when the user says\""
+      }
+    },
+    {
+      "skill": "THEFOUNDER-numbers",
+      "check": "C03_trigger_phrases",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "7 trigger phrase"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-numbers",
+      "check": "C04_fence",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "rantai pengasas tanpa fence - semakan tidak terpakai"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-numbers",
+      "check": "C05_tiada_nama_lama",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "bersih daripada nama lama"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-numbers",
+      "check": "C06_python_stdlib",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "1 skrip, stdlib sahaja, tiada eval/exec"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-opening",
+      "check": "C01_nama_frontmatter",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "name: THEFOUNDER-opening == folder"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-opening",
+      "check": "C02_description",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "description 470 aksara, ada \"Use when the user says\""
+      }
+    },
+    {
+      "skill": "THEFOUNDER-opening",
+      "check": "C03_trigger_phrases",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "6 trigger phrase"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-opening",
+      "check": "C04_fence",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "rantai pengasas tanpa fence - semakan tidak terpakai"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-opening",
+      "check": "C05_tiada_nama_lama",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "bersih daripada nama lama"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-opening",
+      "check": "C06_python_stdlib",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-parity",
+      "check": "C01_nama_frontmatter",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "name: THEFOUNDER-parity == folder"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-parity",
+      "check": "C02_description",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "description 331 aksara, ada \"Use when the user says\""
+      }
+    },
+    {
+      "skill": "THEFOUNDER-parity",
+      "check": "C03_trigger_phrases",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "4 trigger phrase"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-parity",
+      "check": "C04_fence",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "rantai pengasas tanpa fence - semakan tidak terpakai"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-parity",
+      "check": "C05_tiada_nama_lama",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "bersih daripada nama lama"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-parity",
+      "check": "C06_python_stdlib",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "2 skrip, stdlib sahaja, tiada eval/exec"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-pricetag",
+      "check": "C01_nama_frontmatter",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "name: THEFOUNDER-pricetag == folder"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-pricetag",
+      "check": "C02_description",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "description 521 aksara, ada \"Use when the user says\""
+      }
+    },
+    {
+      "skill": "THEFOUNDER-pricetag",
+      "check": "C03_trigger_phrases",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "5 trigger phrase"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-pricetag",
+      "check": "C04_fence",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "rantai pengasas tanpa fence - semakan tidak terpakai"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-pricetag",
+      "check": "C05_tiada_nama_lama",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "bersih daripada nama lama"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-pricetag",
+      "check": "C06_python_stdlib",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "1 skrip, stdlib sahaja, tiada eval/exec"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-pulse",
+      "check": "C01_nama_frontmatter",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "name: THEFOUNDER-pulse == folder"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-pulse",
+      "check": "C02_description",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "description 483 aksara, ada \"Use when the user says\""
+      }
+    },
+    {
+      "skill": "THEFOUNDER-pulse",
+      "check": "C03_trigger_phrases",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "4 trigger phrase"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-pulse",
+      "check": "C04_fence",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "rantai pengasas tanpa fence - semakan tidak terpakai"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-pulse",
+      "check": "C05_tiada_nama_lama",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "bersih daripada nama lama"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-pulse",
+      "check": "C06_python_stdlib",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "1 skrip, stdlib sahaja, tiada eval/exec"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-radar",
+      "check": "C01_nama_frontmatter",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "name: THEFOUNDER-radar == folder"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-radar",
+      "check": "C02_description",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "description 535 aksara, ada \"Use when the user says\""
+      }
+    },
+    {
+      "skill": "THEFOUNDER-radar",
+      "check": "C03_trigger_phrases",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "4 trigger phrase"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-radar",
+      "check": "C04_fence",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "rantai pengasas tanpa fence - semakan tidak terpakai"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-radar",
+      "check": "C05_tiada_nama_lama",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "bersih daripada nama lama"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-radar",
+      "check": "C06_python_stdlib",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-rebrand",
+      "check": "C01_nama_frontmatter",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "name: THEFOUNDER-rebrand == folder"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-rebrand",
+      "check": "C02_description",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "description 383 aksara, ada \"Use when the user says\""
+      }
+    },
+    {
+      "skill": "THEFOUNDER-rebrand",
+      "check": "C03_trigger_phrases",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "4 trigger phrase"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-rebrand",
+      "check": "C04_fence",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "rantai pengasas tanpa fence - semakan tidak terpakai"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-rebrand",
+      "check": "C05_tiada_nama_lama",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "bersih daripada nama lama"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-rebrand",
+      "check": "C06_python_stdlib",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "1 skrip, stdlib sahaja, tiada eval/exec"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-rebuild",
+      "check": "C01_nama_frontmatter",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "name: THEFOUNDER-rebuild == folder"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-rebuild",
+      "check": "C02_description",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "description 340 aksara, ada \"Use when the user says\""
+      }
+    },
+    {
+      "skill": "THEFOUNDER-rebuild",
+      "check": "C03_trigger_phrases",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "4 trigger phrase"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-rebuild",
+      "check": "C04_fence",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "rantai pengasas tanpa fence - semakan tidak terpakai"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-rebuild",
+      "check": "C05_tiada_nama_lama",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "bersih daripada nama lama"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-rebuild",
+      "check": "C06_python_stdlib",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-runway",
+      "check": "C01_nama_frontmatter",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "name: THEFOUNDER-runway == folder"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-runway",
+      "check": "C02_description",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "description 469 aksara, ada \"Use when the user says\""
+      }
+    },
+    {
+      "skill": "THEFOUNDER-runway",
+      "check": "C03_trigger_phrases",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "5 trigger phrase"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-runway",
+      "check": "C04_fence",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "rantai pengasas tanpa fence - semakan tidak terpakai"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-runway",
+      "check": "C05_tiada_nama_lama",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "bersih daripada nama lama"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-runway",
+      "check": "C06_python_stdlib",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-ship",
+      "check": "C01_nama_frontmatter",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "name: THEFOUNDER-ship == folder"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-ship",
+      "check": "C02_description",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "description 360 aksara, ada \"Use when the user says\""
+      }
+    },
+    {
+      "skill": "THEFOUNDER-ship",
+      "check": "C03_trigger_phrases",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "4 trigger phrase"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-ship",
+      "check": "C04_fence",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "rantai pengasas tanpa fence - semakan tidak terpakai"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-ship",
+      "check": "C05_tiada_nama_lama",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "bersih daripada nama lama"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-ship",
+      "check": "C06_python_stdlib",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-skill-creator",
+      "check": "C01_nama_frontmatter",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "name: THEFOUNDER-skill-creator == folder"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-skill-creator",
+      "check": "C02_description",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "description 467 aksara, ada \"Use when the user says\""
+      }
+    },
+    {
+      "skill": "THEFOUNDER-skill-creator",
+      "check": "C03_trigger_phrases",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "5 trigger phrase"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-skill-creator",
+      "check": "C04_fence",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "rantai pengasas tanpa fence - semakan tidak terpakai"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-skill-creator",
+      "check": "C05_tiada_nama_lama",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "bersih daripada nama lama"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-skill-creator",
+      "check": "C06_python_stdlib",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-storefront",
+      "check": "C01_nama_frontmatter",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "name: THEFOUNDER-storefront == folder"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-storefront",
+      "check": "C02_description",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "description 355 aksara, ada \"Use when the user says\""
+      }
+    },
+    {
+      "skill": "THEFOUNDER-storefront",
+      "check": "C03_trigger_phrases",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "4 trigger phrase"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-storefront",
+      "check": "C04_fence",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "rantai pengasas tanpa fence - semakan tidak terpakai"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-storefront",
+      "check": "C05_tiada_nama_lama",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "bersih daripada nama lama"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-storefront",
+      "check": "C06_python_stdlib",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "1 skrip, stdlib sahaja, tiada eval/exec"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-trial",
+      "check": "C01_nama_frontmatter",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "name: THEFOUNDER-trial == folder"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-trial",
+      "check": "C02_description",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "description 308 aksara, ada \"Use when the user says\""
+      }
+    },
+    {
+      "skill": "THEFOUNDER-trial",
+      "check": "C03_trigger_phrases",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "4 trigger phrase"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-trial",
+      "check": "C04_fence",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "rantai pengasas tanpa fence - semakan tidak terpakai"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-trial",
+      "check": "C05_tiada_nama_lama",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "bersih daripada nama lama"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-trial",
+      "check": "C06_python_stdlib",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-workshop",
+      "check": "C01_nama_frontmatter",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "name: THEFOUNDER-workshop == folder"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-workshop",
+      "check": "C02_description",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "description 491 aksara, ada \"Use when the user says\""
+      }
+    },
+    {
+      "skill": "THEFOUNDER-workshop",
+      "check": "C03_trigger_phrases",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "8 trigger phrase"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-workshop",
+      "check": "C04_fence",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "rantai pengasas tanpa fence - semakan tidak terpakai"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-workshop",
+      "check": "C05_tiada_nama_lama",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "bersih daripada nama lama"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-workshop",
+      "check": "C06_python_stdlib",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-xray",
+      "check": "C01_nama_frontmatter",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "name: THEFOUNDER-xray == folder"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-xray",
+      "check": "C02_description",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "description 529 aksara, ada \"Use when the user says\""
+      }
+    },
+    {
+      "skill": "THEFOUNDER-xray",
+      "check": "C03_trigger_phrases",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "5 trigger phrase"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-xray",
+      "check": "C04_fence",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "rantai pengasas tanpa fence - semakan tidak terpakai"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-xray",
+      "check": "C05_tiada_nama_lama",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "bersih daripada nama lama"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-xray",
+      "check": "C06_python_stdlib",
+      "verdict": {
+        "value": null,
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "PACK",
+      "check": "C07_clash_gate",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "136 trigger phrase unik merentas 27 skill"
+      }
+    },
+    {
+      "skill": "PACK",
+      "check": "C08_pack_files",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "plugin.json sah (v2.0.0)"
+      }
+    },
+    {
+      "skill": "PACK",
+      "check": "C09_chain_coverage",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "CHIAN meliputi 27 skill"
+      }
+    },
+    {
+      "skill": "PACK",
+      "check": "C10_populasi_pack",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "27 skill, tiada folder yatim"
+      }
+    }
+  ]
+}

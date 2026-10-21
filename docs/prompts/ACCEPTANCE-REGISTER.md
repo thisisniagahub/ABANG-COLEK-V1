@@ -7,9 +7,9 @@
 
 - Generated: `2026-10-20T21:30:00Z`
 - Source commit: `1fc218e5784efb890641bba1e46ac97f617639a3`
-- Verification run: `2026-10-21T08:54:37.332Z` @ `344175395c10028043b479d941117ff3a53e1089` (branch `integrate/blueprint-v23`, dirty=true)
-- Observed totals: **1266 tests pass, 0 fail, 8193 assertions** across 11 suites (0 failed, 0 unavailable).
-- Source binding: manifest before `d52d74a254121cf6d7d3893854e13b279ef375a32cb82402481e89ebb5b695d4`, after `d52d74a254121cf6d7d3893854e13b279ef375a32cb82402481e89ebb5b695d4`, **sourceStable=true** (1106 source files).
+- Verification run: `2026-10-21T09:30:59.146Z` @ `34cfe7a4b1043eb7d241ad49ec9ab525552b8fe5` (branch `integrate/blueprint-v23`, dirty=true)
+- Observed totals: **1272 tests pass, 0 fail, 8209 assertions** across 11 suites (0 failed, 0 unavailable).
+- Source binding: manifest before `a2a868fc21e0c347156b66d6e649225b6619d1822b704442cc8816127f3c34c8`, after `a2a868fc21e0c347156b66d6e649225b6619d1822b704442cc8816127f3c34c8`, **sourceStable=true** (1108 source files).
 
 ## Status tiers
 
@@ -38,7 +38,7 @@ Test-name evidence: **35** row(s) cite a verbatim testcase title (resolved again
 | `lint` | `bun run lint` | pass (exit 0) |
 | `build` | `bun run build` | pass (exit 0) |
 | `test:jev` | `bun test ./tests/jev` | pass (exit 0) — 55 pass / 0 fail / 331 expect |
-| `test:platform` | `bun test ./tests/platform` | pass (exit 0) — 848 pass / 0 fail / 5850 expect |
+| `test:platform` | `bun test ./tests/platform` | pass (exit 0) — 854 pass / 0 fail / 5866 expect |
 | `test:copilot` | `bun test ./tests/copilot` | pass (exit 0) — 139 pass / 0 fail / 734 expect |
 | `test:frontend` | `bun test ./tests/frontend` | pass (exit 0) — 185 pass / 0 fail / 1029 expect |
 | `test:architecture` | `bun test ./tests/architecture` | pass (exit 0) — 29 pass / 0 fail / 216 expect |
@@ -60,7 +60,7 @@ Test-name evidence: **35** row(s) cite a verbatim testcase title (resolved again
 | CPK-07 | Frontend tools — AGUI toolset wired to the agent | `implemented_unverified` | local / component_present | src/features/copilot/components/frontendToolAdapters.ts | `tests/frontend/frontend-tool-adapters.test.ts` — rejects unknown actions and arbitrary routes _(testKind: none, testNameKind: title (resolved testcase))_ | Adapter logic is real and tested, but the adapter is never instantiated by a live agent run — no server round-trip drives it. |
 | CPK-08 | Shared state — scoped state view, revision separation | `implemented_unverified` | local / component_present | src/features/copilot/state-rendering/ScopedStateView.tsx | `tests/frontend/gui03-04-state-tool.test.tsx` — Scoped state view clears scope and strips authority fields _(testKind: none, testNameKind: prose (human summary — NOT a resolved testcase))_ | Scope-clearing and authority-stripping are real, but the view is not mounted against a live server-issued state store. |
 | CPK-09 | Headless UI — one shared run/thread identity across surfaces | `implemented_verified _(raw: verified_local)_` | local / component_present | src/features/intelligence/copilotRunController.ts; src/features/copilot/runIdentity.ts; src/features/workspaces/CopilotWorkspace.tsx | `tests/frontend/copilot-run-identity-shared.test.tsx` — run started in the Pet -> continued in the workspace (tests/frontend/copilot-run-identity-shared.test.tsx) _(testKind: none, testNameKind: prose (human summary — NOT a resolved testcase))_ | — |
-| CPK-10 | Sub-agents — parent to child delegation with trace | `implemented_unverified` | local / protocol_verified | agents/google-adk/runtime.py (LlmAgent transfer_to_agent); server/agents/intelligence/learning.ts | `tests/platform/copilot-adk-bridge.test.ts` — ADK bridge replays a hardcoded AG-UI transcript fixture (NOT a live delegation transcript) _(testKind: none, testNameKind: prose (human summary — NOT a resolved testcase))_ | Real ADK delegation exists on the Python side, but the cited Python test does not assert a delegation transcript and is executed by no npm script or CI job, and the TypeScript evidence replays a hardcoded transcript fixture. The TypeScript runtime has no parent-to-child delegation, no trace propagation and no budget inheritance. |
+| CPK-10 | Sub-agents — parent to child delegation with trace | `implemented_unverified` | local / protocol_verified | agents/google-adk/runtime.py (LlmAgent transfer_to_agent); server/agents/intelligence/learning.ts | `tests/platform/copilot-adk-bridge.test.ts` — ADK bridge replays a hardcoded AG-UI transcript fixture (NOT a live delegation transcript) _(testKind: none, testNameKind: prose (human summary — NOT a resolved testcase))_ | Separuh PYTHON sudah terbukti: delegasi master → specialist melalui ADK sebenar (delegatedBy "abangcolek_ops", delegatedAgent "commerce_reader", a2ui.provenance.delegatedBy, adk.tool + adk.sessionId) dan intent takresolved dilapor dengan reason code, bukan direka. 23 ujian pytest lulus melalui `bun run test:adk` (venv workspace agents/google-adk/.venv). Yang BELUM dipenuhi: runtime TypeScript (server/agents/copilot) tiada parent→child delegation, tiada trace propagation dan tiada warisan bajet — jadi baris ini kekal implemented_unverified. |
 | GUI-01 | Display Only — render-only A2UI surfaces | `implemented_unverified` | local / component_present | src/features/copilot/cards/**; src/features/copilot/components/** | `tests/frontend/gui01-display-only.test.tsx` — Display-only card rendering contracts _(testKind: none, testNameKind: prose (human summary — NOT a resolved testcase))_ | — |
 | GUI-02 | Interactive — decision form wired to a server callback | `implemented_unverified` | local / component_present | src/features/copilot/interactive/MarginSimulatorForm.tsx | `tests/frontend/gui02-interactive.test.tsx` — Margin simulator input validation and submission gate _(testKind: none, testNameKind: prose (human summary — NOT a resolved testcase))_ | Validation and the double-submission gate are real and tested, but the form is not mounted and has no server callback, so decision -> revalidation -> receipt is not exercised. |
 | GUI-03 | Tool Rendering — tool lifecycle status view | `implemented_unverified` | local / component_present | src/features/copilot/tool-rendering/ToolStatusView.tsx | `tests/frontend/gui03-04-state-tool.test.tsx` — Tool status wording, no raw error leak, XSS safety _(testKind: none, testNameKind: prose (human summary — NOT a resolved testcase))_ | Rendering contracts are real, but the view is not mounted against a live tool-lifecycle event source. |
@@ -146,7 +146,7 @@ Test-name evidence: **35** row(s) cite a verbatim testcase title (resolved again
 
 | ID | Severity | Problem | Required action |
 |---|---|---|---|
-| (verification) | warning | the register was written for commit 1fc218e5784e… but the receipt observed 344175395c10… | confirm the register matches the tree it claims to describe |
+| (verification) | warning | the register was written for commit 1fc218e5784e… but the receipt observed 34cfe7a4b104… | confirm the register matches the tree it claims to describe |
 
 ## Correction history
 

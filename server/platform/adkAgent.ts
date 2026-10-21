@@ -1,3 +1,5 @@
+import { renderSurfacePayload } from './surfaceMiddleware';
+import { getSurfaceCatalog } from './surfaceCatalog';
 /**
  * AbangColek Google ADK Agent Engine v1.1
  * Pematuhan Prinsip: Zero-New-Paid-Cloud-Spend • Rules Own The Money
@@ -694,6 +696,26 @@ Prinsip Operasi:
       maxTokens: 2048,
     });
 
+    // BL-16 / §4:93 — setiap permukaan A2UI yang dihantar ke UI mesti
+    // MELALUI catalog versi + had struktur (depth, komponen, patch ops, cycle).
+    // Tanpa pemasangan ini, catalog dan middleware hanya "dead code" dan had
+    // struktur tidak pernah dikuatkuasakan.
+    let surfaceRefusal: { reasonCode: string; message: string } | undefined;
+    const validatedA2ui = a2ui
+      ? (() => {
+          const surface = renderSurfacePayload(a2ui, getSurfaceCatalog());
+          if (!surface.ok) {
+            // Permukaan tidak sah tidak boleh dihantar ke UI — ia ditolak
+            // dengan reason code yang boleh dibaca mesin.
+            surfaceRefusal = { reasonCode: surface.reason, message: surface.message };
+            return undefined;
+          }
+          // Payload asal dikekalkan (bentuk fixed-schema yang difahami UI);
+          // middleware hanya MENYEMAK/MENOLAK, bukan mengubah bentuk.
+          return a2ui;
+        })()
+      : undefined;
+
     return {
       reply: result.content,
       providerUsed: result.providerId,
@@ -702,8 +724,9 @@ Prinsip Operasi:
       ...(result.blockingReason ? { providerBlockingReason: result.blockingReason } : {}),
       ...(result.candidates ? { providerCandidates: result.candidates } : {}),
       generativeUi: genUi,
-      a2ui,
+      a2ui: validatedA2ui,
       hitlAction: hitl,
+      ...(surfaceRefusal ? { surfaceRefusal } : {}),
     };
   }
 }
