@@ -1,0 +1,21 @@
+{
+  "requirementId": "CPK-10",
+  "status": "implemented_unverified",
+  "environment": "local_test",
+  "timestamp": "2026-10-21T09:11:13.871Z",
+  "sourceCommit": "1fc218e5784efb890641bba1e46ac97f617639a3",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "testName": "test_master_agent_delegates_to_a_specialist_through_adk",
+  "testPath": "agents/google-adk/tests/test_agents.py",
+  "command": "bun run test:adk",
+  "exitCode": 0,
+  "result": "23 passed, 2 warnings in 4.72s",
+  "artifactRefs": [
+    "agents/google-adk/runtime.py",
+    "agents/google-adk/tests/test_agents.py",
+    "server/agents/copilot/runtime.ts"
+  ],
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "integrator-2026-10-21",
+  "limitations": "Bukti ini meliputi separuh PYTHON sahaja: delegasi master → specialist melalui ADK sebenar dengan jejak (delegatedBy, delegatedAgent, a2ui.provenance, adk.tool, adk.sessionId). Runtime TypeScript (server/agents/copilot/runtime.ts) MASIH tiada parent→child delegation, trace propagation atau warisan bajet — itu baki sebenar yang menyebabkan baris kekal implemented_unverified. Suite Python kini boleh dijalankan melalui skrip npm `bun run test:adk` (sebelum ini tiada skrip atau CI job yang memanggilnya)."
+}

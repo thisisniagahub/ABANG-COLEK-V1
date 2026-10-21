@@ -282,7 +282,7 @@ export function Dealers({ role,onNavigate,onChanged }: { role: WorkspaceRole; on
         </div>
         <Status value={application.status} />{role==='founder'&&application.status==='pending'&&<div className="xp-actions">
           <MutationButton path={`/dealer/applications/${application.id}/approve`} input={{ expectedRevision: application.revision }} onChanged={refresh} confirmLabel="Sahkan membership B2B" disabled={!terms}>Approve dealer</MutationButton>
-          <MutationButton path={`/dealer/applications/${application.id}/reject`} input={{ expectedRevision: application.revision,reason: 'Permohonan tidak memenuhi polisi semasa.' }} onChanged={refresh} confirmLabel="Sahkan reject">Reject</MutationButton>
+          <MutationButton path={`/dealer/applications/${application.id}/reject`} input={{ expectedRevision: application.revision, reason: 'Permohonan tidak memenuhi polisi semasa.' }} onChanged={refresh} confirmLabel="Sahkan reject">Reject</MutationButton>
         </div>}</article>)}{!applications.loading&&!applications.error&&!applications.data?.length&&<Empty description="Permohonan dealer muncul selepas customer menghantar borang." />}</Panel>
     <Panel title="Approved commercial terms" eyebrow="Policy version">{terms? <div className="xp-detail-grid">
       <div>

@@ -15,6 +15,7 @@
                     "test:frontend":  "bun test --isolate ./tests/frontend",
                     "test:architecture":  "bun test --isolate ./tests/architecture",
                     "test:ext":  "bun test --isolate ./tests/ext",
+                    "test:adk":  "agents/google-adk/.venv/Scripts/python.exe -m pytest agents/google-adk/tests -q",
                     "test":  "bun run test:jev && bun run test:platform-suite && bun run test:copilot && bun run test:frontend && bun run test:architecture && bun run test:ext && bun test --isolate ./tests/dashboard-model.test.ts ./tests/landing-brand-theme.test.ts",
                     "test:e2e":  "playwright test -c tests/playwright.config.ts",
                     "qa:server":  "bun scripts/qa-platform.ts",

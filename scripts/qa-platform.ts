@@ -8,7 +8,7 @@ const origin = 'http://127.0.0.1:3001';
 const runtime = resolve('var/lib/qa', crypto.randomUUID());
 mkdirSync(runtime, { recursive: true }); mkdirSync('var/run', { recursive: true });
 const bootstrapToken = opaque();
-const app = createPlatformApp({ databasePath: join(runtime, 'platform.sqlite'), bootstrapToken, allowedOrigins: [origin],rateLimits:{identityGlobal:300,identityAccount:60,actor:1000} });
+const app = createPlatformApp({ databasePath: join(runtime, 'platform.sqlite'), bootstrapToken, allowedOrigins: [origin],rateLimits:{identityGlobal:300,identityAccount:60,actor:1000,copilotRun:600,copilotTool:600,copilotControl:2000} });
 type Account = { email: string; password: string; userId: string };
 const accounts = {} as Record<'founder' | 'customer' | 'staff' | 'developer', Account>;
 let founderCookie = '', founderCsrf = '';

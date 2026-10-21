@@ -201,14 +201,15 @@
       "testFile": "tests/platform/copilot-adk-bridge.test.ts",
       "testName": "ADK bridge replays a hardcoded AG-UI transcript fixture (NOT a live delegation transcript)",
       "testNameKind": "prose",
-      "gap": "Real ADK delegation exists on the Python side, but the cited Python test does not assert a delegation transcript and is executed by no npm script or CI job, and the TypeScript evidence replays a hardcoded transcript fixture. The TypeScript runtime has no parent-to-child delegation, no trace propagation and no budget inheritance.",
+      "gap": "Separuh PYTHON sudah terbukti: delegasi master → specialist melalui ADK sebenar (delegatedBy \"abangcolek_ops\", delegatedAgent \"commerce_reader\", a2ui.provenance.delegatedBy, adk.tool + adk.sessionId) dan intent takresolved dilapor dengan reason code, bukan direka. 23 ujian pytest lulus melalui `bun run test:adk` (venv workspace agents/google-adk/.venv). Yang BELUM dipenuhi: runtime TypeScript (server/agents/copilot) tiada parent→child delegation, tiada trace propagation dan tiada warisan bajet — jadi baris ini kekal implemented_unverified.",
       "externalGate": null,
       "evidenceRefs": [
-        "agents/google-adk/DEPENDENCY-NOTES.md"
+        "agents/google-adk/DEPENDENCY-NOTES.md",
+        "reports/implementation/evidence/CPK-10.json"
       ],
       "environment": "local",
       "integrationStage": "protocol_verified",
-      "evidenceProves": "Real Google ADK delegation exists on the Python side and is proven by a live AG-UI transcript (master -> transfer_to_agent -> specialist). The TypeScript runtime has no parent-to-child delegation, no trace propagation and no budget inheritance, so the row is not fully closed.",
+      "evidenceProves": "Python: delegasi ADK sebenar diuji — test_master_agent_delegates_to_a_specialist_through_adk menghantar POST /agent/abangcolek_ops dan asserts delegatedBy/delegatedAgent/provenance/adk.tool/adk.sessionId; 23 pytest lulus (bun run test:adk). Skop TERHAD: ini bukti separuh PYTHON sahaja; runtime TypeScript belum mempunyai delegasi parent→child, trace propagation atau warisan bajet.",
       "remainingRequirement": "The TypeScript runtime has no parent-to-child delegation, no trace propagation and no budget inheritance."
     },
     {

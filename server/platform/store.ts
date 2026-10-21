@@ -90,7 +90,7 @@ export class PlatformStore {
     const stamp = Date.now();
     this.atomic(() => {
       const row = this.db.query<{count:number;reset_at:number}, [string]>('SELECT count,reset_at FROM throttle WHERE bucket=?').get(bucket);
-      if (row && row.reset_at > stamp && row.count >= maximum) fail('RATE_LIMITED', 429, 'Terlalu banyak permintaan. Cuba semula sebentar lagi.');
+      if (row && row.reset_at > stamp && row.count >= maximum) fail('RATE_LIMITED', 429, `Terlalu banyak permintaan (had ${maximum} seminit untuk ${bucket.split(':')[0]}). Cuba semula sebentar lagi.`);
       this.db.query('INSERT INTO throttle VALUES(?,?,?) ON CONFLICT(bucket) DO UPDATE SET count=excluded.count,reset_at=excluded.reset_at').run(bucket, row && row.reset_at > stamp ? row.count + 1 : 1, row && row.reset_at > stamp ? row.reset_at : stamp + 60_000);
       this.db.query('DELETE FROM throttle WHERE reset_at<?').run(stamp - 60_000);
     });
