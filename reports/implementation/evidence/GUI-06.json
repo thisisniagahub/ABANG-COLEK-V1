@@ -1,6 +1,6 @@
 {
   "requirementId": "GUI-06",
-  "status": "verified_local",
+  "status": "implemented_unverified",
   "environment": "local_test",
   "timestamp": "2026-10-20T05:25:00Z",
   "sourceCommit": "HEAD",
@@ -19,6 +19,5 @@
   ],
   "actualProviderModel": "deterministic_local",
   "reviewer": "integrator",
-  "limitations": "Anti-Arbitrary Dynamic Injection protocol strictly active."
+  "limitations": "Anti-Arbitrary Dynamic Injection protocol strictly active. Bukti ini meliputi allowlist + anti-injection sahaja; had struktur A2UI §4:93 (2 surfaces/64 components/depth 8/128 patch ops/512 ops) dan catalog A2UI ber versioning belum di-mount ke laluan dilayani"
 }
-

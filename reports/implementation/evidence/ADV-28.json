@@ -1,0 +1,19 @@
+{
+  "requirementId": "ADV-28",
+  "status": "verified_local",
+  "environment": "local_test",
+  "timestamp": "2026-10-21T08:15:08.116Z",
+  "sourceCommit": "1fc218e5784efb890641bba1e46ac97f617639a3",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "testName": "a candidate that FAILS evaluation is not publishable",
+  "testPath": "tests/platform/intelligence-learning-pipeline.test.ts",
+  "command": "bun test ./tests/platform/intelligence-learning-pipeline.test.ts",
+  "exitCode": 0,
+  "result": "11 pass / 0 fail / 54 expect() calls",
+  "artifactRefs": [
+    "tests/platform/intelligence-learning-pipeline.test.ts"
+  ],
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "integrator-2026-10-21",
+  "limitations": "Bukti diambil daripada larian sebenar fail ujian yang dipetik (tests/platform/intelligence-learning-pipeline.test.ts). Skop TERHAD: ia membuktikan baris requirement ini sahaja; baris requirement lain yang dipetik dalam fail yang sama tidak ditadbirkan di sini. "
+}

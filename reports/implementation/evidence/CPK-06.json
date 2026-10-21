@@ -1,6 +1,6 @@
 {
   "requirementId": "CPK-06",
-  "status": "verified_local",
+  "status": "implemented_unverified",
   "environment": "local_test",
   "timestamp": "2026-10-20T05:25:00Z",
   "sourceCommit": "HEAD",
@@ -15,6 +15,5 @@
   ],
   "actualProviderModel": "deterministic_local",
   "reviewer": "integrator",
-  "limitations": "Execution blocked with EXECUTOR_UNAVAILABLE when physical executor absent; expiry strictly checked."
+  "limitations": "Execution blocked with EXECUTOR_UNAVAILABLE when physical executor absent; expiry strictly checked. Bukti ini hanya meliputi kelifecycle proposal/execution; requirement penuh (executor didaftar untuk SETIUP action type yang diluluskan, bukan refund.execute sahaja) belum dipenuhi —/scripts review offen"
 }
-

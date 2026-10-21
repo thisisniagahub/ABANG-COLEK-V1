@@ -1,0 +1,19 @@
+{
+  "requirementId": "MOD-10",
+  "status": "verified_local",
+  "environment": "local_test",
+  "timestamp": "2026-10-21T08:15:00.681Z",
+  "sourceCommit": "1fc218e5784efb890641bba1e46ac97f617639a3",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "testName": "Founder berjaya menjadualkan kerja morning_brief, worker menuntut dan menghasilkan artifak sah",
+  "testPath": "tests/copilot/mod-10-automations.test.ts",
+  "command": "bun test ./tests/copilot/mod-10-automations.test.ts",
+  "exitCode": 0,
+  "result": "13 pass / 0 fail / 75 expect() calls",
+  "artifactRefs": [
+    "tests/copilot/mod-10-automations.test.ts"
+  ],
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "integrator-2026-10-21",
+  "limitations": "Bukti diambil daripada larian sebenar fail ujian yang dipetik (tests/copilot/mod-10-automations.test.ts). Skop TERHAD: ia membuktikan baris requirement ini sahaja; baris requirement lain yang dipetik dalam fail yang sama tidak ditadbirkan di sini. "
+}

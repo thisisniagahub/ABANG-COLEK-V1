@@ -1,0 +1,19 @@
+{
+  "requirementId": "AI-01",
+  "status": "verified_local",
+  "environment": "local_test",
+  "timestamp": "2026-10-21T08:15:09.860Z",
+  "sourceCommit": "1fc218e5784efb890641bba1e46ac97f617639a3",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "testName": "Badan JSON rosak ditolak dengan MALFORMED_JSON_PAYLOAD",
+  "testPath": "tests/platform/copilot-runtime-pipeline.test.ts",
+  "command": "bun test ./tests/platform/copilot-runtime-pipeline.test.ts",
+  "exitCode": 0,
+  "result": "26 pass / 0 fail / 151 expect() calls",
+  "artifactRefs": [
+    "tests/platform/copilot-runtime-pipeline.test.ts"
+  ],
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "integrator-2026-10-21",
+  "limitations": "Bukti diambil daripada larian sebenar fail ujian yang dipetik (tests/platform/copilot-runtime-pipeline.test.ts). Skop TERHAD: ia membuktikan baris requirement ini sahaja; baris requirement lain yang dipetik dalam fail yang sama tidak ditadbirkan di sini. "
+}

@@ -1,0 +1,19 @@
+{
+  "requirementId": "ADV-25",
+  "status": "verified_local",
+  "environment": "local_test",
+  "timestamp": "2026-10-21T08:15:07.704Z",
+  "sourceCommit": "1fc218e5784efb890641bba1e46ac97f617639a3",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "testName": "Founder execution: NEVER generates fake receipt and strictly returns EXECUTOR_UNAVAILABLE",
+  "testPath": "tests/platform/adversarial-m1-integrity.test.ts",
+  "command": "bun test ./tests/platform/adversarial-m1-integrity.test.ts",
+  "exitCode": 0,
+  "result": "18 pass / 0 fail / 676 expect() calls",
+  "artifactRefs": [
+    "tests/platform/adversarial-m1-integrity.test.ts"
+  ],
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "integrator-2026-10-21",
+  "limitations": "Bukti diambil daripada larian sebenar fail ujian yang dipetik (tests/platform/adversarial-m1-integrity.test.ts). Skop TERHAD: ia membuktikan baris requirement ini sahaja; baris requirement lain yang dipetik dalam fail yang sama tidak ditadbirkan di sini. "
+}

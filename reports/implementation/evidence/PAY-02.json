@@ -1,6 +1,6 @@
 {
   "requirementId": "PAY-02",
-  "status": "verified_local",
+  "status": "blocked_external",
   "environment": "local_test",
   "timestamp": "2026-10-20T05:25:00Z",
   "sourceCommit": "HEAD",
@@ -15,6 +15,5 @@
   ],
   "actualProviderModel": "deterministic_local",
   "reviewer": "integrator",
-  "limitations": "Holds late payment under payment_exception_review without reviving cancelled order."
+  "limitations": "Holds late payment under payment_exception_review without reviving cancelled order. Perjalanan hujung-ke-hujung (redirect + callback pembekal sebenar) memerlukan kredensial merchant gateway + PLATFORM_PAYMENT_WEBHOOK_SECRET; hanya separuh tempatan disahkan"
 }
-

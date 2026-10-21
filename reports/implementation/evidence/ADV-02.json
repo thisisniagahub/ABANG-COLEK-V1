@@ -1,0 +1,19 @@
+{
+  "requirementId": "ADV-02",
+  "status": "verified_local",
+  "environment": "local_test",
+  "timestamp": "2026-10-21T08:15:01.122Z",
+  "sourceCommit": "1fc218e5784efb890641bba1e46ac97f617639a3",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "testName": "Setiap alatan didaftar dengan input contoh yang sah",
+  "testPath": "tests/platform/adv-tools-capability-coverage.test.ts",
+  "command": "bun test ./tests/platform/adv-tools-capability-coverage.test.ts",
+  "exitCode": 0,
+  "result": "34 pass / 0 fail / 389 expect() calls",
+  "artifactRefs": [
+    "tests/platform/adv-tools-capability-coverage.test.ts"
+  ],
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "integrator-2026-10-21",
+  "limitations": "Bukti diambil daripada larian sebenar fail ujian yang dipetik (tests/platform/adv-tools-capability-coverage.test.ts). Skop TERHAD: ia membuktikan baris requirement ini sahaja; baris requirement lain yang dipetik dalam fail yang sama tidak ditadbirkan di sini. "
+}

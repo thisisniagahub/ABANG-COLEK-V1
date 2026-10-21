@@ -1,0 +1,19 @@
+{
+  "requirementId": "MOD-06",
+  "status": "verified_local",
+  "environment": "local_test",
+  "timestamp": "2026-10-21T08:15:00.324Z",
+  "sourceCommit": "1fc218e5784efb890641bba1e46ac97f617639a3",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "testName": "Alatan calculate_points_balance menukar mata kepada nilai ringgit sen integer tepat",
+  "testPath": "tests/copilot/mod-06-loyalty.test.ts",
+  "command": "bun test ./tests/copilot/mod-06-loyalty.test.ts",
+  "exitCode": 0,
+  "result": "14 pass / 0 fail / 99 expect() calls",
+  "artifactRefs": [
+    "tests/copilot/mod-06-loyalty.test.ts"
+  ],
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "integrator-2026-10-21",
+  "limitations": "Bukti diambil daripada larian sebenar fail ujian yang dipetik (tests/copilot/mod-06-loyalty.test.ts). Skop TERHAD: ia membuktikan baris requirement ini sahaja; baris requirement lain yang dipetik dalam fail yang sama tidak ditadbirkan di sini. "
+}

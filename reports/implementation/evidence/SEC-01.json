@@ -1,6 +1,6 @@
 {
   "requirementId": "SEC-01",
-  "status": "verified_local",
+  "status": "implemented_unverified",
   "environment": "local_test",
   "timestamp": "2026-10-20T05:25:00Z",
   "sourceCommit": "HEAD",
@@ -16,6 +16,5 @@
   ],
   "actualProviderModel": "deterministic_local",
   "reviewer": "integrator",
-  "limitations": "Immediate fail closed on session revocation during upload stream."
+  "limitations": "Immediate fail closed on session revocation during upload stream. Bukti ini meliputi revocation semasa strim muat naik sahaja; requirement penuh (public tracking token: expiry handover, revocation path, per-token rate limit) belum dipenuhi"
 }
-

@@ -16,6 +16,10 @@ Diselaraskan berdasarkan receipt bertarikh **21 Oktober 2026**. Dokumen ini iala
 | [Backlog tersusun](../reports/open-task-backlog-20261021.md) | 50 item belum siap (W0 evidence → W1 core runtime → W2 domain → W3 closure → W4 bina baharu) + 8 gate akaun, dependency-ordered dengan owner lane dan Definition of Done | plan kerja |
 | [Wave 1 checkpoint](../reports/wave1-checkpoint-20261021.md) | Bukti wave 1: gate, senarai fail, baki | checkpoint |
 | [Preflight KILO-00](../reports/implementation/kilo-completion-preflight-20261021.md) + [pelan](../docs/superpowers/plans/2026-10-21-kilo-completion-implementation.md) | Jejak punca 500 production, peta assignment + skill setiap assignment, external gates | pelan pelaksanaan |
+| [Audit parity emons.de](../reports/emons-parity-audit-20261021.md) | Recon live emons.de (E-001…E-009) berbanding pelaksanaan ABANGCOLEK; 3 regresi dijumpai & dibaiki | audit |
+| [Commerce & Growth](../docs/design/commerce-growth.md) | Amendment rasmi: public store per dealer, workspace private, referral satu peringkat dua hala, ledger berasingan, sub-checklist CG-01…CG-12 | spesifikasi (TARGET_DESIGN) |
+
+**Pekerjaan sedang berjalan (21 Okt):** closure item wajib — 3 lane delegasi (frontend AG-UI/state `CPK-08/09, GUI-03..07`; backend Commerce & Growth P0 `CG-01..04`; browser/release `REL-01, DR-01, CG-12`) + 1 auditor bebas. Bukti ditulis ke `reports/implementation/evidence/<ID>.json` **sebelum** ledger disentuh, kemudian `verify-acceptance` → `render-acceptance-register` → checklist.
 
 Nota: seksyen di bawah disegarkan ke HEAD `1fc218e` bagi ledger, gate dan bukti provider. Working tree masih mempunyai kerja dalamVy (lihat `git status`) yang **belum** commit.
 

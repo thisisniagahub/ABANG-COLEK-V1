@@ -1,0 +1,19 @@
+{
+  "requirementId": "MOD-04",
+  "status": "verified_local",
+  "environment": "local_test",
+  "timestamp": "2026-10-21T08:14:59.921Z",
+  "sourceCommit": "1fc218e5784efb890641bba1e46ac97f617639a3",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "testName": "Alatan propose_refund hanya mencipta draf cadangan tanpa memutasi transaksi terus",
+  "testPath": "tests/copilot/mod-04-qc-jev.test.ts",
+  "command": "bun test ./tests/copilot/mod-04-qc-jev.test.ts",
+  "exitCode": 0,
+  "result": "17 pass / 0 fail / 98 expect() calls",
+  "artifactRefs": [
+    "tests/copilot/mod-04-qc-jev.test.ts"
+  ],
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "integrator-2026-10-21",
+  "limitations": "Bukti diambil daripada larian sebenar fail ujian yang dipetik (tests/copilot/mod-04-qc-jev.test.ts). Skop TERHAD: ia membuktikan baris requirement ini sahaja; baris requirement lain yang dipetik dalam fail yang sama tidak ditadbirkan di sini. "
+}
