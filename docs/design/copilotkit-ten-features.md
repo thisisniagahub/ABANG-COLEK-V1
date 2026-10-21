@@ -14,6 +14,10 @@ Gunakan field `integrationStage`: `designed` -> `component_present` -> `sdk_wire
 
 ## Matlamat dan batas
 
+**TARGET_DESIGN — Commerce & Growth 21 Oktober:** [spesifikasi commerce](commerce-growth.md) mengikat customer/dealer journeys kepada public store setiap Agent/Stokis aktif dan dedicated private Dealer Workspace melalui membership/grants canonical. Empat auth roles source tidak menggugurkan pengalaman dealer. Public store browsing anonymous tidak memberi private tool grants. Konteks store owner/dealer, customer referrer dan fulfiller mesti datang daripada server, diasingkan mengikut principal/store/org dan revision; Pet/shared state dibersihkan ketika logout, revoke atau pertukaran scope.
+
+Chat/cards/frontend tools membantu search, tracking dan penjelasan scoped sahaja. Cart/reorder ialah **unsent draft** yang direprice dan direvalidate canonical; model tidak menentukan payee, mengesahkan bayaran, menerbitkan kedai atau memberi reward. Wholesale margin, komisen dealer, referral pelanggan satu peringkat dua hala dan points kekal berasingan serta polisi approved menentukan eligibility/stacking. Share sahaja tiada reward; kadar lima tingkat Ahmad’s bukan polisi. Top-up, cash withdrawal dan native app wajib deferred. P0 ordering → P1 rewards → P2 retention ialah urutan domain dalam plan projek, tanpa melangkau integriti/runtime/CPK/GUI/release acceptance atau menutup tick melalui dokumentasi.
+
 Gunakan 10 kemampuan yang dipaparkan pada halaman Google ADK CopilotKit untuk membantu kerja sebenar ABANGCOLEK. React/Vite dan domain backend Bun dikekalkan. Agent ABANGCOLEK-OS dipetakan semula kepada command canonical, bukan diaktifkan dengan financial actions legacy.
 
 Pelan meliputi kesemua 10 kemampuan. Lapan kemampuan open-source dan dua kemampuan Intelligence mempunyai activation gates berasingan. Tiada langganan, bayaran inference, akaun cloud baharu atau penghantaran data kepada Intelligence dibenarkan hanya kerana dokumen ini ditulis. Jika Intelligence yang memenuhi syarat kos/data belum tersedia, dua kemampuan itu kekal `blocked_external`, bukan diganti dengan mock atau dilabel siap.

@@ -1,5 +1,7 @@
 # Workspaces — Spesifikasi Reka Bentuk Operasi (v0)
 
+> **Mandat pengguna, 21 Oktober 2026:** setiap Agent/Stokis aktif wajib mendapat **Dealer Workspace private dan Online Store public sendiri yang ABANGCOLEK sediakan**. Empat workspace/role yang diperhatikan dalam source di bawah ialah baseline implementasi, bukan had sasaran produk. Perincian wajib mengikut [blueprint §8.1](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md#81-mandat-online-store-setiap-agentstokis--21-oktober-2026) dan [workflow Agent/Stokis](user-workflows.md#5-agentstokis--workspace-sendiri-dan-online-store-sendiri). Pendaftaran rakan niaga tidak memerlukan pembelian terdahulu. Ini requirement belum dibuktikan siap; banner referral sedia ada tidak menggantikan provisioning kedai individu, public checkout dan workspace berscope.
+
 <!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
 > **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Kontrak sasaran kekal di bawah blueprint v2.4; scope reka bentuk dan keputusan tetap bukan bukti semua fungsi telah diimplementasi. Semak status per-ID dan environment sebelum mendakwa siap atau production-ready.
 <!-- ABANGCOLEK-CURRENT-STATUS:END -->
@@ -24,7 +26,7 @@ Dokumen adik-beradik: `docs/design/landing-page.md` (landing public), `docs/desi
 
 ## 1. Tujuan, Skop, Autoriti
 
-**Tujuan (TARGET_DESIGN)**: Mentakrifkan pengalaman operasi harian workspace ABANGCOLEK — empat peranan (Founder, Staff, Developer, Customer) yang masing-masing menjalankan tugas nyata atas rekod sebenar (orders, cases, tasks, inventory, approvals), bukan dashboard kosmetik.
+**Tujuan (TARGET_DESIGN)**: Mentakrifkan pengalaman operasi harian workspace ABANGCOLEK — empat auth roles source (Founder, Staff, Developer, Customer) dan dedicated Dealer Workspace melalui membership/grants canonical, menjalankan tugas nyata atas rekod sebenar (orders, cases, tasks, inventory, approvals).
 
 **Skop**:
 
@@ -47,14 +49,20 @@ Sumber: `shared/platform-contracts.ts` (`WorkspaceRole`), `src/features/platform
 | **Founder** | Pemilik bisnes; kelulusan, stok, kewangan, marketing, automations, pasukan & akses | `business.read` / `business.write` / `people.grant` |
 | **Developer** | Runtime & integrasi; health, automation jobs, JEV evaluation, diagnostics | `runtime.read` |
 
-### 2.1 Peraturan kritikal: tiada role URL "dealer"
+### 2.1 Baseline role dan pengalaman dealer wajib
 
 - **OBSERVED_SOURCE**: `WorkspaceRole` hanya `customer | staff | founder | developer`. Token `'dealer'` sebagai `CanonicalRole` wujud **hanya di lapisan server** (`server/platform/domainTools.ts` L30) untuk domain tools/API — **bukan** route URL dan **bukan** peranan UI.
 - **Pengalaman B2B masuk MELALUI membership**, bukan role URL:
   - `Membership.dealerOrgId` (opsyen pada membership customer) menandakan pelanggan tergolong dalam organisasi ejen.
   - `DealerApplication` (`pending | approved | rejected`) ialah laluan permohonan; kelulusan founder menambah `dealerOrgId` pada membership.
   - Route `/customer/business` (sisi customer) dan `/founder/dealers` (sisi founder) **kedua-duanya** merender pengalaman Dealers — dari sudut masing-masing.
-- **TARGET_DESIGN**: Jangan cipta role URL `dealer`, jangan tambah `WorkspaceRole` baharu, jangan pindahkan pengalaman B2B keluar daripada membership. Nilai `'dealer'` kekal sebagai konsep API-level sahaja.
+- **TARGET_DESIGN**: Reuse customer/business membership dan grant organisasi tanpa mengada auth role kelima. Setiap Agent/Stokis aktif tetap wajib mendapat dedicated Dealer Workspace dengan identiti/navigasi dealer serta public Online Store sendiri. Empat roles source bukan had pengalaman produk; nama route bukan authority tambahan. Direct signup atau jemputan founder tidak memerlukan pembelian dahulu.
+
+#### Dua surface dealer — TARGET_DESIGN
+
+Ikut [Commerce & Growth](commerce-growth.md): public store sasaran `/kedai/:slug` menyokong anonymous published browse, cart dan checkout canonical; private workspace mengurus kedai sendiri, link/QR, order berizin, stok/restock mengikut mod, statements/settlement dan bantuan. Pending/rejected tidak menerbitkan store aktif; suspend/revoke menghalang jualan baharu serta akses private yang tidak sah tanpa memadam receipt lama. Dealer A tidak boleh membaca atau mengubah private data B, sementara published store B kekal public.
+
+Store owner/dealer, customer referrer dan fulfiller diselesaikan server secara berasingan. Katalog/stock/checkout/tracking/reorder mengikut sumber fulfilment sebenar; reorder membina unsent cart baharu untuk reprice/revalidation. Wholesale margin, komisen dealer, referral pelanggan satu peringkat dua hala dan points dipaparkan berasingan mengikut polisi approved. Share sahaja bukan earning. MadConomy lima tingkat tidak diadopt; top-up/cash withdrawal/native wajib deferred. Ordering P0 → rewards P1 → retention P2 berada dalam domain phase sedia ada, selepas prerequisite integriti/runtime; tiada tick daripada spesifikasi ini.
 
 ### 2.2 Capability model (OBSERVED_SOURCE)
 
@@ -71,6 +79,8 @@ Sumber: `src/features/platform/routes.ts`.
 ### 3.1 Laluan public
 
 `publicPaths`: `/`, `/products`, `/locations`, `/become-dealer`, `/help`, `/login`, `/setup`; tambahan corak `/products/:id` (public) dan `/flows/:slug` (guided flow).
+
+**TARGET_DESIGN berasingan:** `/kedai/:slug` ialah public store dealer dalam [kontrak commerce](commerce-growth.md), belum dibuktikan oleh inventory source di atas. Login/checkout mengikut sesi canonical; private dealer workspace kekal membership/org-scoped.
 
 ### 3.2 Workspace `/{role}/{section}` (≤3 segmen; segmen ke-3 = entity id, hanya untuk entity sections)
 

@@ -8,6 +8,10 @@ Tarikh asal:19 Oktober 2026; disemak20 Oktober 2026. Status: DECIDED_FOR_IMPLEME
 
 ## Keputusan tetap
 
+### Amendment Commerce & Growth — 21 Oktober 2026
+
+Setiap Agent/Stokis aktif wajib mendapat Online Store public sendiri dan Dealer Workspace private dalam canonical platform yang sama. Reuse membership/grants; direct signup tidak memerlukan pembelian terdahulu. Server memisahkan store owner, buyer, customer referrer dan fulfiller serta mengekalkan snapshot order/policy. Referral pelanggan satu peringkat dua hala; margin wholesale, komisen, referral reward dan points berasingan. MadConomy lima tingkat/kadar competitor hanya research; top-up/cash withdrawal/native wajib tidak diaktifkan. Ikut [spec](../design/commerce-growth.md) dan [handover](../prompts/COMMERCE-GROWTH-HANDOVER-20261021.md), dengan subcriteria di bawah 85 ID dan bukti sebenar sebelum tick. Keputusan ini menambah kontrak produk, bukan acceptance siap.
+
 | Bidang | Pilihan pelaksana wajib |
 |---|---|
 | Source | `D:\ABANGCOLEK-PLATFORM`; preserve dirty changes; jangan clone/recreate/reset |

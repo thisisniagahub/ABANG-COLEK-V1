@@ -1,5 +1,15 @@
 # ABANGCOLEK — Operations Copilot architecture
 
+> **Compatibility mirror — 21 Oktober 2026:** [canonical root](../AI-AGENT-ARCHITECTURE.md). Kandungan disync daripada canonical dengan relative links diselaraskan; edit canonical dahulu dan sync mirror, bukan kontrak bebas.
+
+
+<!-- COMMERCE-GROWTH-20261021:BEGIN -->
+> **Amendment 21 Oktober 2026 — TARGET_DESIGN:** Commerce context sasaran: tools menerima store/order/fulfilment yang disahkan server; store owner dan customer referrer berasingan. Frontend cart/reorder hanya unsent draft. Agent/Pet tidak menentukan payee, mengesahkan payment atau memberi reward; HITL/canonical command/durable receipt kekal wajib. Scope 10 CPK/7 GUI/10 MOD/32 ADV tidak berubah.
+>
+> Rujukan: [spesifikasi canonical](../design/commerce-growth.md) · [handover lengkap](../prompts/COMMERCE-GROWTH-HANDOVER-20261021.md). Generated acceptance kekal berasaskan ledger dan receipt, bukan nota ini.
+<!-- COMMERCE-GROWTH-20261021:END -->
+
+
 <!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
 > **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Kontrak sasaran kekal di bawah blueprint v2.4; scope reka bentuk dan keputusan tetap bukan bukti semua fungsi telah diimplementasi. Semak status per-ID dan environment sebelum mendakwa siap atau production-ready.
 <!-- ABANGCOLEK-CURRENT-STATUS:END -->

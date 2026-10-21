@@ -6,6 +6,8 @@
 
 Authority semasa: [master blueprint v2.4](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md), [ADR-0003](../decisions/0003-blueprint-v23-execution-contract.md), [prompt utama](../prompts/IMPLEMENT-ABANGCOLEK.md).
 
+**Sambungan 21 Oktober 2026:** [Commerce & Growth](../design/commerce-growth.md), [handover](../prompts/COMMERCE-GROWTH-HANDOVER-20261021.md), [inventori disposition terkini](MARKDOWN-INVENTORY-GROWTH-20261021.md) dan [laporan alignment](../../reports/documentation-growth-alignment-20261021.md). Kiraan/hash/keputusan 19–20 Oktober di bawah ialah rekod sejarah; jangan gunakannya sebagai denominator semasa atau bukti implementasi growth.
+
 Inventori awal sesi ini: **356 Markdown = 120 dokumen projek + 236 skill-library files**. Semua disenaraikan mengikut path/hash/category dalam [register per-file](MARKDOWN-INVENTORY-20261019.md). Kiraan akhir termasuk dokumen/prompt baharu direkod selepas verification; jangan guna kiraan sejarah di bawah sebagai denominator semasa.
 
 Dokumen aktif disemak kandungan; dokumen sejarah mendapat supersession/authority context dan pembetulan pautan yang boleh disahkan. Skill vendor/managed di `skills/` dan `.agents/` dikekalkan dengan hashes; ia bukan business blueprint dan tidak ditulis semula atau didakwa semuanya dijalankan/semantic-audited. Generated/runtime/private/dependency trees dikecualikan daripada project documentation.

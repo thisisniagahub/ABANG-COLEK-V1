@@ -79,6 +79,10 @@ Satu ledger authoritative bagi setiap environment. Google ialah identity/integra
 
 Source: [platform contracts](../shared/platform-contracts.ts), [auth](../server/platform/auth.ts), [dealer domain](../server/platform/dealers.ts). Ejen/stokis **bukan role auth kelima** dalam model semasa; ia commercial organization yang dihubungkan kepada customer selepas approval.
 
+**TARGET_DESIGN — 21 Oktober 2026:** setiap Agent/Stokis aktif wajib mendapat Online Store public sendiri dan Dealer Workspace private dengan identiti/navigasi dealer. Reuse customer/business membership dan grant organisasi canonical; nama role source tidak menggugurkan pengalaman dealer atau mewajibkan pembelian sebelum pendaftaran. Anonymous browse hanya menggunakan published store projection; private orders/statement/management memerlukan scope organisasi yang disahkan server. Banner `?ref=` bukan bukti stable store ID, provisioning, public checkout atau fulfilment dealer sudah lengkap.
+
+[Kontrak Commerce & Growth](design/commerce-growth.md) memisahkan store owner/dealer, customer referrer dan fulfiller yang diselesaikan server. Checkout, stok, tracking dan reorder mengikuti sumber fulfilment sebenar; reorder ialah cart baharu yang direprice. Referral pelanggan satu peringkat dua hala mengikut polisi approved dipisahkan daripada wholesale margin, komisen dealer dan points. Share sahaja tidak menghasilkan reward. P0 ordering → P1 rewards → P2 retention kekal dalam domain phase selepas prerequisite runtime/integriti; top-up, cash withdrawal, native app wajib dan lima tingkat referral kekal deferred. Tiada acceptance ditutup oleh nota ini.
+
 ## 5. Feature registry
 
 IMPLEMENTED_LOCAL bermaksud domain source/API tersedia, bukan onboarding/vendor/production selesai.

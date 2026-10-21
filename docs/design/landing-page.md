@@ -81,6 +81,10 @@ Semua CTA landing hanya boleh guna route berikut (daripada `LandingPage.tsx` + `
 | `/customer/orders`, `/customer/cases` | Orders & cases customer |
 | `/help`, `/login` | Bantuan, login |
 
+**TARGET_DESIGN — Commerce & Growth 21 Oktober:** setiap Agent/Stokis aktif menerima public store sasaran `/kedai/:slug` dan private Dealer Workspace pada platform sama. Ini belum route/provisioning yang dibuktikan jadual source di atas. Published store boleh dibrowse anonymous; private management/order/statement memerlukan scope server. CTA pendaftaran dealer membenarkan daftar terus tanpa pembelian terdahulu. Query `ref`/`phone` dalam route lama bukan authority store owner, referrer eligibility, fulfiller atau payee.
+
+Ikut [spesifikasi commerce](commerce-growth.md): entry landing/HQ/dealer mengekalkan identiti store, seller dan sumber fulfilment sebenar hingga checkout/tracking. Reorder membuat cart baharu dengan harga/stok/polisi semasa; share biasa tidak memberi reward. Referral pelanggan satu peringkat dua hala hanya mengikut polisi approved, berasingan daripada margin/komisen/points; lima tingkat Ahmad’s kekal research. Ordering P0 → rewards P1 → retention P2 ialah urutan domain selepas prerequisite runtime/integriti. Top-up, cash withdrawal dan native wajib deferred; jangan tambah CTA yang menjanjikan ciri atau reward belum tersedia.
+
 ---
 
 ## 4. Enam bab sasaran (TARGET_DESIGN)

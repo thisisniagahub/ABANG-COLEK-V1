@@ -26,6 +26,8 @@ Chat/research/report lama, dua checkout, environment AI Studio dan deployment fr
 | DEC-07 | Current registry/backlog atas dated reports/research/skill library | Semua Markdown inventoried/classified; historical content retained with authority context |
 | DEC-08 | Separate source/test/runtime/data/release/business acceptance | No DONE_ALL from local test/build/docs success |
 
+**Amendment 21 Oktober 2026 — DEC-03:** empat auth roles/membership ialah baseline authorization, bukan larangan Dealer Workspace tersendiri. Setiap Agent/Stokis aktif wajib mendapat public store dan private workspace; direct signup tidak memerlukan pembelian dahulu. Ikut [Commerce & Growth](../design/commerce-growth.md) dan blueprint semasa. Tiada auth privilege/production status diberi melalui amendment dokumentasi.
+
 ## Alternatives dan sebab
 
 - Membina app ketiga atau mereset OS menambah divergence dan berisiko hilang data; tidak dipilih.

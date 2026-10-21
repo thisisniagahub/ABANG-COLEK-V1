@@ -1,0 +1,111 @@
+---
+name: THEFOUNDER-rebrand
+description: >-
+  Strips the original app's name, domain and colours out of the finished build - including inside identifiers - and fits it with the new identity, blocking the ship until the sweep is clean. Naming a new business from scratch belongs to THEFOUNDER-identity. Use when the user says "remove every trace of the original", "rebrand the clone", "sweep the codebase", "make it legally ours".
+---
+
+# THEFOUNDER-rebrand
+
+Nothing launches under the original's identity. This skill is the line
+between "a clone" and "your app".
+
+Tool in this folder:
+
+```bash
+python3 sweep.py . --avoid "Original Name,Its Company" --domains original.com --colors "#006bff"
+python3 sweep.py . --config THEFOUNDER/clone/brand.json        # same, from the brand file
+```
+
+Writes `THEFOUNDER/clone/brand.md` and `THEFOUNDER/clone/brand.json` (`avoid`, `domains`,
+`colors`, used by `sweep.py`, `listing.py` and THEFOUNDER-ship).
+
+## Step 1: the name
+
+Read the angle from `THEFOUNDER/clone/fixes.md`. Generate 20 candidates across styles:
+descriptive (Booklink), compound (Slotwise), invented (Calvo), metaphor
+(Harbor), verb (Book). Then cut to 5 with these filters:
+
+- **Not confusingly similar to the original** in sound, look or meaning, and
+  not to any other app in the same category. That is the test trademark
+  offices use, so it is the test here. No puns on their name, no "-ly" twin.
+- Short, spellable after hearing it once, no awkward meaning in big languages.
+- Says something about the angle, or at least does not fight it.
+
+## Step 2: the checks, run, not assumed
+
+For each of the 5, a row per check. Mark each **to run**, or the result with
+the date it was run. Never write "available" for a check nobody ran.
+
+| check | where |
+| --- | --- |
+| US trademark | tmsearch.uspto.gov, the app's class (usually 9 and 42) |
+| EU trademark | euipo.europa.eu eSearch, or TMview for many offices |
+| Canada | ised-isde.canada.ca trademarks database |
+| global | WIPO Global Brand Database |
+| domain | `whois name.com`, or the registrar's search |
+| App Store and Play | search the exact name |
+| handles | X, Instagram, TikTok, GitHub |
+| the web | search "name + category" |
+
+These are screening checks, not legal clearance. Before spending money on
+the name, a trademark lawyer should do a proper search.
+
+## Step 3: palette
+
+A new palette, written into the same token roles THEFOUNDER-interface set up.
+Pick a primary brand hue from a different family than the original's (if
+theirs is blue, yours is not a nearby blue). Then:
+
+```bash
+python3 ../THEFOUNDER-interface/contrast.py THEFOUNDER/clone/design/tokens.json
+```
+
+Zero AA failures. Add the original's brand colours to `brand.json` so the
+sweep catches any that survive.
+
+## Step 4: logo brief
+
+Not a logo, a brief for whoever makes it (the user, a designer, an image
+model):
+
+- the idea in one line, tied to the name and angle
+- mark type: wordmark, symbol plus wordmark, or monogram
+- must work at 16px (favicon) and as a 1024px app icon
+- deliverables: SVG, app icon 1024x1024 with no transparency for iOS,
+  favicon set, social image 1200x630
+- **must not resemble the original's mark**: no shared shape, colour pair or
+  letterform trick. Put the original's logo next to the drafts and check.
+
+## Step 5: voice
+
+Three words for how it sounds, with what each does not mean ("direct, not
+blunt"). Five do and don't pairs. Then rewrite the 10 most-seen strings in
+the clone (sign up, empty states, the main button, the confirmation, the
+error) in that voice. All fresh, none echoing the original's phrasing.
+
+## Step 6: the sweep
+
+Replace every placeholder name, colour and string. Then:
+
+```bash
+python3 sweep.py . --config THEFOUNDER/clone/brand.json
+```
+
+It searches file contents and file names for the original's name (also inside
+identifiers like `CalendlyEmbed`), domains and colours, skipping
+`node_modules`, build output and the `THEFOUNDER/clone/` planning folder. Exit 1 means
+something is left. Fix until it says clean. Also check by eye: the favicon,
+the page titles, the email templates, the OG image, the app icon.
+
+## Output
+
+`THEFOUNDER/clone/brand.md` (name with checks, palette, logo brief, voice),
+`THEFOUNDER/clone/brand.json`, updated tokens, rewritten strings, and a clean sweep.
+Next: `/THEFOUNDER-storefront`.
+
+## The fence
+
+- Never declares the sweep clean while a hit remains; the ship stays blocked.
+- Never chooses the business name - THEFOUNDER-identity owns naming.
+
+Credit: adapted from Jakeschincariol/replica-skill (MIT).

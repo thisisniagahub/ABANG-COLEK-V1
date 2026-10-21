@@ -1,10 +1,20 @@
 # ABANGCOLEK — Operations Copilot roadmap
 
+> **Compatibility mirror — 21 Oktober 2026:** [canonical root](../AI-AGENT-ROADMAP.md). Kandungan disync daripada canonical dengan relative links diselaraskan; edit canonical dahulu dan sync mirror, bukan kontrak bebas.
+
+
+<!-- COMMERCE-GROWTH-20261021:BEGIN -->
+> **Amendment 21 Oktober 2026 — TARGET_DESIGN:** Tambahkan CG-01..12 pada audit MOD/REF/LOY/PAY/SEC/PD/CPK/GUI/REL/DR sedia ada: P0 store/workspace + checkout/reconciliation/tracking, P1 approved single-level two-sided rewards + ledger/reversal, P2 reorder + consented retention. Ini dependency dalam domain phase; runtime/struktur/intelligence/release tidak dilangkau. Tiada tick roadmap diberikan melalui amendment ini.
+>
+> Rujukan: [spesifikasi canonical](../design/commerce-growth.md) · [handover lengkap](../prompts/COMMERCE-GROWTH-HANDOVER-20261021.md). Generated acceptance kekal berasaskan ledger dan receipt, bukan nota ini.
+<!-- COMMERCE-GROWTH-20261021:END -->
+
+
 <!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
 > **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Kontrak sasaran kekal di bawah blueprint v2.4; scope reka bentuk dan keputusan tetap bukan bukti semua fungsi telah diimplementasi. Semak status per-ID dan environment sebelum mendakwa siap atau production-ready.
 <!-- ABANGCOLEK-CURRENT-STATUS:END -->
 
-Diselaraskan: **19 Oktober 2026**. Status: **PLANNED**. [Blueprint v2.4](ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md), [architecture](../AI-AGENT-ARCHITECTURE.md), [pelan terperinci](../superpowers/plans/2026-10-19-copilotkit-ten-features.md) dan [prompts](../prompts/README.md) menentukan urutan. Tidak ada checkbox lulus melalui kemas kini Markdown ini.
+Diselaraskan: **19 Oktober 2026**. Status: **PLANNED**. [Blueprint v2.4](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md), [architecture](../AI-AGENT-ARCHITECTURE.md), [pelan terperinci](../superpowers/plans/2026-10-19-copilotkit-ten-features.md) dan [prompts](../prompts/README.md) menentukan urutan. Tidak ada checkbox lulus melalui kemas kini Markdown ini.
 
 ## 0. Baseline dan safety
 

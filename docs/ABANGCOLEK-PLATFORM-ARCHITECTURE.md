@@ -14,6 +14,14 @@ Domain: Operations Core; Commerce & Dealer Network; Orbit loyalty/referral; Oper
 
 ADR semasa: [ADR-0003](decisions/0003-blueprint-v23-execution-contract.md) menetapkan execution contract dan supersession local-only topology.
 
+## Commerce & Growth — kontrak sasaran 21 Oktober 2026
+
+[Spesifikasi Commerce & Growth](design/commerce-growth.md) mewajibkan satu public store `/kedai/:slug` dan satu private Dealer Workspace bagi setiap Agent/Stokis aktif pada aplikasi canonical yang sama. Reuse customer/business membership serta grant organisasi untuk dedicated dealer experience; tiada auth role kelima, database per dealer atau SaaS baharu diperlukan. Direct signup tidak memerlukan prior purchase. Anonymous browse membaca published projection sahaja; private management/order/statement disahkan server bagi setiap request.
+
+Server menyelesaikan stable store/dealer owner, pembeli, customer referrer serta mod/lokasi/pihak fulfilment secara berasingan dan menyimpan attribution/policy snapshot order. HQ stock tidak dipersembahkan sebagai local dealer stock. Cart berlainan store memerlukan conflict handling dan pengesahan baharu; checkout, tracking, refund dan reorder menggunakan authority canonical. Reorder membina unsent cart baharu dengan harga/stock/eligibility semasa, tanpa automatic payment. Existing order/payment/inventory/commission/loyalty atomic/CAS boundary kekal.
+
+Wholesale margin, dealer commission, referral pelanggan satu peringkat dua hala dan loyalty points mempunyai entri/eligibility tersendiri. Share biasa tidak memberi reward; kadar/stacking memerlukan polisi approved dan contribution yang sah. MadConomy lima tingkat ialah research, bukan compensation plan ABANGCOLEK. Top-up, cash withdrawal dan native app wajib deferred. P0 ordering → P1 rewards → P2 retention berada dalam domain phase sedia ada; ia tidak melangkau runtime atau release gates. Semua ini TARGET_DESIGN, bukan receipt route/provisioning/release.
+
 ## Runtime authority
 
 | Environment | Data authority dan lifecycle |

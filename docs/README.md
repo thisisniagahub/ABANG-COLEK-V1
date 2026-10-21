@@ -17,6 +17,13 @@ Diselaraskan: **20 Oktober 2026**. Blueprint ialah kontrak sasaran; source/runti
 5. [Platform architecture](ABANGCOLEK-PLATFORM-ARCHITECTURE.md) — domain dan runtime boundaries.
 6. [Struktur repo sasaran](design/repository-structure.md) dan [research GitHub](research/2026-10-19-github-project-structure.md) — pemetaan, dependency rules dan migrasi berperingkat; belum bukti fail dipindahkan.
 
+## Commerce & Growth — amendment 21 Oktober 2026
+
+- [Spesifikasi canonical](design/commerce-growth.md): Online Store setiap Agent/Stokis + Dealer Workspace private, pemisahan store owner/referrer/fulfiller, referral pelanggan satu peringkat dua hala dan sub-checklist CG-01..12.
+- [Handover lengkap](prompts/COMMERCE-GROWTH-HANDOVER-20261021.md): read order, file map, skills/MCP/fallback, ownership, TDD, browser proof, ledger dan continuation. Ia melengkapkan Kilo master bagi semua baki 85 requirement.
+- [Research model dealer](research/2026-10-21-dealer-storefronts-proven-models.md) dan [Ahmad’s app](research/2026-10-21-ahmad-app-concept-review.md): rujukan bukti; lima tingkat/kadar competitor, wallet top-up/cashout dan native wajib tidak diaktifkan.
+- P0 ordering/reconciliation → P1 approved rewards → P2 reorder/consented retention ialah urutan dalam domain phase, tanpa melangkau runtime/integrity/release. Dokumentasi tidak memberi tick aplikasi.
+
 ## Operations Copilot
 
 - [Architecture](AI-AGENT-ARCHITECTURE.md) dan [roadmap](AI-AGENT-ROADMAP.md).

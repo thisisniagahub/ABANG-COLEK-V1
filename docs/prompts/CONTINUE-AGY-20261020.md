@@ -1,5 +1,7 @@
 # Sambung ABANGCOLEK v2.4 — AGY CLI sebagai integrator dan pelaksana
 
+**Supersession21Oktober:** dokumen ini rekod sesi sejarah. Entry semasa ialah [Kilo master](KILO-COMPLETE-PROJECT-20261021.md), [commerce/growth handover](COMMERCE-GROWTH-HANDOVER-20261021.md) dan [spec canonical](../design/commerce-growth.md), bersama arahan pengguna semasa. Jangan memulakan semula agent/candidate lama atau menyalin ticks; receipt → ledger85 → verifier → renderer ialah aliran status semasa. Badan asal dipelihara untuk provenance.
+
 <!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
 > **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Rekod historical; pemerhatian, angka ujian, tick dan executor dalam badan asal merujuk sesi asal sahaja. Arahan launch/delegation lama tidak aktif. Status semasa dan bukti release ditentukan oleh rujukan di atas; kandungan asal dipelihara untuk provenance.
 <!-- ABANGCOLEK-CURRENT-STATUS:END -->

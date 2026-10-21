@@ -22,7 +22,7 @@ Baca dahulu, mengikut turutan:
 2. `docs/CURRENT-STATUS.md`, `docs/handover/IMPLEMENTATION-CHECKPOINT.md`, `reports/open-task-backlog-20261021.md`, `reports/wave1-checkpoint-20261021.md`.
 3. `reports/implementation/acceptance-status.json`, `reports/implementation/acceptance-verification.json`, `reports/implementation/activation-decisions.json` dan `PROJECT-CHECKLIST.md`.
 4. `docs/ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md`, `docs/decisions/0003-blueprint-v23-execution-contract.md`, `docs/prompts/AGENT-EXECUTION-CONTRACT.md`.
-5. Dokumen ini dan `docs/prompts/KILO-TASK-MATRIX-20261021.md`.
+5. Dokumen ini, `docs/prompts/KILO-TASK-MATRIX-20261021.md`, `docs/design/commerce-growth.md` dan `docs/prompts/COMMERCE-GROWTH-HANDOVER-20261021.md`. Growth ialah refinement subcriteria existing85 IDs, bukan receipt atau commercial policy baharu.
 6. Untuk task sahaja: `docs/design/copilotkit-ten-features.md`, `docs/design/copilot-generative-ui-seven-approaches.md`, `docs/design/copilot-advanced-tools.md`, `docs/design/repository-structure.md`, `DESIGN.md`, `docs/design/landing-page.md`, `docs/design/workspaces.md`, `docs/design/brand-spec.md`.
 7. Prompt fasa `00-baseline.md`, `03-domains-and-tools.md`, `01-structure.md`, `02-copilot-foundation.md`, `04-ui-and-agents.md`, `05-intelligence.md`, `06-release.md` apabila fasa berkaitan bermula.
 
@@ -71,6 +71,7 @@ Working directory pelaksanaan tetap root integration ini. Jika ownership aktif b
 - Server sahaja memiliki role, tenant, grants, prices, policy/revision, approval dan outcome. Payload browser/model, CORS, localhost atau X-Actor header bukan bukti authority. Revalidate pada setiap effect/resource read serta restore/reconnect.
 - Wang integer sen. Ratio menggunakan BigInt basis points; allocation deterministik, zero drift, explicit zero-denominator. Unknown/not-computed menggunakan `null` serta reason code; jangan menghasilkan 0, false, PASS atau confidence rekaan.
 - Simulasi/draf tidak membuat order, reserve stock, settlement, publication atau external send. Local transaction tidak dianggap cloud durable sebelum persistence/CAS berjaya. Idempotency terikat principal + operation + canonical payload hash.
+- Store owner, pihak fulfilment dan customer referrer ialah fakta berasingan yang diselesaikan server; slug/ref/phone tidak memilih payee. Simpan attribution/policy snapshot asal supaya payment/reconciliation/refund tidak menulis semula historical earning. Margin wholesale, komisen dealer, customer referral reward dan loyalty points kekal konsep/entri berasingan.
 
 ### 5.2 Model dan budget aplikasi
 
@@ -109,7 +110,7 @@ Had SDK yang lebih ketat mengatasi jadual. Query/simulation network <=10 saat da
 
 Gunakan komponen/token ABANGCOLEK, BM/English, light/dark, keyboard/focus, mobile, reduced motion dan WCAG 2.1 AA. Public landing mengikuti DESIGN.md dan storyboard enam bab dalam landing-page.md, termasuk founder, produk dahulu, CTA sebenar, camera journey/hotspot dan share berasaskan tindakan. Jangan mereka SKU Jerux, jenis buah, stok, harga, testimoni, aktiviti event terkini atau aset founder. Logo/favicon mesti aset ABANGCOLEK sebenar. Jangan menghasilkan semula aset balang/sticker yang telah ditolak pengguna.
 
-Katalog production kosong memerlukan data bisnes diluluskan; sediakan onboarding/import berizin dan empty state yang jujur. Fixture QA bukan data untuk diterbitkan. Share menggunakan canonical published product dan URL sebenar, dengan cancel/clipboard fallback; tiada reward atau penghantaran sosial automatik.
+Katalog production kosong memerlukan data bisnes diluluskan; sediakan onboarding/import berizin dan empty state yang jujur. Fixture QA bukan data untuk diterbitkan. Share menggunakan canonical published product dan URL sebenar, dengan cancel/clipboard fallback; share/signup sahaja tidak menghasilkan reward atau penghantaran sosial automatik. Qualified customer referral satu peringkat/dua hala menggunakan lifecycle eligibility/polisi berasingan, bukan ganjaran kerana klik/share.
 
 ## 6. Skills, plugins dan MCP: guna yang wujud
 
@@ -247,6 +248,12 @@ Satu acceptance ditutup hanya selepas browser merekod request -> real tool/state
 
 ### KILO-07 — tools/domain lengkap, JEV dan struktur
 
+Baca [spec commerce/growth](../design/commerce-growth.md) dan [handover](COMMERCE-GROWTH-HANDOVER-20261021.md). Di dalam domain03A/03B, urutan wajib ialah **P0 store/workspace, ordering/reconciliation/tracking → P1 rewards/penyata/refund reversal → P2 reorder/consented retention**. Integrity03A tetap sebelum struktur; runtime,10CPK,7GUI,10MOD,32ADV, Intelligence dan release gates asal kekal. Policy/provider gate satu reward tidak menangguhkan kerja P0 yang bebas. Kadar dan5-tier Ahmad’s/MadConomy research-only; wallet top-up/cashout, native app wajib dan referral berbilang tingkat deferred tanpa scope/policy baharu daripada pengguna.
+
+**Mandat pengguna 21 Oktober: setiap Agent/Stokis wajib mempunyai Online Store sendiri yang ABANGCOLEK sediakan, bersama Dealer Workspace private.** Ikut blueprint §8.1 dan diagram `docs/design/user-workflows.md` §5. Ini requirement wajib MOD-01/MOD-05/SEC-02/REL-01 yang menambah acceptance criteria, bukan penambahan denominator 85. Reassess bukti row berkenaan; jangan kekalkan verified hanya kerana ujian lama tidak meliputi store individu. Rakan niaga mendaftar terus atau dijemput, tanpa syarat pembelian terdahulu. Aktivasi sah -> provision store unik + private workspace secara idempotent -> public `/kedai/:slug` -> canonical cart/checkout -> server-bound store/dealer attribution -> scoped orders/commission/settlement. Route tersebut TARGET_DESIGN sehingga dibina. Existing `Shop` mempunyai banner Kedai Mini Ejen dan referral propagation; itu bukan bukti provisioning storefront milik setiap dealer.
+
+Sediakan branded public store dengan approved profile, published catalogue, cart/checkout dan pautan/QR, serta private dealer navigation bagi store/orders/restock/stock/commissions/settlements/support mengikut grants. Reuse canonical catalogue, identity dan domain; jangan bina commerce backend kedua atau SaaS baharu. Scope pada server, unique slug/reserved-name/collision validation, suspend/revoke, store/cart binding, duplicate activation dan cross-dealer IDOR wajib diuji. Public browsing tidak memerlukan login; checkout kekal mengikut canonical session policy. Jangan membenarkan client `ref`/`phone` memilih pemilik kedai atau payee, atau menjadikan jualan kasar sebagai payout. Ujian browser mesti meliputi dua dealer berlainan dan order/payment/refund yang attributed tepat. Role source empat sahaja tidak membatalkan kewajipan private Dealer Workspace; tambah surface/grants yang diperlukan tanpa memberi founder privilege atau memalsukan siap.
+
 Laksanakan semua **MOD-01..10, ADV-01..32 dan 19 requirement domain** dalam matriks. Audit row verified juga apabila source/claim bercanggah. Gunakan `docs/design/copilot-advanced-tools.md` untuk input/output dan acceptance boundary tepat bagi setiap tool, bukan katalog nama sahaja.
 
 Jurang yang mesti ditutup termasuk:
@@ -257,9 +264,9 @@ Jurang yang mesti ditutup termasuk:
 - ADV-20: export private, quota, CSV injection, bounded size, expiry dan **fresh download authorization/revocation**, bukan URL kekal berasaskan ID.
 - ADV-23/24/30/32: drafts/plans/tasks berizin dan grounded; permissions/policy/input revisions dipin. Untrusted SOP/document tidak memberi tool authority. Cadangan task tidak sama dengan assignment dilaksanakan.
 - MOD-02/SEC-01: public/private order projection, tracking token hash/expiry/revoke/rate limit dan URL hygiene. Order ID bukan public credential.
-- MOD-05/06: dealer org scope, commission due vs payment provenance, refund reversal/contra, referral self/duplicate/OTP/device/velocity signals dan unknown inputs tanpa rekaan risk score. Risk engine sudah mempunyai source/tests; semak sebelum bina semula.
+- MOD-05/06: dealer org scope, owner/fulfiller/customer-referrer separation, commission due vs payment provenance dan distinct commission/reward/points entries. Referral customer single-level/two-sided menguji empat kombinasi eligibility buyer/referrer, attribution/policy lock dan held/eligible/issued/reversed menggunakan enum domain sebenar. Refund/retry/replay tidak menggandakan credit/contra; stacking memerlukan polisi approved dan margin selepas semua manfaat. Self/duplicate/OTP/device/velocity signals dan unknown inputs tidak menghasilkan risk score rekaan. Risk engine sudah mempunyai source/tests; semak sebelum bina semula.
 - MOD-08/09: real cost basis/day-close exclusions/MYT period dan citations source/version/permission/expiry; jangan kekalkan metadata NONE setelah code wujud atau claim historical test menutup new code.
-- PD-01: consent provenance + preference + opt-out **pada masa dispatch** serta queued jobs dan asset consent; blanket publish-disabled bukan full implementation. Draft tidak send.
+- PD-01: consent provenance + preference + opt-out **pada masa dispatch** serta queued jobs dan asset consent; purchase bukan marketing consent. Reorder daripada order berizin membina cart baharu dengan reprice/store/availability/fulfilment/referral revalidation, tanpa automatic order/payment. Reminder/retention memerlukan channel/purpose consent dan revoke-after-enqueue proof; blanket publish-disabled bukan full implementation. Draft tidak send.
 - DR-01: backup integrity/manifest, non-destructive restore isolated target, actual measured RPO/RTO dan failure drill. Existing helper tests bukan production recovery drill; jangan overwrite operational DB. Production key/hosting drill kekal gated jika authority belum ada.
 
 Kekalkan Rules Own The Money bagi FIN/PAY/STK/LOY/REF/OFF/OPS. Lengkapkan approved modular structure stages A-D hanya selepas integrity/interface stabil: move manifest/hashes/import parity/test discovery dan boundary checks setiap stage. Tiada wholesale rename atau move runtime data roots. Arah module -> legacy platform sahaja; platform -> agents cycle tidak dibenarkan kecuali exception sah sedia direkodkan, bukan exception baru untuk menyembunyikan violation.

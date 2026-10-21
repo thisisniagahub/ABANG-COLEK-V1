@@ -1,5 +1,12 @@
 # ABANGCOLEK — capability matrix: skills, MCP, plugins dan fallbacks
 
+<!-- COMMERCE-GROWTH-20261021:BEGIN -->
+> **Amendment 21 Oktober 2026 — TARGET_DESIGN:** Amendment scope produk: source banner Kedai Mini Ejen atau customer-business membership belum membuktikan provisioned store individu, public checkout dan private workspace. CG-01..12 memperluas acceptance existing IDs; tiada upgrade status/tick dibuat di sini. Semua claim runtime dalam badan bertarikh mesti dipadankan semula kepada current source/receipt.
+>
+> Rujukan: [spesifikasi canonical](../design/commerce-growth.md) · [handover lengkap](../prompts/COMMERCE-GROWTH-HANDOVER-20261021.md). Generated acceptance kekal berasaskan ledger dan receipt, bukan nota ini.
+<!-- COMMERCE-GROWTH-20261021:END -->
+
+
 <!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
 > **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Panduan aktif mengikut skop fail ini. Fakta source/runtime dan ownership semasa dirujuk di atas; arahan atau baseline bertarikh lama memerlukan revalidation. Tiada acceptance aplikasi ditutup oleh alignment dokumentasi.
 <!-- ABANGCOLEK-CURRENT-STATUS:END -->

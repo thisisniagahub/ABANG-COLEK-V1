@@ -1,5 +1,7 @@
 # ABANGCOLEK — Deterministic Implementation Prompt Pack v2.4
 
+**Handover commerce/growth 21 Oktober:** baca [brief pelaksanaan](COMMERCE-GROWTH-HANDOVER-20261021.md) dan [spesifikasi canonical](../design/commerce-growth.md) bersama entry Kilo. Setiap dealer aktif mendapat public `/kedai/:slug` + workspace private tanpa syarat pembelian terdahulu. Store owner, pihak fulfilment dan customer referrer berasingan; referral pelanggan satu peringkat dan dua hala, dengan lejar commission/reward/points berasingan. P0 ordering/reconciliation → P1 rewards → P2 reorder/consented retention ialah keutamaan dalam domain03A/03B, bukan pengganti runtime, GUI atau release gates. Kadar Ahmad’s/MadConomy dan lima tingkat ialah research sahaja; wallet top-up/cashout serta native app wajib kekal deferred. Semua skop asal 10CPK/7GUI/10MOD/32ADV dan denominator85 dikekalkan; dokumen ini bukan receipt aplikasi.
+
 **Entry Kilo Code, 21 Oktober 2026:** [Prompt penyelesaian projek](KILO-COMPLETE-PROJECT-20261021.md) + [matriks semua 85 requirement](KILO-TASK-MATRIX-20261021.md). Gunakan kedua-duanya untuk implementasi baharu yang diminta pengguna: preflight keadaan sebenar, 12 dapatan audit, lane ownership, runtime/GUI/domain/EXT, bukti dan release gates. Prompt tidak melancarkan semula agent lama atau memberikan status siap. Rujukan candidate/model/baseline bertarikh 20 Oktober di bawah ialah konteks sejarah dan perlu revalidation; susunan model semasa menggunakan export sebenar `STRICT_FREE_CANDIDATE_SEQUENCE` dan provider register. Jangan memilih candidate lama sebagai working tree secara automatik.
 
 <!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
@@ -8,7 +10,7 @@
 
 **Konteks sesi 20 Oktober — sejarah:** ketika itu kerja disambung Codex inline pada candidate `codex-completion-20261020`. Nilai ini bukan working-tree instruction semasa. Baca [CURRENT-STATUS](../CURRENT-STATUS.md), [checklist](../../PROJECT-CHECKLIST.md), actual Git/source dan entry Kilo 21 Oktober di atas sebelum menyambung. Prompt CONTINUE-AGY/MULTI-CLI tidak membenarkan pelancaran semula implementation agents lama yang dihentikan pengguna.
 
-**Lihat kemajuan dahulu:** [PROJECT-CHECKLIST.md](../../PROJECT-CHECKLIST.md). Setiap prompt fasa mewajibkan integrator mengemas kini checkbox selepas task dengan actual evidence, environment dan reviewer. `implemented_unverified`/blocked/failed/not-run kekal unchecked; komponen siap tidak terus menutup parent feature. Ikut execution contract§10 dan sync register/checkpoint sebelum handoff.
+**Lihat kemajuan dahulu:** [PROJECT-CHECKLIST.md](../../PROJECT-CHECKLIST.md). Selepas task, integrator menulis actual receipt, mengemas kini ledger berdasarkan bukti, kemudian menjalankan verifier dan renderer. Checklist/register ialah generated dan tidak diedit dengan tangan. `implemented_unverified`/blocked/failed/not-run kekal unchecked; komponen siap tidak terus menutup parent feature. Ikut execution contract§10 dan simpan checkpoint sebelum handoff.
 
 Tarikh:20Oktober2026. Authority: [master blueprint](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md) dan [ADR-0003](../decisions/0003-blueprint-v23-execution-contract.md). Semua fail ini ialah arahan implementasi masa hadapan. Penulisan dokumen, komponen yang telah wujud atau report lama tidak membuktikan SDK/protocol/provider/production verified.
 
@@ -20,7 +22,7 @@ Tarikh:20Oktober2026. Authority: [master blueprint](../ABANGCOLEK-MASTER-GROWTH-
 
 | Step | Prompt | Inputs wajib | Deliverable/exit utama |
 |---|---|---|---|
-| 00 | [Baseline](00-baseline.md) | Current source/config/Git/runtime identity dan shared contract | Dirty/file manifest, baseline outcomes, capability availability, approved/unknown policy register,78 initial requirement rows |
+| 00 | [Baseline](00-baseline.md) | Current source/config/Git/runtime identity dan shared contract | Dirty/file manifest, baseline outcomes, capability availability, approved/unknown policy register; pelihara dan audit85 existing requirement rows |
 | 03A | [Domain integrity](03-domains-and-tools.md#fasa-03a--integriti-sebelum-struktur) |00 evidence, current domain source dan domain review | Exact integer margin/allocation, late-payment/refund/stock/offline/tracking/consent/security/AI invariants; red->green regression evidence |
 | 01 | [Structure](01-structure.md) |03A safe dependency closure, exact structure maps | Reviewed stages A–D, file/hash/import/test-discovery parity, architecture enforcement; no data-root move |
 | 02 | [Copilot foundation](02-copilot-foundation.md) |01 move manifest, exact ADR pins, identity/provider gates | Real SDK Fetch->HttpAgent->ADK, owned sessions/shared budget, CPK-01/09 and free-only policy; honest local/blocked status |

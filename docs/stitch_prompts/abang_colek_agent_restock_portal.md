@@ -1,3 +1,7 @@
+<!-- COMMERCE-GROWTH-HISTORY-20261021:BEGIN -->
+> **Konteks semasa 21 Oktober 2026:** badan bertarikh/mockup/proposal ini dikekalkan untuk provenance. Untuk pembangunan seterusnya, [Commerce & Growth](../design/commerce-growth.md) dan [handover](../prompts/COMMERCE-GROWTH-HANDOVER-20261021.md) memperincikan mandat public store setiap Agent/Stokis + private workspace, direct signup, server-bound store/referrer/fulfiller dan referral pelanggan satu peringkat dua hala. Contoh kadar, wallet, hierarki referral, empat role source atau arahan agent lama di bawah tidak meluluskan perubahan polisi/privilege atau menggantikan kontrak semasa. CG subcriteria memerlukan bukti di bawah ledger85; tiada status aplikasi dinaik taraf melalui nota sejarah ini.
+<!-- COMMERCE-GROWTH-HISTORY-20261021:END -->
+
 
 <!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
 > **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Rekod historical; pemerhatian, angka ujian, tick dan executor dalam badan asal merujuk sesi asal sahaja. Arahan launch/delegation lama tidak aktif. Status semasa dan bukti release ditentukan oleh rujukan di atas; kandungan asal dipelihara untuk provenance.

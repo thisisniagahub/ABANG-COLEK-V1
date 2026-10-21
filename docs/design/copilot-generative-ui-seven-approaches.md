@@ -8,6 +8,12 @@ Tarikh semakan: 20 Oktober 2026. Status: Kontrak sasaran GUI-01..07; beberapa ko
 
 ## Pilihan yang telah ditetapkan
 
+**TARGET_DESIGN — Commerce & Growth 21 Oktober:** [spesifikasi commerce](commerce-growth.md) terpakai kepada ketujuh-tujuh approach tanpa menambah GUI ID atau renderer kedua. Setiap Agent/Stokis aktif mempunyai public store dan private Dealer Workspace melalui membership/grants canonical. UI membezakan published public projection daripada private org-scoped order/statement. Paparkan store/seller dan sumber fulfilment sebenar; customer referrer ialah konteks berasingan yang hanya dipaparkan mengikut permission, bukan fakta yang disimpulkan daripada URL.
+
+Cards/tools/state menggunakan server-authorized refs/revisions untuk harga, availability, tracking dan eligibility. Cart/reorder controls hanya membina **unsent draft** untuk reprice/revalidation; tiada automatic order/payment/reward. Pisahkan wholesale margin, komisen dealer, referral pelanggan satu peringkat dua hala dan points dengan reason pending/unknown/reversed daripada polisi approved. Share biasa tidak memberi reward; kadar lima tingkat Ahmad’s tidak diadopt. Uji cross-store conflict, A/B private-data denial, account/store switch, logout/revoke clearing, stale data dan empat kombinasi kelayakan pembeli/perujuk. Fixture/card screenshots bukan bukti store provisioning, SDK/runtime atau durable transaction.
+
+Ordering P0 → rewards P1 → retention P2 ialah urutan dalam domain phase selepas prerequisite integriti/runtime; semua CPK/GUI dan release gates kekal. Top-up/cash withdrawal/native wajib deferred; jangan render janji cashout atau angka reward yang tiada sumber.
+
 Gunakan Google ADK Python melalui AG-UI dan TypeScript CopilotKit v2 runtime. React/Vite kekal. Pakai komponen ABANGCOLEK, data canonical serta renderer/schema yang disahkan dalam pinned packages. Jangan gunakan Built-in Agent hanya kerana halaman contoh generik menggunakannya. Tiada dynamic schema secondary-model inference.
 
 | ID | Use case dan implementasi sasaran | Acceptance |

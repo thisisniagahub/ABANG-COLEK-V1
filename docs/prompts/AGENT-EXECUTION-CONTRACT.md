@@ -4,9 +4,9 @@
 > **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Panduan aktif mengikut skop fail ini. Fakta source/runtime dan ownership semasa dirujuk di atas; arahan atau baseline bertarikh lama memerlukan revalidation. Tiada acceptance aplikasi ditutup oleh alignment dokumentasi.
 <!-- ABANGCOLEK-CURRENT-STATUS:END -->
 
-Tarikh: 20 Oktober 2026. Authority: [blueprint](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md), [ADR-0003](../decisions/0003-blueprint-v23-execution-contract.md). Ini kontrak sasaran, bukan pengesahan integrasi aktif. Baca bersama [prompt induk](IMPLEMENT-ABANGCOLEK.md) dan [register acceptance](ACCEPTANCE-REGISTER.md).
+Tarikh asal:20 Oktober2026; refinement21Oktober: [commerce/growth canonical](../design/commerce-growth.md) dan [handover](COMMERCE-GROWTH-HANDOVER-20261021.md) wajib dibaca bagi scope berkaitan. Authority: [blueprint](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md), [ADR-0003](../decisions/0003-blueprint-v23-execution-contract.md). Ini kontrak sasaran, bukan pengesahan integrasi aktif. Entry semasa [Kilo master](KILO-COMPLETE-PROJECT-20261021.md); candidate/executor lama memerlukan revalidation.
 
-**Checklist kemajuan wajib:** [PROJECT-CHECKLIST.md](../../PROJECT-CHECKLIST.md). Integrator mengemas kini checklist selepas setiap task bersama receipt, acceptance register dan checkpoint. Worker menghantar bukti/cadangan status; hanya integrator mengubah tick canonical. Ikut kontrak tick§10 di bawah.
+**Bukti kemajuan wajib:** [PROJECT-CHECKLIST.md](../../PROJECT-CHECKLIST.md) dan acceptance register ialah generated. Integrator menulis receipt, mengemas kini ledger85 berdasarkan bukti, kemudian menjalankan verifier dan renderer; jangan edit generated tick/register secara manual. Worker menghantar bukti/cadangan status; checkpoint merekod baki. Ikut§10 di bawah.
 
 ## 1. Keputusan tetap dan precedence
 
@@ -17,7 +17,7 @@ Tarikh: 20 Oktober 2026. Authority: [blueprint](../ABANGCOLEK-MASTER-GROWTH-BLUE
 5. Gunakan A2UI Fixed Schema. Dynamic schema, secondary schema-generation model, arbitrary HTML/JS dan generic shell/SQL/HTTP tool dilarang.
 6. MCP App pertama ialah read-only Operations Brief. Jangan menggantikan protocol/tool/resource/host dengan kad HTML atau REST JSON dan mendakwa GUI-05 siap.
 7. Tiada inference berbayar, paid overflow, hidden title/evaluation/memory/vision/voice model atau akaun baharu untuk mengelak quota.
-8. Sesi semasa: sifar background implementation workers; Codex melaksanakan task inline kerana pengguna menghentikan external agents. Bounded read-only review selepas diff stabil boleh dijalankan. Had umum tiga worker hanya terpakai jika pengguna kemudian mengaktifkan delegation semula; ketersediaan slot sahaja bukan authorization.
+8. Roster/executor sesi lama ialah sejarah; jangan restart AGY/Kilo/Copilot/Hermes yang dihentikan secara automatik. Dalam task implementasi baharu, gunakan delegation hanya apabila arahan pengguna/AGENTS semasa membenarkannya dan slot sebenar tersedia, maksimum tiga assignment dengan ownership terasing. Jika tiada authorization/tool, jalankan inline; ketersediaan slot sahaja bukan authorization. Task review/dokumentasi tidak melancarkan implementation aplikasi.
 
 ### Keputusan yang bukan pilihan agent
 
@@ -41,7 +41,7 @@ Snapshot audit awal20Oktober: integration `60311aa`, main ketika itu `e736856`. 
 
 Worktree `D:\ABANGCOLEK-WORKTREES\copilot-completion` telah diwujudkan tetapi operasi integrasi terputus. Sebelum menggunakannya, baca HEAD, branch, index, working diff, `MERGE_HEAD`, unmerged entries dan proses Git; jangan menyamakan ketiadaan conflict markers dengan merge lengkap. Jangan menulis aplikasi dalam worktree itu sehingga manifest/reconciliation diluluskan integrator berdasarkan bukti. Review dokumen ini tidak menyambung merge tersebut.
 
-Integrator memiliki migration map, composition/entry, dependency lock, shared contracts, checkpoint, acceptance register dan release. Backend worker memiliki domain adapters/execution dan ujian backend; frontend worker memiliki provider/surfaces/renderers dan ujian UI; Python worker memiliki ADK bridge/session/specialists dan ujian Python. Integrator memberi shared interface snapshot dahulu. Dua worker tidak menulis fail shared yang sama.
+Ownership canonical mengikut AGENTS: backend memiliki `server/**`, `api/**`, `shared/**`; frontend memiliki `src/**`; ujian memiliki `tests/**`, `scripts/**`; integrator memiliki docs/checkpoint/ledger dan menyelaras dependency/config/migration/release melalui satu assignment owned yang jelas. UI/backend workers tidak mengedit tests lane. Kerja Python `agents/google-adk/**` memerlukan assignment path terasing dan interface snapshot dahulu; tidak memberi hak pada fail lane lain. Integrator tidak menjadi writer shared contracts serentak dengan backend. Generated register/checklist hanya melalui renderer, bukan writer manual.
 
 Jangan bulk-copy seluruh worktree frontend/backend. Inventori fail, bandingkan snapshot dan port komponen yang diperlukan. Landing production, auth, route discovery dan persistence authority mesti kekal dilindungi. Jangan memindahkan DB, evidence, browser profiles atau secrets melalui Git.
 
@@ -111,6 +111,8 @@ Budget exhaustion menghasilkan typed reason dan mengekalkan committed/pending/un
 - Successful provider payment yang tiba selepas attempt expired/cancelled direkod sebagai verified receipt sekali; jangan mengubah fakta kewangan kepada failed atau menghidupkan order/stok secara automatik. Masuk `payment_exception_review`; canonical operator memilih fulfilment/refund melalui polisi yang diluluskan. Duplicate/out-of-order events kekal idempotent.
 - Approval hanya keputusan manusia. Success memerlukan command sebenar, fresh authorization/revisions, durable CAS, authoritative audit/journal reference dan receipt unik. Jangan menjana ID jurnal rawak untuk meniru execution.
 - Rate komisen, nilai point/reward, refund entitlement, MOQ dan polisi consent/retention mesti dibaca daripada polisi berversi yang diluluskan. Tiada nilai komersial dicipta oleh prompt ini.
+- Store owner, pihak fulfilment dan customer referrer diselesaikan server sebagai fakta berasingan; slug/ref/phone client tidak memilih payee. Snapshot attribution/policy asal dipelihara merentas payment/reconciliation/refund. Margin wholesale, komisen dealer, reward referral customer dan points tidak dicampur sebagai satu balance.
+- Referral customer satu peringkat dan dua hala mengikut eligibility setiap pihak; share/signup sahaja tiada reward. Kadar Ahmad’s/MadConomy/lima tingkat ialah research-only; wallet top-up/cashout dan native app wajib deferred. P0 ordering/reconciliation → P1 rewards → P2 reorder/consented retention berlaku dalam domain03A/03B, sambil mengekalkan struktur/runtime/GUI/release gates dan semua85 IDs.
 
 ## 6. Skill dan reviewer yang wajib mengikut tugas
 
@@ -179,11 +181,11 @@ Tiada publish seluruh branch integrasi yang mengandungi fake success/fixed busin
 
 ## 10. Checklist dan penutupan task wajib
 
-1. Sebelum task: baca `PROJECT-CHECKLIST.md`, semak next ready task, tandakan status `in_progress` untuk task owned dan rekod target requirement IDs. Checkbox kekal `[ ]`.
+1. Sebelum task: baca generated `PROJECT-CHECKLIST.md`, ledger dan checkpoint; rekod task owned/target IDs dalam plan atau checkpoint. Jangan edit generated checkbox atau menambah denominator85.
 2. Selepas task: integrator memeriksa hasil worker, actual command/exit, tests yang diwajibkan, environment, exact source/dirty hashes, reviewer dan receipt. Component/unit/synthetic pass tidak menutup acceptance yang masih memerlukan protocol/live/browser/domain evidence.
 3. Tick `[x]` hanya jika **keseluruhan acceptance bagi item berlabel itu** dipenuhi. Item task kecil boleh ditick tanpa menutup parent CPK/GUI/MOD/ADV; phase rollup lengkap hanya apabila semua mandatory exit gates selesai. `implemented_unverified`, `failed`, `not_run` dan `blocked_external` sentiasa unchecked.
-4. Untuk setiap tick: tambah evidence link yang benar-benar wujud, status/environment, SHA/dirty manifest, timestamp Malaysia dan reviewer. Kemas kini row ID sama dalam acceptance register dan checkpoint pada batch yang sama bagi ID yang wujud dalam register. DONE/NEXT direkod dalam checklist/log dan checkpoint sahaja; jangan menambah denominator requirement. Jangan membuat receipt pass daripada laporan agent atau label UI.
-5. Integrator ialah single writer checklist/counters. Workers tidak menukar tick serentak; mereka menghantar ID, status cadangan, test output, receipt dan remaining gaps.
-6. Jika source/config/dependency/identity berubah sehingga bukti tidak lagi sah, untick item terjejas, rekod sebab dan preserve receipt historical. Jangan reset seluruh checklist tanpa dependency impact review.
+4. Untuk status closure: tulis receipt dengan evidence link yang wujud, status/environment, SHA/dirty manifest, timestamp Malaysia dan reviewer; kemas kini existing ledger row hanya jika seluruh requirement asal serta subcriteria tambahan dipenuhi. Jalankan `bun scripts/maintenance/verify-acceptance.ts` kemudian `bun scripts/maintenance/render-acceptance-register.ts`. Jika gate/generator gagal, rekod kegagalan; jangan hand-edit generated checklist/register. DONE/NEXT kekal dalam plan/checkpoint/log, bukan ID acceptance tambahan.
+5. Integrator ialah single writer ledger/counters berdasarkan actual evidence. Workers menyerahkan ID, status cadangan, test output, receipt dan remaining gaps; mereka tidak mengedit generated ticks.
+6. Jika source/config/dependency/identity atau refinement skop menyebabkan bukti tidak mencukupi, reassess row terjejas, rekod baki/sebab dan preserve receipt historical. Perubahan status yang dibenarkan mesti berasaskan bukti kemudian melalui verifier/renderer; jangan reset seluruh ledger atau menulis tick secara manual.
 7. Sebelum handoff, interruption yang sempat direkod, commit/push atau tamat sesi: simpan current/next task, blocked reasons, evidence, counters mengikut kategori dan log perubahan. Jangan tick seluruh feature kerana sesi hendak tamat.
-8. Nyatakan progress sebagai acceptance closed/total **mengikut kategori**; jangan mengira percentage keseluruhan yang mencampurkan dokumentasi, source presence, local dan production. Counter `0/78` bermaksud tiada acceptance integrasi penuh ditutup, bukan tiada kod ditulis.
+8. Nyatakan progress sebagai acceptance closed/total **mengikut kategori** dan environment; inventori keseluruhan85 =78core+7EXT. Jangan mencampurkan dokumentasi/source presence/local/production atau menambah CG sub-checklist kepada denominator. `0/78core` hanya counter kategori, bukan jumlah projek.

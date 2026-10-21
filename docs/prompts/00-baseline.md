@@ -4,7 +4,9 @@
 > **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Panduan aktif mengikut skop fail ini. Fakta source/runtime dan ownership semasa dirujuk di atas; arahan atau baseline bertarikh lama memerlukan revalidation. Tiada acceptance aplikasi ditutup oleh alignment dokumentasi.
 <!-- ABANGCOLEK-CURRENT-STATUS:END -->
 
-> **Checklist wajib selepas setiap task:** baca [PROJECT-CHECKLIST.md](../../PROJECT-CHECKLIST.md). Integrator mengekalkan `[ ]` semasa in_progress/separa/blocked/failed/not_run; tukar kepada `[x]` hanya selepas acceptance item lulus dengan actual tests, environment, source manifest dan reviewer. Tambah evidence link yang wujud, sync acceptance register/checkpoint/counters dan rekod exact next task sebelum handoff. Worker menghantar bukti, bukan mengedit tick canonical serentak. Ikut execution contract§10; jangan menutup parent feature hanya kerana child task selesai.
+> **Bukti dan generated status:** baca [PROJECT-CHECKLIST.md](../../PROJECT-CHECKLIST.md). Integrator menulis actual receipt/environment/source manifest/reviewer, mengemas kini ledger85 berdasarkan bukti lengkap, kemudian menjalankan verifier dan renderer. Jangan edit generated checklist/register dengan tangan; separa/blocked/failed/not-run kekal unchecked. Worker menyerahkan bukti/baki; checkpoint menyimpan next task. Ikut execution contract§10; child task tidak menutup parent feature.
+
+**Refinement commerce/growth:** baca [spec canonical](../design/commerce-growth.md) dan [handover](COMMERCE-GROWTH-HANDOVER-20261021.md). Inventori store/workspace, attribution, polisi dan bukti semasa; pelihara ledger85, jangan reinitialize78 rows. Ini subcriteria existing85 IDs; tiada kadar/5-tier/wallet/native app baharu diluluskan dan tiada acceptance ditutup oleh dokumentasi.
 
 
 Status: **arahan implementasi masa hadapan**, bukan receipt aplikasi siap. Baca [master prompt](IMPLEMENT-ABANGCOLEK.md), [execution contract](AGENT-EXECUTION-CONTRACT.md), [acceptance register](ACCEPTANCE-REGISTER.md), [ADR-0003](../decisions/0003-blueprint-v23-execution-contract.md) dan [domain review](../../reports/blueprint-review-20261020-domain.md). Jalankan dahulu; next ialah **03A**, bukan 01. Jangan memilih stack, model, hosting atau business policy baharu.
@@ -20,7 +22,7 @@ Integrator memiliki baseline dan checkpoint; reviewer membaca tanpa mengubah sou
 | `reports/implementation/00-capability-availability.md` | Skill/plugin/MCP/CLI sebenar, probe, status callable/configured-only/auth-required/unavailable dan fallback |
 | `reports/implementation/domain-policy-decisions.md` | Commercial/privacy/recovery decision table; reference approval sebenar |
 | `reports/implementation/activation-decisions.json` | Exact activation schema execution contract §8; tiada credentials |
-| `reports/implementation/acceptance-evidence.md` | Semua 78 requirement rows daripada acceptance register dengan status/evidence berasingan |
+| `reports/implementation/acceptance-evidence.md` | Audit semua85 existing requirement rows daripada ledger, dengan status/evidence berasingan; jangan membina ledger baharu daripada prompt78-row lama |
 | `docs/handover/IMPLEMENTATION-CHECKPOINT.md` | Current/next task, ownership, dirty manifest, blockers, disabled states dan rollback |
 
 Fail yang wujud sahaja tidak memberi policy approval atau test pass. Jangan load semua skills/library ke context; baca hanya skill manifest yang relevan dalam execution contract §6–7.
@@ -93,12 +95,12 @@ Setiap domain decision menyimpan ID, owner, effective version, approved/not-appr
 
 ## 00.6 — Acceptance dan checkpoint
 
-Instantiate **78 core requirements**: CPK10+GUI7+MOD10+ADV32+master19. Registered functions boleh melebihi32; ini bukan jumlah tests. Ikut status vocabulary execution contract §9; source presence ialah observation. Bezakan future test/implementation path daripada actual existing file dan command yang sudah dijalankan. Adjacent ecosystem EXT rows kekal registry berasingan; jangan menambahnya kepada78 atau auto-enable kerana SDK dipasang.
+Pelihara dan audit **85 existing requirement IDs**:78core (CPK10+GUI7+MOD10+ADV32+master19) +7EXT. Jangan reinitialize ledger, membuang blocked rows atau mengganti85 dengan78. Registered functions boleh melebihi32; ini bukan jumlah tests. Map subcriteria commerce/growth kepada ID sedia ada mengikut spec tanpa menambah denominator. Ikut status vocabulary execution contract §9; source presence ialah observation. Bezakan future test/implementation path daripada actual existing file dan command yang sudah dijalankan. EXT mempunyai activation gates berasingan; jangan auto-enable kerana SDK dipasang.
 
 Tulis plan 03A dengan ownership fail/test, prerequisite, red test, implementation, green test, reviewer, exit gate dan next task. Maksimum3 workers hanya jika actual slots tersedia; failed spawn -> inline lane, jangan mengaku agent telah berjalan. Workers tidak revert edit orang lain.
 
 ## Exit gate dan continuation
 
-00 lulus apabila source/runtime inventory boleh diaudit, baseline outcomes direkod, 78 rows ada initial state, decision/MCP/SDK gates explicit dan independent read-only review selesai. Tiada claim runtime/provider/production verified daripada metadata.
+00 lulus apabila source/runtime inventory boleh diaudit, baseline outcomes direkod, semua85 existing rows dipadankan kepada bukti/baki semasa, decision/MCP/SDK gates explicit dan independent read-only review selesai. Tiada claim runtime/provider/production verified daripada metadata.
 
 Next: [03A integriti](03-domains-and-tools.md#fasa-03a--integriti-sebelum-struktur). `POLICY_UNCONFIGURED`, `PROVIDER_ELIGIBILITY_UNVERIFIED` atau Intelligence blocker menyekat capability tepat; synthetic/domain work bebas diteruskan. Runtime identity unknown menyekat restart/data mutation/restore. Checkpoint blocker mesti mempunyai reason, evidence, owner, safe state dan next executable task.

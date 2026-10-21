@@ -1,5 +1,12 @@
 # ABANGCOLEK — handover A–Z
 
+<!-- COMMERCE-GROWTH-20261021:BEGIN -->
+> **Amendment 21 Oktober 2026 — TARGET_DESIGN:** Entry handover Commerce & Growth di bawah ialah sambungan skop semasa, melengkapkan Kilo master untuk baki keseluruhan projek. Arahan/angka/agent roster lama dalam badan kekal sejarah; jangan melancarkan agent lama atau menggunakan candidate lama secara automatik. Kedai setiap dealer, single-level two-sided referral dan canonical attribution/fulfilment mesti dibaca daripada spec, bukan mockup/history.
+>
+> Rujukan: [spesifikasi canonical](../design/commerce-growth.md) · [handover lengkap](../prompts/COMMERCE-GROWTH-HANDOVER-20261021.md). Generated acceptance kekal berasaskan ledger dan receipt, bukan nota ini.
+<!-- COMMERCE-GROWTH-20261021:END -->
+
+
 <!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
 > **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Rekod historical; pemerhatian, angka ujian, tick dan executor dalam badan asal merujuk sesi asal sahaja. Arahan launch/delegation lama tidak aktif. Status semasa dan bukti release ditentukan oleh rujukan di atas; kandungan asal dipelihara untuk provenance.
 <!-- ABANGCOLEK-CURRENT-STATUS:END -->

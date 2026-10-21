@@ -1,11 +1,14 @@
 # AbangColek Sovereign GrowthOS & Orbit — Master Blueprint v2.4
 
+> **Compatibility mirror — 21 Oktober 2026:** [canonical root](../ABANGCOLEK-MASTER-GROWTH-BLUEPRINT.md). Kandungan disync daripada canonical dengan relative links diselaraskan; edit canonical dahulu dan sync mirror, bukan kontrak bebas.
+
+
 <!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
 > **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Kontrak sasaran kekal di bawah blueprint v2.4; scope reka bentuk dan keputusan tetap bukan bukti semua fungsi telah diimplementasi. Semak status per-ID dan environment sebelum mendakwa siap atau production-ready.
 <!-- ABANGCOLEK-CURRENT-STATUS:END -->
 
 **Versi:** 2.4 — kontrak pelaksanaan tetap, coverage penuh dan gates berbukti.
-**Tarikh semakan:** 20 Oktober 2026.
+**Tarikh semakan:** 21 Oktober 2026 — amendment Commerce & Growth; versi kontrak kekal v2.4.
 **Status:** Rujukan reka bentuk untuk pembangunan; implementasi, migrasi folder dan kesediaan production memerlukan bukti berasingan.  
 **Prinsip:** Rules Own The Money; domain modules; contribution margin; durable transactions; tiada caj inference baharu tanpa kebenaran; evidence sebelum dakwaan siap.
 
@@ -28,7 +31,7 @@ Dokumen ini menetapkan kontrak sasaran. Ia bukan pengesahan semua fungsi siap, s
 - [Prompt implementasi utama](../prompts/IMPLEMENT-ABANGCOLEK.md): arahan lengkap dan fasa pelaksanaan; bukan bukti tugas sudah selesai.
 - [Kontrak pelaksanaan agent](../prompts/AGENT-EXECUTION-CONTRACT.md): ownership, budgets, skills, plugin/MCP manifest, keputusan kewangan deterministik dan failure actions.
 - [Register acceptance](../prompts/ACCEPTANCE-REGISTER.md): 78 requirement teras dan ekstensi CopilotKit yang digate secara berasingan; bukan jumlah tests.
-- [Checklist projek](../../PROJECT-CHECKLIST.md): paparan current phase, delivered scope, semua requirement, blockers dan evidence; agent wajib mengemas kini ticks mengikut acceptance selepas setiap task.
+- [Checklist projek](../../PROJECT-CHECKLIST.md): paparan dijana daripada ledger; integrator merekod receipt/status sah, menjalankan verifier kemudian renderer selepas task. Jangan edit generated ticks/counters secara manual.
 - [Review terperinci 20 Oktober](../../reports/blueprint-review-20261020.md): dapatan, metadata dependency, sumber primer dan batas review dokumentasi.
 - [Research GitHub](../research/2026-10-19-github-project-structure.md): sumber primer dan commit pin Bulletproof React, Medusa, CopilotKit, Hono dan Google ADK TypeScript.
 - [Review pemuktamadan](../handoffs/2026-10-19-blueprint-finalization-review.md): review chat Antigravity `80abddbc-37fb-472e-ac65-d96784cc5832` serta source.
@@ -40,7 +43,7 @@ Jika sasaran bercanggah dengan implementasi, rekodkan jurang. Mengemas kini blue
 
 ### 1.2 Di luar skop MVP
 
-Multi-tenant SaaS, pemasangan aplikasi native wajib, referral berbilang tingkat, perubahan polisi kewangan melalui pembelajaran autonomi dan migrasi framework menyeluruh ditangguhkan. Pemasangan SDK atau pembelian perkhidmatan bukan kesan automatik blueprint ini.
+Multi-tenant SaaS, pemasangan aplikasi native wajib, wallet top-up/cash withdrawal, referral berbilang tingkat, perubahan polisi kewangan melalui pembelajaran autonomi dan migrasi framework menyeluruh ditangguhkan. Pemasangan SDK atau pembelian perkhidmatan bukan kesan automatik blueprint ini. Lima tingkat dan kadar MadConomy Ahmad’s ialah perbandingan research sahaja, bukan polisi ABANGCOLEK.
 
 ## 2. Prinsip operasi dan kos
 
@@ -266,7 +269,29 @@ Secret server tidak berada dalam Git, client bundle atau chat log. Evidence keka
 
 ## 8. Dealer, loyalty, referral dan consent
 
-Pisahkan margin wholesale, komisen jualan ejen, referral pelanggan dan mata loyalty. Dealer link `?ref=...` tidak membuktikan two-sided customer referral lengkap.
+### 8.1 Mandat Online Store setiap Agent/Stokis — 21 Oktober 2026
+
+**USER_REQUIRED / TARGET_DESIGN:** setiap profil Agent/Stokis aktif wajib mendapat **Online Store sendiri yang ABANGCOLEK sediakan**, bersama **Dealer Workspace** untuk pengurusan. Ini bukan ciri pilihan atau sekadar pautan referral ke katalog umum. Empat role source semasa belum membuktikan sasaran workspace dealer selesai. Menu customer business dan asas Kedai Mini Ejen sedia ada boleh digunakan semula selepas disemak; jangan mendakwa kedai individu sudah provisioned kerana parameter `?ref=` diterima.
+
+- Rakan niaga boleh mendaftar terus melalui laluan Agent/Stokis tanpa pembelian terdahulu; founder boleh menjemput rakan niaga sedia ada. Istilah customer membership dalam source ialah butiran implementasi, bukan syarat mesti menjadi pembeli dahulu.
+- Selepas kelulusan/aktivasi sah mengikut polisi sedia ada, sistem menyediakan store ID stabil, slug unik dan akses workspace secara idempotent. Retry tidak menggandakan kedai. Permohonan pending/rejected tidak menerbitkan kedai aktif. Ini saluran jualan pada platform ABANGCOLEK yang sama; tidak memperkenalkan SaaS berbilang tenant atau bayaran langganan baharu.
+- **Storefront public:** laluan sasaran `/kedai/:slug`, nama kedai dan profil public yang diluluskan, katalog published, cart, checkout dan tracking berizin. Pelawat boleh melayari tanpa login; checkout mengikut keperluan sesi canonical. URL ini sasaran, bukan route yang sudah dibuktikan wujud. Custom domain/subdomain tidak diwajibkan.
+- **Dealer Workspace private:** urus profil kedai dalam batas jenama, pautan/QR, pesanan yang diizinkan, restock/stok mengikut polisi, komisen/settlement, bantuan dan aset marketing yang diluluskan. Akses berpunca daripada membership aktif dan scope server; workspace UI tersendiri tidak secara automatik memerlukan role privilege baharu.
+- Setiap store terikat kepada profil pemilik dan `dealerOrgId` yang sah. Slug/ref/phone pelayar bukan authority. Server menyelesaikan store aktif dan mengikat attribution order kepada store/dealer yang betul; cross-store cart, payload tampering dan akses organisasi lain ditolak atau meminta pengesahan baharu mengikut kontrak checkout.
+- Harga, stok, eligibility komisen, payment dan fulfilment menggunakan source/polisi canonical. Siapa fulfil HQ/dealer ditentukan konfigurasi sebenar, bukan andaian semua Agent memegang stok. Gross sales tidak sama dengan komisen earned, dan earned tidak sama dengan payout.
+- Suspension/revocation menghentikan jualan baharu serta akses yang tidak lagi sah tanpa memadam order, audit atau receipt lama. Public profile tidak mendedahkan alamat/telefon/dokumen peribadi tanpa kebenaran.
+
+**Acceptance wajib tambahan di bawah MOD-01/MOD-05/SEC-02/REL-01:** dealer A dan B menerima kedai/link berlainan; anonymous browse berfungsi; pembelian dari store A diikat server kepada A; duplicate activation tidak mencipta store kedua; pending/suspended/unknown slug tidak boleh menjual; login A tidak boleh membaca pengurusan private/order/statement B atau mengubah store B, sementara storefront published B kekal boleh dilayari; harga/ref/phone tampering tidak menukar authority; payment/refund/komisen dan browser mobile dibuktikan pada laluan sebenar. Ini memperluas skop requirement sedia ada atas arahan pengguna, tanpa mengubah denominator 85 atau memberi tick selesai. Agent wajib menilai semula status row berkaitan selepas membaca bukti semasa.
+
+### 8.2 Integriti attribution dan rewards
+
+Kontrak terperinci dan sub-checklist: [Commerce & Growth](../design/commerce-growth.md). Referral pelanggan ialah **satu peringkat dua hala**, dengan manfaat pembeli dan perujuk tertakluk kepada eligibility polisi masing-masing. Pisahkan margin wholesale, komisen jualan ejen, referral pelanggan dan mata loyalty. Dealer link `?ref=...` tidak membuktikan two-sided customer referral lengkap.
+
+- Server memisahkan store owner/dealer, buyer, customer referrer dan fulfiller; identiti ini boleh berbeza. Simpan attribution, fulfilment dan policy/revisions yang diperlukan pada order/ledger canonical. Slug/ref/phone tidak memilih payee atau sumber stok. Store tidak secara automatik mengaktifkan semua mod HQ fulfilment, dealer-owned stock atau consignment.
+- Cross-store cart memerlukan conflict/revalidation dan pengesahan pengguna; jangan menukar store/referrer secara senyap. Reorder menghasilkan cart/quote baharu daripada harga, stok, fulfilment, promo dan eligibility semasa; bukan replay order/payment lama.
+- Pending/held, eligible, issued serta redeemed/expired/reversed dipaparkan mengikut lifecycle domain sebenar. Retry, concurrent redemption dan callback/refund tidak menggandakan credit/contra. Selepas payout, gunakan adjustment append-only mengikut polisi.
+- Dealer commission dan customer referral stacking hanya apabila polisi approved membenarkan serta contribution selepas semua manfaat/fees/costs mencukupi. Tiada kadar, window, expiry atau aturan first/last-touch diambil daripada competitor atau fixture.
+- Share biasa tanpa qualified transaction tidak memberi reward. Retention/reorder reminders memerlukan consent mengikut purpose/channel dan opt-out disemak semula pada dispatch; pembelian bukan consent promosi automatik.
 
 - Kod dipadankan kepada entiti aktif; capture client bukan authority kelayakan.
 - Tetapkan attribution window, first/last touch, konflik kod, tempoh layak dan snapshot polisi.
@@ -280,6 +305,14 @@ IP/peranti sahaja tidak cukup untuk menolak keluarga berkongsi Wi-Fi. Risk signa
 Marketing consent menyimpan tujuan, channel, sumber, masa dan penarikan balik. Semak opt-out semula ketika dispatch termasuk mesej queued. Polisi transaksi dan promosi diasingkan; template allowlist bukan consent enforcement.
 
 Referral satu peringkat ialah pilihan produk, bukan pengesahan undang-undang. Sahkan terma, promosi, privasi, kewajipan jualan langsung dan keperluan e-Invois mengikut keadaan syarikat bersama pihak berkelayakan sebelum pelancaran berkaitan. Blueprint tidak menetapkan ambang undang-undang atau cukai yang belum disahkan.
+
+### 8.3 Urutan delivery dan bukti growth
+
+Di dalam domain phase, **P0** ialah store/workspace, stok/fulfilment, checkout, payment reconciliation dan tracking; **P1** ialah ledger berasingan, referral satu peringkat dua hala dan refund reversal; **P2** ialah reorder, consented retention serta measurement sebenar. Urutan global baseline → integriti → struktur → runtime → tools/UI → intelligence → release kekal. Ketiadaan polisi reward tidak menghalang kerja P0 yang bebas dan sah.
+
+[CG-01..12](../design/commerce-growth.md#8-sub-checklist-implementasi-dan-mapping-85-id) memetakan subcriteria kepada MOD/REF/LOY/PAY/SEC/PD/CPK/GUI/ADV/REL/DR sedia ada. Ia tidak menambah denominator 85, tidak mewarisi tick ujian lama dan tidak ditutup oleh dokumentasi. Audit semula affected rows dengan named tests, browser/protocol/receipt dan environment sebenar. Generated checklist/register hanya dihasilkan selepas ledger dan verifier sah.
+
+Research [model dealer](../research/2026-10-21-dealer-storefronts-proven-models.md) dan [Ahmad’s app](../research/2026-10-21-ahmad-app-concept-review.md) memberi rujukan; [handover pembangunan](../prompts/COMMERCE-GROWTH-HANDOVER-20261021.md) menetapkan read order, lane, skills/tools dan bukti. Research bukan approval kadar atau dakwaan fungsi sudah tersedia.
 
 ## 9. Copilot, JEV, Pet dan voice
 

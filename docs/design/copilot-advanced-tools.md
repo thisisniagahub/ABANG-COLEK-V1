@@ -18,6 +18,14 @@ Rujukan integrasi: [CopilotKit frontend tools](https://docs.copilotkit.ai/google
 
 Semua modul berikut termasuk dalam skop Copilot sasaran. MOD IDs tetap dan berasingan daripada CPK/GUI/ADV IDs. Specializations berikut sudah diputuskan dalam kontrak ini; implementer tidak memilih tool/architecture baharu untuk menutup jurang. Tiada row bermaksud integrasi aktif atau verified.
 
+### Konteks Commerce & Growth — TARGET_DESIGN 21 Oktober
+
+[Kontrak commerce](commerce-growth.md) menambah acceptance berscope pada MOD-01/02/03/05/06 tanpa ID tool baharu. Setiap Agent/Stokis aktif mempunyai public store dan dedicated private Dealer Workspace melalui customer/business membership canonical. Tool menerima store/dealer owner, customer referrer dan fulfilment source yang diselesaikan server secara berasingan; client slug/ref/phone, shared state dan prompt bukan authority. Anonymous published browse tidak memberikan akses private order, statement atau referral account lain.
+
+`search_catalogue`/comparison/checkout diagnosis mesti menggunakan harga, availability dan revision bagi store serta sumber fulfilment sebenar. Cart/reorder frontend tool menghasilkan **unsent draft** dengan reprice/revalidation; tiada reservation/order/payment automatik. Tracking mengikut projection private atau token public yang sah. Settlement/reward explanation membezakan wholesale margin, komisen dealer, referral pelanggan satu peringkat dua hala dan points; eligibility/stacking/rates datang daripada polisi approved. Share sahaja tidak memberikan reward. Model tidak memilih payee, meluluskan komisen/referral, mengesahkan pembayaran atau mengaktifkan store.
+
+Ujian tambahan: store/referrer/fulfiller berbeza, cross-store cart, harga/stok stale, A/B private-scope denial, revoke/logout/shared-state clearing, unknown eligibility dan refund reversal dengan sumber canonical. Ordering P0 → rewards P1 → retention P2 berada dalam domain phase selepas prerequisite runtime/integriti, bukan shortcut untuk CPK/GUI/release gates. MadConomy lima tingkat ialah research sahaja; top-up/cash withdrawal/native wajib deferred.
+
 | ID / modul | Bantuan wajib dan canonical inputs/outputs | Tool mapping / acceptance khusus modul |
 |---|---|---|
 | MOD-01 Storefront & katalog | Search/compare produk published menggunakan atribut/product-facts version; sediakan unsent cart draft dengan SKU, quantity dan price revision | ADV-02 `search_catalogue` Q, ADV-03 `compare_products` Q, ADV-05 diagnosis dan `prepare_cart_draft` frontend-only. Unpublished/disabled product tersembunyi; allergy facts tiada -> unknown; stale price disegarkan; tiada order/reservation/payment |

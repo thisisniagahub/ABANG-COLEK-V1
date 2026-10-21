@@ -1,5 +1,12 @@
 # ABANGCOLEK — Design QA contract dan dated evidence
 
+<!-- COMMERCE-GROWTH-20261021:BEGIN -->
+> **Amendment 21 Oktober 2026 — TARGET_DESIGN:** Acceptance tambahan CG-01..12: dua store A/B, anonymous browse, private dealer IDOR denial, owner ≠ fulfiller ≠ referrer, stock/reprice/cross-store conflict, duplicate/late payment dan unknown outcome, single-level two-sided eligibility, refund reversal, fresh-cart reorder serta queued opt-out. Uji mobile/light/dark/keyboard/reduced-motion dengan route/runtime sebenar. Share sahaja tidak memberi reward. Component/fixture pass tidak menutup journey ini.
+>
+> Rujukan: [spesifikasi canonical](design/commerce-growth.md) · [handover lengkap](prompts/COMMERCE-GROWTH-HANDOVER-20261021.md). Generated acceptance kekal berasaskan ledger dan receipt, bukan nota ini.
+<!-- COMMERCE-GROWTH-20261021:END -->
+
+
 <!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
 > **Alignment20Oktober2026:** [Status semasa](CURRENT-STATUS.md) · [Checklist](../PROJECT-CHECKLIST.md). Panduan aktif mengikut skop fail ini. Fakta source/runtime dan ownership semasa dirujuk di atas; arahan atau baseline bertarikh lama memerlukan revalidation. Tiada acceptance aplikasi ditutup oleh alignment dokumentasi.
 <!-- ABANGCOLEK-CURRENT-STATUS:END -->

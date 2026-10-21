@@ -1,5 +1,12 @@
 # ABANGCOLEK — Design QA contract dan dated evidence
 
+<!-- COMMERCE-GROWTH-20261021:BEGIN -->
+> **Amendment 21 Oktober 2026 — TARGET_DESIGN:** Gunakan CG-01..12 bagi QA commerce/dealer: public browse berasingan private management, dua dealer, canonical attribution/fulfilment, checkout/reconciliation, reward/contra, fresh-cart reorder dan dispatch-time opt-out. Simpan viewport, source manifest, trace/receipt dan limits; target design tidak dilabel siap melalui Markdown.
+>
+> Rujukan: [spesifikasi canonical](../design/commerce-growth.md) · [handover lengkap](../prompts/COMMERCE-GROWTH-HANDOVER-20261021.md). Generated acceptance kekal berasaskan ledger dan receipt, bukan nota ini.
+<!-- COMMERCE-GROWTH-20261021:END -->
+
+
 <!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
 > **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Panduan aktif mengikut skop fail ini. Fakta source/runtime dan ownership semasa dirujuk di atas; arahan atau baseline bertarikh lama memerlukan revalidation. Tiada acceptance aplikasi ditutup oleh alignment dokumentasi.
 <!-- ABANGCOLEK-CURRENT-STATUS:END -->

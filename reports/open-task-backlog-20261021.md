@@ -1,5 +1,12 @@
 # Backlog Tersusun Semula — Task Belum Siap (ABANGCOLEK-PLATFORM)
 
+<!-- COMMERCE-GROWTH-20261021:BEGIN -->
+> **Amendment 21 Oktober 2026 — TARGET_DESIGN:** Queue Commerce & Growth semasa: P0 CG-01..06 store/workspace, attribution/fulfilment, checkout/reconciliation/tracking; P1 CG-07..08 approved referral satu peringkat dua hala + ledger/refund; P2 CG-09..10 reorder dan consented retention, disertai CG-11 Copilot serta CG-12 release. Semua mapped kepada85ID sedia ada. Kekalkan prerequisite global, audit source dahulu; jadual landed/active/next dan counts di bawah ialah snapshot berturutan, bukan semakan live task ini. Commit hanya apabila pengguna semasa mengarahkannya; top-up coding-agent lama bukan kelulusan wallet produk.
+>
+> Rujukan: [spesifikasi canonical](../docs/design/commerce-growth.md) · [handover lengkap](../docs/prompts/COMMERCE-GROWTH-HANDOVER-20261021.md). Generated acceptance kekal berasaskan ledger dan receipt, bukan nota ini.
+<!-- COMMERCE-GROWTH-20261021:END -->
+
+
 **Tarikh:** 21 Oktober 2026
 **Asas:** sintesis chat log (`reports/chat-log-synthesis-20261021.md`), ledger `reports/implementation/acceptance-status.json` (85 baris, snapshot `60311aa`), `docs/CURRENT-STATUS.md`, dan baki kerja sebenar yang dilaporkan oleh 9 subagent yang mati pada had step.
 **Status:** plan kerja, **bukan** acceptance. Setiap baris perlu ditanda `verified_local` hanya selepas receipt sebenar.
@@ -196,7 +203,7 @@ Wave 1a/1b/1c mati separuh jalan — **jangan ulang tiga-tiga sekali gus; satu g
 
 | ID | Task | ID ledger | Nota |
 |---|---|---|---|
-| BL-59 | Risk engine: OTP, device/velocity/age signals, reason codes, appeal path | REF-01 | `not_run` — tiada apa-apa lagi; build terbesar yang tinggal |
+| BL-59 | Risk engine: OTP, device/velocity/age signals, reason codes, appeal path | REF-01 | Baris queue asal superseded oleh kemas kini Wave 2 di atas: source/tests risk engine wujud. Revalidate existing engine dan exact provider/integration gaps; jangan bina engine kedua atau menganggap semua skop CG-07 sudah verified. |
 | BL-60 | RTO diukur: 30-minit drill + timing assertion + production drill + key-recovery evidence | DR-01 | Perlu persekitaran drill |
 
 ---

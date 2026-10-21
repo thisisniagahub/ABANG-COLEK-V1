@@ -4,14 +4,16 @@
 > **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Panduan aktif mengikut skop fail ini. Fakta source/runtime dan ownership semasa dirujuk di atas; arahan atau baseline bertarikh lama memerlukan revalidation. Tiada acceptance aplikasi ditutup oleh alignment dokumentasi.
 <!-- ABANGCOLEK-CURRENT-STATUS:END -->
 
-> **Checklist wajib selepas setiap task:** baca [PROJECT-CHECKLIST.md](../../PROJECT-CHECKLIST.md). Integrator mengekalkan `[ ]` semasa in_progress/separa/blocked/failed/not_run; tukar kepada `[x]` hanya selepas acceptance item lulus dengan actual tests, environment, source manifest dan reviewer. Tambah evidence link yang wujud, sync acceptance register/checkpoint/counters dan rekod exact next task sebelum handoff. Worker menghantar bukti, bukan mengedit tick canonical serentak. Ikut execution contract§10; jangan menutup parent feature hanya kerana child task selesai.
+> **Bukti dan generated status:** baca [PROJECT-CHECKLIST.md](../../PROJECT-CHECKLIST.md). Integrator menulis actual receipt/environment/source manifest/reviewer, mengemas kini ledger85 berdasarkan bukti lengkap, kemudian menjalankan verifier dan renderer. Jangan edit generated checklist/register dengan tangan; separa/blocked/failed/not-run kekal unchecked. Worker menyerahkan bukti/baki; checkpoint menyimpan next task. Ikut execution contract§10; child task tidak menutup parent feature.
+
+**Refinement commerce/growth:** baca [spec canonical](../design/commerce-growth.md) dan [handover](COMMERCE-GROWTH-HANDOVER-20261021.md). P0 ordering/reconciliation → P1 rewards → P2 reorder/consented retention dalam domain03A/03B;03A integrity tetap sebelum struktur dan03B selepas runtime/grants foundation. Ini subcriteria existing85 IDs; tiada kadar/5-tier/wallet/native app baharu diluluskan dan tiada acceptance ditutup oleh dokumentasi.
 
 
 Baca [master prompt](IMPLEMENT-ABANGCOLEK.md), [execution contract](AGENT-EXECUTION-CONTRACT.md), [acceptance register](ACCEPTANCE-REGISTER.md), [advanced registry](../design/copilot-advanced-tools.md), [domain review D-01..07](../../reports/blueprint-review-20261020-domain.md) dan decision register00. **03A selepas00 sebelum01; 03B selepas02 sebelum04.** Dua bahagian ialah dependency order wajib, bukan dua pilihan.
 
 ## Ownership, inputs dan output
 
-Domain owner memiliki commerce/payment/inventory/dealer/loyalty/consent rules; adapter owner memiliki registry/projections sahaja. Satu cross-domain transaction mempunyai owner tunggal. Integrator memiliki shared contracts/config/checkpoint; independent financial/security reviewer diperlukan. Maksimum3 actual workers berasingan fail, inline fallback jika slot/tool tiada. Workers tidak revert edits orang lain.
+Domain owner memiliki commerce/payment/inventory/dealer/loyalty/consent rules; adapter owner memiliki registry/projections sahaja. Satu cross-domain transaction mempunyai owner tunggal. Lane canonical: backend `server/**`, `api/**`, `shared/**`; frontend `src/**`; ujian `tests/**`, `scripts/**`; integrator docs/config coordination/ledger/checkpoint. Integrator menyelaras interface snapshot tanpa mengedit shared contracts serentak dengan backend. Independent financial/security reviewer diperlukan. Maksimum3 actual workers berasingan fail jika dibenarkan arahan semasa, inline fallback jika slot/tool tiada. Workers tidak revert edits orang lain.
 
 03A menggunakan current paths `server/platform/` dan `shared/`; 03B menggunakan mapped destination01 (`server/modules/`, `server/application/`, `server/agents/tools/`). Jangan mencipta duplicate service pada path lama dan baru. Output **PLANNED**: `reports/implementation/03a-integrity.md`, `03b-domain-tools.md`, canonical policy/version/result contracts, red/green receipts dan checkpoint per bahagian. Semua business values memerlukan approved policy; fixture constants bukan production configuration.
 
@@ -62,7 +64,9 @@ Capture failures against precise behavior, implement smallest coherent domain fi
 
 - STK-01/OPS-01: physical/reserved/quarantined/available jelas; expiry clock dan lot eligibility verified; two concurrent last-unit orders satu winner. Return hanya restock selepas received/QC policy, bukan selepas refund button.
 - OFF-01: account-scoped unsent drafts, logout clears/switch isolates, stale response ignored. Server reprice/revalidate semasa submit; material price/availability change memerlukan review. Same payload stable idempotency key; network retry tidak create order lagi. Offline draft bukan reservation atau saved payment authorization.
-- REF-01/02: reject self-referral server-side; shared Wi-Fi bukan automatic fraud. Required OTP/payment fingerprint/risk dependencies belum wujud -> `insufficient_data`/manual review/disabled reward activation dengan reason. Jangan fabricate risk score atau menyamakan dealer attribution tests dengan customer fraud engine.
+- REF-01/02: reuse existing risk/OTP/appeal source dan semak availability setiap integration sebenar; jangan menganggap engine tiada kerana provider live belum configured. Reject self-referral server-side; shared Wi-Fi bukan automatic fraud. Missing required signal/provider -> typed unknown/`insufficient_data`/manual review/disabled reward activation dengan reason. Jangan fabricate risk score atau menyamakan dealer attribution tests dengan customer fraud engine.
+- Commerce/growth: P0 provisioning/store/cart/order/reconciliation/tracking dahulu, P1 rewards kemudian, P2 reorder/consented retention selepasnya mengikut [spec](../design/commerce-growth.md) dan [handover](COMMERCE-GROWTH-HANDOVER-20261021.md). Ini dependency domain03A/03B; struktur/runtime/GUI/release asal tidak dilangkau. Store owner, pihak fulfilment dan customer referrer berasingan serta server-bound. Attribution/policy snapshot asal kekal durable merentas callback/retry/refund.
+- Referral customer satu peringkat dan dua hala: uji empat kombinasi eligibility buyer/referrer, self/duplicate/unknown-risk, hold/eligible/issued/reversed mengikut enum domain sebenar. Commission dealer, reward referral dan loyalty points ialah entri berasingan; no automatic reward kerana share/signup, tiada kadar komersial rekaan. Refund/replay/concurrency tidak menggandakan credit/contra; stacking memerlukan polisi approved dan margin selepas semua manfaat/fees/costs.
 - LOY-01: clock-boundary expiry, concurrent double-spend, refund reversals/caps dan rollback diuji; rates/expiry/stacking daripada approved version. Unknown business policy disable affected execution sahaja.
 
 ### 03A.5 — Tracking, authorization, consent dan truthful AI
@@ -71,7 +75,7 @@ SEC-01: cryptographic token, stored hash sahaja, minimum private-safe projection
 
 SEC-02: customer own records, dealer own org, staff permitted outlet/assignment dan founder capability-specific grants diperiksa query/command/export/download. Mixed-scope batch/cache selepas revoke tidak mendedahkan existence/fields. Frontend filter tidak mencukupi.
 
-PD-01: purpose/channel-specific consent berversi checked **at dispatch**, termasuk queued promotions selepas revoke; draft bukan send. Deletion request tidak memadam financial ledger/receipt tanpa approved retention/legal decision. Missing processor/data policy -> deny relevant outbound data, teruskan synthetic work.
+PD-01: purpose/channel-specific consent berversi checked **at dispatch**, termasuk queued promotions selepas revoke; draft bukan send dan purchase bukan marketing consent. Reorder mencipta cart baharu daripada order berizin, kemudian reprice/revalidate store/stock/fulfilment/voucher/loyalty/referral semasa; tiada replay order/payment/harga lama. Retention/reminder memerlukan consent/preference dan revoke-after-enqueue tests; tiada mesej pelanggan sebenar dihantar oleh task development. Deletion request tidak memadam financial ledger/receipt tanpa approved retention/legal decision. Missing processor/data policy -> deny relevant outbound data, teruskan synthetic work.
 
 AI-01/02: current fake margin/confidence/provider attribution/action success dibuang atau exact path disabled; validate history/decision input, deadlines dan free-only fail-closed. LOCAL_RULES berlabel, no native/vision/calibrated confidence claims. Adapter belum siap02 tidak alasan mengekalkan fake-success fallback. AI-03 shared budget tests02/04 disambung; 03A mesti menghalang unbounded current inference.
 
@@ -110,12 +114,12 @@ Named specializations fixed oleh registry: `search_catalogue` ADV-02 Q; `compare
 
 | ID/module | Acceptance yang mesti implemented/tested |
 |---|---|
-| MOD-01 Storefront/catalogue | Published search/compare, verified allergy facts atau unknown, stale-price unsent cart draft; no order/reserve/payment |
+| MOD-01 Storefront/catalogue | Public store setiap dealer aktif, canonical cart/checkout dan A/B store binding mengikut spec. Copilot search/compare/reorder hanya unsent draft, stale-price confirmation; tool tidak order/reserve/pay |
 | MOD-02 Orders/tracking | Own-order timeline/tracking/refund preview, cross-customer denied, public token/private projection separate |
 | MOD-03 Inventory | Location scope, physical/reserved/quarantine/available, expiry/FEFO/restock assumptions; no unknown lead-time fiction |
 | MOD-04 QC/JEV | Scoped case/evidence/batch/SOP; LOCAL_RULES reasons/missing evidence, safe quarantine/refund proposal |
-| MOD-05 Dealer/commission | Org-only earning/payout/contra/settlement facts; due versus recorded-paid/provenance distinct |
-| MOD-06 Loyalty/referral | Account ledger/expiry/reversal/held reasons; unknown fraud signals never create score/activation |
+| MOD-05 Dealer/commission | Signup tanpa pembelian, activation idempotent -> public store + private workspace; org-only earning/payout/contra/settlement. Owner/fulfiller/referrer berasingan; due versus recorded-paid/provenance distinct |
+| MOD-06 Loyalty/referral | Customer referral single-level/two-sided, per-party eligibility, distinct commission/reward/points, expiry/reversal/held reasons; unknown signals never create score/activation |
 | MOD-07 Marketing | Published products/rights, canonical amount AND ratio, unsent campaign draft, revoke blocks dispatch |
 | MOD-08 Finance/day-close | Founder finance grant, timezone/outlet/shift scope, variance/exclusions/receipts; no auto-ledger adjustment |
 | MOD-09 Tasks/documents/SOP | Permission/version/citations, untrusted-content isolation, scoped draft task; no implied assignment success |

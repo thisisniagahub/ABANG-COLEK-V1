@@ -4,15 +4,15 @@
 > **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Panduan aktif mengikut skop fail ini. Fakta source/runtime dan ownership semasa dirujuk di atas; arahan atau baseline bertarikh lama memerlukan revalidation. Tiada acceptance aplikasi ditutup oleh alignment dokumentasi.
 <!-- ABANGCOLEK-CURRENT-STATUS:END -->
 
-**Executor semasa:** Codex inline dalam candidate `D:/ABANGCOLEK-WORKTREES/codex-completion-20261020`. Pengguna menghentikan AGY/Kilo/Copilot/Hermes implementation agents. Baca [CURRENT-STATUS](../CURRENT-STATUS.md), [checklist](../../PROJECT-CHECKLIST.md) dan checkpoint sebelum sambung; jangan menggunakan prompt delegation lama untuk memulakan sesi luar. Blueprint dan skop CopilotKit kekal sama.
+**Entry semasa:** [Kilo master](KILO-COMPLETE-PROJECT-20261021.md), [handover commerce/growth](COMMERCE-GROWTH-HANDOVER-20261021.md) dan [spesifikasi canonical](../design/commerce-growth.md). Candidate `codex-completion-20261020` dan executor inline di bawah ialah konteks sesi20Oktober, bukan arahan memilih working tree atau memulakan agent lama. Revalidate actual source/ownership dan arahan pengguna semasa; skop10CPK/7GUI/10MOD/32ADV serta85ID dikekalkan.
 
 Tarikh:20 Oktober 2026. Ini prompt pelaksanaan apabila pengguna mengarahkan implementasi; membaca/review dokumen tidak mengaktifkan provider, migration, merge, push atau deployment.
 
 ## Prompt yang perlu diberi kepada integrator
 
-Anda ialah integrator projek sedia ada `D:\ABANGCOLEK-PLATFORM`; pelaksanaan aplikasi semasa dibuat secara inline dalam candidate `D:/ABANGCOLEK-WORKTREES/codex-completion-20261020`, sambil memelihara source asal yang dirty. Siapkan implementasi sebenar blueprint mengikut prerequisite yang telah diputuskan. Jangan berhenti pada pelan, scaffolding atau laporan subagent. Jangan meminta pengguna memilih stack, model, protocol, worktree lane, jumlah worker, nama tool atau susunan fasa.
+Anda ialah integrator projek sedia ada `D:\ABANGCOLEK-PLATFORM`; sahkan actual working tree dan ownership mengikut entry semasa sambil memelihara semua edit sedia ada. Siapkan implementasi sebenar blueprint mengikut prerequisite yang telah diputuskan. Jangan berhenti pada pelan, scaffolding atau laporan subagent. Jangan meminta pengguna memilih stack, model, protocol, worktree lane, jumlah worker, nama tool atau susunan fasa.
 
-**Wajib baca dan kemas kini [PROJECT-CHECKLIST.md](../../PROJECT-CHECKLIST.md).** Selepas setiap task, integrator memeriksa evidence dan menukar `[ ]` kepada `[x]` hanya apabila keseluruhan acceptance item itu selesai. Source separa, blocked, failed dan not-run kekal unchecked. Sync checklist, acceptance register dan checkpoint, serta rekod current/next task sebelum handoff atau tamat sesi. Worker menghantar bukti; mereka tidak menulis tick canonical serentak. Kontrak lengkap ialah execution contract§10.
+**Wajib baca [PROJECT-CHECKLIST.md](../../PROJECT-CHECKLIST.md).** Selepas task, integrator memeriksa actual receipt lalu mengemas kini ledger85 hanya apabila keseluruhan acceptance dipenuhi; jalankan verifier kemudian renderer untuk menjana checklist/register. Jangan edit generated tick/register dengan tangan. Source separa, blocked, failed dan not-run kekal unchecked. Checkpoint menyimpan current/next task; worker menyerahkan bukti. Kontrak lengkap ialah execution contract§10.
 
 Baca mengikut urutan:
 
@@ -40,7 +40,7 @@ Baca mengikut urutan:
 
 1. Rekod timestamp Malaysia, cwd, `git rev-parse HEAD`, branch, origin, worktrees, tracked/untracked/index/working diffs, hashes fail owned dan listener/runtime identity. Jangan output secret, cookies, token atau business rows.
 2. Baseline audit asal ialah root integration60311aa/main e736856; ia historical. Receipt lebih baharu merekod main18c69b3 bagi patch11 fail konfigurasi sahaja. Sahkan actual HEAD/dirty source; jangan checkout/reset kepada mana-mana nilai lama.
-3. Sambung candidate `codex-completion-20261020` berdasarkan manifest takeover. Worktree lama `copilot-completion`, frontend/backend dan multi-CLI bukan lane aktif; preserve index/HEAD/MERGE_HEAD/dirty changes masing-masing. Jangan memulihkan, membersihkan atau menggunakan lane lama secara automatik.
+3. Revalidate actual root/candidate dan manifest takeover mengikut entry semasa. `codex-completion-20261020`, `copilot-completion`, frontend/backend dan multi-CLI ialah lane sejarah sehingga ownership semasa membuktikan sebaliknya; preserve index/HEAD/MERGE_HEAD/dirty changes masing-masing. Jangan memulihkan, membersihkan atau menggunakan lane lama secara automatik.
 4. Bandingkan release main dengan integrasi. Kekalkan pembaikan landing/deployment/Bun/SPA yang sudah disahkan. Kod HITL/fixed facts dalam integrasi belum layak masuk main sehingga03A/02/03B lulus.
 5. Gunakan baseline receipt yang masih sepadan dengan manifest; jalankan checks yang diperlukan untuk perubahan aplikasi semasa dan final-source release. Rekod command/result serta failures/timeout; jangan mewarisi count lama atau mengulang semua baseline untuk task Markdown sahaja. Runner browser/fixture yang berkongsi data tidak dijalankan serentak.
 6. Inventori actual skills/tools/plugins, exact SDK metadata/exports/peers dan provider configured status sahaja. Review npm/PyPI20 Oktober membuktikan availability metadata, bukan compatibility installation.
@@ -63,9 +63,9 @@ Jika prerequisite phase tertentu gagal, teruskan hanya task bebas yang tidak ber
 
 ## Ownership dan collaboration
 
-Integrator memiliki composition/shared contracts/dependencies/moves/checkpoint/release. Sesi semasa dilaksanakan inline; jangan melancarkan implementation workers walaupun collaboration tools tersedia. Lane backend, frontend dan Python ialah pembahagian scope kerja Codex, bukan arahan spawn. Penggunaan semula worker hanya boleh dipertimbangkan selepas pengguna mengaktifkan delegation semula; ketika itu setiap lane mesti mempunyai fail owned, interface snapshot, negative tests dan exit gate, serta memelihara perubahan pihak lain.
+Integrator menyelaras composition/dependencies/moves/checkpoint/ledger/release melalui assignment owned; backend memiliki `server/**`, `api/**`, `shared/**`, frontend `src/**`, ujian `tests/**` dan `scripts/**` mengikut AGENTS. Arahan inline/candidate sesi20Oktober ialah sejarah; execution mode dan delegation ditentukan arahan pengguna semasa, AGENTS dan ownership yang sah. Tiada automatic startup agent lama. Setiap assignment mempunyai fail owned, interface snapshot, negative tests dan exit gate serta memelihara perubahan pihak lain.
 
-Gunakan `executing-plans` secara inline untuk sambungan semasa. Jangan bertanya pengguna jumlah agent atau menunggu proses yang tidak pernah bermula. Report lama hanyalah input semakan; integrator mesti membaca diff dan mengesahkan output tests pada source yang berkaitan.
+Gunakan execution workflow yang sesuai dengan mode sesi semasa. Jangan bertanya pengguna jumlah agent atau menunggu proses yang tidak pernah bermula. Report lama hanyalah input semakan; integrator mesti membaca diff dan mengesahkan output tests pada source yang berkaitan.
 
 Selepas implementasi, jadualkan TypeScript/Python/security/database/domain reviewer yang berkaitan. Reviewer read-only dahulu; pembetulan kembali kepada owner. Reviewer yang tidak tersedia direkod sebagai limitation, bukan independent pass palsu.
 
@@ -79,7 +79,7 @@ Ports/UI routing/session paths, input/rate/token/tool/model budgets dan expiry t
 
 ## Model, account dan privacy gate
 
-Calon sahaja: `gemini-3.6-flash` -> `gemini-3.5-flash-lite` -> OpenRouter `nvidia/nemotron-3-super-120b-a12b:free`. Exact offering, account, tool compatibility, fees/overflow, privacy dan verification TTL wajib disahkan sebelum call. Nama model/free suffix/pricingpublic tidak mencukupi. Benchmark minimum60synthetic cases hanya melalui calon yang telah lulus gate; synthetic provider tanpa model boleh digunakan untuk protocol/security tests.
+Calon semasa mengikuti export sebenar `STRICT_FREE_CANDIDATE_SEQUENCE` dan provider register; susunan model sesi20Oktober telah superseded. Jangan probe model mati dalam AGENTS. Exact offering, account, tool compatibility, fees/overflow, privacy dan verification TTL wajib disahkan sebelum call. Nama model/free suffix/pricingpublic tidak mencukupi. Benchmark minimum60synthetic cases hanya melalui calon yang telah lulus gate; synthetic provider tanpa model boleh digunakan untuk protocol/security tests.
 
 Adapter ditetapkan ADR: native ADK Gemini; OpenRouter menggunakan app-owned `BaseLlm` subclass melalui pinned httpx pada `agents/google-adk/models/free_openrouter.py`, exact OpenRouter chat-completions endpoint/model field. Tiada LiteLLM/optional router dipilih sendiri, bare external model string atau duplicated TypeScript provider call. Import/transport compatibility yang gagal menghasilkan `MODEL_ADAPTER_INCOMPATIBLE`, bukan pertukaran stack.
 

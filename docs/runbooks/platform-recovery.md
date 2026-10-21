@@ -1,5 +1,12 @@
 # ABANGCOLEK — Runbook operasi dan pemulihan
 
+<!-- COMMERCE-GROWTH-20261021:BEGIN -->
+> **Amendment 21 Oktober 2026 — TARGET_DESIGN:** Recovery commerce mesti memelihara stable store identity, dealer/referrer/fulfiller snapshots, approved policy revisions, append-only commission/referral/points dan operation/receipt dedupe. Uji restart/restore pada target isolated tanpa duplicate store/earning/refund; unknown external outcome memerlukan reconciliation sebelum retry. Jangan mengatasi database operasi atau menganggap local drill membuktikan cloud RPO/RTO.
+>
+> Rujukan: [spesifikasi canonical](../design/commerce-growth.md) · [handover lengkap](../prompts/COMMERCE-GROWTH-HANDOVER-20261021.md). Generated acceptance kekal berasaskan ledger dan receipt, bukan nota ini.
+<!-- COMMERCE-GROWTH-20261021:END -->
+
+
 <!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
 > **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Panduan aktif mengikut skop fail ini. Fakta source/runtime dan ownership semasa dirujuk di atas; arahan atau baseline bertarikh lama memerlukan revalidation. Tiada acceptance aplikasi ditutup oleh alignment dokumentasi.
 <!-- ABANGCOLEK-CURRENT-STATUS:END -->

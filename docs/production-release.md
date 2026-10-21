@@ -1,5 +1,12 @@
 # Production runtime and release verification
 
+<!-- COMMERCE-GROWTH-20261021:BEGIN -->
+> **Amendment 21 Oktober 2026 — TARGET_DESIGN:** Release scope commerce mesti memasukkan CG-01..12 yang terpakai: store provisioning/state/grants, attribution/fulfilment snapshots, checkout/payment/tracking, single-level two-sided reward eligibility, refund reversal, reorder dan consented retention. Live provider/merchant configuration, data approval dan exact deployed source memerlukan receipt sendiri. Jangan menutup 85-ID parent daripada public landing HTTP200 atau mengaktifkan wallet/top-up/cashout/5-tier referral.
+>
+> Rujukan: [spesifikasi canonical](design/commerce-growth.md) · [handover lengkap](prompts/COMMERCE-GROWTH-HANDOVER-20261021.md). Generated acceptance kekal berasaskan ledger dan receipt, bukan nota ini.
+<!-- COMMERCE-GROWTH-20261021:END -->
+
+
 <!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
 > **Alignment20Oktober2026:** [Status semasa](CURRENT-STATUS.md) · [Checklist](../PROJECT-CHECKLIST.md). Panduan aktif mengikut skop fail ini. Fakta source/runtime dan ownership semasa dirujuk di atas; arahan atau baseline bertarikh lama memerlukan revalidation. Tiada acceptance aplikasi ditutup oleh alignment dokumentasi.
 <!-- ABANGCOLEK-CURRENT-STATUS:END -->

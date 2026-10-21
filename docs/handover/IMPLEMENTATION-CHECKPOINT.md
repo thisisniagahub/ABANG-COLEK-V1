@@ -1,12 +1,19 @@
 # ABANGCOLEK — Implementation Checkpoint Ledger
 
+<!-- COMMERCE-GROWTH-20261021:BEGIN -->
+> **Amendment 21 Oktober 2026 — TARGET_DESIGN:** Checkpoint dokumentasi: scope Commerce & Growth serta prompt handover telah ditambah, bukan aplikasi diimplementasikan. CG-01..12 masih memerlukan named tests/browser/protocol/receipts; ledger85/counters/receipts tidak diubah oleh task ini. CURRENT/NEXT implementasi perlu ditentukan daripada Git/source/runtime sebenar; angka, PID dan worker aktif dalam checkpoint terdahulu ialah snapshot sesi asal, bukan proses yang dibuktikan aktif sekarang.
+>
+> Rujukan: [spesifikasi canonical](../design/commerce-growth.md) · [handover lengkap](../prompts/COMMERCE-GROWTH-HANDOVER-20261021.md). Generated acceptance kekal berasaskan ledger dan receipt, bukan nota ini.
+<!-- COMMERCE-GROWTH-20261021:END -->
+
+
 <!-- ABANGCOLEK-CURRENT-STATUS:BEGIN -->
 > **Alignment20Oktober2026:** [Status semasa](../CURRENT-STATUS.md) · [Checklist](../../PROJECT-CHECKLIST.md). Checkpoint semasa berada di bahagian atas; badan historical dilabel secara eksplisit. Jangan mewarisi tick, ownership atau dakwaan lengkap daripada rekod lama.
 <!-- ABANGCOLEK-CURRENT-STATUS:END -->
 
 ## Checkpoint semasa — 21 Oktober 2026 (Kilo Code completion, sesi KILO-COMPLETE-PROJECT)
 
-Authority fakta: [CURRENT-STATUS](../CURRENT-STATUS.md) · [checklist](../../PROJECT-CHECKLIST.md) · [preflight KILO-00](../reports/implementation/kilo-completion-preflight-20261021.md) · [pelan implementasi](../docs/superpowers/plans/2026-10-21-kilo-completion-implementation.md)
+Authority fakta: [CURRENT-STATUS](../CURRENT-STATUS.md) · [checklist](../../PROJECT-CHECKLIST.md) · [preflight KILO-00](../../reports/implementation/kilo-completion-preflight-20261021.md) · [pelan implementasi](../superpowers/plans/2026-10-21-kilo-completion-implementation.md)
 
 - HEAD `1fc218e` pada `integrate/blueprint-v23`; `origin/main` masih `be45a84` (2 commit di belakang). **Tiada commit/push/deploy dalam sesi ini** (prompt §1).
 - **Punca 500 production** (bukti `var/log/whole-project-audit-20261021/vercel-errors.jsonl`, deployment `dpl_5kj1wZ2bGi5hnPqQprzGoXMi58AL`): `Cannot find package 'uuid' imported from @ag-ui/client/dist/index.mjs` → `/api/copilotkit` 500; `Cannot find package 'pkce-challenge' imported from @modelcontextprotocol/client/dist/index.mjs` → `/api/mcp` 500. Kedua-duanya hanya *transitive* ⇒ **fix KILO-01b** landed: `uuid@11.1.1` + `pkce-challenge@5.0.1` kini direct dependencies, `vercel.json` ada `includeFiles` untuk kedua-duanya, `bun.lock` dikemas kini, dan `vite` diduplikasi dalam package.json dibuang.

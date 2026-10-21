@@ -4,6 +4,12 @@ Diselaraskan berdasarkan receipt bertarikh **21 Oktober 2026**. Dokumen ini iala
 
 ## Pakej sintesis & backlog — 21 Oktober 2026
 
+### Scope amendment Commerce & Growth — dokumentasi sahaja
+
+[Spesifikasi canonical](design/commerce-growth.md) dan [handover pembangunan](prompts/COMMERCE-GROWTH-HANDOVER-20261021.md) menetapkan kedai public setiap Agent/Stokis + private workspace, direct signup, server-resolved store/referrer/fulfiller, referral satu peringkat dua hala, reorder dan consented retention. Research [dealer](research/2026-10-21-dealer-storefronts-proven-models.md)/[Ahmad’s](research/2026-10-21-ahmad-app-concept-review.md) bukan approval kadar, lima tingkat atau wallet.
+
+**CG-01..12 masih subcriteria terancang yang memerlukan bukti.** Banner `?ref`/cart-draft/unit tests lama tidak membuktikan provisioned store A/B atau seluruh journey baharu. Nilai semula affected MOD/REF/LOY/PAY/SEC/PD/CPK/GUI/REL/DR rows menggunakan ledger 85 sedia ada. Task alignment ini tidak mengubah status/count/receipt generated di bawah, tidak mengesahkan listener atau production dan tidak melancarkan implementation agents.
+
 | Dokumen | Kegunaan | Status |
 |---|---|---|
 | [Sintesis chat log](../reports/chat-log-synthesis-20261021.md) | Rekonstruksi kerja 18–21 Okt 2026 daripada `kilo.db` (127 sessions): kronologi, claim vs verified, 9 subagent mati pada had step | analisis fakta |
@@ -69,11 +75,11 @@ Ledger [acceptance-status.json](../reports/implementation/acceptance-status.json
 - Dependency CopilotKit/AG-UI kini disenaraikan dalam `package.json` lane integrasi. Ini membatalkan pemerhatian lama bahawa dependency/folder `server/agents` tiada, tanpa menutup integration acceptance.
 - Candidate mempunyai pembetulan route canonical MCP, whitespace/framing AG-UI dan trust downgrade. Pemeriksaan terpilih lulus; suite candidate terdahulu 1,139 pass bukan fresh certification selepas setiap edit berikutnya dan bukan suite main 305 tests.
 - PAY-01/02 mempunyai kerja callback/signature/idempotency tempatan selain gate akaun gateway. Menunggu credential bukan alasan meninggalkan kerja tempatan tersebut.
-- FastAPI source requirements menggunakan 0.141.1, berbeza daripada sasaran ADR 0.146.0. Nota resolver ialah bukti ketidakserasian yang dilaporkan, bukan kelulusan senyap menukar kontrak pin.
+- FastAPI `0.141.1` telah direkod sebagai amendment eksplisit dalam [ADR-0003](decisions/0003-blueprint-v23-execution-contract.md), menggantikan sasaran asal `0.146.0`. Compatibility/import/runtime masih memerlukan bukti tersendiri; perbezaan dengan pin asal bukan lagi percanggahan kontrak yang belum diluluskan.
 
 ## Urutan sambungan yang telah ditetapkan
 
-1. **Dokumentasi selesai:**188 dokumen milik projek diselaraskan, inventori/pautan/status diperiksa dan dua finding bounded review dibetulkan. [Laporan](../reports/documentation-alignment-20261020.md). Ini tidak menutup acceptance aplikasi.
+1. **Snapshot dokumentasi 20 Oktober:**188 dokumen milik projek diselaraskan ketika itu. [Laporan](../reports/documentation-alignment-20261020.md). Amendment Commerce & Growth 21 Oktober di atas menambah skop; kedua-duanya tidak menutup acceptance aplikasi.
 2. Dalam candidate, TDD penghantaran cookie sesi sebenar, migrasi cookie lama, logout/revocation dan authorization pada Copilot/MCP; preserve Supabase CAS request boundary.
 3. Sambungkan SDK Fetch/HttpAgent kepada ADK dan scoped canonical tools; uji signed grants, IDs, streaming, budget dan fail-closed free-only eligibility.
 4. Lengkapkan GUI/shared state/HITL/delegation/modul/domain mengikut prerequisite blueprint; setiap ID memerlukan bukti pada keseluruhan runtime yang berkaitan.
