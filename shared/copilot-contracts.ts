@@ -128,7 +128,13 @@ export interface OrderTrackingProjectionProps {
   orderId: string;
   stage: 'draft' | 'accepted' | 'packing' | 'dispatched' | 'received';
   trackingTokenRedactedHash: string;
-  expiryDaysRemaining: number;
+  /**
+   * Baki hari sehingga token tracking luput. `null` apabila tempoh luput TIDAK
+   * direkod — "tidak dikira" bukan sifar (0 hari dibaca sebagai "tamat hari ini").
+   */
+  expiryDaysRemaining: number | null;
+  /** sebab yang boleh dibaca mesin untuk nilai di atas. */
+  expiryReasonCode?: 'TRACKING_TOKEN_ACTIVE' | 'TRACKING_TOKEN_EXPIRED' | 'TRACKING_EXPIRY_NOT_RECORDED';
 }
 
 // ============================================================================

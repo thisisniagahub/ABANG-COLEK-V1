@@ -28,8 +28,14 @@ export interface ApproveInput {
   ttlMs?: number;
 }
 
-const DEFAULT_PROPOSAL_TTL_MS = 24 * 60 * 60 * 1000;
-const DEFAULT_APPROVAL_TTL_MS = 12 * 60 * 60 * 1000;
+// §4:99 — "Proposal preview Maksimum 5 minit".
+// §4:100 — "High-risk approval Maksimum 15 minit … expiry tidak boleh
+// diperpanjang client". Kedua-duanya had SERVER: nilai `ttlMs` daripada
+// pemanggil DIHIMPIT, bukanAccepted apa adanya.
+const MAX_PROPOSAL_TTL_MS = 5 * 60 * 1000;
+const MAX_APPROVAL_TTL_MS = 15 * 60 * 1000;
+const DEFAULT_PROPOSAL_TTL_MS = MAX_PROPOSAL_TTL_MS;
+const DEFAULT_APPROVAL_TTL_MS = MAX_APPROVAL_TTL_MS;
 
 export class ApprovalService {
   constructor(
@@ -69,7 +75,7 @@ export class ApprovalService {
       version: 1,
       nonce: randomUUID(),
       createdAt,
-      expiresAt: this.isoAfter(input.ttlMs ?? DEFAULT_PROPOSAL_TTL_MS),
+      expiresAt: this.isoAfter(Math.min(input.ttlMs ?? DEFAULT_PROPOSAL_TTL_MS, MAX_PROPOSAL_TTL_MS)),
       sourceRefs: [...(input.sourceRefs ?? [])],
     };
     return this.store.saveProposal(proposal);
@@ -106,7 +112,8 @@ export class ApprovalService {
       throw new ApprovalStateError('INVALID_APPROVAL', 'Kelulusan memerlukan pengesah yang Known.');
     }
     const createdAt = this.now();
-    const requestedExpiry = this.isoAfter(input.ttlMs ?? DEFAULT_APPROVAL_TTL_MS);
+    // §4:100 — expiry kelulusan tidak boleh diperpanjang oleh pemanggil.
+    const requestedExpiry = this.isoAfter(Math.min(input.ttlMs ?? DEFAULT_APPROVAL_TTL_MS, MAX_APPROVAL_TTL_MS));
     const expiresAt = requestedExpiry < proposal.expiresAt ? requestedExpiry : proposal.expiresAt;
     // The approval binds the exact revision of the proposal that was approved.
     const approvedProposal = this.store.compareAndSwapProposal(

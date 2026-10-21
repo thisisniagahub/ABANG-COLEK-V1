@@ -23,6 +23,12 @@
 import { FreeModelRouter, globalFreeRouter, type ChatMessageParam } from './freeModelRouter';
 import { PlatformStore, now, id, fail } from './store';
 import { Auth, type Principal } from './auth';
+
+/**
+ * §4:100 — kelulusan berisiko tinggi maksimum 15 minit. Ini had SERVER:
+ * pemanggil tidak boleh memanjangkan expiry beyond ini.
+ */
+const HITL_MAX_EXPIRY_MS = 15 * 60 * 1000;
 import { Commerce } from './commerce';
 import { Dealers } from './dealers';
 import { Loyalty } from './loyalty';
@@ -175,7 +181,11 @@ Prinsip Operasi:
       amountSen: typeof payload.amountSen === 'number' ? payload.amountSen : undefined,
       revision: typeof payload.revision === 'number' ? payload.revision : 1,
       reason: typeof payload.reason === 'string' ? payload.reason : description,
-      expiry: typeof payload.expiry === 'string' ? payload.expiry : new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
+      // §4:100 — kelulusan berisiko tinggi maksimum 15 minit; expiry tidak boleh
+      // diperpanjang oleh pemanggil (nilai dihimpit ke had server).
+      expiry: typeof payload.expiry === 'string'
+        ? new Date(Math.min(new Date(payload.expiry).getTime(), Date.now() + HITL_MAX_EXPIRY_MS)).toISOString()
+        : new Date(Date.now() + HITL_MAX_EXPIRY_MS).toISOString(),
       status: 'pending_approval',
       description,
       payload,
@@ -407,7 +417,7 @@ Prinsip Operasi:
             ...(estimatedImpactSen !== undefined ? { amountSen: estimatedImpactSen } : {}),
             revision: order ? order.revision : 1,
             reason: 'Aduan kualiti penutup botol bocor semasa pos',
-            expiry: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
+            expiry: new Date(Date.now() + HITL_MAX_EXPIRY_MS).toISOString(),
             message: userMessage,
             // Reason code yang boleh mesin baca: RESOLUSI pesanan dan NIAT
             // refund dilaporkan berasingan supaya pelayar tidak meneka
@@ -547,12 +557,18 @@ Prinsip Operasi:
     } else if (lower.includes('jejak') || lower.includes('tracking')) {
       const { order, reason: orderResolution } = this.findOrder(userMessage);
       if (order) {
+        // MIN-2 — "tidak dikira" ≠ sifar. Tanpa `trackingTokenExpiresAt` yang
+        // direkod, baki hari TIDAK direka sebagai 0 (yang dibaca sebagai
+        // "tamat hari ini"); ia `null` + reason code.
         const expiryDaysRemaining = order.trackingTokenExpiresAt
           ? Math.max(
               0,
               Math.floor((new Date(order.trackingTokenExpiresAt).getTime() - Date.now()) / (24 * 3600 * 1000))
             )
-          : 0;
+          : null;
+        const expiryReasonCode = order.trackingTokenExpiresAt
+          ? (expiryDaysRemaining === 0 ? 'TRACKING_TOKEN_EXPIRED' : 'TRACKING_TOKEN_ACTIVE')
+          : 'TRACKING_EXPIRY_NOT_RECORDED';
         const stage =
           order.fulfilmentStatus === 'dispatched'
             ? ('dispatched' as const)
@@ -570,6 +586,7 @@ Prinsip Operasi:
             ? order.trackingTokenHash.slice(0, 16)
             : 'unavailable',
           expiryDaysRemaining,
+          expiryReasonCode,
         };
         const provenanceDetail: ProvenanceDetail = {
           evaluator: 'none',

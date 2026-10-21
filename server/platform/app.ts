@@ -63,7 +63,7 @@ const EventType = {
 } as const;
 import type { AguiThreadEvent, AguiThreadRecord } from '../../shared/founder-intelligence-contracts';
 
-export interface PlatformAppOptions { googleIdentityVerifier?:GoogleIdentityVerifier; persistenceMode?:'local'|'supabase'; evidenceStorage?:EvidenceStorage; databasePath?:string; bootstrapToken?:string; origin?:string; allowedOrigins?:string[]; rateLimits?:{identityGlobal:number;identityAccount:number;actor:number}; automationOptions?:AutomationOptions; whatsappTransport?:WhatsAppTransport; adkAgent?:GoogleAdkAgent; freeModelRouter?:FreeModelRouter; backupScheduler?:BackupSchedulerOptions|boolean; log?:(entry:{requestId:string;code:string;status:number})=>void }
+export interface PlatformAppOptions { googleIdentityVerifier?:GoogleIdentityVerifier; persistenceMode?:'local'|'supabase'; evidenceStorage?:EvidenceStorage; databasePath?:string; bootstrapToken?:string; origin?:string; allowedOrigins?:string[];   rateLimits?:{identityGlobal:number;identityAccount:number;actor:number;copilotRun?:number;copilotTool?:number;copilotControl?:number}; automationOptions?:AutomationOptions; whatsappTransport?:WhatsAppTransport; adkAgent?:GoogleAdkAgent; freeModelRouter?:FreeModelRouter; backupScheduler?:BackupSchedulerOptions|boolean; log?:(entry:{requestId:string;code:string;status:number})=>void }
 
 /**
  * Keanggotaan dealer yang sah untuk bacaan terma dealer.
@@ -169,9 +169,11 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
   /** Menambah atribut `Secure` pada header cookie apabila origin ialah HTTPS. */
   function secureCookie(header:string,secure:boolean){return secure&&!/(^|;\s*)Secure(\s|;|$)/.test(header)?`${header}; Secure`:header;}
   function collection(data:unknown[],url:URL) {
-    const limitValue=url.searchParams.get('limit')??'100',offsetValue=url.searchParams.get('offset')??'0';
+    const limitValue=url.searchParams.get('limit')??'50',offsetValue=url.searchParams.get('offset')??'0';
     if(!/^\d+$/.test(limitValue)||!/^\d+$/.test(offsetValue))fail('INVALID_PAGINATION');
-    const limit=Math.min(100,Number(limitValue)),offset=Number(offsetValue);
+    // §4:96 — "50 records/page" ialah had tetap kontrak. Nilai lebih besar
+    // ditolak, bukan dipangkas sahaja, supaya pelanggan tidakSongsong pagination.
+    const limit=Math.min(50,Number(limitValue)),offset=Number(offsetValue);
     if(limit<1||!Number.isSafeInteger(offset)||offset<0)fail('INVALID_PAGINATION');
     return json({ok:true,data:data.slice(offset,offset+limit)},200,{'X-Total-Count':String(data.length),'X-Next-Offset':offset+limit<data.length?String(offset+limit):''});
   }
@@ -561,6 +563,8 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
       }
       if(segments[0]==='copilot'&&segments[1]==='tools'&&segments[2]&&segments[3]==='execute'){
         auth.operational(actor);
+        // §4:91 — "60 canonical tool requests/min/principal".
+        store.rate(`copilot-tool:${actor.user.id}`,options.rateLimits?.copilotTool??60);
         return globalDomainTools.executeTool(segments[2], { actor, store, commerce, dealers, loyalty, operations, auth }, input);
       }
     }
@@ -599,7 +603,13 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
         if(request.method==='POST'&&!allowedOrigins.includes(request.headers.get('origin')??''))fail('ORIGIN_DENIED',403,'Asal permintaan tidak dibenarkan.');
         if(request.method==='POST'&&path==='/evidence/upload'){const actor=auth.resolve(request);store.rate(`upload:${actor.user.id}`,12);auth.csrf(actor,request.headers.get('x-csrf-token'));if(runtimeControls.current().activeRelease==='platform-local-readonly-v1')fail('RELEASE_READ_ONLY',409);if(!request.headers.get('content-type')?.startsWith('multipart/form-data;'))fail('CONTENT_TYPE',415);return json({ok:true,data:await evidenceFiles.upload(actor,request)});}
         let input:unknown=undefined;
-        if(request.method==='POST') {if(!request.headers.get('content-type')?.includes('application/json'))fail('CONTENT_TYPE',415);const body=new TextDecoder().decode(await boundedBody(request,256*1024));try{input=JSON.parse(body);}catch{fail('INVALID_JSON',400);}object(input);}
+        if(request.method==='POST') {if(!request.headers.get('content-type')?.includes('application/json'))fail('CONTENT_TYPE',415);
+          // §4:92 — "Request/input | body 64 KiB … reject 413 sebelum inference".
+          const declaredLength=Number(request.headers.get('content-length')??'0');
+          if(Number.isFinite(declaredLength)&&declaredLength>64*1024)fail('PAYLOAD_TOO_LARGE',413,'Badan permintaan melebihi 64 KiB.');
+          const body=new TextDecoder().decode(await boundedBody(request,64*1024));
+          if(new TextEncoder().encode(body).byteLength>64*1024)fail('PAYLOAD_TOO_LARGE',413,'Badan permintaan melebihi 64 KiB.');
+          try{input=JSON.parse(body);}catch{fail('INVALID_JSON',400);}object(input);}
         if(request.method==='GET'&&path==='/catalogue')return collection(commerce.catalogue(),url);
         if(request.method==='GET'&&path==='/catalogue/version')return json({ok:true,data:{version:commerce.version()}});
         if(request.method==='GET'&&/^\/catalogue\/[^/]+$/.test(path)&&path!=='/catalogue/admin')return json({ok:true,data:reports.publishedProduct(path.split('/')[2])});
@@ -646,6 +656,10 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
           return json({ok:true,data:result.data},200,{'Set-Cookie':result.cookies.map(header=>secureCookie(header,url.protocol==='https:'))});
         }
         const actor=auth.resolve(request);store.rate(`actor:${actor.user.id}`,options.rateLimits?.actor??180);
+        // §4:91 — "120 control requests/min/principal" (descriptor, state,
+        // session, capabilities). Endpoint control murah tetapi tetap perlu
+        // had supaya tidak jadi vektor leitura.
+        store.rate(`copilot-control:${actor.user.id}`,options.rateLimits?.copilotControl??120);
         // BL-22 — inspector tempatan memerlukan sesi server yang sah DAN
         // kebenaran pengasas/pembangun. Sesi pelanggan ditolak 403.
         if(request.method==='GET'&&path==='/dev/inspector'){
@@ -734,6 +748,11 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
           if(handled!==undefined)return json({ok:true,data:handled});
         }
         if(request.method==='POST'&&(path==='/copilot/chat'||path==='/copilot/v2'||path==='/v2'||path==='/copilotkit/v2')){
+          // §4:91 — "10 run creations/min/principal". Had ini mesti datang
+          // SEBELUM panggilan provider: tanpa ia, satu principals dengan
+          // sesi sah boleh menghabiskan kuota free tier (20 permintaan/hari)
+          // dalam beberapa saat sahaja.
+          store.rate(`copilot-run:${actor.user.id}`,options.rateLimits?.copilotRun??10);
           auth.operational(actor);
           const b=object(input);
           // BL-21 / EXT-07 — lampiran tidak pernah menjadi bukti vision.
@@ -753,10 +772,19 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
             : (Array.isArray(b.messages) && b.messages.length > 0
                 ? (typeof b.messages[b.messages.length - 1]?.content === 'string' ? b.messages[b.messages.length - 1]?.content : '')
                 : (typeof b.query === 'string' ? b.query : ''));
-          const messageText=text(rawMessage,'Mesej copilot',10000);
+          const messageText=text(rawMessage,'Mesej copilot',8192);
           const conversationHistory=(Array.isArray(b.history)
             ? b.history
             : (Array.isArray(b.messages) ? b.messages.slice(0, -1) : [])) as any[];
+          // §3:71 + §4:92 — sejarah pelayar BUKAN authority. Had 20 rujukan
+          // (§4:92 "maksimum 20 history references yang disahkan server") dan
+          // role 'system'/'tool' dibuang: tanpa ini, mesej system daripada
+          // browser mendahului prompt pelayan dan model melihat arahan
+          // pelanggan sebagai arahan sistem.
+          const sanitisedHistory=conversationHistory
+            .filter(entry=>!!entry&&typeof entry==='object'&&(entry.role==='user'||entry.role==='assistant'))
+            .slice(-20)
+            .map(entry=>({role:entry.role as 'user'|'assistant',content:typeof entry.content==='string'?entry.content:''}));
           const streamRequested=request.headers.get('accept')?.includes('text/event-stream')||b.stream===true;
 
           // BL-15 — kitaran hidup thread AG-UI. Thread milik tenant atau
@@ -777,7 +805,7 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
           const startedAt=Date.now();
           let result:CopilotRunResult|undefined;
           let failure:{error:unknown}|undefined;
-          try{result=await adkAgent.processMessage(actor,messageText,conversationHistory);}
+          try{result=await adkAgent.processMessage(actor,messageText,sanitisedHistory);}
           catch(error){failure={error};}
           const durationMs=Date.now()-startedAt;
 
