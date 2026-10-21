@@ -13,6 +13,14 @@
     {
       "destination": "/api/platform?__route=:route*",
       "source": "/api/platform/:route*"
+    },
+    {
+      "destination": "/api/copilotkit?__route=:route*",
+      "source": "/api/copilotkit/:route*"
+    },
+    {
+      "destination": "/api/copilot-mcp?__route=:route*",
+      "source": "/api/copilot-mcp/:route*"
     }
   ],
   "headers": [
@@ -44,6 +52,10 @@
     }
   ],
   "installCommand": "bun install --frozen-lockfile",
+  "includeFiles": [
+    "node_modules/uuid/**",
+    "node_modules/pkce-challenge/**"
+  ],
   "bunVersion": "1.4.x",
   "crons": [{"path":"/api/platform-worker","schedule":"0 2 * * *"}]
 }
