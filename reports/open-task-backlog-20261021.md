@@ -55,6 +55,23 @@
 **Ledger 85 baris selepas bukti live (21 Okt):** `verified_local` **40** (dari 38), `implemented_unverified` 36, `blocked_external` 8, `not_run` 1 (REF-01) → **45 belum ditutup** (dari 47).
 `CPK-01` dan `AI-01` dinaik taraf kepada `verified_local` / `live_verified` atas bukti probe live sebenar (`reports/implementation/live-provider-evidence-20261021.json`).
 
+### Kemas kini selepas Wave 2 (21 Okt, ~00:20)
+
+| Item | Status | Bukti |
+|---|---|---|
+| REF-01 risk engine | **verified_local** | `tests/platform/ref-01-risk-engine.test.ts` — 7 ujian / 87 assertion (isyarat hilang ⇒ unknown, bukan 0; OTP tanpa provider ⇒ 503 `OTP_PROVIDER_UNAVAILABLE`; rayuan ⇒ state machine + `INVALID_APPEAL_TRANSITION`; gate persetujuan umur) |
+| DR-01 RTO | **verified_local** | `tests/platform/dr-01-recovery-rto.test.ts` — 3 ujian / 61 assertion (anti-fake: masa sebenar, marker disahkan terhadap fail SQLite dipulihkan, `not_met` ⇒ `RTO_TARGET_NOT_MET`) |
+| CPK-02 thread store | **verified_local** (separuh hosted kekal gated) | `tests/platform/thread-store-mount.test.ts` — 6 ujian |
+| MOD-01 cart draft | **verified_local** | `tests/platform/cart-revalidate-consent.test.ts` — draf unsent, tiada order/tempahan, `requiresReprice` |
+| MOD-08 cost basis | **verified_local** | `tests/platform/mod-08-cost-basis.test.ts` — 6 ujian (integer sen, basis points, 24.996% ≠ 25%, `COST_BASIS_SOURCE_CHANGED`) |
+| MOD-09 citations | **verified_local** | `tests/platform/mod-09-citations.test.ts` — 6 ujian (tiada luput ⇒ `EXPIRY_NOT_RECORDED`) |
+| OFF-01 revalidation | **verified_local** | `tests/platform/cart-revalidate-consent.test.ts` — konflik medan ⇒ `REVALIDATION_CONFLICT`, command tak dijalankan |
+| PD-01 consent | implemented_unverified | Gate `ASSET_CONSENT_NOT_GRANTED` + laluan `POST /campaigns/consent` sudah selesai dan diuji (rekod hilang ⇒ ditolak); **kes opted-out (`DISPATCH_OPTED_OUT`) belum ada ujian** |
+| PAY-01/02 | blocked_external (gate tepat) | 12 ujian hijau untuk separuh tempatan (HMAC, idempotency, redirect baca-sahaja); baki = kredensial merchant gateway + `PLATFORM_PAYMENT_WEBHOOK_SECRET` |
+| REL-01 | implemented_unverified | `VERCEL_TOKEN` dalam env **tidak sah** ⇒ tiada deployment receipt boleh diambil; 38 spec e2e masih gagal (punca sedang diklaster) |
+
+**Ledger selepas kemas kini ini:** `verified_local` **47** (dari 40), `implemented_unverified` 30, `blocked_external` 8 → **38 belum ditutup** (dari 47).
+
 ---
 
 

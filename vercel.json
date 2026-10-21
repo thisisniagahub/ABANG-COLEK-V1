@@ -9,6 +9,10 @@
     {
       "destination": "/",
       "source": "/((?!api(?:/|$)).*)"
+    },
+    {
+      "destination": "/api/platform?__route=:route*",
+      "source": "/api/platform/:route*"
     }
   ],
   "headers": [
