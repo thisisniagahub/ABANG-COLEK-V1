@@ -26,16 +26,17 @@ Turn the pack into agents: [SUB-AGENTS.md](SUB-AGENTS.md).
 
 ## Install
 
-Copy every folder into your project's `.claude/skills/` (project-local) or
-`~/.claude/skills/` (global). Or as a plugin:
-
+```bash
+npx thefounder init                # pasang ke ./.claude/skills (projek ini)
+npx thefounder init --global       # pasang ke ~/.claude/skills
+npx thefounder init --agent kilo   # pasang ke ./.kilo/skills untuk Kilo
+npx thefounder init --target dir   # mana-mana folder skills lain
+npx thefounder doctor              # sahkan integriti pack (exit 1 jika rosak)
 ```
-/plugin marketplace add <this-repo>
-/plugin install thefounder@thefounder
-```
 
-No Python dependencies anywhere in the pack; scripts are standard-library
-only and run on Python 3.8+.
+CLI itu zero-dependency (Node 18+). Bukan pengguna npx? Salin setiap folder
+ke `.claude/skills/` projek anda secara manual. Sepadan dengan agent lain
+(Codex, Cursor, Gemini CLI): lihat [COMPATIBILITY.md](COMPATIBILITY.md).
 
 ## The rules the pack lives by
 

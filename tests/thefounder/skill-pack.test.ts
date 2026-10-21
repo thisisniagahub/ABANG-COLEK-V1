@@ -151,6 +151,19 @@ for (const skill of skills) {
       : fail(offenders.join('; '));
   }
   record(skill.folder, 'C06_python_stdlib', pyVerdict);
+
+  // C11: keserasian merentas model — tiada laluan mutlak mesin ini tertinggal
+  // (?![\\/]) mengecualikan URL (https://) — hanya drive path Windows yang gagal.
+  const absPath = /[A-Za-z]:[\\/](?![\\/])/.test(stripCredit(skill.raw));
+  record(skill.folder, 'C11_tiada_laluan_mutlak', absPath
+    ? fail('SKILL.md mengandungi laluan mutlak mesin (pemindahan merentas agent pecah)')
+    : pass('tiada laluan mutlak — boleh alih ke mana-mana agent'));
+
+  // C12: README.md wajib bagi setiap skill (muka depan mesra manusia)
+  const hasReadme = fs.existsSync(path.join(skillsDir, skill.folder, 'README.md'));
+  record(skill.folder, 'C12_readme', hasReadme
+    ? pass('README.md wujud')
+    : fail('README.md tiada'));
 }
 
 // ---- Semakan merentas skill ----
@@ -201,11 +214,31 @@ if (fs.existsSync(chainPath)) {
 }
 record('PACK', 'C09_chain_coverage', chainVerdict);
 
-// C10: bilangan skill == 27 dan tiada folder tanpa SKILL.md
-const orphanFolders = folders.filter((f) => !readSkill(f));
+// C10: bilangan skill == 27 dan tiada folder skill yatim (folder bukan skill
+// seperti bin/ dan .claude-plugin/ tidak dikira)
+const orphanFolders = folders.filter((f) => f.startsWith('THEFOUNDER-') && !readSkill(f));
 record('PACK', 'C10_populasi_pack', skills.length === 27 && orphanFolders.length === 0
   ? pass(`27 skill, tiada folder yatim`)
   : fail(`${skills.length} skill, yatim: ${orphanFolders.join(', ') || 'tiada'}`));
+
+// C13: pakej npx — manifest sah, CLI wajib wujud
+const pkgPath = path.join(skillsDir, 'package.json');
+const binPath = path.join(skillsDir, 'bin', 'thefounder.js');
+let pkgVerdict = fail('package.json tiada');
+if (fs.existsSync(pkgPath)) {
+  try {
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8')) as {
+      name?: string; bin?: Record<string, string>; engines?: { node?: string };
+    };
+    const binOk = fs.existsSync(binPath) && !!pkg.bin?.thefounder;
+    pkgVerdict = pkg.name === 'thefounder' && binOk && !!pkg.engines?.node
+      ? pass(`pakej npx sah (bin -> ${pkg.bin?.thefounder}, node ${pkg.engines?.node}+)`)
+      : fail(`manifest tidak lengkap (name=${pkg.name}, bin wujud=${binOk})`);
+  } catch (error) {
+    pkgVerdict = fail(`package.json tidak sah JSON: ${String(error)}`);
+  }
+}
+record('PACK', 'C13_pakej_npx', pkgVerdict);
 
 // ---- Assertions bun:test (gate merah/hijau) ----
 

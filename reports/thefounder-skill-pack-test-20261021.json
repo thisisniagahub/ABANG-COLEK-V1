@@ -1,8 +1,8 @@
 {
   "counts": {
     "skills": 27,
-    "checks": 166,
-    "pass": 121,
+    "checks": 221,
+    "pass": 176,
     "fail": 0,
     "uncomputed": 45,
     "clashes": 0
@@ -69,6 +69,26 @@
       }
     },
     {
+      "skill": "THEFOUNDER-assembly",
+      "check": "C11_tiada_laluan_mutlak",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada laluan mutlak — boleh alih ke mana-mana agent"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-assembly",
+      "check": "C12_readme",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "README.md wujud"
+      }
+    },
+    {
       "skill": "THEFOUNDER-backend",
       "check": "C01_nama_frontmatter",
       "verdict": {
@@ -126,6 +146,26 @@
         "confidence": null,
         "probabilities": null,
         "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-backend",
+      "check": "C11_tiada_laluan_mutlak",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada laluan mutlak — boleh alih ke mana-mana agent"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-backend",
+      "check": "C12_readme",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "README.md wujud"
       }
     },
     {
@@ -189,6 +229,26 @@
       }
     },
     {
+      "skill": "THEFOUNDER-battlefield",
+      "check": "C11_tiada_laluan_mutlak",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada laluan mutlak — boleh alih ke mana-mana agent"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-battlefield",
+      "check": "C12_readme",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "README.md wujud"
+      }
+    },
+    {
       "skill": "THEFOUNDER-blueprint",
       "check": "C01_nama_frontmatter",
       "verdict": {
@@ -246,6 +306,26 @@
         "confidence": null,
         "probabilities": null,
         "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-blueprint",
+      "check": "C11_tiada_laluan_mutlak",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada laluan mutlak — boleh alih ke mana-mana agent"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-blueprint",
+      "check": "C12_readme",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "README.md wujud"
       }
     },
     {
@@ -309,6 +389,26 @@
       }
     },
     {
+      "skill": "THEFOUNDER-council",
+      "check": "C11_tiada_laluan_mutlak",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada laluan mutlak — boleh alih ke mana-mana agent"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-council",
+      "check": "C12_readme",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "README.md wujud"
+      }
+    },
+    {
       "skill": "THEFOUNDER-crowd",
       "check": "C01_nama_frontmatter",
       "verdict": {
@@ -366,6 +466,26 @@
         "confidence": null,
         "probabilities": null,
         "reason": "1 skrip, stdlib sahaja, tiada eval/exec"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-crowd",
+      "check": "C11_tiada_laluan_mutlak",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada laluan mutlak — boleh alih ke mana-mana agent"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-crowd",
+      "check": "C12_readme",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "README.md wujud"
       }
     },
     {
@@ -429,6 +549,26 @@
       }
     },
     {
+      "skill": "THEFOUNDER-flywheel",
+      "check": "C11_tiada_laluan_mutlak",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada laluan mutlak — boleh alih ke mana-mana agent"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-flywheel",
+      "check": "C12_readme",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "README.md wujud"
+      }
+    },
+    {
       "skill": "THEFOUNDER-identity",
       "check": "C01_nama_frontmatter",
       "verdict": {
@@ -486,6 +626,26 @@
         "confidence": null,
         "probabilities": null,
         "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-identity",
+      "check": "C11_tiada_laluan_mutlak",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada laluan mutlak — boleh alih ke mana-mana agent"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-identity",
+      "check": "C12_readme",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "README.md wujud"
       }
     },
     {
@@ -549,6 +709,26 @@
       }
     },
     {
+      "skill": "THEFOUNDER-interface",
+      "check": "C11_tiada_laluan_mutlak",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada laluan mutlak — boleh alih ke mana-mana agent"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-interface",
+      "check": "C12_readme",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "README.md wujud"
+      }
+    },
+    {
       "skill": "THEFOUNDER-magnet",
       "check": "C01_nama_frontmatter",
       "verdict": {
@@ -606,6 +786,26 @@
         "confidence": null,
         "probabilities": null,
         "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-magnet",
+      "check": "C11_tiada_laluan_mutlak",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada laluan mutlak — boleh alih ke mana-mana agent"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-magnet",
+      "check": "C12_readme",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "README.md wujud"
       }
     },
     {
@@ -669,6 +869,26 @@
       }
     },
     {
+      "skill": "THEFOUNDER-masterplan",
+      "check": "C11_tiada_laluan_mutlak",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada laluan mutlak — boleh alih ke mana-mana agent"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-masterplan",
+      "check": "C12_readme",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "README.md wujud"
+      }
+    },
+    {
       "skill": "THEFOUNDER-megaphone",
       "check": "C01_nama_frontmatter",
       "verdict": {
@@ -726,6 +946,26 @@
         "confidence": null,
         "probabilities": null,
         "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-megaphone",
+      "check": "C11_tiada_laluan_mutlak",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada laluan mutlak — boleh alih ke mana-mana agent"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-megaphone",
+      "check": "C12_readme",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "README.md wujud"
       }
     },
     {
@@ -789,6 +1029,26 @@
       }
     },
     {
+      "skill": "THEFOUNDER-numbers",
+      "check": "C11_tiada_laluan_mutlak",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada laluan mutlak — boleh alih ke mana-mana agent"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-numbers",
+      "check": "C12_readme",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "README.md wujud"
+      }
+    },
+    {
       "skill": "THEFOUNDER-opening",
       "check": "C01_nama_frontmatter",
       "verdict": {
@@ -846,6 +1106,26 @@
         "confidence": null,
         "probabilities": null,
         "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-opening",
+      "check": "C11_tiada_laluan_mutlak",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada laluan mutlak — boleh alih ke mana-mana agent"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-opening",
+      "check": "C12_readme",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "README.md wujud"
       }
     },
     {
@@ -909,6 +1189,26 @@
       }
     },
     {
+      "skill": "THEFOUNDER-parity",
+      "check": "C11_tiada_laluan_mutlak",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada laluan mutlak — boleh alih ke mana-mana agent"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-parity",
+      "check": "C12_readme",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "README.md wujud"
+      }
+    },
+    {
       "skill": "THEFOUNDER-pricetag",
       "check": "C01_nama_frontmatter",
       "verdict": {
@@ -966,6 +1266,26 @@
         "confidence": null,
         "probabilities": null,
         "reason": "1 skrip, stdlib sahaja, tiada eval/exec"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-pricetag",
+      "check": "C11_tiada_laluan_mutlak",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada laluan mutlak — boleh alih ke mana-mana agent"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-pricetag",
+      "check": "C12_readme",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "README.md wujud"
       }
     },
     {
@@ -1029,6 +1349,26 @@
       }
     },
     {
+      "skill": "THEFOUNDER-pulse",
+      "check": "C11_tiada_laluan_mutlak",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada laluan mutlak — boleh alih ke mana-mana agent"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-pulse",
+      "check": "C12_readme",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "README.md wujud"
+      }
+    },
+    {
       "skill": "THEFOUNDER-radar",
       "check": "C01_nama_frontmatter",
       "verdict": {
@@ -1086,6 +1426,26 @@
         "confidence": null,
         "probabilities": null,
         "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-radar",
+      "check": "C11_tiada_laluan_mutlak",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada laluan mutlak — boleh alih ke mana-mana agent"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-radar",
+      "check": "C12_readme",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "README.md wujud"
       }
     },
     {
@@ -1149,6 +1509,26 @@
       }
     },
     {
+      "skill": "THEFOUNDER-rebrand",
+      "check": "C11_tiada_laluan_mutlak",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada laluan mutlak — boleh alih ke mana-mana agent"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-rebrand",
+      "check": "C12_readme",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "README.md wujud"
+      }
+    },
+    {
       "skill": "THEFOUNDER-rebuild",
       "check": "C01_nama_frontmatter",
       "verdict": {
@@ -1206,6 +1586,26 @@
         "confidence": null,
         "probabilities": null,
         "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-rebuild",
+      "check": "C11_tiada_laluan_mutlak",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada laluan mutlak — boleh alih ke mana-mana agent"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-rebuild",
+      "check": "C12_readme",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "README.md wujud"
       }
     },
     {
@@ -1269,6 +1669,26 @@
       }
     },
     {
+      "skill": "THEFOUNDER-runway",
+      "check": "C11_tiada_laluan_mutlak",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada laluan mutlak — boleh alih ke mana-mana agent"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-runway",
+      "check": "C12_readme",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "README.md wujud"
+      }
+    },
+    {
       "skill": "THEFOUNDER-ship",
       "check": "C01_nama_frontmatter",
       "verdict": {
@@ -1326,6 +1746,26 @@
         "confidence": null,
         "probabilities": null,
         "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-ship",
+      "check": "C11_tiada_laluan_mutlak",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada laluan mutlak — boleh alih ke mana-mana agent"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-ship",
+      "check": "C12_readme",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "README.md wujud"
       }
     },
     {
@@ -1389,6 +1829,26 @@
       }
     },
     {
+      "skill": "THEFOUNDER-skill-creator",
+      "check": "C11_tiada_laluan_mutlak",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada laluan mutlak — boleh alih ke mana-mana agent"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-skill-creator",
+      "check": "C12_readme",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "README.md wujud"
+      }
+    },
+    {
       "skill": "THEFOUNDER-storefront",
       "check": "C01_nama_frontmatter",
       "verdict": {
@@ -1446,6 +1906,26 @@
         "confidence": null,
         "probabilities": null,
         "reason": "1 skrip, stdlib sahaja, tiada eval/exec"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-storefront",
+      "check": "C11_tiada_laluan_mutlak",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada laluan mutlak — boleh alih ke mana-mana agent"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-storefront",
+      "check": "C12_readme",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "README.md wujud"
       }
     },
     {
@@ -1509,6 +1989,26 @@
       }
     },
     {
+      "skill": "THEFOUNDER-trial",
+      "check": "C11_tiada_laluan_mutlak",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada laluan mutlak — boleh alih ke mana-mana agent"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-trial",
+      "check": "C12_readme",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "README.md wujud"
+      }
+    },
+    {
       "skill": "THEFOUNDER-workshop",
       "check": "C01_nama_frontmatter",
       "verdict": {
@@ -1566,6 +2066,26 @@
         "confidence": null,
         "probabilities": null,
         "reason": "tiada skrip python dalam skill ini"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-workshop",
+      "check": "C11_tiada_laluan_mutlak",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada laluan mutlak — boleh alih ke mana-mana agent"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-workshop",
+      "check": "C12_readme",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "README.md wujud"
       }
     },
     {
@@ -1629,6 +2149,26 @@
       }
     },
     {
+      "skill": "THEFOUNDER-xray",
+      "check": "C11_tiada_laluan_mutlak",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "tiada laluan mutlak — boleh alih ke mana-mana agent"
+      }
+    },
+    {
+      "skill": "THEFOUNDER-xray",
+      "check": "C12_readme",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "README.md wujud"
+      }
+    },
+    {
       "skill": "PACK",
       "check": "C07_clash_gate",
       "verdict": {
@@ -1666,6 +2206,16 @@
         "confidence": null,
         "probabilities": null,
         "reason": "27 skill, tiada folder yatim"
+      }
+    },
+    {
+      "skill": "PACK",
+      "check": "C13_pakej_npx",
+      "verdict": {
+        "value": "PASS",
+        "confidence": null,
+        "probabilities": null,
+        "reason": "pakej npx sah (bin -> bin/thefounder.js, node >=18+)"
       }
     }
   ]
