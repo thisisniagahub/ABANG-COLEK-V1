@@ -7,9 +7,9 @@
 
 - Generated: `2026-10-20T21:30:00Z`
 - Source commit: `1fc218e5784efb890641bba1e46ac97f617639a3`
-- Verification run: `2026-10-21T09:30:59.146Z` @ `34cfe7a4b1043eb7d241ad49ec9ab525552b8fe5` (branch `integrate/blueprint-v23`, dirty=true)
+- Verification run: `2026-10-21T09:35:22.942Z` @ `7701d397ff4ee72292a9a2292bcd0da195915cc7` (branch `integrate/blueprint-v23`, dirty=true)
 - Observed totals: **1272 tests pass, 0 fail, 8209 assertions** across 11 suites (0 failed, 0 unavailable).
-- Source binding: manifest before `a2a868fc21e0c347156b66d6e649225b6619d1822b704442cc8816127f3c34c8`, after `a2a868fc21e0c347156b66d6e649225b6619d1822b704442cc8816127f3c34c8`, **sourceStable=true** (1108 source files).
+- Source binding: manifest before `e040eaf54da8e8729a15cb7e7fffffd488ad1a52fdf7f62011e1b426eb44c030`, after `e040eaf54da8e8729a15cb7e7fffffd488ad1a52fdf7f62011e1b426eb44c030`, **sourceStable=true** (1109 source files).
 
 ## Status tiers
 
@@ -25,9 +25,9 @@
 
 | Scope | verified | unverified | partial | not_run | blocked_external | total |
 |---|---|---|---|---|---|---|
-| Core (78) | 46 | 27 | 2 | 0 | 3 | 78 |
+| Core (78) | 48 | 25 | 2 | 0 | 3 | 78 |
 | Extensions (7) | 0 | 2 | 0 | 0 | 5 | 7 |
-| **All (85)** | **46** | **29** | **2** | **0** | **8** | **85** |
+| **All (85)** | **48** | **27** | **2** | **0** | **8** | **85** |
 
 Test-name evidence: **35** row(s) cite a verbatim testcase title (resolved against an observed testcase), **50** row(s) cite a prose summary (the cited file is the evidence and must exist on disk), **0** row(s) declare no `testNameKind` and are therefore treated as strict titles.
 
@@ -54,8 +54,8 @@ Test-name evidence: **35** row(s) cite a verbatim testcase title (resolved again
 | CPK-01 | Chat runtime — real provider call, no echo | `implemented_verified _(raw: verified_local)_` | local / live_verified | server/agents/copilot/runtime.ts; server/agents/providers/model-adapters.ts; api/copilotkit.ts | `tests/platform/copilot-runtime-pipeline.test.ts` — Copilot Runtime Pipeline — real provider path, no echo, fail-closed (tests/platform/copilot-runtime-pipeline.test.ts, 26 tests) _(testKind: none, testNameKind: prose (human summary — NOT a resolved testcase))_ | — |
 | CPK-02 | AG-UI Streams — thread persistence, replay, re-authorise on restore | `implemented_verified _(raw: verified_local)_` | local / protocol_verified | server/agents/intelligence/threads.ts; api/copilotkit.ts (official @copilotkit/runtime AG-UI route) | `tests/platform/intelligence-agui-threads-mount.test.ts` — BL-15: X-Thread-Id pada respons chat, replay SSE dengan X-Last-Event-Id + X-Receipt-Count, ?after= hanya event selepas kursor, thread tenant lain => 403, hitl_prompt tanpa resit bukan state-changing (tests/platform/intelligence-agui-threads-mount.test.ts, 6 ujian) _(testKind: none, testNameKind: prose (human summary — NOT a resolved testcase))_ | Tiada jurang tempatan: thread store AG-UI sudah di-mount dalam server/platform/app.ts dengan X-Thread-Id, route GET /api/platform/copilot/threads/:id/events (SSE replay + X-Last-Event-Id + X-Receipt-Count + ?after=), dan requireOwned() menolak thread tenant lain. Bukti: tests/platform/intelligence-agui-threads-mount.test.ts (6 ujian) hijau. Separuh hosted (cross-device, saved runs) kekal gated. |
 | CPK-03 | Automatic Learning — evidence to skill to human publish to rollback | `blocked_external` | local / protocol_verified | server/agents/intelligence/learning.ts; server/agents/tools/capabilities/governance.ts (ADV-28 reviewer) | `tests/platform/intelligence-learning-pipeline.test.ts` — a candidate that FAILS evaluation is not publishable (tests/platform/intelligence-learning-pipeline.test.ts) _(testKind: none, testNameKind: title (resolved testcase))_ | **EXTERNAL:** CopilotKit Intelligence account + Self-Service Agreement + organization on the free Developer plan + a selected project (project API key) + a Learning container created in the browser (stable id) + 15 eligible threads before the first learning run; Automatic Learning itself IS included in the free Developer plan, so this is not a paid-plan gate. Separately, the host-side wiring does not exist yet: api/copilotkit.ts constructs CopilotRuntime with no `intelligence` client and no `identifyUser` callback, and CopilotKitIntelligence is never instantiated. |
-| CPK-04 | Generative UI — server-emitted A2UI from real state | `implemented_unverified` | local / component_present | src/features/copilot/declarative/A2UIFixedRenderer.tsx; server/platform/adkAgent.ts | `tests/frontend/a2ui-components.test.tsx` — A2UI fixed schema allowlist + inert rendering (tests/frontend/a2ui-components.test.tsx) _(testKind: none, testNameKind: prose (human summary — NOT a resolved testcase))_ | — |
-| CPK-05 | Declarative UI — versioned surface catalog and allowlist | `implemented_unverified` | local / component_present | src/features/copilot/a2ui-registry.ts; shared/copilot-contracts.ts | `tests/frontend/a2ui-components.test.tsx` — the allowlist still holds exactly the approved components + a component outside the allowlist is refused by the renderer (tests/frontend/a2ui-components.test.tsx) _(testKind: none, testNameKind: prose (human summary — NOT a resolved testcase))_ | — |
+| CPK-04 | Generative UI — server-emitted A2UI from real state | `implemented_verified _(raw: verified_local)_` | local / component_present | src/features/copilot/declarative/A2UIFixedRenderer.tsx; server/platform/adkAgent.ts | `tests/frontend/a2ui-components.test.tsx` — A2UI fixed schema allowlist + inert rendering (tests/frontend/a2ui-components.test.tsx) _(testKind: none, testNameKind: prose (human summary — NOT a resolved testcase))_ | — |
+| CPK-05 | Declarative UI — versioned surface catalog and allowlist | `implemented_verified _(raw: verified_local)_` | local / component_present | src/features/copilot/a2ui-registry.ts; shared/copilot-contracts.ts | `tests/frontend/a2ui-components.test.tsx` — the allowlist still holds exactly the approved components + a component outside the allowlist is refused by the renderer (tests/frontend/a2ui-components.test.tsx) _(testKind: none, testNameKind: prose (human summary — NOT a resolved testcase))_ | — |
 | CPK-06 | Human-in-the-loop — proposal, approval, CAS, executor, receipt | `implemented_unverified` | local / protocol_verified | server/agents/approval/**; server/agents/executor/**; server/agents/tools/capabilities/governance.ts; server/platform/adkAgent.ts | `tests/platform/adv-tools-approval-execution.test.ts` — Approval -> CAS -> executor -> durable receipt; revocation; expiry; scope; idempotency _(testKind: none, testNameKind: prose (human summary — NOT a resolved testcase))_ | The approval/executor/receipt chain is real, but only ONE executor is registered (refund.execute). Other approved action types still return EXECUTOR_UNAVAILABLE, so the HITL path is not universal. |
 | CPK-07 | Frontend tools — AGUI toolset wired to the agent | `implemented_unverified` | local / component_present | src/features/copilot/components/frontendToolAdapters.ts | `tests/frontend/frontend-tool-adapters.test.ts` — rejects unknown actions and arbitrary routes _(testKind: none, testNameKind: title (resolved testcase))_ | Adapter logic is real and tested, but the adapter is never instantiated by a live agent run — no server round-trip drives it. |
 | CPK-08 | Shared state — scoped state view, revision separation | `implemented_unverified` | local / component_present | src/features/copilot/state-rendering/ScopedStateView.tsx | `tests/frontend/gui03-04-state-tool.test.tsx` — Scoped state view clears scope and strips authority fields _(testKind: none, testNameKind: prose (human summary — NOT a resolved testcase))_ | Scope-clearing and authority-stripping are real, but the view is not mounted against a live server-issued state store. |
@@ -146,7 +146,7 @@ Test-name evidence: **35** row(s) cite a verbatim testcase title (resolved again
 
 | ID | Severity | Problem | Required action |
 |---|---|---|---|
-| (verification) | warning | the register was written for commit 1fc218e5784e… but the receipt observed 34cfe7a4b104… | confirm the register matches the tree it claims to describe |
+| (verification) | warning | the register was written for commit 1fc218e5784e… but the receipt observed 7701d397ff4e… | confirm the register matches the tree it claims to describe |
 
 ## Correction history
 

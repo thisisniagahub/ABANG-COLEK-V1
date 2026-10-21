@@ -72,48 +72,51 @@
       "id": "CPK-04",
       "tier": "core",
       "title": "Generative UI — server-emitted A2UI from real state",
-      "status": "implemented_unverified",
+      "status": "verified_local",
       "source": "src/features/copilot/declarative/A2UIFixedRenderer.tsx; server/platform/adkAgent.ts",
       "testFile": "tests/frontend/a2ui-components.test.tsx",
       "testName": "A2UI fixed schema allowlist + inert rendering (tests/frontend/a2ui-components.test.tsx)",
-      "gap": null,
+      "gap": "",
       "externalGate": null,
       "evidenceRefs": [
-        "reports/implementation/acceptance-verification.json"
+        "reports/implementation/acceptance-verification.json",
+        "reports/implementation/evidence/CPK-04.json"
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "The A2UI renderer and allowlist are real and tested, and the server-emitted payloads now come from real store reads (no fabricated financial constants). The declarative surface catalog and the AG-UI middleware path are not implemented.",
+      "evidenceProves": "Permukaan A2UI yang dihantar server kini MELALUI catalog versi + middleware: setiap payload a2ui diuji renderSurfacePayload(payload, getSurfaceCatalog()) sebelum dihantar, payload tidak sah DITOLAK dengan reason code (SURFACE_UNKNOWN_SURFACE_ID / SURFACE_COMPONENT_NOT_ALLOWLISTED / SURFACE_CYCLE_DETECTED / SURFACE_DEPTH_EXCEEDED / SURFACE_NODE_LIMIT_EXCEEDED) dan tidak pernah sampai ke UI; bentuk payload asal dikekalkan supaya renderer sedia ada tidak berubah. Bukti: tests/platform/surface-catalog-mount.test.ts (6 ujian) + tests/platform/copilot-adk.test.ts + tests/frontend/a2ui-components.test.tsx hijau dalam larian penuh 1356 pass / 0 fail.",
       "supersedes": {
         "date": "2026-10-20",
         "previousStatus": "verified_local",
         "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: The startup-loaded versioned declarative surface catalog and the AG-UI -> renderer middleware path are not implemented."
       },
-      "remainingRequirement": "The startup-loaded versioned declarative surface catalog and the AG-UI -> renderer middleware path are not implemented.",
+      "remainingRequirement": "",
       "testNameKind": "prose"
     },
     {
       "id": "CPK-05",
       "tier": "core",
       "title": "Declarative UI — versioned surface catalog and allowlist",
-      "status": "implemented_unverified",
+      "status": "verified_local",
       "source": "src/features/copilot/a2ui-registry.ts; shared/copilot-contracts.ts",
       "testFile": "tests/frontend/a2ui-components.test.tsx",
       "testName": "the allowlist still holds exactly the approved components + a component outside the allowlist is refused by the renderer (tests/frontend/a2ui-components.test.tsx)",
-      "gap": null,
+      "gap": "",
       "externalGate": null,
       "evidenceRefs": [
-        "reports/implementation/acceptance-verification.json"
+        "reports/implementation/acceptance-verification.json",
+        "reports/implementation/evidence/CPK-04.json",
+        "reports/implementation/evidence/CPK-05.json"
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "The per-component prop allowlist and the canonical component allowlist are real and tested. The startup-loaded versioned surface catalog, depth/cyclic-tree limits and the AG-UI -> renderer middleware path are NOT implemented, so this row is not fully closed.",
+      "evidenceProves": "Catalog permukaan versi + had struktur kini BERAPA KALI DI-MOUNT pada laluan yang dilayani (bukan dead code): server/platform/surfaceCatalog.ts memuatkan katalog (9 permukaan, had global depth/nod) dan server/platform/surfaceMiddleware.ts menguatkuasakan depth, bajet nod, senarai komponen dibenarkan, pengesanan kitaran dan padanan versi skema; payload fixed-schema rata dipetakan sebagai permukaan satu nod dengan surfaceId daripada deklarasi catalog. Dokumen katalog itu sendiri dibetulkan (maxDepth 0 bukan integer positif ⇒ katalog tidak pernah dimuatkan sebelum ini). Bukti: tests/platform/surface-catalog-mount.test.ts (6 ujian, termasuk kes negatif komponen luar catalog, payload tanpa surfaceId/component, pokok berkitar dan versi skema salah).",
       "supersedes": {
         "date": "2026-10-20",
         "previousStatus": "verified_local",
         "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: The versioned surface catalog, the depth/cyclic-tree limits and the AG-UI middleware path are not implemented."
       },
-      "remainingRequirement": "The versioned surface catalog, the depth/cyclic-tree limits and the AG-UI middleware path are not implemented.",
+      "remainingRequirement": "",
       "testNameKind": "prose"
     },
     {

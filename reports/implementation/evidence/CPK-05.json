@@ -1,0 +1,43 @@
+{
+  "requirementId": "CPK-05",
+  "status": "verified_local",
+  "environment": "local_test",
+  "timestamp": "2026-10-20T12:25:00Z",
+  "sourceCommit": "60311aad5a1695eb2804e830488a3133e182397f",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "testName": "Dependency boundary check (client->server, shared->app/server)",
+  "testPath": "tests/architecture/dependency-boundaries.test.ts",
+  "command": "bun test ./tests/architecture",
+  "exitCode": 0,
+  "result": "3 pass / 0 fail / 15 expect() calls across 1 file",
+  "artifactRefs": [
+    "scripts/maintenance/check-boundaries.ts",
+    "reports/audits/2026-10-20-acceptance-source-audit.md",
+    "reports/audits/2026-10-20-double-check-findings.md"
+  ],
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "orchestrator-double-check-2026-10-20",
+  "limitations": "Dua daripada tiga peraturan边界 yang didokumentasikan implemented sahaja. (1) Cycle detection antara module interfaces TIDAKimplemented walaupun comment di scripts/maintenance/check-boundaries.ts:87-88 menjanjikannya, dan server/modules/ tidak wujud. (2) Ujian negative fixture TIDAK wujud — tests/architecture/dependency-boundaries.test.ts:27-35 hanya evaluates LEGACY_EXCEPTIONS.some(...) terhadap path rekaan dan tidak pernah memanggil checker, jadi ia tidak membuktikan apa-apa tentang detector. (3) Checker tidak boleh dipacu dengan tree rekaan (hanya walk real directories), jadi negative test mustahil pada masa ini. (4) Multiline imports, dynamic import() dan deep relative paths tidak dikesan oleh scanner line-based. (5) Fasa 01 belum implemented: server/modules/ tiada, references/ tiada, 246 fail media produk masih di repo root.",
+  "corrections": [
+    {
+      "date": "2026-10-20",
+      "previousStatus": "verified_local",
+      "previousTestName": "Architectural boundary import & cycle rejection",
+      "previousTestPath": "tests/architecture/dependency-boundaries.test.ts",
+      "previousResult": "3 pass, 0 fail, 15 expect() calls",
+      "previousArtifactRefs": [
+        "scripts/maintenance/check-boundaries.ts"
+      ],
+      "previousTimestamp": "2026-10-20T05:25:00Z",
+      "previousLimitations": "All legacy exceptions registered with owner, reason, and removal batch.",
+      "reason": "Evidence file asal overclaim. testName asal mendakwa 'cycle rejection' tetapi tiada cycle detection implemented dalam scripts/maintenance/check-boundaries.ts:89-172 — hanya dua rule (client->server, shared->app/server) dijalankan, manakala rule 3 yang dijanjikan di header comment (:87-88) tiada implementasi langsung. Selain itu satu-satunya 'negative' test (:27-35) tidak pernah memanggil checker, jadi ia hanya membuktikan bahawa path rekaan tiada dalam senarai exception. Ini正是 corak yang ditegur dalam brief: 'Test sekadar isExempt === false tidak membuktikan detector.' Audit sumber penuh: reports/audits/2026-10-20-acceptance-source-audit.md (defect D-30).",
+      "evidenceRefs": [
+        "reports/audits/2026-10-20-acceptance-source-audit.md#D-30",
+        "reports/audits/2026-10-20-double-check-findings.md#7.1",
+        "scripts/maintenance/check-boundaries.ts:87-88",
+        "tests/architecture/dependency-boundaries.test.ts:27-35"
+      ],
+      "reopenCondition": "ARC-01 boleh ditick semula apabila: (a) checker boleh dipacu dengan tree rekaan, (b) negative fixtures sebenar menguji client->server, shared->src, shared->server dan cycle, (c) cycle detection diimplementasikan, (d) struktur Fasa 01 (server/modules/, references/media/) dipindahkan dengan hash manifest."
+    }
+  ]
+}
