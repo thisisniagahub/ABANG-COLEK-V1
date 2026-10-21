@@ -104,6 +104,24 @@ Setiap commit mesti dipilih fail (`git add <path>`), **bukan** `git add -A` — 
 
 ## 8. Deployment plan + rollback
 
+### Status push & deploy (21 Okt 2026, 05:22Z)
+
+| Perkara | Hasil |
+|---|---|
+| Push ke `origin/main` | **Berjaya** — `be45a84..e4b8bad` (fast-forward, tanpa force). `origin/main` = `e4b8bad` |
+| GitHub Actions ("Linux Platform CI") | **GAGAL** — job gagal dalam **2 saat dengan 0 langkah** (`steps: []`): runner tidak pernah mengambil job ⇒ **akaun dikunci (billing)**, bukan kecacatan kod |
+| GitHub Actions ("Vercel Production") | **GAGAL** — gagal dalam 4 saat, simptom sama |
+| Vercel deployment `dpl_6G6ZD9LTjQWgrFT14sQmKB72imNs` | **"Deployment has failed"** — build awan gagal; projek kedua (`google-adk`) juga gagal ⇒ simptom **akaun**, bukan repo |
+| Bukti tempatan (bukan dalam akaun) | `npx vercel build --yes` pada tree yang **sama** ⇒ **"Build completed successfully"** (`status: ok`), `.vercel/output/functions/api/*` terhasil, dan `.vercel/output/config.json` mengandungi rewrite `/api/copilotkit/:route*` → `/api/copilotkit?__route=$1&route=$1` ✔ |
+| Bukti repo (bukan build) | `bun install --frozen-lockfile` (command Vercel guna) ⇒ **exit 0**, "no changes" ⇒ lockfile disegerakkan |
+
+**Kesimpulan:** punca deploy awan ialah **gate akaun (billing lock)**, bukan kod. Audit 21 Okt 02:30Z sudah merekod "GitHub Actions main tidak bermula kerana akaun dikunci akibat billing". Fix kod (uuid/pkce-challenge sebagai direct dependency, rewrite laluan, `includeFiles`) sudah masuk `main` dan akan digunakan sebaik sahaja akaun dibuka.
+
+**Langkah human:** buka akaun Vercel/GitHub (billing) — **jangan** ubah workflow untuk melangkau check. Selepas itu, deploy semula `e4b8bad` (atau SHA terkini) dan probe feature sebenar:
+`GET /api/copilotkit/info` · `GET /api/copilotkit/descriptor` · `POST /api/platform/auth/login` · `POST /api/mcp` (initialize) · `POST /api/copilot-mcp` (initialize) · `GET /api/platform/session`.
+
+**Nota (bukan blocker):** `vercel build` mem-print `TS2835` (relative import perlu extension `.js`) kerana pembina fungsi Vercel memaksa `moduleResolution: node16` — tetapiIa **tidak fatal** (build keluar `status: ok` dan fungsi terhasil). Tiada import yang ditulis semula; jika Gateway mulaNetworks gagal dengan TS2835, add `.js` extension pada import relatif `api/**` + `server/**`.
+
 - **Deploy**: `vercel deploy --prod` hanya selepas token yang sah + SHA tepat yang pushing. Semak `vercel inspect <deployment-id> --logs`, kemudian probe feature sebenar (bukan root 200): `GET /api/copilotkit/info`, `POST /api/platform/auth/login`, `POST /api/mcp` (initialize), `GET /api/copilotkit/descriptor`, `/api/copilot-mcp`.
 - **Rollback**: `git revert` commit Atomic (bukan `git reset`), atau deploy ke SHA known-good `be45a84` yang sudah READY di `abangcolek.gangniaga.my`.
 - **Nota**: deployment `dpl_4PgXXTsfhjnBrGzYBWCq5c2wrMYu` (dinyata oleh sesi paralel) dibina daripada **dirty tree**, jadi ia **tidak** boleh dikaitkan sebagai resept release untuk mana-mana SHA.

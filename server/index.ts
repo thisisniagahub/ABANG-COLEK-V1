@@ -15,7 +15,11 @@ export interface LocalRouteHandlers {
   runtimeIdentity: (request: Request) => Response | Promise<Response>;
   /** CopilotKit runtime route (`api/copilotkit.ts`). */
   copilotKit: (request: Request) => Response | Promise<Response>;
-  /** First-party MCP entry (`api/mcp.ts`). */
+  /**
+   * First-party MCP entry (`api/mcp.ts`) — dilayan oleh KEDUA-DUA laluan:
+   * `/api/copilot-mcp` (kanonikal) dan `/api/mcp` (compatibility facade).
+   * Satu pengendali sahaja: sesi MCP dan auth dikongsi antara kedua-duanya.
+   */
   mcp: (request: Request) => Response | Promise<Response>;
   /**
    * Payment callback + post-payment return routes (PAY-01/PAY-02).
@@ -34,7 +38,9 @@ export interface LocalRouteHandlers {
  *
  *  - `/api/platform/runtime-identity` → identiti operator tempatan.
  *  - `/api/copilotkit/*` → pengendali CopilotKit rasmi daripada `api/copilotkit.ts`.
- *  - `/api/mcp*` → pengendali MCP rasmi daripada `api/mcp.ts`.
+ *  - `/api/copilot-mcp*` dan `/api/mcp*` → pengendali MCP rasmi daripada
+ *    `api/mcp.ts` (laluan kanonikal dan compatibility facade berkongsi
+ *    implementasi, auth dan peta sesi yang sama — bukan pelayan kedua).
  *  - `/api/platform/payments/*` → pengendali bayaran daripada
  *    `server/platform/paymentCallbackRoutes.ts` (authority: tandatangan HMAC).
  *  - everything else → aplikasi platform (`createPlatformApp`).
@@ -51,7 +57,10 @@ export function createLocalRouter(handlers: LocalRouteHandlers): (
     if (pathname === '/api/copilotkit' || pathname.startsWith('/api/copilotkit/')) {
       return handlers.copilotKit(request);
     }
-    if (pathname === '/api/mcp' || pathname.startsWith('/api/mcp/')) {
+    if (
+      pathname === '/api/mcp' || pathname.startsWith('/api/mcp/')
+      || pathname === '/api/copilot-mcp' || pathname.startsWith('/api/copilot-mcp/')
+    ) {
       return handlers.mcp(request);
     }
     if (
@@ -155,6 +164,6 @@ if (import.meta.main) {
   function shutdown(){clearInterval(interval);server.stop();app.close();const pidPath=join(runtimeRoot,'run','platform.pid');if(existsSync(pidPath)&&readFileSync(pidPath,'utf8')===String(process.pid))unlinkSync(pidPath);process.exit(0);}
   process.once('SIGINT',shutdown);process.once('SIGTERM',shutdown);
   console.info(`ABANGCOLEK API listening on http://${config.hostname}:${config.port}`);
-  console.info('CopilotKit runtime: /api/copilotkit/* | MCP: /api/mcp');
+  console.info('CopilotKit runtime: /api/copilotkit/* | MCP: /api/copilot-mcp (kanonikal) + /api/mcp (facade)');
   console.info('First founder setup uses the one-time token in var/run/owner-bootstrap.token. No account is created automatically.');
 }
