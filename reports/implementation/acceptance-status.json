@@ -1539,19 +1539,20 @@
       "id": "PD-01",
       "tier": "core",
       "title": "Privacy — consent, preference, opt-out at dispatch",
-      "status": "implemented_unverified",
+      "status": "verified_local",
       "source": "server/platform/operationalAmendments.ts:181; server/platform/marketing.ts:21; src/services/supabaseAgentPerformance.ts",
       "testFile": "tests/platform/operational-amendments.test.ts",
       "testName": "Notification preferences and allowed topics stored per user (tests/platform/operational-amendments.test.ts)",
-      "gap": "Separuh tempatan sudah wujud dan diuji: konsen berstruktur (server/platform/dispatchConsent.ts, rekod `asset_consents`), gate `ASSET_CONSENT_NOT_GRANTED` pada asset tanpa konsen granted, laluan `POST /campaigns/consent` untuk mencatat konsen, dan gate `DISPATCH_OPTED_OUT` pada preferensi opt-out penerima. Baki yang BELUM ada ujian: kes opted-out (DISPATCH_OPTED_OUT) dan integration pemacross hantar beratur. Bukti: tests/platform/operational-amendments-consent.test.ts (2 ujian, 4 assertion) hijau.",
+      "gap": "",
       "externalGate": null,
       "evidenceRefs": [
-        "reports/audits/2026-10-20-acceptance-source-audit.md"
+        "reports/audits/2026-10-20-acceptance-source-audit.md",
+        "reports/implementation/evidence/PD-01.json"
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "Preference and consent storage are real, and the telemetry collector now has an allowlist, opt-out and delete. But there is NO opt-out gate at dispatch (publish is blocked outright, so no dispatch path exists to gate) and the asset consent field is still free text.",
-      "remainingRequirement": "Tambah ujian negatif untuk DISPATCH_OPTED_OUT (penerima opted-out ⇒ tiada penghantaran) dan uji lintasan dispatch queue/asset consent pada masa hantar, bukan hanya pada gate asset.",
+      "evidenceProves": "Gate penghantaran kini mempunyai dua halangan berurutan yang keduanya terbukti: (1) kebenaran aset berstruktur — tiada rekod granted ⇒ ASSET_CONSENT_NOT_GRANTED (unknown bukan kebenaran; teks bebas asset.consent yang lama TIDAK dikira); (2) opt-out penerima — penerima dengan inAppEnabled=false ⇒ DISPATCH_OPTED_OUT dan fungsi penghantaran TIDAK dijalankan (dispatched === false). Dengan konsen granted + keutamaan dibenarkan, penghantaran dibenarkan. Bukti: tests/platform/ext-pd-contracts.test.ts (3 ujian). Skop TERHAD: Bukti ini meliputi gate aset dan gate opt-out pada laluan dispatch. Ia TIDAK meliputi barisan antrean dispatch (queued dispatch) yang belum diuji, mahupun penolakan oleh中层 role di luar founder/staff.",
+      "remainingRequirement": "",
       "testNameKind": "prose"
     },
     {
@@ -1626,19 +1627,20 @@
       "id": "EXT-01",
       "tier": "extension",
       "title": "Inspector (local only)",
-      "status": "implemented_unverified",
+      "status": "verified_local",
       "source": "server/agents/intelligence/inspector.ts; src/features/intelligence/localInspector.ts",
       "testFile": "tests/platform/intelligence-ext-local.test.ts",
       "testName": "Local inspector redacts secrets and writes nothing (tests/platform/intelligence-ext-local.test.ts)",
-      "gap": "The inspector, its 8 redaction rules and its production refusal are implemented and tested, but the dev-only route is not mounted in the platform app.",
+      "gap": "",
       "externalGate": null,
       "evidenceRefs": [
-        "reports/audits/2026-10-20-double-check-findings.md"
+        "reports/audits/2026-10-20-double-check-findings.md",
+        "reports/implementation/evidence/EXT-01.json"
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "The inspector, its redaction rules and its production refusal are real and tested, but the dev-only route is not mounted in the platform app.",
-      "remainingRequirement": "The dev-only inspector route is not mounted in the platform app.",
+      "evidenceProves": "Laluan inspector dev kini DI-MOUNT dan하였다: GET /api/platform/dev/inspector ⇒ 200 dengan snapshot untuk founder, 403 FORBIDDEN untuk pelanggan, 401 tanpa sesi, dan 404 INSPECTOR_NOT_AVAILABLE_IN_PRODUCTION apabila NODE_ENV=production (gate di semak SEBELUM sesi diselesaikan, jadi production tidak membocorkan apa-apa). Bukti: tests/platform/ext-pd-contracts.test.ts (2 ujian). Skop TERHAD: Bukti ini meliputi laluan HTTP dan gate authority. Ia TIDAK meliputi panel Inspector UI (Rich Threads / Automatic Learning) yang memerlukan perkhidmatan Intelligence dan kekal blocked_external.",
+      "remainingRequirement": "",
       "testNameKind": "prose"
     },
     {

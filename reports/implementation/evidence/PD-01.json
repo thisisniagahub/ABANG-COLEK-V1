@@ -1,0 +1,21 @@
+{
+  "requirementId": "PD-01",
+  "status": "verified_local",
+  "environment": "local_test",
+  "timestamp": "2026-10-21T14:42:59.282Z",
+  "sourceCommit": "78514e0",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "testName": "Kontrak baris PD-01 (kelakuan khusus baris)",
+  "testPath": "tests/platform/ext-pd-contracts.test.ts",
+  "command": "bun test ./tests/platform/ext-pd-contracts.test.ts",
+  "exitCode": 0,
+  "result": "5 pass / 0 fail (seluruh fail baris EXT-01 + PD-01)",
+  "artifactRefs": [
+    "server/platform/app.ts",
+    "server/platform/dispatchConsent.ts",
+    "shared/pd-contracts.ts"
+  ],
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "integrator-2026-10-21",
+  "limitations": "Bukti ini meliputi gate aset dan gate opt-out pada laluan dispatch. Ia TIDAK meliputi barisan antrean dispatch (queued dispatch) yang belum diuji, mahupun penolakan oleh中层 role di luar founder/staff."
+}
