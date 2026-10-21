@@ -19,11 +19,15 @@ test('flow review returns a canonical price breakdown and removes it when answer
 test('public catalogue uses bounded pages with an explicit next offset', async () => {
   const { app } = harness();
   for (let index = 0; index < 103; index++) app.store.save('catalogue', { id: `sku-${index}`, name: `Test ${index}`, description: 'QA only', priceSen: 100, currency: 'MYR', packSize: 1, publishedVersion: 1, revision: 1, status: 'published' });
-  const first = await call(app, '/catalogue?limit=100');
-  expect(first.json.data).toHaveLength(100);
+  // §4:96 — "50 records/page" ialah had tetap kontrak; had 100 sebelum ini
+  // dinaikkan tanpa benchmark/review yang direkodkan (audit MAJ-5). Assertion
+  // "halaman berbatas + offset seterusnya eksplisit" kekal; saiz halaman
+  // dikembalikan kepada had kontrak.
+  const first = await call(app, '/catalogue?limit=50');
+  expect(first.json.data).toHaveLength(50);
   expect(first.response.headers.get('X-Total-Count')).toBe('103');
-  expect(first.response.headers.get('X-Next-Offset')).toBe('100');
-  const last = await call(app, '/catalogue?limit=100&offset=100');
+  expect(first.response.headers.get('X-Next-Offset')).toBe('50');
+  const last = await call(app, '/catalogue?limit=50&offset=100');
   expect(last.json.data).toHaveLength(3);
   expect(last.response.headers.get('X-Next-Offset')).toBe('');
   expect((await call(app, '/catalogue?offset=-1')).response.status).toBe(400);

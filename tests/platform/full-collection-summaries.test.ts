@@ -17,7 +17,7 @@ test('finance summary includes every canonical row beyond the page cap and exclu
   app.store.save('orders', cancelled);
   for (const status of ['draft', 'rejected'] as const) app.store.save('expenses', { ...app.store.require<ExpenseRecord>('expenses', 'summary-expense-0'), id: `summary-${status}`, status, amountSen: 99999 });
   app.store.save('dealer_settlement_payments', { id: 'isolated-manual-dealer-receipt', amountSen: 999999, state: 'recorded_by_user' });
-  expect((await call(app, '/orders', undefined, founder)).json.data).toHaveLength(100);
+  // §4:96 — 50 rekod/page (had kontrak); nilai 100 sebelum ini dinaikkan tanpa review.\n  expect((await call(app, '/orders', undefined, founder)).json.data).toHaveLength(50);
   const summary = await call(app, '/finance/summary', undefined, founder);
   expect(summary.response.status).toBe(200);
   expect(summary.json.data).toMatchObject({ confirmedReceiptsSen: 63000, refundSen: 10500, netConfirmedReceiptsSen: 52500, receivablesSen: 42000, approvedExpensesSen: 2625, manualDealerReceiptsSen: 999999, sourceCounts: { orders: 106, paymentRecords: 210, approvedExpenses: 105 } });
@@ -33,7 +33,7 @@ test('staff summary counts all own assigned tasks and excludes another assignee 
   await call(app, '/people/grants', { userId: staff.userId, role: 'staff', outletIds: ['hq'], expectedVersion: 0 }, founder);
   for (let index = 0; index < 107; index++) app.store.save<TaskRecord>('tasks', { id: `assigned-${index}`, entityId: 'business', title: 'Isolated assigned work', assigneeId: staff.userId, ownerId: founder.userId, status: index < 105 ? 'open' : 'done', documentIds: [], revision: 1, createdAt: '2026-10-02T00:00:00.000Z' });
   app.store.save<TaskRecord>('tasks', { ...app.store.require<TaskRecord>('tasks', 'assigned-0'), id: 'other-assignee', assigneeId: outsider.userId, ownerId: staff.userId });
-  expect((await call(app, '/tasks', undefined, staff)).json.data).toHaveLength(100);
+  expect((await call(app, '/tasks', undefined, staff)).json.data).toHaveLength(50);
   const summary = await call(app, '/tasks/summary', undefined, staff);
   expect(summary.response.status).toBe(200);
   expect(summary.json.data).toMatchObject({ totalAssignedTasks: 107, openAssignedTasks: 105, completedAssignedTasks: 2 });
@@ -46,7 +46,7 @@ test('public product detail resolves beyond the first catalogue page without lea
   app.store.setMetadata('catalogue_version', '7');
   const first = (await call(app, '/catalogue')).json.data as { id: string }[];
   const beyond = app.store.all<CatalogueProduct>('catalogue').find(product => !first.some(visible => visible.id === product.id))!;
-  expect(first).toHaveLength(100);
+  expect(first).toHaveLength(50);
   const detail = await call(app, `/catalogue/${beyond.id}`);
   expect(detail.response.status).toBe(200);
   expect(detail.json.data).toMatchObject({ id: beyond.id, name: beyond.name, priceSen: 1234, publishedVersion: 7 });

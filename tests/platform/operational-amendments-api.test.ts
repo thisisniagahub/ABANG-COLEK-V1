@@ -4,7 +4,7 @@ test('posted expense net includes reversals beyond page one and has complete sou
  const {app}=harness(),owner=await user(app,'posting-summary',true);
  for(let index=0;index<101;index++)app.store.save('expense_postings',{id:'QA-post-'+index,kind:'EXPENSE',expenseId:'QA-expense-'+index,amountSen:100});
  app.store.save('expense_postings',{id:'QA-reversal',kind:'REVERSAL',expenseId:'QA-expense-0',reversesId:'QA-post-0',amountSen:-100});
- const page=await call(app,'/expense-postings',undefined,owner);expect(page.json.data).toHaveLength(100);
+ const page=await call(app,'/expense-postings',undefined,owner);// §4:96 — 50 rekod/page (had kontrak).\n  expect(page.json.data).toHaveLength(50);
  const summary=await call(app,'/expense-postings/summary',undefined,owner);
  expect(summary.json.data.netAmountSen).toBe(10000);expect(summary.json.data.recordCount).toBe(102);expect(summary.json.data.scope).toBe('complete_ledger');expect(summary.json.data.reversedPostingIds).toContain('QA-post-0');
 });
