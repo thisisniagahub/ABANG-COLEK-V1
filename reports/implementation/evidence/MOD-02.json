@@ -1,0 +1,21 @@
+{
+  "requirementId": "MOD-02",
+  "status": "verified_local",
+  "environment": "local_test",
+  "timestamp": "2026-10-21T15:26:07.115Z",
+  "sourceCommit": "ba8efff",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "testName": "MOD-02: unjuran awam tiada order id; unjuran yang membocorkan id ⇒ PUBLIC_PROJECTION_LEAK_BLOCKED; token lapus ⇒ TRACKING_TOKEN_EXPIRED; token tiada ⇒ ORDER_NOT_FOUND",
+  "testPath": "tests/copilot/mod-02-public-projection.test.ts",
+  "command": "bun test ./tests/copilot/mod-02-public-projection.test.ts",
+  "exitCode": 0,
+  "result": "4 pass / 0 fail",
+  "artifactRefs": [
+    "server/platform/publicOrderProjection.ts",
+    "server/platform/adkAgent.ts",
+    "server/platform/commerce.ts"
+  ],
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "integrator-2026-10-21",
+  "limitations": "Bukti ini meliputi sempadan unjuran awam dan laluan copilot (kad tracking，展示 publicRef, bukan order id). Path revocation token tracking dan expiry berasaskan handover (baris SEC-01) adalah isu berasingan dan masih belum ditutup."
+}

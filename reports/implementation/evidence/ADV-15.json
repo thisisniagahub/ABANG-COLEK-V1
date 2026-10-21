@@ -1,0 +1,21 @@
+{
+  "requirementId": "ADV-15",
+  "status": "verified_local",
+  "environment": "local_test",
+  "timestamp": "2026-10-21T15:14:40.605Z",
+  "sourceCommit": "ba8efff",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "testName": "ADV-15: audit sahaja tidak menulis; remediate:true merekodkan rekod luput CHF kungtif (LOYALTY_EXPIRY_RECORDED) dan lejar mengandungi satu rekod expired",
+  "testPath": "tests/platform/adv-row-contracts-3.test.ts",
+  "command": "bun test ./tests/platform/adv-row-contracts-3.test.ts",
+  "exitCode": 0,
+  "result": "1 pass / 0 fail",
+  "artifactRefs": [
+    "server/agents/tools/capabilities/advRemediation.ts",
+    "server/agents/tools/capabilities/growth.ts",
+    "shared/growth-contracts.ts"
+  ],
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "integrator-2026-10-21",
+  "limitations": "Bukti ini meliputi rekod luput CHF kungtif. Pelarasan baki oleh founder (LOYALTY_BALANCE_ADJUSTED) dan penolakan pelarasan tanpa kebenaran (LOYALTY_ADJUSTMENT_REJECTED) belum mempunyai ujian berasingan."
+}

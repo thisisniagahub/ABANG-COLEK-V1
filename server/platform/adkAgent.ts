@@ -33,6 +33,7 @@ import { Auth, type Principal } from './auth';
 const HITL_MAX_EXPIRY_MS = 15 * 60 * 1000;
 import { Commerce } from './commerce';
 import { Dealers } from './dealers';
+import { publicRefFromTokenHash } from './publicOrderProjection';
 import { Loyalty } from './loyalty';
 import {
   type A2UIFixedSchema,
@@ -581,8 +582,16 @@ Prinsip Operasi:
                 : order.fulfilmentStatus === 'accepted'
                   ? ('accepted' as const)
                   : ('draft' as const);
+        // MOD-02 — unjuran awam (public token) diasingkan daripada order
+        // peribadi DALAM laluan copilot: kad memaparkan rujukan awam yang
+        // tidak boleh dibalik kepada order id, walaupun chat ini milik
+        // pelanggan itu sendiri. Satu implementasi sahaja
+        // (publicOrderProjection.publicRefFromTokenHash).
+        const publicRef = order.trackingTokenHash
+          ? publicRefFromTokenHash(order.trackingTokenHash)
+          : 'unavailable';
         const trackingProps: OrderTrackingProjectionProps = {
-          orderId: order.id,
+          orderId: publicRef,
           stage,
           trackingTokenRedactedHash: order.trackingTokenHash
             ? order.trackingTokenHash.slice(0, 16)

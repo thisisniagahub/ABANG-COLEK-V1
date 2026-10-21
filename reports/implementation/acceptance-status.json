@@ -391,24 +391,25 @@
       "id": "MOD-02",
       "tier": "core",
       "title": "Orders and tracking",
-      "status": "implemented_unverified",
+      "status": "verified_local",
       "source": "server/platform/commerce.ts; server/agents/tools/capabilities/commerce.ts",
       "testFile": "tests/copilot/mod-02-orders.test.ts",
       "testName": "track_consignment reads a real bus_shipments record (tests/copilot/mod-02-orders.test.ts)",
-      "gap": null,
+      "gap": "",
       "externalGate": null,
       "evidenceRefs": [
-        "reports/implementation/acceptance-verification.json"
+        "reports/implementation/acceptance-verification.json",
+        "reports/implementation/evidence/MOD-02.json"
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "Order status and consignment tracking are proven against a seeded real bus_shipments record, and the unknown-record path returns NOT_FOUND rather than a fabricated status.",
+      "evidenceProves": "Unjuran awam kini diasingkan daripada order peribadi DI DALAM laluan copilot: kad tracking dalam chat showing `publicRef` (opaque, daripada hash token) dan BUKAN order id; satu implementasi sahaja (publicOrderProjection.publicRefFromTokenHash) digunakan oleh adkAgent. Unjuran awam tidak mengandungi id/orderId, guard itu menolak apa-apa medan peribadi (PUBLIC_PROJECTION_LEAK_BLOCKED), token lapus ⇒ TRACKING_TOKEN_EXPIRED, token tiada ⇒ ORDER_NOT_FOUND (bukan unjuran reka). Bukti: tests/copilot/mod-02-public-projection.test.ts (4 ujian). Skop TERHAD: bukti ini meliputi sempadan unjuran awam dan laluan copilot; path revocation token tracking (SEC-01) masih berasingan.",
       "supersedes": {
         "date": "2026-10-20",
         "previousStatus": "verified_local",
         "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: Public-token projection is not separated from the private order inside the copilot path."
       },
-      "remainingRequirement": "Public-token projection is not separated from the private order inside the copilot path.",
+      "remainingRequirement": "",
       "testNameKind": "prose"
     },
     {
@@ -856,24 +857,25 @@
       "id": "ADV-15",
       "tier": "core",
       "title": "audit_loyalty",
-      "status": "implemented_unverified",
+      "status": "verified_local",
       "source": "server/agents/tools/capabilities/growth.ts",
       "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
       "testName": "ADV-15 audit_loyalty — pengesahan ketat + pelaksanaan sebenar",
-      "gap": null,
+      "gap": "",
       "externalGate": null,
       "evidenceRefs": [
-        "reports/implementation/acceptance-verification.json"
+        "reports/implementation/acceptance-verification.json",
+        "reports/implementation/evidence/ADV-15.json"
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "audit_loyalty reconciles a FIFO balance and reports anomalies.",
+      "evidenceProves": "audit_loyalty kini BOLEH remediasi: `remediate: true` merekodkan rekod luput yang tertinggal (LOYALTY_EXPIRY_RECORDED), mutasi ditandakan, dan selepas remediasi lejar mengandungi satu rekod `expired` yang sah. Audit tanpa remediasi TIDAK menulis apa-apa. Bukti: tests/platform/adv-row-contracts-3.test.ts (1 ujian). Skop TERHAD: bukti ini meliputi rekod luput CHF kungtif. Pelarasan baki oleh founder (LOYALTY_BALANCE_ADJUSTED) dan penolakan pelarasan tanpa kebenaran (LOYALTY_ADJUSTMENT_REJECTED) belum mempunyai ujian berasingan.",
       "supersedes": {
         "date": "2026-10-20",
         "previousStatus": "verified_local",
         "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: Detects and explains anomalies but does not remediate them."
       },
-      "remainingRequirement": "Detects and explains anomalies but does not remediate them.",
+      "remainingRequirement": "",
       "testNameKind": "title"
     },
     {
