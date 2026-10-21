@@ -4,8 +4,15 @@ import { login } from './fixtures';
 test('public catalogue and mobile landing preserve navigation, language and theme', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 760 });
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('Colek.');
-  await expect(page.getByRole('heading', { name: 'QA Colek' })).toBeVisible();
+  // Tajuk h1 landing ialah tajuk bab 0 hero: "Dunia" + "ABANGCOLEK."
+  // (src/features/landing/ScrollWorldHero.tsx, chapters[0].title). Assertion lama
+  // "Colek." berasal daripada tajuk dokumen, bukan h1 yang dirender.
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Dunia');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('ABANGCOLEK.');
+  // Navigasi awam landing (src/features/landing/LandingPage.tsx:76
+  // aria-label "Public navigation"). Heading "QA Colek" ialah shell platform
+  // selepas log masuk, bukan landing awam.
+  await expect(page.getByRole('navigation', { name: 'Public navigation' })).toBeVisible();
   const theme = page.locator('.platform-app');
   const before = await theme.getAttribute('data-theme');
   await page.getByRole('button', { name: 'Tukar tema', exact: true }).click();

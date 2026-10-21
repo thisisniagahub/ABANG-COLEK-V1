@@ -30,11 +30,15 @@ test('failed film and active still retain usable world fallback and dialog', asy
   const activeImage = page.locator('.ac-world-scene.is-active');
   await expect(activeImage).not.toHaveAttribute('src', '/assets/world/scene-6-hero.webp');
   await expect.poll(() => activeImage.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
-  await page.getByRole('button', { name: 'Terokai dunia', exact: true }).click();
+  // Label hotspot Bab 01 = "Terokai produk" (src/features/landing/WorldHotspot.tsx,
+  // butiran[0]; reka bentuk: docs/design/landing-page.md §Bab 01 "Hotspot:
+  // (1) packaging Jerux -> butiran produk"). Label lama "Terokai dunia" tidak
+  // wujud dalam senarai butiran yang diluluskan.
+    await page.getByRole('button', { name: 'Terokai produk', exact: true }).click();
   await expect(page.getByRole('dialog')).toBeVisible();
   await page.keyboard.press('Escape');
-  await expect(page.getByRole('dialog')).not.toBeVisible();
-  await expect(page.getByRole('button', { name: 'Terokai dunia', exact: true })).toBeFocused();
+    await expect(page.getByRole('dialog')).not.toBeVisible();
+    await expect(page.getByRole('button', { name: 'Terokai produk', exact: true })).toBeFocused();
 });
 
 test('autoplay denial falls back to a still', async ({ page }) => {
