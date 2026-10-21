@@ -7,9 +7,9 @@
 
 - Generated: `2026-10-20T21:30:00Z`
 - Source commit: `1fc218e5784efb890641bba1e46ac97f617639a3`
-- Verification run: `2026-10-21T09:35:22.942Z` @ `7701d397ff4ee72292a9a2292bcd0da195915cc7` (branch `integrate/blueprint-v23`, dirty=true)
-- Observed totals: **1272 tests pass, 0 fail, 8209 assertions** across 11 suites (0 failed, 0 unavailable).
-- Source binding: manifest before `e040eaf54da8e8729a15cb7e7fffffd488ad1a52fdf7f62011e1b426eb44c030`, after `e040eaf54da8e8729a15cb7e7fffffd488ad1a52fdf7f62011e1b426eb44c030`, **sourceStable=true** (1109 source files).
+- Verification run: `2026-10-21T14:37:44.530Z` @ `4f9dba6029f11020a3565c4786dc4ba43929ed0a` (branch `integrate/blueprint-v23`, dirty=true)
+- Observed totals: **1281 tests pass, 0 fail, 8242 assertions** across 11 suites (0 failed, 0 unavailable).
+- Source binding: manifest before `a2d5259c83334b57b660f796d27e1a96fd89c4c87ed3b0bae3e814b153e5ac82`, after `a2d5259c83334b57b660f796d27e1a96fd89c4c87ed3b0bae3e814b153e5ac82`, **sourceStable=true** (1142 source files).
 
 ## Status tiers
 
@@ -25,9 +25,9 @@
 
 | Scope | verified | unverified | partial | not_run | blocked_external | total |
 |---|---|---|---|---|---|---|
-| Core (78) | 48 | 25 | 2 | 0 | 3 | 78 |
+| Core (78) | 54 | 19 | 2 | 0 | 3 | 78 |
 | Extensions (7) | 0 | 2 | 0 | 0 | 5 | 7 |
-| **All (85)** | **48** | **27** | **2** | **0** | **8** | **85** |
+| **All (85)** | **54** | **21** | **2** | **0** | **8** | **85** |
 
 Test-name evidence: **35** row(s) cite a verbatim testcase title (resolved against an observed testcase), **50** row(s) cite a prose summary (the cited file is the evidence and must exist on disk), **0** row(s) declare no `testNameKind` and are therefore treated as strict titles.
 
@@ -38,7 +38,7 @@ Test-name evidence: **35** row(s) cite a verbatim testcase title (resolved again
 | `lint` | `bun run lint` | pass (exit 0) |
 | `build` | `bun run build` | pass (exit 0) |
 | `test:jev` | `bun test ./tests/jev` | pass (exit 0) — 55 pass / 0 fail / 331 expect |
-| `test:platform` | `bun test ./tests/platform` | pass (exit 0) — 854 pass / 0 fail / 5866 expect |
+| `test:platform` | `bun test ./tests/platform` | pass (exit 0) — 863 pass / 0 fail / 5899 expect |
 | `test:copilot` | `bun test ./tests/copilot` | pass (exit 0) — 139 pass / 0 fail / 734 expect |
 | `test:frontend` | `bun test ./tests/frontend` | pass (exit 0) — 185 pass / 0 fail / 1029 expect |
 | `test:architecture` | `bun test ./tests/architecture` | pass (exit 0) — 29 pass / 0 fail / 216 expect |
@@ -82,7 +82,7 @@ Test-name evidence: **35** row(s) cite a verbatim testcase title (resolved again
 | ADV-02 | search_records | `implemented_verified _(raw: verified_local)_` | local / component_present | server/agents/tools/capabilities/discovery.ts | `tests/platform/adv-tools-capability-coverage.test.ts` — ADV-02 search_records — pengesahan ketat + pelaksanaan sebenar _(testKind: none, testNameKind: title (resolved testcase))_ | — |
 | ADV-03 | build_context_bundle | `implemented_verified _(raw: verified_local)_` | local / component_present | server/agents/tools/capabilities/discovery.ts | `tests/platform/adv-tools-capability-coverage.test.ts` — ADV-03 build_context_bundle — pengesahan ketat + pelaksanaan sebenar _(testKind: none, testNameKind: title (resolved testcase))_ | — |
 | ADV-04 | explain_record | `implemented_verified _(raw: verified_local)_` | local / component_present | server/agents/tools/capabilities/discovery.ts | `tests/platform/adv-tools-capability-coverage.test.ts` — ADV-04 explain_record — pengesahan ketat + pelaksanaan sebenar _(testKind: none, testNameKind: title (resolved testcase))_ | — |
-| ADV-05 | diagnose_checkout | `implemented_unverified` | local / component_present | server/agents/tools/capabilities/commerce.ts | `tests/copilot/mod-01-storefront.test.ts` — diagnose_checkout detects a real stock conflict _(testKind: none, testNameKind: prose (human summary — NOT a resolved testcase))_ | — |
+| ADV-05 | diagnose_checkout | `implemented_verified _(raw: verified_local)_` | local / component_present | server/agents/tools/capabilities/commerce.ts | `tests/copilot/mod-01-storefront.test.ts` — diagnose_checkout detects a real stock conflict _(testKind: none, testNameKind: prose (human summary — NOT a resolved testcase))_ | — |
 | ADV-06 | reconcile_payments | `implemented_verified _(raw: verified_local)_` | local / component_present | server/agents/tools/capabilities/commerce.ts | `tests/platform/adv-tools-capability-coverage.test.ts` — ADV-06 reconcile_payments — pengesahan ketat + pelaksanaan sebenar _(testKind: none, testNameKind: title (resolved testcase))_ | — |
 | ADV-07 | preview_refund | `implemented_unverified` | local / component_present | server/agents/tools/capabilities/commerce.ts | `tests/platform/adv-tools-capability-coverage.test.ts` — ADV-07 preview_refund — pengesahan ketat + pelaksanaan sebenar _(testKind: none, testNameKind: title (resolved testcase))_ | — |
 | ADV-08 | propose_refund | `implemented_verified _(raw: verified_local)_` | local / component_present | server/agents/tools/capabilities/commerce.ts; server/agents/approval/** | `tests/copilot/mod-04-qc-jev.test.ts` — propose_refund creates a draft only; order, balance and ledgers are unchanged _(testKind: none, testNameKind: prose (human summary — NOT a resolved testcase))_ | — |
@@ -94,14 +94,14 @@ Test-name evidence: **35** row(s) cite a verbatim testcase title (resolved again
 | ADV-14 | explain_commission | `implemented_verified _(raw: verified_local)_` | local / component_present | server/agents/tools/capabilities/growth.ts | `tests/platform/adv-tools-capability-coverage.test.ts` — ADV-14 explain_commission — pengesahan ketat + pelaksanaan sebenar _(testKind: none, testNameKind: title (resolved testcase))_ | — |
 | ADV-15 | audit_loyalty | `implemented_unverified` | local / component_present | server/agents/tools/capabilities/growth.ts | `tests/platform/adv-tools-capability-coverage.test.ts` — ADV-15 audit_loyalty — pengesahan ketat + pelaksanaan sebenar _(testKind: none, testNameKind: title (resolved testcase))_ | — |
 | ADV-16 | assess_referral | `implemented_verified _(raw: verified_local)_` | local / component_present | server/agents/tools/capabilities/growth.ts | `tests/platform/adv-tools-capability-coverage.test.ts` — ADV-16 assess_referral — pengesahan ketat + pelaksanaan sebenar _(testKind: none, testNameKind: title (resolved testcase))_ | — |
-| ADV-17 | reconcile_dayclose | `implemented_unverified` | local / component_present | server/agents/tools/capabilities/growth.ts | `tests/platform/adv-tools-capability-coverage.test.ts` — ADV-17 reconcile_dayclose — pengesahan ketat + pelaksanaan sebenar _(testKind: none, testNameKind: title (resolved testcase))_ | — |
+| ADV-17 | reconcile_dayclose | `implemented_verified _(raw: verified_local)_` | local / component_present | server/agents/tools/capabilities/growth.ts | `tests/platform/adv-tools-capability-coverage.test.ts` — ADV-17 reconcile_dayclose — pengesahan ketat + pelaksanaan sebenar _(testKind: none, testNameKind: title (resolved testcase))_ | — |
 | ADV-18 | build_finance_digest | `implemented_verified _(raw: verified_local)_` | local / component_present | server/agents/tools/capabilities/growth.ts | `tests/platform/adv-tools-capability-coverage.test.ts` — ADV-18 build_finance_digest — pengesahan ketat + pelaksanaan sebenar _(testKind: none, testNameKind: title (resolved testcase))_ | — |
 | ADV-19 | trace_transaction | `implemented_verified _(raw: verified_local)_` | local / component_present | server/agents/tools/capabilities/operations.ts | `tests/platform/adv-tools-capability-coverage.test.ts` — ADV-19 trace_transaction — pengesahan ketat + pelaksanaan sebenar _(testKind: none, testNameKind: title (resolved testcase))_ | — |
-| ADV-20 | export_report | `implemented_unverified` | local / component_present | server/agents/tools/capabilities/operations.ts | `tests/platform/adv-tools-capability-coverage.test.ts` — ADV-20 export_report — pengesahan ketat + pelaksanaan sebenar _(testKind: none, testNameKind: title (resolved testcase))_ | — |
-| ADV-21 | triage_case | `implemented_unverified` | local / component_present | server/agents/tools/capabilities/operations.ts | `tests/platform/adv-tools-capability-coverage.test.ts` — ADV-21 triage_case — pengesahan ketat + pelaksanaan sebenar _(testKind: none, testNameKind: title (resolved testcase))_ | — |
+| ADV-20 | export_report | `implemented_verified _(raw: verified_local)_` | local / component_present | server/agents/tools/capabilities/operations.ts | `tests/platform/adv-tools-capability-coverage.test.ts` — ADV-20 export_report — pengesahan ketat + pelaksanaan sebenar _(testKind: none, testNameKind: title (resolved testcase))_ | — |
+| ADV-21 | triage_case | `implemented_verified _(raw: verified_local)_` | local / component_present | server/agents/tools/capabilities/operations.ts | `tests/platform/adv-tools-capability-coverage.test.ts` — ADV-21 triage_case — pengesahan ketat + pelaksanaan sebenar _(testKind: none, testNameKind: title (resolved testcase))_ | — |
 | ADV-22 | plan_consignment | `implemented_verified _(raw: verified_local)_` | local / component_present | server/agents/tools/capabilities/operations.ts | `tests/platform/adv-tools-capability-coverage.test.ts` — ADV-22 plan_consignment — pengesahan ketat + pelaksanaan sebenar _(testKind: none, testNameKind: title (resolved testcase))_ | — |
-| ADV-23 | draft_customer_reply | `implemented_unverified` | local / component_present | server/agents/tools/capabilities/operations.ts | `tests/platform/adv-tools-capability-coverage.test.ts` — ADV-23 draft_customer_reply — pengesahan ketat + pelaksanaan sebenar _(testKind: none, testNameKind: title (resolved testcase))_ | — |
-| ADV-24 | build_action_plan | `implemented_unverified` | local / component_present | server/agents/tools/capabilities/operations.ts | `tests/platform/adv-tools-capability-coverage.test.ts` — ADV-24 build_action_plan — pengesahan ketat + pelaksanaan sebenar _(testKind: none, testNameKind: title (resolved testcase))_ | — |
+| ADV-23 | draft_customer_reply | `implemented_verified _(raw: verified_local)_` | local / component_present | server/agents/tools/capabilities/operations.ts | `tests/platform/adv-tools-capability-coverage.test.ts` — ADV-23 draft_customer_reply — pengesahan ketat + pelaksanaan sebenar _(testKind: none, testNameKind: title (resolved testcase))_ | — |
+| ADV-24 | build_action_plan | `implemented_verified _(raw: verified_local)_` | local / component_present | server/agents/tools/capabilities/operations.ts | `tests/platform/adv-tools-capability-coverage.test.ts` — ADV-24 build_action_plan — pengesahan ketat + pelaksanaan sebenar _(testKind: none, testNameKind: title (resolved testcase))_ | — |
 | ADV-25 | execute_approved_action | `implemented_verified _(raw: verified_local)_` | local / protocol_verified | server/agents/tools/capabilities/governance.ts; server/agents/executor/** | `tests/platform/adversarial-m1-integrity.test.ts` — Founder execution: NEVER generates fake receipt and strictly returns EXECUTOR_UNAVAILABLE (tests/platform/adversarial-m1-integrity.test.ts) _(testKind: none, testNameKind: title (resolved testcase))_ | — |
 | ADV-26 | reconcile_action | `implemented_unverified` | local / component_present | server/agents/tools/capabilities/governance.ts | `tests/platform/adv-tools-capability-coverage.test.ts` — ADV-26 reconcile_action — pengesahan ketat + pelaksanaan sebenar _(testKind: none, testNameKind: title (resolved testcase))_ | — |
 | ADV-27 | inspect_runtime | `implemented_verified _(raw: verified_local)_` | local / component_present | server/agents/tools/capabilities/governance.ts | `tests/platform/adv-tools-capability-coverage.test.ts` — ADV-27 inspect_runtime — pengesahan ketat + pelaksanaan sebenar _(testKind: none, testNameKind: title (resolved testcase))_ | — |
@@ -146,7 +146,7 @@ Test-name evidence: **35** row(s) cite a verbatim testcase title (resolved again
 
 | ID | Severity | Problem | Required action |
 |---|---|---|---|
-| (verification) | warning | the register was written for commit 1fc218e5784e… but the receipt observed 7701d397ff4e… | confirm the register matches the tree it claims to describe |
+| (verification) | warning | the register was written for commit 1fc218e5784e… but the receipt observed 4f9dba6029f1… | confirm the register matches the tree it claims to describe |
 
 ## Correction history
 

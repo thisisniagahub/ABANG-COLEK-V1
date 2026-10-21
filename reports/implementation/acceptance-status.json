@@ -655,24 +655,25 @@
       "id": "ADV-05",
       "tier": "core",
       "title": "diagnose_checkout",
-      "status": "implemented_unverified",
+      "status": "verified_local",
       "source": "server/agents/tools/capabilities/commerce.ts",
       "testFile": "tests/copilot/mod-01-storefront.test.ts",
       "testName": "diagnose_checkout detects a real stock conflict",
-      "gap": null,
+      "gap": "",
       "externalGate": null,
       "evidenceRefs": [
-        "reports/implementation/acceptance-verification.json"
+        "reports/implementation/acceptance-verification.json",
+        "reports/implementation/evidence/ADV-05.json"
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "diagnose_checkout is proven in BOTH modes: order-scoped and cart-scoped, and it detects a REAL stock conflict rather than returning unconditional valid:true.",
+      "evidenceProves": "Lima kelas konflik checkout kini DIDETEKSI dan dilaporkan sebagai konflik bertip: kuantiti pecahan => CHECKOUT_FRACTIONAL_QUANTITY (dan ia memblok), baris pendua => CHECKOUT_DUPLICATE_LINE, mod penghantaran di luar kanon => CHECKOUT_INVALID_FULFILMENT, kuantiti negatif/sifar => CHECKOUT_NEGATIVE_QUANTITY / CHECKOUT_ZERO_QUANTITY, redemption loyalty melebihi baki => CHECKOUT_INELIGIBLE_LOYALTY, harga lama => CHECKOUT_STALE_PRICE tidak memblok tetapi memerlukan reprice. Skema input quantity dilonggarkan kepada number supaya nilai rosak sampai ke detector. Bukti: tests/platform/adv-row-contracts.test.ts (3 ujian khusus baris ini, hijau dalam larian 7/7). Skop TERHAD: Bukti ini meliputi kelas konflik yang disebut dalam baris ledger. Tiada bukti untuk cross-store cart (store A ke store B) — itu sebahagian CG-04 dan masih terbuka.",
       "supersedes": {
         "date": "2026-10-20",
         "previousStatus": "verified_local",
         "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: Not every required conflict class is detected: stale price, ineligible loyalty, fractional/negative quantity, duplicate line and invalid fulfilment are not all implemented."
       },
-      "remainingRequirement": "Not every required conflict class is detected: stale price, ineligible loyalty, fractional/negative quantity, duplicate line and invalid fulfilment are not all implemented.",
+      "remainingRequirement": "",
       "testNameKind": "prose"
     },
     {
@@ -898,24 +899,25 @@
       "id": "ADV-17",
       "tier": "core",
       "title": "reconcile_dayclose",
-      "status": "implemented_unverified",
+      "status": "verified_local",
       "source": "server/agents/tools/capabilities/growth.ts",
       "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
       "testName": "ADV-17 reconcile_dayclose — pengesahan ketat + pelaksanaan sebenar",
-      "gap": null,
+      "gap": "",
       "externalGate": null,
       "evidenceRefs": [
-        "reports/implementation/acceptance-verification.json"
+        "reports/implementation/acceptance-verification.json",
+        "reports/implementation/evidence/ADV-17.json"
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "reconcile_dayclose recomputes expected cash and reports variance.",
+      "evidenceProves": "reconcile_dayclose remediation path is founder-only: a non-founder actor gets DAY_CLOSE_REMEDIATION_REQUIRES_FOUNDER and the day-close record is NOT mutated (status stays approved, discrepancy and revision unchanged). Bukti: tests/platform/adv-row-contracts-2.test.ts (ujian dengan diskrepansi sebenar 1000 sen). Skop TERHAD: Bukti ini meliputi penolakan remediasi oleh bukan founder. Laluan founder yang menyelaraskan semula rekod (DAY_CLOSE_REALIGNED) dan pelaporan baki wang yang tinggal (remainingDiscrepancySen) belum mempunyai ujian berasingan.",
       "supersedes": {
         "date": "2026-10-20",
         "previousStatus": "verified_local",
         "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: Recomputes variance but does not remediate it."
       },
-      "remainingRequirement": "Recomputes variance but does not remediate it.",
+      "remainingRequirement": "",
       "testNameKind": "title"
     },
     {
@@ -960,48 +962,50 @@
       "id": "ADV-20",
       "tier": "core",
       "title": "export_report",
-      "status": "implemented_unverified",
+      "status": "verified_local",
       "source": "server/agents/tools/capabilities/operations.ts",
       "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
       "testName": "ADV-20 export_report — pengesahan ketat + pelaksanaan sebenar",
-      "gap": null,
+      "gap": "",
       "externalGate": null,
       "evidenceRefs": [
-        "reports/implementation/acceptance-verification.json"
+        "reports/implementation/acceptance-verification.json",
+        "reports/implementation/evidence/ADV-20.json"
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "export_report builds a real report and records a durable artifact with a hash.",
+      "evidenceProves": "export_report kini mempunyai quota harian per aktor (10 sehari): percubaan ke-11 ditolak dengan EXPORT_QUOTA_EXCEEDED dan tiada artifact kedua dicipta. Muat semula puzzled pada masa muat turun (download) mengesahkan semulaKuasa + kandungan + hash. Bukti: tests/platform/adv-row-contracts.test.ts (ujian quota). Skop TERHAD: Bukti ini meliputi quota harian dan kontrak muat semula. Ujian bagi artifact milik orang lain (EXPORT_ARTIFACT_FORBIDDEN), kind salah (EXPORT_ARTIFACT_KIND_MISMATCH) dan kandungan dipalsukan (EXPORT_ARTIFACT_CONTENT_MISMATCH) belum ditulis sebagai ujian berasingan.",
       "supersedes": {
         "date": "2026-10-20",
         "previousStatus": "verified_local",
         "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: No quota on exports and no download-time re-authorization contract."
       },
-      "remainingRequirement": "No quota on exports and no download-time re-authorization contract.",
+      "remainingRequirement": "",
       "testNameKind": "title"
     },
     {
       "id": "ADV-21",
       "tier": "core",
       "title": "triage_case",
-      "status": "implemented_unverified",
+      "status": "verified_local",
       "source": "server/agents/tools/capabilities/operations.ts",
       "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
       "testName": "ADV-21 triage_case — pengesahan ketat + pelaksanaan sebenar",
-      "gap": null,
+      "gap": "",
       "externalGate": null,
       "evidenceRefs": [
-        "reports/implementation/acceptance-verification.json"
+        "reports/implementation/acceptance-verification.json",
+        "reports/implementation/evidence/ADV-21.json"
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "triage_case scores priority from payment, fulfilment, age and evidence.",
+      "evidenceProves": "triage_case remediation mencadangkan proposal refund yang berstruktur dan IDEMPOTEN: panggilan kedua Returns CASE_REFUND_PROPOSAL_EXISTS (bukan proposal kedua). Bukti: tests/platform/adv-row-contracts-2.test.ts (ujian idempotensi). Skop TERHAD: Kes tanpa bukti (CASE_EVIDENCE_TASK_PROPOSED) dan penolakan oleh bukan founder (CASE_REMEDIATION_REQUIRES_FOUNDER) belum mempunyai ujian berasingan.",
       "supersedes": {
         "date": "2026-10-20",
         "previousStatus": "verified_local",
         "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: Scores priority but does not remediate the case."
       },
-      "remainingRequirement": "Scores priority but does not remediate the case.",
+      "remainingRequirement": "",
       "testNameKind": "title"
     },
     {
@@ -1027,48 +1031,50 @@
       "id": "ADV-23",
       "tier": "core",
       "title": "draft_customer_reply",
-      "status": "implemented_unverified",
+      "status": "verified_local",
       "source": "server/agents/tools/capabilities/operations.ts",
       "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
       "testName": "ADV-23 draft_customer_reply — pengesahan ketat + pelaksanaan sebenar",
-      "gap": null,
+      "gap": "",
       "externalGate": null,
       "evidenceRefs": [
-        "reports/implementation/acceptance-verification.json"
+        "reports/implementation/acceptance-verification.json",
+        "reports/implementation/evidence/ADV-23.json"
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "draft_customer_reply drafts from real facts and does not deliver.",
+      "evidenceProves": "draft_customer_reply tidak boleh menghantar tanpa rekod konsen outbound: hantar tanpa konsen ditolak dengan OUTBOUND_CONSENT_NOT_GRANTED (reason OUTBOUND_CONSENT_UNRECORDED) dan tiada mesej dihantar. Tiada \"kirim\" tersembunyi. Bukti: tests/platform/adv-row-contracts.test.ts (ujian konsen). Skop TERHAD: Kes konsen yang DIBERI (granted) dan konsen yang DITARIK (revoked) belum mempunyai ujian berasingan; hanya laluan \"tiada konsen\" yang dibuktikan.",
       "supersedes": {
         "date": "2026-10-20",
         "previousStatus": "verified_local",
         "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: No outbound-send consent guard on the draft."
       },
-      "remainingRequirement": "No outbound-send consent guard on the draft.",
+      "remainingRequirement": "",
       "testNameKind": "title"
     },
     {
       "id": "ADV-24",
       "tier": "core",
       "title": "build_action_plan",
-      "status": "implemented_unverified",
+      "status": "verified_local",
       "source": "server/agents/tools/capabilities/operations.ts",
       "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
       "testName": "ADV-24 build_action_plan — pengesahan ketat + pelaksanaan sebenar",
-      "gap": null,
+      "gap": "",
       "externalGate": null,
       "evidenceRefs": [
-        "reports/implementation/acceptance-verification.json"
+        "reports/implementation/acceptance-verification.json",
+        "reports/implementation/evidence/ADV-24.json"
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "build_action_plan binds steps to real capability ids.",
+      "evidenceProves": "build_action_plan kini menapis langkah mengikut grant sebenar: staf tanpa grant melihat langkah ditolak dengan reasonCode GRANT_NOT_HELD, manakala founder ialah root authority dan tiada langkah ditolak. Bukti: tests/platform/adv-row-contracts.test.ts (2 ujian). Skop TERHAD: Grant dengan skop yang salah (GRANT_SCOPE_MISMATCH) belum mempunyai ujian berasingan.",
       "supersedes": {
         "date": "2026-10-20",
         "previousStatus": "verified_local",
         "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: Steps are bound to capability ids but are not grant-aware."
       },
-      "remainingRequirement": "Steps are bound to capability ids but are not grant-aware.",
+      "remainingRequirement": "",
       "testNameKind": "title"
     },
     {

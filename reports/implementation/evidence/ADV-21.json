@@ -1,0 +1,22 @@
+{
+  "requirementId": "ADV-21",
+  "status": "verified_local",
+  "environment": "local_test",
+  "timestamp": "2026-10-21T14:25:25.024Z",
+  "sourceCommit": "4f9dba6",
+  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "testName": "Kontrak baris ADV-21 (kelakuan khusus baris, bukan liputan generik)",
+  "testPath": "tests/platform/adv-row-contracts.test.ts",
+  "command": "bun test ./tests/platform/adv-row-contracts.test.ts",
+  "exitCode": 0,
+  "result": "7 pass / 0 fail (seluruh fail baris ADV dalam satu fail)",
+  "artifactRefs": [
+    "server/agents/tools/capabilities/advCheckoutConflicts.ts",
+    "server/agents/tools/capabilities/advOperations.ts",
+    "server/agents/tools/capabilities/commerce.ts",
+    "server/agents/tools/capabilities/operations.ts"
+  ],
+  "actualProviderModel": "deterministic_local",
+  "reviewer": "integrator-2026-10-21",
+  "limitations": "Kes tanpa bukti (CASE_EVIDENCE_TASK_PROPOSED) dan penolakan oleh bukan founder (CASE_REMEDIATION_REQUIRES_FOUNDER) belum mempunyai ujian berasingan."
+}
