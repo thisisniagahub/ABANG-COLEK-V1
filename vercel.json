@@ -58,5 +58,8 @@
     "api/mcp.ts": { "includeFiles": "node_modules/{uuid,pkce-challenge}/**" }
   },
   "bunVersion": "1.4.x",
+  "git": {
+    "deploymentEnabled": false
+  },
   "crons": [{"path":"/api/platform-worker","schedule":"0 2 * * *"}]
 }
