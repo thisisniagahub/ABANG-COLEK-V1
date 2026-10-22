@@ -1,11 +1,11 @@
 /**
  * Resolusi URL permintaan untuk fungsi `api/*.ts` yang dijalankan pada Vercel.
  *
- * ❗_isu sebenar: `new URL(request.url)` melontar `TypeError: Invalid URL`
+ * Isu sebenar: `new URL(request.url)` melontar `TypeError: Invalid URL`
  * apabila `request.url` hanya pathname relatif (`/api/copilotkit`). Vercel
- * menghantar URL relatif dalam beberapa laluan (adapter Node untuk handler
- * yang dieksport terus, dan sebahagian fungsi yang dibina semula). Kesannya
- * setiap laluan `/api/copilotkit` membalas 500 di produksi.
+ * menghantar URL relatif untuk fungsi yang dibina semula dengan
+ * `includeFiles` — kesannya setiap laluan `/api/copilotkit` membalas 500
+ * di produksi.
  *
  * Rujukan berfungsi di produksi: `api/platform.ts` dan `api/mcp.ts` yang
  * mengeksport `{ fetch }` — Vercel membina `Request` dengan URL mutlak untuk
@@ -54,14 +54,4 @@ export function resolveRequestUrl(request: Request): URL {
     // tidak melontar. Pathname dikekalkan supaya diagnostik masih tepat.
     return new URL(FALLBACK_ORIGIN);
   }
-}
-
-/**
- * URL mutlak untuk permintaan, dengan `searchParams` boleh ditulis.
- *
- * `URL` pulangan oleh `resolveRequestUrl` sentiasa baharu — jadi
- * `searchParams.delete()` pada salinan itu tidak mengubah URL asal.
- */
-export function withMutableSearchParams(request: Request): URL {
-  return new URL(resolveRequestUrl(request).toString());
 }

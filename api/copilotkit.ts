@@ -696,19 +696,13 @@ export function createCopilotKitRoute(options: CopilotKitRouteOptions = {}): (
 }
 
 /**
- * Eksport gaya `fetch` — WAJIB, bukan pilihan.
+ * Eksport gaya `{ fetch }` — WAJIB, bukan pilihan.
  *
- * Vercel Membezakan dua gaya eksport untuk fungsi `api/*.ts`:
- *   - `export default { fetch: handler }`  → Vercel membina `Request` dengan
- *     `request.url` ABSOLUT (daripada header `host` + `x-forwarded-proto`).
- *   - `export default handler` (fungsi terus) → Vercel memanggil handler
- *     daripada adapter Node; `request.url` then hanya PATHPATHNAME RELATIF
- *     (`/api/copilotkit`), bukan URL mutlak.
- *
- * `restoreRoute` memerlukan `new URL(request.url)` — dengan URL relatif ia
- * melontar `TypeError: Invalid URL` (ERR_INVALID_URL) dan setiap laluan
- * CopilotKit balas 500. Rujukan: `api/platform.ts` dan `api/mcp.ts` yang
- * functioning di produksi, kedua-duanya guna gaya `{ fetch }`.
+ * Vercel menghantar `request.url` RELATIF (`/api/copilotkit`) untuk handler
+ * yang dieksport terus, jadi `restoreRoute` melontar `TypeError: Invalid URL`
+ * dan setiap laluan CopilotKit membalas 500. Gaya `{ fetch }` membina
+ * `Request` dengan URL mutlak — sama seperti `api/platform.ts` dan `api/mcp.ts`
+ * yang berfungsi di produksi.
  */
 export default {
   fetch: createCopilotKitRoute(),
