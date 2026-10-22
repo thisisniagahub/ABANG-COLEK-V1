@@ -54,8 +54,8 @@
   "installCommand": "bun install --frozen-lockfile",
   "functions": {
     "api/copilotkit.ts": { "includeFiles": "node_modules/{uuid,pkce-challenge}/**" },
-    "api/copilot-mcp.ts": { "includeFiles": "node_modules/pkce-challenge/**" },
-    "api/mcp.ts": { "includeFiles": "node_modules/pkce-challenge/**" }
+    "api/copilot-mcp.ts": { "includeFiles": "node_modules/{uuid,pkce-challenge}/**" },
+    "api/mcp.ts": { "includeFiles": "node_modules/{uuid,pkce-challenge}/**" }
   },
   "bunVersion": "1.4.x",
   "crons": [{"path":"/api/platform-worker","schedule":"0 2 * * *"}]

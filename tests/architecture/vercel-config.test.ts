@@ -110,12 +110,21 @@ test('fungsi MCP/CopilotKit membungkus pkce-challenge (akibat runtime)', () => {
   }
 });
 
-test('fungsi CopilotKit membungkus uuid (akibat runtime @ag-ui/client)', () => {
+test('fungsi CopilotKit dan MCP membungkus uuid (akibat runtime @ag-ui/client dan @copilotkit/shared)', () => {
   // `@ag-ui/client` (import nilai dalam api/copilotkit.ts) meng-import `uuid`
   // pada aras modul ⇒ tanpa bundle ini, /api/copilotkit crash dengan
   // "Cannot find package 'uuid'" (bukti: docs/handover/IMPLEMENTATION-CHECKPOINT.md).
+  //
+  // `api/mcp.ts` dan `api/copilot-mcp.ts` (yang mewarisi `api/mcp.ts`) juga
+  // memerlukan `uuid`: `@copilotkit/shared/dist/utils/random-id.mjs` melakukan
+  // `import { v4, v5, validate } from "uuid"` pada aras modul. Tanpa bundle
+  // ini, kedua-dua laluan crash dengan "Cannot find package 'uuid'" dan proses
+  // Bun keluar dengan status 1 (bukti Langsung: log runtime Vercel
+  // 2026-10-22, deployment q1nn8ybl1).
   const functions = (config.functions ?? {}) as Record<string, { includeFiles?: string }>;
-  expect(includedPackages(functions['api/copilotkit.ts']?.includeFiles)).toContain('uuid');
+  for (const pattern of ['api/copilotkit.ts', 'api/copilot-mcp.ts', 'api/mcp.ts']) {
+    expect(includedPackages(functions[pattern]?.includeFiles)).toContain('uuid');
+  }
 });
 
 test('setiap laluan API awam ada rewrite ke fail fungsi sebenar', () => {

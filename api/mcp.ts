@@ -24,6 +24,7 @@
 import { existsSync } from 'node:fs';
 import { resolve as resolvePath } from 'node:path';
 import { PlatformStore } from '../server/platform/store';
+import { resolveRequestUrl } from '../server/platform/requestUrl';
 import { McpAccessError } from '../server/agents/mcp/actor';
 import { createMcpHttpHandler } from '../server/agents/mcp/http';
 import { createSessionActorResolver } from '../server/agents/mcp/session';
@@ -162,7 +163,7 @@ async function handleSurface(
 
 export default {
   fetch: async (request: Request): Promise<Response> => {
-    const url = new URL(request.url);
+    const url = resolveRequestUrl(request);
     const surface = url.searchParams.get('surface');
 
     if (request.method === 'GET' && surface) {

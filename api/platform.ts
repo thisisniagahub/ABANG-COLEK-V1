@@ -3,6 +3,7 @@ import { MAX_PLATFORM_REQUEST_BYTES } from '../shared/upload-limits';
 import { boundedBody } from '../server/platform/evidenceFiles';
 import { DomainError } from '../server/platform/store';
 import { boundHostedResponse } from '../server/platform/hostedResponse';
+import { resolveRequestUrl } from '../server/platform/requestUrl';
 import { createGoogleIdentityVerifier } from '../server/platform/googleIdentity';
 import { drainLocalJobs } from '../server/automation/cloudWorker';
 import { createDurableHandler, SupabaseEvidenceStorage, SupabaseSnapshotRepository } from '../server/platform/supabasePersistence';
@@ -59,7 +60,7 @@ function trustedOrigins(value: string | undefined): string[] {
 export function createProductionHandler(environment: Environment, bodyTimeoutMs = 10000) {
   let handler: ((request: Request) => Promise<Response>) | undefined;
   return async (request: Request): Promise<Response> => {
-    const target = new URL(request.url);
+    const target = resolveRequestUrl(request);
     const restored = restorePlatformRoute(target);
     if (restored === null) return failure(404, 'NOT_FOUND', 'Halaman API tidak ditemui.');
     const routeTarget = restored ?? target;

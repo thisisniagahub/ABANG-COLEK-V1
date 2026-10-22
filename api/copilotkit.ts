@@ -57,6 +57,7 @@ import {
 } from '../server/agents/copilot/runtime-instance';
 import { visionInferenceAvailability } from '../server/agents/intelligence/availability';
 import { Auth, type Principal } from '../server/platform/auth';
+import { resolveRequestUrl } from '../server/platform/requestUrl';
 import { DomainError, PlatformStore } from '../server/platform/store';
 import { SESSION_COOKIE_NAME, sessionCookieTokens } from '../server/platform/sessionCookie';
 
@@ -557,7 +558,10 @@ export function createCopilotKitRoute(options: CopilotKitRouteOptions = {}): (
    * `/api/copilotkit`) — permintaan ditolak 404 bertyped.
    */
   const restoreRoute = (request: Request): { request: Request; url: URL } | null => {
-    const url = new URL(request.url);
+    // `resolveRequestUrl` boleh guna URL relatif: Vercel menghantar `request.url`
+    // sebagai pathname sahaja (`/api/copilotkit`) dalam sesetengah laluan, dan
+    // `new URL(request.url)` akan melontar ERR_INVALID_URL pada URL relatif.
+    const url = resolveRequestUrl(request);
     const route = url.searchParams.get(ROUTE_QUERY);
     if (route === null || route === '' || url.pathname !== '/api/copilotkit') {
       return { request, url };
@@ -691,4 +695,21 @@ export function createCopilotKitRoute(options: CopilotKitRouteOptions = {}): (
   };
 }
 
-export default createCopilotKitRoute();
+/**
+ * Eksport gaya `fetch` — WAJIB, bukan pilihan.
+ *
+ * Vercel Membezakan dua gaya eksport untuk fungsi `api/*.ts`:
+ *   - `export default { fetch: handler }`  → Vercel membina `Request` dengan
+ *     `request.url` ABSOLUT (daripada header `host` + `x-forwarded-proto`).
+ *   - `export default handler` (fungsi terus) → Vercel memanggil handler
+ *     daripada adapter Node; `request.url` then hanya PATHPATHNAME RELATIF
+ *     (`/api/copilotkit`), bukan URL mutlak.
+ *
+ * `restoreRoute` memerlukan `new URL(request.url)` — dengan URL relatif ia
+ * melontar `TypeError: Invalid URL` (ERR_INVALID_URL) dan setiap laluan
+ * CopilotKit balas 500. Rujukan: `api/platform.ts` dan `api/mcp.ts` yang
+ * functioning di produksi, kedua-duanya guna gaya `{ fetch }`.
+ */
+export default {
+  fetch: createCopilotKitRoute(),
+};
