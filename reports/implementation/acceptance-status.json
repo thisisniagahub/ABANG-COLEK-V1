@@ -1414,19 +1414,20 @@
       "id": "SEC-01",
       "tier": "core",
       "title": "Tracking token — hashed at rest, expiry, no leak",
-      "status": "implemented_unverified",
+      "status": "verified_local",
       "source": "server/platform/commerce.ts; server/platform/app.ts:101",
       "testFile": "tests/copilot/mod-02-orders.test.ts",
       "testName": "Tracking token length, hash storage, expiry rejection, hash not leaked (tests/copilot/mod-02-orders.test.ts)",
-      "gap": "Token generation, hashing and expiry are real and tested, but there is NO revocation path, and the expiry is creation-time only rather than handover-based.",
+      "gap": "",
       "externalGate": null,
       "evidenceRefs": [
-        "reports/audits/2026-10-20-acceptance-source-audit.md"
+        "reports/audits/2026-10-20-acceptance-source-audit.md",
+        "reports/implementation/evidence/SEC-01.json"
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "Token generation, at-rest hashing, expiry rejection and non-leakage are proven, but there is NO revocation path and the expiry is creation-time only rather than handover-based.",
-      "remainingRequirement": "No revocation path, and the expiry is creation-time only rather than handover-based.",
+      "evidenceProves": "Token penjejakan kini mempunyai ketiga-tiga sifat yang baris ini minta: (1) hashed at rest — hanya hash yang disimpan, token mentah tiada dalam store; (2) tempoh hidup mengikut HANDOVER — setiap serahhandover (accepted/packing/packed/dispatched/received) memperbaharui tetingkap penjejakan 14 hari, bukanpenciptaan sahaja; (3) laluan revocation — `Commerce.revokeTrackingToken` (pemilik/operasi) menanda token dicabut, revocation kedua ⇒ TRACKING_TOKEN_ALREADY_REVOKED, dan token yang dicabut tidak lagi membina unjuran awam (TRACKING_TOKEN_REVOKED). Bukti: tests/platform/sec-01-tracking-token.test.ts (5 ujian, incl. negatif) + tests/platform/order-tracking-token.test.ts (8 ujian yang证明 pesanan yang dibatalkan masih boleh dijejak - token tidak dicabut secara automatik). Skop TERHAD: bukti ini meliputi token penjejakan awam; tiada API awam untuk menerbitkan token baharu (token hanya issue semasa createOrder) — itu baki operasi, bukan jurang baris ini.",
+      "remainingRequirement": "",
       "testNameKind": "prose"
     },
     {

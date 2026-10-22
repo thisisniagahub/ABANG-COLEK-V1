@@ -47,8 +47,8 @@ describe('MOD-02 — unjuran awam berasingan daripada order peribadi', () => {
     expect(projection.publicRef.startsWith('pub_')).toBe(true);
     const serialised = JSON.stringify(projection);
     expect(serialised).not.toContain('ord-pub-001');
-    expect((projection as Record<string, unknown>).id).toBeUndefined();
-    expect((projection as Record<string, unknown>).orderId).toBeUndefined();
+    expect((projection as unknown as Record<string, unknown>).id).toBeUndefined();
+    expect((projection as unknown as Record<string, unknown>).orderId).toBeUndefined();
   });
 
   test('NEGATIF unjuran yang membocorkan id ⇒ PUBLIC_PROJECTION_LEAK_BLOCKED', () => {

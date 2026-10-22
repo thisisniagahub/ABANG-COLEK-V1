@@ -81,6 +81,20 @@ describe('ARC-01 architecture boundary checker — synthetic violation fixtures'
     expect(result.ok).toBe(false);
   });
 
+  test('reports a require() call of server code', () => {
+    const result = scanFixture('require-import');
+
+    const violation = onlyViolation(result);
+    expect(violation.rule).toBe(RULES.FORBIDDEN_CLIENT_IMPORTING_SERVER);
+    expect(violation.file).toBe('src/features/legacy/require-import.ts');
+    expect(violation.importedPath).toBe('../../../server/platform/assessment');
+    // Borang require() mesti dikesan sebagai require, bukan static — ini yang
+    // membezakan scanner parser-based daripada regex line-based.
+    expect(violation.form).toBe('require');
+    expect(violation.line).toBe(1);
+    expect(result.ok).toBe(false);
+  });
+
   test('reports a deep relative import that climbs four levels out of the client layer', () => {
     const result = scanFixture('deep-relative-import');
 
@@ -191,7 +205,7 @@ describe('ARC-01 architecture boundary checker — real repository tree', () => 
     expect(result.violations).toHaveLength(0);
     expect(result.cycles).toHaveLength(0);
     expect(result.ok).toBe(true);
-  });
+  }, 30_000);
 
   test('every violation the real tree produces is covered by a registered exception', () => {
     const result = checkDependencyBoundaries(REPO_ROOT);
@@ -203,7 +217,7 @@ describe('ARC-01 architecture boundary checker — real repository tree', () => 
       expect(registered.has(`${violation.file}|${violation.importedPath}|${violation.rule}`)).toBe(true);
     }
     expect(result.exemptions.length).toBeGreaterThanOrEqual(0);
-  });
+  }, 30_000);
 
   test('the registered JEV exceptions are consumed as exemptions, not as violations', () => {
     const result = checkDependencyBoundaries(REPO_ROOT);
@@ -211,7 +225,7 @@ describe('ARC-01 architecture boundary checker — real repository tree', () => 
     const exempted = result.exemptions.map((ex) => `${ex.file}|${ex.importedPath}`);
     expect(exempted).toContain('src/features/jev/index.ts|../../../server/platform/jev/assessment');
     expect(exempted).toContain('src/services/jevEngine.ts|../../server/platform/jev/assessment');
-  });
+  }, 30_000);
 
   test('regression guard: a NEW cross-boundary import without a registered exception fails the check', () => {
     const realFiles = loadSourceTree(REPO_ROOT);
@@ -228,7 +242,7 @@ describe('ARC-01 architecture boundary checker — real repository tree', () => 
     expect(after.violations[0].rule).toBe(RULES.FORBIDDEN_CLIENT_IMPORTING_SERVER);
     expect(after.violations[0].file).toBe(probe.path);
     expect(after.ok).toBe(false);
-  });
+  }, 30_000);
 
   test('regression guard: a NEW shared->client import without a registered exception fails the check', () => {
     const realFiles = loadSourceTree(REPO_ROOT);

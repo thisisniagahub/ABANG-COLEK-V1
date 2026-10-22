@@ -109,4 +109,3 @@ states the sample size. Next: `/THEFOUNDER-rebrand`.
 - Never invents a review, quote or number; every claim carries its source link and the sample size is stated.
 - Simulated buyer reactions belong to THEFOUNDER-crowd; competitor maps belong to THEFOUNDER-battlefield.
 
-Credit: adapted from Jakeschincariol/replica-skill (MIT).

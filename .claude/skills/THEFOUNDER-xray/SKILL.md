@@ -132,4 +132,3 @@ scope, and the next step: `/THEFOUNDER-blueprint`.
 - Never logs into an account that is not the user's, never scrapes behind a login, never reads the target's source code, bundles or private APIs.
 - Market sizing and competitor maps belong to THEFOUNDER-battlefield; simulated buyers belong to THEFOUNDER-crowd.
 
-Credit: adapted from Jakeschincariol/replica-skill (MIT).

@@ -102,4 +102,3 @@ with your name on it.
 - Never ships with a dirty sweep or an open S1/S2 bug.
 - Never touches DNS for a domain it does not control; go requires the user's explicit yes.
 
-Credit: adapted from Jakeschincariol/replica-skill (MIT).

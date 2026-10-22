@@ -6,6 +6,10 @@ pathIgnorePatterns = [
   "var/**",
   "**/var/**",
 ]
+# CATATAN: Kunci `timeout` di bawah DIABAIKAN oleh Bun 1.4.2 (default sebenar
+# 5000ms). Semua skrip `bun test` mesti lulus `--timeout 15000` secara
+# eksplisit — itulah sebabnya package.json dan verify-acceptance.ts kini
+# membawa flag tersebut. Jangan bergantung pada kunci ini.
 timeout = 15000
 # Suite berjalan offline: panggilan provider live dilumpuhkan (kuota free tier
 # luar bukan OWN platform dan ia memakan kuota produksi).

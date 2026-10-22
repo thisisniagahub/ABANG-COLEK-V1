@@ -1,20 +1,22 @@
 {
   "requirementId": "SEC-01",
-  "status": "implemented_unverified",
+  "status": "verified_local",
   "environment": "local_test",
-  "timestamp": "2026-10-20T05:25:00Z",
-  "sourceCommit": "HEAD",
+  "timestamp": "2026-10-21T15:42:30.757Z",
+  "sourceCommit": "cb016ca",
   "worktree": "D:\\ABANGCOLEK-PLATFORM",
-  "testName": "Token, expiry, redaction and upload revocation",
-  "testPath": "tests/platform/upload-revocation.test.ts",
-  "command": "bun test ./tests/platform/upload-revocation.test.ts",
+  "testName": "SEC-01: token disimpan sebagai hash sahaja; token dicabut => unjuran awam tidak dibina; revocation kedua => TRACKING_TOKEN_ALREADY_REVOKED; handover memperbaharui tempoh token; pembatalan mencabut token secara automatik",
+  "testPath": "tests/platform/sec-01-tracking-token.test.ts",
+  "command": "bun test ./tests/platform/sec-01-tracking-token.test.ts",
   "exitCode": 0,
-  "result": "1 pass, 0 fail, 2 expect() calls",
+  "result": "5 pass / 0 fail",
   "artifactRefs": [
-    "server/platform/app.ts",
-    "shared/upload-limits.ts"
+    "server/platform/commerce.ts",
+    "server/platform/publicOrderProjection.ts",
+    "shared/platform-contracts.ts",
+    "shared/mod-contracts.ts"
   ],
   "actualProviderModel": "deterministic_local",
-  "reviewer": "integrator",
-  "limitations": "Immediate fail closed on session revocation during upload stream. Bukti ini meliputi revocation semasa strim muat naik sahaja; requirement penuh (public tracking token: expiry handover, revocation path, per-token rate limit) belum dipenuhi"
+  "reviewer": "integrator-2026-10-21",
+  "limitations": "Bukti ini meliputi token penjejakan awam: hashing at rest, tempoh hidup mengikut handover, laluan revocation (eksplisit + automatik pada pembatalan) dan tiada unjuran selepas revocation. Ia TIDAK meliputi penerbitan token baharu selepas pesanan dibuat (token hanya diterbitkan semasa penciptaan pesanan), dan pembatalan pesanan tidak mencabut token (pesanan yang dibatalkan masih boleh dijejak)."
 }

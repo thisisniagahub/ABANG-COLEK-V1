@@ -444,7 +444,7 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
       if(segments[0]==='flow-sessions'&&recordId){if(command==='advance')return flows.advance(actor,recordId,input);if(command==='back')return flows.advance(actor,recordId,input,true);if(command==='review')return flows.review(actor,recordId,input);if(command==='form')return flows.form(actor,recordId,input);if(command==='submit')return flows.submit(actor,recordId,input,key);}
       if(path==='/quotes')return commerce.quote(actor,input);
       if(path==='/orders')return commerce.submitOrder(actor,input,key);
-      if(segments[0]==='orders'&&recordId){if(command==='transition')return commerce.transition(actor,recordId,input);if(command==='payment')return commerce.payment(actor,recordId,input,key);}
+      if(segments[0]==='orders'&&recordId){if(command==='transition')return commerce.transition(actor,recordId,input);if(command==='revoke-tracking')return commerce.revokeTrackingToken(actor,recordId);if(command==='payment')return commerce.payment(actor,recordId,input,key);}
       if(path==='/inventory/receive')return commerce.receive(actor,input,key);
       if(segments[0]==='inventory'&&recordId&&command==='quarantine')return commerce.quarantine(actor,recordId,input);
       if(segments[0]==='inventory'&&recordId&&command==='adjust')return commerce.adjust(actor,recordId,input,key);

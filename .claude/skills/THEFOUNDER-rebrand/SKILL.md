@@ -108,4 +108,3 @@ Next: `/THEFOUNDER-storefront`.
 - Never declares the sweep clean while a hit remains; the ship stays blocked.
 - Never chooses the business name - THEFOUNDER-identity owns naming.
 
-Credit: adapted from Jakeschincariol/replica-skill (MIT).

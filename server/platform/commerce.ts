@@ -247,6 +247,24 @@ export class Commerce {
     if (outcome.code === 'TRACKING_TOKEN_EXPIRED') fail('TRACKING_TOKEN_EXPIRED', 410, outcome.message);
     fail('PUBLIC_PROJECTION_LEAK_BLOCKED', 500, outcome.message);
   }
+  /**
+   * SEC-01 — revocation path untuk token penjejakan awam.
+   *
+   * Token dicabut secara EKSPLISIT oleh pemilik pesanan atau operasi. Selepas
+   * dicabut, pautan awam berhenti berfungsi dan unjuran tidak lagi dibina.
+   * Pembatalan pesanan TIDAK mencabut token secara automatik — pesanan yang
+   * dibatalkan masih perlu boleh dijejak supaya pelanggan melihat keputusan.
+   */
+  revokeTrackingToken(actor:Principal,orderId:string){
+    const order=this.store.require<OrderRecord>('orders',orderId);
+    this.auth.own(actor,order.customerId,order.outletId);
+    if(!order.trackingTokenHash)fail('TRACKING_TOKEN_UNAVAILABLE',409,'Pesanan ini tiada token penjejakan untuk dicabut.');
+    if(order.trackingTokenRevokedAt)fail('TRACKING_TOKEN_ALREADY_REVOKED',409,'Token penjejakan sudah dicabut.');
+    const updated={...order,trackingTokenRevokedAt:now(),revision:order.revision+1,updatedAt:now()};
+    this.store.save('orders',updated);
+    this.store.audit(actor.user.id,'order.tracking_revoked',order.id,updated.revision);
+    return { orderId:order.id, trackingTokenRevokedAt:updated.trackingTokenRevokedAt, revision:updated.revision };
+  }
   order(actor:Principal,orderId:string) { const order=this.store.require<OrderRecord>('orders',orderId);this.auth.own(actor,order.customerId,order.outletId);return order; }
   orders(actor:Principal) { return this.store.all<OrderRecord>('orders').filter(o=>o.customerId===actor.user.id||this.auth.has(actor,'founder')||actor.memberships.some(m=>m.role==='staff'&&m.outletIds.includes(o.outletId))); }
   evidence(actor:Principal,evidenceIds:unknown,entityId:string,minimum=0) {
@@ -297,11 +315,28 @@ export class Commerce {
     if (next==='packed') this.consume(order);
     if (next==='cancelled') {
       // Pembatalan sebenar: lepaskan tempahan stok dan tarik balik mata
-      // kesetiaan yang dikaitkan dengan pesanan ini.
+      // kesetiaan yang dikaitkan dengan pesanan ini. Token penjejakan TIDAK
+      // dicabut secara automatik: pesanan yang dibatalkan masih perlu boleh
+      // dijejak supaya pelanggan melihat keputusan (laluan revocation
+      // eksplisit tetap ada untuk proprietor/operasi — SEC-01).
       for (const reservation of this.store.all<InventoryReservation>('reservations').filter(r=>r.orderId===order.id&&r.status==='active')) this.store.save('reservations',{...reservation,status:'released' as const,revision:reservation.revision+1});
       this.loyalty.reversePointsForOrder(order.customerId, order.id, 'Pembatalan pesanan');
     }
-    const updated={...order,fulfilmentStatus:next,revision:order.revision+1,updatedAt:now()};this.store.save('orders',updated);this.store.audit(actor.user.id,`order.${next}`,order.id,updated.revision);return updated;
+    // SEC-01 — tempoh hidup token penjejakan mengikut HANDOVER, bukan
+    // penciptaan: setiap serahhandover memperbaharui tetingkap penjejakan
+    // (14 hari dari serahhandover), jadi pesanan yang lama masih boleh
+    // dijejak selepas diserahhantar.
+    const handedOver=['accepted','packing','packed','dispatched','received'].includes(next);
+    const updated={
+      ...order,
+      fulfilmentStatus:next,
+      revision:order.revision+1,
+      updatedAt:now(),
+      ...(handedOver&&order.trackingTokenHash
+        ?{trackingTokenExpiresAt:new Date(Date.now()+14*24*3600_000).toISOString()}
+        :{}),
+    };
+    this.store.save('orders',updated);this.store.audit(actor.user.id,`order.${next}`,order.id,updated.revision);return updated;
     });
   }
   payment(actor:Principal,orderId:string,raw:unknown,key:unknown) {

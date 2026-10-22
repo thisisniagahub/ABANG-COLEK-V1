@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b0b1e"/>
+      <stop offset="100%" stop-color="#191036"/>
+    </linearGradient>
+    <linearGradient id="flow" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="50%" stop-color="#ffb347"/>
+      <stop offset="100%" stop-color="#ff5e7e"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#ffb347"/>
+    </marker>
+  </defs>
+  <rect width="1200" height="520" fill="url(#bg2)"/>
+  <text x="600" y="52" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="26" font-weight="700" fill="#ffe9c7" letter-spacing="4">THE FOOD CHAIN — VALUE FLOWS IN A CIRCLE</text>
+
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif">
+    <g>
+      <rect x="40"  y="100" width="170" height="86" rx="14" fill="#8b5cf6" fill-opacity="0.16" stroke="#8b5cf6"/>
+      <text x="125" y="134" text-anchor="middle" font-size="16" font-weight="700" fill="#d6c8ff">0 JUDGE</text>
+      <text x="125" y="158" text-anchor="middle" font-size="13" fill="#9d92c9">council</text>
+    </g>
+    <g>
+      <rect x="246" y="100" width="170" height="86" rx="14" fill="#8b5cf6" fill-opacity="0.16" stroke="#8b5cf6"/>
+      <text x="331" y="134" text-anchor="middle" font-size="16" font-weight="700" fill="#d6c8ff">1 TRUTH</text>
+      <text x="331" y="158" text-anchor="middle" font-size="13" fill="#9d92c9">battlefield · crowd · pulse</text>
+    </g>
+    <g>
+      <rect x="452" y="100" width="170" height="86" rx="14" fill="#ffb347" fill-opacity="0.14" stroke="#ffb347"/>
+      <text x="537" y="134" text-anchor="middle" font-size="16" font-weight="700" fill="#ffe9c7">2 MONEY</text>
+      <text x="537" y="158" text-anchor="middle" font-size="13" fill="#c9a86b">numbers · pricetag · magnet · runway</text>
+    </g>
+    <g>
+      <rect x="658" y="100" width="170" height="86" rx="14" fill="#ffb347" fill-opacity="0.14" stroke="#ffb347"/>
+      <text x="743" y="134" text-anchor="middle" font-size="16" font-weight="700" fill="#ffe9c7">3 IDENTITY</text>
+      <text x="743" y="158" text-anchor="middle" font-size="13" fill="#c9a86b">identity</text>
+    </g>
+    <g>
+      <rect x="864" y="100" width="170" height="86" rx="14" fill="#ff5e7e" fill-opacity="0.14" stroke="#ff5e7e"/>
+      <text x="949" y="134" text-anchor="middle" font-size="16" font-weight="700" fill="#ffc9d4">4 BUILD</text>
+      <text x="949" y="158" text-anchor="middle" font-size="13" fill="#c98a9a">xray → ship (8 skills)</text>
+    </g>
+    <g>
+      <rect x="1070" y="100" width="90" height="86" rx="14" fill="#ff5e7e" fill-opacity="0.14" stroke="#ff5e7e"/>
+      <text x="1115" y="134" text-anchor="middle" font-size="16" font-weight="700" fill="#ffc9d4">5 MKT</text>
+      <text x="1115" y="158" text-anchor="middle" font-size="13" fill="#c98a9a">megaphone</text>
+    </g>
+  </g>
+  <g stroke="url(#flow)" stroke-width="2.2" fill="none" marker-end="url(#arrow)">
+    <path d="M210 143 H242"/><path d="M416 143 H448"/><path d="M622 143 H654"/><path d="M828 143 H860"/><path d="M1034 143 H1066"/>
+  </g>
+
+  <path d="M1115 186 V240 H537 V286" stroke="url(#flow)" stroke-width="2.2" fill="none" marker-end="url(#arrow)"/>
+
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif">
+    <g>
+      <rect x="40"  y="300" width="170" height="86" rx="14" fill="#ff5e7e" fill-opacity="0.14" stroke="#ff5e7e"/>
+      <text x="125" y="334" text-anchor="middle" font-size="16" font-weight="700" fill="#ffc9d4">9 GROW</text>
+      <text x="125" y="358" text-anchor="middle" font-size="13" fill="#c98a9a">flywheel</text>
+    </g>
+    <g>
+      <rect x="246" y="300" width="170" height="86" rx="14" fill="#ff5e7e" fill-opacity="0.14" stroke="#ff5e7e"/>
+      <text x="331" y="334" text-anchor="middle" font-size="16" font-weight="700" fill="#ffc9d4">8 MEASURE</text>
+      <text x="331" y="358" text-anchor="middle" font-size="13" fill="#c98a9a">radar</text>
+    </g>
+    <g>
+      <rect x="452" y="300" width="170" height="86" rx="14" fill="#ffffff" fill-opacity="0.08" stroke="#e8e2ff"/>
+      <text x="537" y="334" text-anchor="middle" font-size="16" font-weight="700" fill="#ffffff">7 OPERATE</text>
+      <text x="537" y="358" text-anchor="middle" font-size="13" fill="#a8a2c4">workshop</text>
+    </g>
+    <g>
+      <rect x="658" y="300" width="170" height="86" rx="14" fill="#ffffff" fill-opacity="0.08" stroke="#e8e2ff"/>
+      <text x="743" y="334" text-anchor="middle" font-size="16" font-weight="700" fill="#ffffff">6 OPEN</text>
+      <text x="743" y="358" text-anchor="middle" font-size="13" fill="#a8a2c4">opening · ship</text>
+    </g>
+    <g>
+      <rect x="864" y="300" width="170" height="86" rx="14" fill="#ffffff" fill-opacity="0.08" stroke="#e8e2ff"/>
+      <text x="949" y="334" text-anchor="middle" font-size="16" font-weight="700" fill="#ffffff">5 MARKET</text>
+      <text x="949" y="358" text-anchor="middle" font-size="13" fill="#a8a2c4">storefront</text>
+    </g>
+    <g>
+      <rect x="1070" y="300" width="90" height="86" rx="14" fill="#8b5cf6" fill-opacity="0.16" stroke="#8b5cf6"/>
+      <text x="1115" y="334" text-anchor="middle" font-size="15" font-weight="700" fill="#d6c8ff">META</text>
+      <text x="1115" y="358" text-anchor="middle" font-size="12" fill="#9d92c9">assembly</text>
+    </g>
+  </g>
+  <g stroke="url(#flow)" stroke-width="2.2" fill="none" marker-end="url(#arrow)">
+    <path d="M1070 343 H1038"/><path d="M864 343 H832"/><path d="M658 343 H626"/><path d="M452 343 H420"/><path d="M246 343 H214"/>
+  </g>
+
+  <path d="M40 343 H20 V143 H36" stroke="#ff5e7e" stroke-width="2.4" fill="none" stroke-dasharray="7 7" marker-end="url(#arrow)"/>
+  <text x="26" y="250" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#ff8ba0" transform="rotate(-90 26 250)">THE LOOP: radar feeds truth, flywheel feeds radar</text>
+
+  <text x="600" y="440" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="15" fill="#9d92c9">A business that only walks the chain once walks off a cliff on schedule — the last stage feeds the first.</text>
+  <text x="600" y="470" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#6f6890">masterplan compiles the whole story · skill-creator keeps the pack clash-free</text>
+</svg>

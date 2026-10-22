@@ -86,4 +86,3 @@ screens done of total, must-haves done of total, what is next. Then
 - Never invents features that are not in the feature matrix without flagging them as additions.
 - Never fakes or wires the data layer - THEFOUNDER-backend owns that.
 
-Credit: adapted from Jakeschincariol/replica-skill (MIT).

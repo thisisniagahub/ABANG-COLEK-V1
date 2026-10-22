@@ -458,6 +458,11 @@ export const SOURCE_MANIFEST_EXCLUDED_PREFIXES: string[] = [
   '.next/',
   '.output/',
   'tmp/',
+  // `.claude/` ialah harness dan skill pack (dokumentasi pembekal) — TIDAK
+  // sebarang suite acceptance mengeksekusinya, jadi ia bukan "source yang
+  // diuji". Memexitkannya juga memastikan resit kekal terikat pada kod yang
+  // benar-benar dijalankan, walaupun sesi lain sedang menyunting pack skills.
+  '.claude/',
 ];
 
 export function isSourceManifestExcluded(relPath: string): boolean {
@@ -671,12 +676,12 @@ export function buildSuites(
       timeoutMs: 900_000,
       requires: () => (opts.skipBuild ? { ok: false, reason: 'skipped by --skip-build' } : { ok: true }),
     },
-    { id: 'test:jev', cmd: 'bun', args: ['test', './tests/jev'], cwd: repoRoot, timeoutMs: 600_000 },
-    { id: 'test:platform', cmd: 'bun', args: ['test', './tests/platform'], cwd: repoRoot, timeoutMs: 900_000 },
+    { id: 'test:jev', cmd: 'bun', args: ['test', '--isolate', '--timeout', '15000', './tests/jev'], cwd: repoRoot, timeoutMs: 600_000 },
+    { id: 'test:platform', cmd: 'bun', args: ['test', '--isolate', '--timeout', '15000', './tests/platform'], cwd: repoRoot, timeoutMs: 900_000 },
     {
       id: 'test:copilot',
       cmd: 'bun',
-      args: ['test', './tests/copilot'],
+      args: ['test', '--isolate', '--timeout', '15000', './tests/copilot'],
       cwd: repoRoot,
       timeoutMs: 600_000,
       requires: (root) => {
@@ -689,7 +694,7 @@ export function buildSuites(
     {
       id: 'test:frontend',
       cmd: 'bun',
-      args: ['test', './tests/frontend'],
+      args: ['test', '--isolate', '--timeout', '15000', './tests/frontend'],
       cwd: repoRoot,
       timeoutMs: 600_000,
       requires: (root) => {
@@ -702,7 +707,7 @@ export function buildSuites(
     {
       id: 'test:architecture',
       cmd: 'bun',
-      args: ['test', './tests/architecture'],
+      args: ['test', '--isolate', '--timeout', '15000', './tests/architecture'],
       cwd: repoRoot,
       timeoutMs: 300_000,
       requires: (root) => {
@@ -715,7 +720,7 @@ export function buildSuites(
     {
       id: 'test:ext',
       cmd: 'bun',
-      args: ['test', './tests/ext'],
+      args: ['test', '--isolate', '--timeout', '15000', './tests/ext'],
       cwd: repoRoot,
       timeoutMs: 300_000,
       requires: (root) => {
@@ -728,7 +733,7 @@ export function buildSuites(
     {
       id: 'test:landing-brand-theme',
       cmd: 'bun',
-      args: ['test', './tests/landing-brand-theme.test.ts'],
+      args: ['test', '--isolate', '--timeout', '15000', './tests/landing-brand-theme.test.ts'],
       cwd: repoRoot,
       timeoutMs: 300_000,
       requires: (root) => {
@@ -739,7 +744,7 @@ export function buildSuites(
     {
       id: 'test:dashboard-model',
       cmd: 'bun',
-      args: ['test', './tests/dashboard-model.test.ts'],
+      args: ['test', '--isolate', '--timeout', '15000', './tests/dashboard-model.test.ts'],
       cwd: repoRoot,
       timeoutMs: 300_000,
       requires: (root) => {

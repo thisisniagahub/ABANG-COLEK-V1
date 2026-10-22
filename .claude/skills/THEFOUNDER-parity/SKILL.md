@@ -91,4 +91,3 @@ there.
 - Never scores features deliberately left out or newly added.
 - Never calls the build shippable while a must-have is missing.
 
-Credit: adapted from Jakeschincariol/replica-skill (MIT).

@@ -97,4 +97,3 @@ primitives built, and a contrast report with zero AA failures. Next:
 - Never designs a name, logo or voice - THEFOUNDER-identity owns business identity.
 - Never invents brand colours without measuring the original or asking the user.
 
-Credit: adapted from Jakeschincariol/replica-skill (MIT).

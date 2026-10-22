@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b0b1e"/>
+      <stop offset="55%" stop-color="#141033"/>
+      <stop offset="100%" stop-color="#1f0f3d"/>
+    </linearGradient>
+    <radialGradient id="glowGold" cx="50%" cy="38%" r="55%">
+      <stop offset="0%" stop-color="#ffb347" stop-opacity="0.35"/>
+      <stop offset="45%" stop-color="#ff8a3d" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#ff8a3d" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowViolet" cx="82%" cy="80%" r="45%">
+      <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="goldLine" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="50%" stop-color="#ffb347"/>
+      <stop offset="100%" stop-color="#ff5e7e"/>
+    </linearGradient>
+    <linearGradient id="text" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="60%" stop-color="#ffe9c7"/>
+      <stop offset="100%" stop-color="#ffc46b"/>
+    </linearGradient>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="600" fill="url(#bg)"/>
+  <rect width="1200" height="600" fill="url(#glowGold)"/>
+  <rect width="1200" height="600" fill="url(#glowViolet)"/>
+
+  <g stroke="#ffffff" stroke-opacity="0.04">
+    <path d="M0 100H1200M0 200H1200M0 300H1200M0 400H1200M0 500H1200"/>
+    <path d="M100 0V600M200 0V600M300 0V600M400 0V600M500 0V600M600 0V600M700 0V600M800 0V600M900 0V600M1000 0V600M1100 0V600"/>
+  </g>
+
+  <ellipse cx="600" cy="392" rx="330" ry="118" fill="none" stroke="url(#goldLine)" stroke-opacity="0.55" stroke-width="2" stroke-dasharray="6 10"/>
+
+  <g filter="url(#soft)">
+    <g fill="#ffb347">
+      <circle cx="600" cy="470" r="7" fill-opacity="0.45"/>
+      <circle cx="588" cy="440" r="8" fill-opacity="0.55"/>
+      <circle cx="612" cy="440" r="8" fill-opacity="0.55"/>
+      <circle cx="580" cy="410" r="9" fill-opacity="0.65"/>
+      <circle cx="620" cy="410" r="9" fill-opacity="0.65"/>
+      <circle cx="600" cy="380" r="11" fill-opacity="0.8"/>
+      <circle cx="572" cy="348" r="10" fill="#ffd9a0"/>
+      <circle cx="628" cy="348" r="10" fill="#ffd9a0"/>
+      <circle cx="600" cy="316" r="13" fill="#ffe9c7"/>
+      <circle cx="560" cy="282" r="10" fill="#ffffff" fill-opacity="0.9"/>
+      <circle cx="640" cy="282" r="10" fill="#ffffff" fill-opacity="0.9"/>
+      <circle cx="600" cy="248" r="15" fill="#ffffff"/>
+    </g>
+    <g fill="#8b5cf6" fill-opacity="0.85">
+      <circle cx="536" cy="300" r="7"/>
+      <circle cx="664" cy="300" r="7"/>
+      <circle cx="518" cy="330" r="6" fill-opacity="0.6"/>
+      <circle cx="682" cy="330" r="6" fill-opacity="0.6"/>
+    </g>
+    <circle cx="600" cy="196" r="17" fill="#ff5e7e" filter="url(#soft)"/>
+    <circle cx="600" cy="196" r="6" fill="#ffffff"/>
+    <circle cx="600" cy="150" r="4" fill="#ffb347"/>
+    <circle cx="566" cy="132" r="3" fill="#8b5cf6"/>
+    <circle cx="640" cy="124" r="3" fill="#ff5e7e"/>
+  </g>
+
+  <g stroke="url(#goldLine)" stroke-width="1.4" stroke-opacity="0.7">
+    <path d="M600 196 L600 248 L560 282 M600 248 L640 282 M560 282 L600 316 L640 282 M600 316 L600 380 M572 348 L600 380 L628 348 M600 380 L580 410 M600 380 L620 410 M580 410 L588 440 M620 410 L612 440 M588 440 L600 470 M612 440 L600 470"/>
+  </g>
+
+  <text x="600" y="86" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="64" font-weight="800" fill="url(#text)" letter-spacing="6">THEFOUNDER</text>
+  <text x="600" y="122" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="21" fill="#b9a8ff" letter-spacing="3">27 AI SKILLS · ONE BUSINESS CHAIN · IDEA → LIVE → GROWING</text>
+
+  <g font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="15" fill="#e8e2ff" fill-opacity="0.9">
+    <rect x="352" y="536" width="150" height="34" rx="17" fill="#ffffff" fill-opacity="0.07" stroke="#8b5cf6" stroke-opacity="0.5"/>
+    <text x="427" y="558" text-anchor="middle">JUDGE · TRUTH</text>
+    <rect x="518" y="536" width="164" height="34" rx="17" fill="#ffffff" fill-opacity="0.07" stroke="#ffb347" stroke-opacity="0.5"/>
+    <text x="600" y="558" text-anchor="middle">MONEY · BUILD</text>
+    <rect x="698" y="536" width="150" height="34" rx="17" fill="#ffffff" fill-opacity="0.07" stroke="#ff5e7e" stroke-opacity="0.5"/>
+    <text x="773" y="558" text-anchor="middle">LAUNCH · GROW</text>
+  </g>
+</svg>

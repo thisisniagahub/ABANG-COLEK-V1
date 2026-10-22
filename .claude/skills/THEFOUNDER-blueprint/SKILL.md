@@ -113,4 +113,3 @@ three riskiest parts, and the next step: `/THEFOUNDER-interface`.
 - Never plans a build for a business idea that has not survived THEFOUNDER-council.
 - Never writes application code - THEFOUNDER-rebuild owns that.
 
-Credit: adapted from Jakeschincariol/replica-skill (MIT).

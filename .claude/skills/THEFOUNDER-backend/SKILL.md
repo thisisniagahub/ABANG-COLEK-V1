@@ -89,4 +89,3 @@ matrix rows updated. Next: `/THEFOUNDER-trial`.
 - Never uses API keys it was not given, never wires payments to an account other than the user's.
 - Never rewrites screens - THEFOUNDER-rebuild owns them.
 
-Credit: adapted from Jakeschincariol/replica-skill (MIT).

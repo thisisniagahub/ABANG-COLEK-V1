@@ -85,4 +85,3 @@ failed, bugs by severity, fixed so far. Ship nothing with an open S1. Next:
 - Never marks a bug fixed without a failing test written first.
 - Never loosens, skips or deletes a test to get green.
 
-Credit: adapted from Jakeschincariol/replica-skill (MIT).

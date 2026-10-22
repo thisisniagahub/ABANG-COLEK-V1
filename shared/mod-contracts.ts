@@ -227,6 +227,8 @@ export type PublicTrackingReasonCode =
   | 'INVALID_TOKEN'
   | 'ORDER_NOT_FOUND'
   | 'TRACKING_TOKEN_EXPIRED'
+  /** SEC-01 — token penjejakan dicabut; pautan awam berhenti berfungsi. */
+  | 'TRACKING_TOKEN_REVOKED'
   | 'PUBLIC_PROJECTION_LEAK_BLOCKED';
 
 /* -------------------------------------------------------------------------- */

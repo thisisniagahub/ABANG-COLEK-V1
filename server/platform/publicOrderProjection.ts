@@ -166,6 +166,10 @@ export function resolvePublicTrackingProjection(
   if (order.trackingTokenExpiresAt && order.trackingTokenExpiresAt <= now()) {
     return { ok: false, code: 'TRACKING_TOKEN_EXPIRED', message: 'Token penjejakan telah luput.' };
   }
+  if (order.trackingTokenRevokedAt) {
+    // SEC-01 — token yang dicabut tidak lagi membina unjuran awam.
+    return { ok: false, code: 'TRACKING_TOKEN_REVOKED', message: 'Token penjejakan telah dicabut.' };
+  }
   try {
     const projection = buildPublicOrderProjection(order);
     assertPublicProjectionIsolated(projection, [

@@ -1,8 +1,25 @@
 name: Vercel Production
 
+# ⚠️ DEPLOYMENT DI-DISABLEkan (22 Okt 2026) — jangan push ke `main` sehingga
+# owner sahkan status Vercel Git integration untuk projek `abang-colek-v1`.
+#
+# SEBAB: steps "Deploy to Vercel Production" menjalankan
+#   npx vercel@59.1.3 deploy --prod --yes --scope niaga-hub-pro --project abang-colek-v1
+# dan GitHub Actions Vercel Production adalah SATU-SATUNYA laluan deploy
+# untuk repo ini. Push ke `main` mencetuskan `vercel deploy --prod` terus
+# ke domain production `abangcolek.gangniaga.my`.
+#
+# Selenium yang masih wujud: checkout → bun install → lint → test → build.
+# Trigger `main` sengaja TIDAK ada supaya push tidak sekali-kali mencetuskan
+# workflow yang boleh deploy.
+#
+# Untuk pulihkan deploy: kembalikan `branches: [main]` di bawah, DAN sahkan
+# Vercel Git integration untuk projek `abang-colek-v1` (Settings → Git) —
+# dua-dua laluan mesti dilumpuhkan sebelum push dikembalikan.
+
 on:
   push:
-    branches: [main]
+    branches: [manual-vercel-deploy]
   workflow_dispatch:
 
 permissions:

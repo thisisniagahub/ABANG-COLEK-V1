@@ -98,4 +98,3 @@ Next: `/THEFOUNDER-ship`.
 - Never sets the price numbers - THEFOUNDER-pricetag owns pricing strategy.
 - Never writes launch dates or run sheets - THEFOUNDER-opening owns those.
 
-Credit: adapted from Jakeschincariol/replica-skill (MIT).
