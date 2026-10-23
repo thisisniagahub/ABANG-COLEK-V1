@@ -15,7 +15,6 @@
 
 <p align="center">
   <a href="https://vercel.com/niaga-hub-pro/abang-colek-v1"><img src="https://img.shields.io/badge/Production-Vercel-black?logo=vercel" alt="Production on Vercel" /></a>
-  <a href="https://github.com/thisisniagahub/ABANG-COLEK-V1/actions"><img src="https://img.shields.io/github/actions/workflow/status/thisisniagahub/ABANG-COLEK-V1/vercel-production.yml?branch=main&label=CI%20%2B%20deploy" alt="CI and deploy status" /></a>
   <img src="https://img.shields.io/badge/runtime-Bun%201.4.2-f9f1e1?logo=bun&logoColor=black" alt="Bun 1.4.2" />
   <img src="https://img.shields.io/badge/frontend-React%20%2B%20Vite-61dafb?logo=react&logoColor=black" alt="React and Vite" />
 </p>
@@ -144,26 +143,23 @@ Credential/provider readiness mesti dibuktikan secara berasingan. Mock state, ad
 
 ## Continuous delivery ke Vercel
 
-Setiap push ke `main` menjalankan workflow [`.github/workflows/vercel-production.yml`](.github/workflows/vercel-production.yml):
+Push ke `main` dihantar terus kepada **Vercel Git integration** untuk projek
+**niaga-hub-pro/abang-colek-v1**. GitHub hanya menyimpan source; tiada GitHub
+Actions runner atau Actions secret diperlukan untuk deployment.
 
-1. checkout repository;
-2. install Bun `1.4.2` dengan frozen lockfile;
-3. jalankan `lint`;
-4. jalankan `test:platform`;
-5. jalankan production build;
-6. optional CLI deploy hanya jika `VERCEL_TOKEN` dikonfigurasi; canonical autodeploy ialah Vercel Git integration ke **niaga-hub-pro/abang-colek-v1**. Sahkan exact SHA dalam deployment; CI boleh blocked sebelum berjalan dan tidak menjamin deploy.
+1. Vercel memasang dependency dengan `bun install --frozen-lockfile`.
+2. Vercel menjalankan `bun run lint && bun run test:platform && bun run build`.
+3. Hanya build yang berjaya boleh menggantikan deployment production.
 
-### Optional GitHub CLI deployment secret
+`vercel.json` mengaktifkan deployment Git untuk `main` sahaja. Branch lain
+memerlukan deployment preview yang disengajakan. Workflow Actions lama telah
+dikeluarkan supaya push tidak lagi bergantung pada billing GitHub Actions.
+Ini tidak mengubah billing atau kuota Vercel dan tidak menyelesaikan tunggakan GitHub.
 
-Untuk optional CLI deployment sahaja, konfigurasi secret repository berikut di **GitHub → Settings → Secrets and variables → Actions**:
-
-| Secret | Kegunaan |
-| --- | --- |
-| `VERCEL_TOKEN` | Token Vercel milik account/team yang mempunyai akses ke team `niaga-hub-pro`, project `abang-colek-v1` |
-
-Workflow tidak menyimpan token dalam source code. Jika token pernah terdedah, revoke token lama dahulu dan cipta token baharu sebelum menambahnya ke GitHub Actions.
-
-> **Important:** Vercel email yang memiliki `VERCEL_TOKEN` tidak perlu sama dengan email GitHub, tetapi token tersebut mesti mempunyai akses kepada project/team yang betul.
+Sebelum push, jalankan arahan validation yang sama secara tempatan. Jika lint
+atau ujian gagal, baiki kod; jangan buang gate untuk memaksa deployment.
+Sahkan deployment melalui `vercel inspect` dan pastikan metadata commit SHA
+sepadan dengan `main`. Push berjaya sahaja bukan bukti versi baharu telah live.
 
 ## Security dan data boundaries
 

@@ -116,19 +116,13 @@ test('fungsi CopilotKit dan MCP membungkus uuid (akibat runtime @ag-ui/client da
   }
 });
 
-test('auto-deploy Git dinyahaktifkan (git.deploymentEnabled = false)', () => {
-  // Setiap push ke GitHub tidak boleh mencetuskan deploy Vercel secara
-  // automatik. `git.deploymentEnabled: false` memberitahu Vercel untuk TIDAK
-  // menjalankan deployment automatik daripada git push — deploy hanya
-  // berlaku bila Vercel CLI dipanggil secara sengaja.
-  //
-  // Bukti punca: push pada 2026-10-22 mencetuskan deployment production
-  // `q1nn8ybl1` yang membawakan 500 pada `/api/copilotkit` — deployment
-  // automak tidak dapat disekat sepenuhnya melalui tetapan panel, hanya
-  // melalui konfigurasi repo ini.
-  const git = config.git as { deploymentEnabled?: unknown } | undefined;
-  expect(git).toBeDefined();
-  expect(git?.deploymentEnabled).toBe(false);
+test('deployment main terus di Vercel dengan gate sebelum build', () => {
+  // Pengguna menggantikan GitHub CI yang terkunci billing dengan build Vercel.
+  const git = config.git as { deploymentEnabled?: unknown };
+  expect(git.deploymentEnabled).toEqual({ '**': false, main: true });
+  expect(config.buildCommand).toBe('bun run lint && bun run test:platform && bun run build');
+  expect(existsSync(resolve(ROOT, '.github/workflows/ci.yml'))).toBe(false);
+  expect(existsSync(resolve(ROOT, '.github/workflows/vercel-production.yml'))).toBe(false);
 });
 
 test('setiap laluan API awam ada rewrite ke fail fungsi sebenar', () => {

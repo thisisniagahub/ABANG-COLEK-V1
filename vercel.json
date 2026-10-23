@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "bun run build",
+  "buildCommand": "bun run lint && bun run test:platform && bun run build",
   "outputDirectory": "dist",
   "framework": "vite",
   "cleanUrls": true,
@@ -59,7 +59,7 @@
   },
   "bunVersion": "1.4.x",
   "git": {
-    "deploymentEnabled": false
+    "deploymentEnabled": { "**": false, "main": true }
   },
   "crons": [{"path":"/api/platform-worker","schedule":"0 2 * * *"}]
 }
