@@ -17,5 +17,6 @@
   ],
   "actualProviderModel": "deterministic_local",
   "reviewer": "integrator-2026-10-21",
-  "limitations": "Bukti ini meliputi sempadan unjuran awam dan laluan copilot (kad tracking，展示 publicRef, bukan order id). Path revocation token tracking dan expiry berasaskan handover (baris SEC-01) adalah isu berasingan dan masih belum ditutup."
+  "limitations": "Bukti ini melipungi sempadan unjuran awam dan laluan copilot (kad tracking，memaparkan publicRef, bukan order id). Path revocation token tracking dan expiry berasaskan handover (baris SEC-01) adalah isu berasingan dan masih belum ditutup.",
+  "corrections": []
 }

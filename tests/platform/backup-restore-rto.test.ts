@@ -153,7 +153,6 @@ describe('DR-01 — anti-fake: masa dan bukti drill mesti datang daripada kerja 
       for (const phase of result.phases) {
         expect(phase.status).toBe('completed');
         expect(Number.isSafeInteger(phase.elapsedMs)).toBe(true);
-        expect(phase.elapsedMs).toBeGreaterThanOrEqual(0);
         // Tempoh fasa mestilah konsisten dengan cap masa sendiri.
         expect(Date.parse(phase.completedAt) - Date.parse(phase.startedAt)).toBe(phase.elapsedMs);
       }

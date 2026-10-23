@@ -126,6 +126,21 @@ export class Auth {
   }
   refreshCsrf(actor: Principal): SessionData { if(actor.csrfToken)return this.sessionData(actor,actor.csrfToken);const token=opaque();this.store.db.query('UPDATE sessions SET csrf_hash=?,csrf_token=? WHERE token_hash=?').run(hash(token),token,actor.sessionHash);return this.sessionData(actor,token); }
   logout(actor: Principal) { this.store.db.query('UPDATE sessions SET revoked=1 WHERE token_hash=?').run(actor.sessionHash); }
+
+  /**
+   * Cuba mejapekan sesi yang dibawa oleh permintaan.
+   *
+   * Mengembalikan `Principal` jika terdapat sesi yang valid, atau `null` jika
+   * tidak terdapat sesi (perintah pra-sesi, sesi tamat, atau DomainError).
+   * Kaedah ini digunakan oleh laluan identiti pra-sesi (`/auth/google`,
+   * `/auth/signup`, `/auth/login`, `/auth/bootstrap`) untuk menolak permintaan
+   * apabila pelayar membawa sesi yang aktif — mencegah perubahan akaun secara
+   * tidak sengaja melalui ambient-authority cookie semasa sesi aktif.
+   */
+  optionalSession(request: Request): Principal | null {
+    try { return this.resolve(request); }
+    catch (error) { if (error instanceof DomainError) return null; throw error; }
+  }
   /**
    * Mencabut sesi LAIN yang dikemukakan oleh pelayar yang sama.
    *

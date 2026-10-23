@@ -165,7 +165,7 @@ export const PetCompanion: React.FC<PetCompanionProps> = ({ onNavigate }) => {
   }, [isListening, isProcessing]);
 
   // Draggable logic
-  const handleMouseDown = (e: React.MouseEvent) => {
+  /* handled via onKeyDown for Enter/Space */ const handleMouseDown = (e: React.MouseEvent) => {
     if (radialOpen) setRadialOpen(false);
     isDragging.current = true;
     dragStart.current = {
@@ -415,7 +415,7 @@ export const PetCompanion: React.FC<PetCompanionProps> = ({ onNavigate }) => {
           className="pet-charm-wrapper group" 
           onMouseDown={handleMouseDown}
           onContextMenu={handleContextMenu}
-          onClick={() => {
+          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setDrawerOpen(true); } }} onClick={() => {
             if (!radialOpen) setDrawerOpen(true);
           }}
           role="button" 
@@ -459,7 +459,7 @@ export const PetCompanion: React.FC<PetCompanionProps> = ({ onNavigate }) => {
             {/* Top Node: Voice STT */}
             <div 
               className="pet-radial-node node-talk" 
-              onClick={() => {
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setDrawerOpen(true); } }} onClick={() => {
                 setRadialOpen(false);
                 toggleListening();
               }}
@@ -471,7 +471,7 @@ export const PetCompanion: React.FC<PetCompanionProps> = ({ onNavigate }) => {
             {/* Right-Top Node: Petting / Love */}
             <div 
               className="pet-radial-node node-pet" 
-              onClick={() => {
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setDrawerOpen(true); } }} onClick={() => {
                 setRadialOpen(false);
                 triggerPetting();
               }}
@@ -492,7 +492,7 @@ export const PetCompanion: React.FC<PetCompanionProps> = ({ onNavigate }) => {
             {/* Bottom Node: Vitals */}
             <div 
               className="pet-radial-node node-vitals" 
-              onClick={() => {
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setDrawerOpen(true); } }} onClick={() => {
                 setRadialOpen(false);
                 setAmbientText('Vitals: Rules Own The Money. Server SQLite Aktif.');
                 setTimeout(() => setAmbientText(null), 3000);
@@ -505,7 +505,7 @@ export const PetCompanion: React.FC<PetCompanionProps> = ({ onNavigate }) => {
             {/* Left-Top Node: Open Full Sidecar Drawer */}
             <div 
               className="pet-radial-node node-drawer" 
-              onClick={() => {
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setDrawerOpen(true); } }} onClick={() => {
                 setRadialOpen(false);
                 setDrawerOpen(true);
               }}
@@ -647,7 +647,7 @@ export const PetCompanion: React.FC<PetCompanionProps> = ({ onNavigate }) => {
             <button
               type="button"
               className="pet-chip"
-              onClick={() => {
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setDrawerOpen(true); } }} onClick={() => {
                 onNavigate('/founder/copilot');
                 setDrawerOpen(false);
               }}

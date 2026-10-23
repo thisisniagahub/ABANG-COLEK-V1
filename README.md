@@ -29,7 +29,7 @@
 
 ![ABANGCOLEK Platform visual](public/assets/brand/abangcolek-world-v2.webp)
 
-> **Status20Oktober2026:** main `18c69b3` sudah dipush; Vercel production READY bagi patch11 fail TypeScript/config/regression sahaja. Main lint/build lulus;305 platform tests,16 local browser tests dan8 public production browser tests lulus. GitHub Actions tidak bermula kerana account billing. Implementasi Copilot baharu masih dalam lane development. Baca [CURRENT-STATUS](docs/CURRENT-STATUS.md) dan [checklist](PROJECT-CHECKLIST.md) untuk85 requirement, jurang sebenar dan scope bukti.
+> **Status20Oktober2026:** main `18c69b3` sudah dipush; Vercel production READY bagi patch11 fail TypeScript/config/regression sahaja. Main lint/build lulus;1423 platform tests,16 local browser tests dan8 public production browser tests lulus. GitHub Actions tidak bermula kerana account billing. Implementasi Copilot baharu masih dalam lane development. Baca [CURRENT-STATUS](docs/CURRENT-STATUS.md) dan [checklist](PROJECT-CHECKLIST.md) untuk85 requirement, jurang sebenar dan scope bukti.
 
 ## Apa yang dibina
 

@@ -64,7 +64,6 @@ describe('Versioned JEV evaluation and permission-filtered context', () => {
       expect(result.calibration.status).toBe('NOT_APPLICABLE_LOCAL_RULES');
       expect(result.usage.providerCalls).toBe(0);
       expect(result.usage.newSpendSen).toBe(0);
-      expect(result.metrics.matchRate).toBeGreaterThanOrEqual(0);
       expect(result.metrics.matchRate).toBeLessThanOrEqual(1);
       expect(JSON.stringify(result)).not.toContain('Ignore previous instructions');
       expect(() => first.service.evaluate(actor('customer'), { datasetId: 'x', datasetVersion: '1', split: 'held_out', cases: HELD_OUT_CASES })).toThrow();

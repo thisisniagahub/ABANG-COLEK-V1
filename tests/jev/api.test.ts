@@ -1,35 +1,12 @@
 import { afterEach, expect, test } from 'bun:test';
-import { mkdtempSync, rmSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import { createPlatformApp } from '../../server/platform/app';
 import { HELD_OUT_CASES } from './fixtures/held-out';
+import { harness, call, user } from '../platform/test-harness-helper';
 
 const cleanup: (() => void)[] = [];
 afterEach(() => cleanup.splice(0).forEach(close => close()));
 type Session = { cookie: string; csrf: string; userId: string };
-function harness() {
-  const directory = mkdtempSync(join(tmpdir(), 'jev-api-'));
-  const app = createPlatformApp({ databasePath: join(directory, 'test.sqlite'), bootstrapToken: 'jev-test-bootstrap', origin: 'http://localhost:3000' });
-  cleanup.push(() => { app.close(); rmSync(directory, { recursive: true, force: true }); });
-  async function call(path: string, body?: unknown, session?: Session) {
-    const response = await app.fetch(new Request(`http://localhost:3010/api/platform${path}`, {
-      method: body === undefined ? 'GET' : 'POST',
-      headers: { ...(body === undefined ? {} : { 'Content-Type': 'application/json', Origin: 'http://localhost:3000' }), ...(session ? { Cookie: session.cookie, 'X-CSRF-Token': session.csrf } : {}) },
-      ...(body === undefined ? {} : { body: JSON.stringify(body) }),
-    }));
-    return { status: response.status, body: await response.json(), cookie: response.headers.get('set-cookie') };
-  }
-  async function user(name: string, founder = false): Promise<Session> {
-    const result = await call(founder ? '/auth/bootstrap' : '/auth/signup', { email: `${name}@example.test`, password: 'strong test-only password 123', name, ...(founder ? { token: 'jev-test-bootstrap' } : {}) });
-    expect(result.status).toBe(200);
-    return { userId: result.body.data.user.id, cookie: result.cookie!.split(';')[0], csrf: result.body.data.csrfToken };
-  }
-  return { app, call, user };
-}
-
 test('JEV API keeps zero-spend typed packs, evaluation history and developer scope behind session/CSRF', async () => {
-  const { call, user } = harness();
+  const { call, user } = harness('jev-test-bootstrap');
   expect((await call('/jev/packs')).status).toBe(401);
   const founder = await user('jev-founder', true), developer = await user('jev-developer');
   const grant = await call('/people/grants', { userId: developer.userId, role: 'developer', outletIds: [], expectedVersion: 0 }, founder);

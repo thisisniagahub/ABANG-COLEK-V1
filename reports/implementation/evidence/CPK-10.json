@@ -4,7 +4,7 @@
   "environment": "local_test",
   "timestamp": "2026-10-21T09:11:13.871Z",
   "sourceCommit": "1fc218e5784efb890641bba1e46ac97f617639a3",
-  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "worktree": "D:/\ABANGCOLEK-PLATFORM",
   "testName": "test_master_agent_delegates_to_a_specialist_through_adk",
   "testPath": "agents/google-adk/tests/test_agents.py",
   "command": "bun run test:adk",

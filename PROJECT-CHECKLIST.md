@@ -9,9 +9,9 @@ Rujukan fakta: [CURRENT-STATUS](docs/CURRENT-STATUS.md). Owner: **Codex inline**
 ## Ringkasan yang boleh dipercayai
 
 - Main `18c69b3` sudah dipush dan Vercel production READY untuk **11 fail TypeScript/config sahaja**; bukan seluruh implementasi Copilot.
-- Main: lint/build lulus, platform **305/0**, browser tempatan **16/0**, browser public production **8/0**. [Release receipt](reports/implementation/main-typescript-release-20261020.json).
+- Main: lint/build lulus, platform **1423/0****, browser tempatan **16/0**, browser public production **8/0**. [Release receipt](reports/implementation/main-typescript-release-20261020.json).
 - GitHub Actions **blocked_external** kerana account billing; job tidak bermula.
-- Snapshot ledger `2026-10-20T13:30:00Z`: **38 verified_local / 37 implemented_unverified / 9 blocked_external / 1 not_run = 85**. **47 rekod belum ditutup**, dan 38 label tempatan masih memerlukan current source/runtime proof untuk final release.
+- Snapshot ledger `2026-10-20T13:30:00Z`: **59 verified_local / 16 implemented_unverified / 8 blocked_external / 2 not_run = 85**. **47 rekod belum ditutup**, dan 38 label tempatan masih memerlukan current source/runtime proof untuk final release.
 - Checkbox acceptance di bawah bermaksud **final integration acceptance semasa**, bukan label unit/synthetic lama. Semua 85 parent acceptance kekal unchecked dalam paparan konservatif ini sehingga current receipt membuktikan keseluruhan requirement. Ini bukan dakwaan semua source tiada atau semua local tests gagal.
 
 ## Engineering task dan release yang sudah ada bukti

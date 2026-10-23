@@ -216,7 +216,6 @@ describe('ARC-01 architecture boundary checker — real repository tree', () => 
     for (const violation of result.violations) {
       expect(registered.has(`${violation.file}|${violation.importedPath}|${violation.rule}`)).toBe(true);
     }
-    expect(result.exemptions.length).toBeGreaterThanOrEqual(0);
   }, 30_000);
 
   test('the registered JEV exceptions are consumed as exemptions, not as violations', () => {

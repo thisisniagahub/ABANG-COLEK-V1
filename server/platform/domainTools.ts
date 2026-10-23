@@ -1243,8 +1243,14 @@ export class DomainToolRegistry {
       },
       async execute(ctx, input: any) {
         const amountSen = input.amountSen;
-        const isStrictInteger = Number.isInteger(amountSen);
-        const integerAmount = Math.floor(amountSen);
+        let isStrictInteger = true;
+        let integerAmount: number;
+        try {
+          integerAmount = integer(input.amountSen, 'amountSen');
+        } catch {
+          isStrictInteger = false;
+          integerAmount = 0;
+        }
         return {
           ok: true,
           toolName: 'verify_sen_balance',
@@ -1489,7 +1495,16 @@ export class DomainToolRegistry {
         required: ['points'],
       },
       async execute(ctx, input: any) {
-        const points = Math.floor(input.points);
+        let points: number;
+        try {
+          points = integer(input.points, 'points');
+        } catch {
+          return {
+            ok: false,
+            toolName: 'calculate_points_balance',
+            data: { observation: 'unavailable', reasonCode: 'INVALID_POINTS' }
+          };
+        }
         const valueSen = loyaltyPointsToDiscountSen(points);
         return {
           ok: true,

@@ -1,7 +1,7 @@
 import { Database } from 'bun:sqlite';
 import { mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
-import { randomUUID } from 'node:crypto';
+import { randomUUID, timingSafeEqual } from 'node:crypto';
 
 export class DomainError extends Error {
   /**
@@ -62,6 +62,7 @@ export class PlatformStore {
       CREATE TABLE IF NOT EXISTS audit (id TEXT PRIMARY KEY,actor_id TEXT NOT NULL,operation TEXT NOT NULL,entity_id TEXT NOT NULL,revision INTEGER NOT NULL,created_at TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS metadata (key TEXT PRIMARY KEY,value TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS throttle (bucket TEXT PRIMARY KEY,count INTEGER NOT NULL,reset_at INTEGER NOT NULL);
+      CREATE UNIQUE INDEX IF NOT EXISTS records_orders_tracking_token_hash ON records(json_extract(data,'$.trackingTokenHash')) WHERE kind='orders' AND json_extract(data,'$.trackingTokenHash') IS NOT NULL;
       PRAGMA user_version=1;
     `);
     if(!this.db.query<{name:string},[]>('PRAGMA table_info(sessions)').all().some(column=>column.name==='csrf_token'))this.db.run('ALTER TABLE sessions ADD COLUMN csrf_token TEXT NOT NULL DEFAULT \'\'');
@@ -94,6 +95,24 @@ export class PlatformStore {
       this.db.query('INSERT INTO throttle VALUES(?,?,?) ON CONFLICT(bucket) DO UPDATE SET count=excluded.count,reset_at=excluded.reset_at').run(bucket, row && row.reset_at > stamp ? row.count + 1 : 1, row && row.reset_at > stamp ? row.reset_at : stamp + 60_000);
       this.db.query('DELETE FROM throttle WHERE reset_at<?').run(stamp - 60_000);
     });
+  }
+  /**
+   * Cari pesanan melalui indeks ekspresi `trackingTokenHash`.
+   *
+   * Indeks unik separa (`records_orders_tracking_token_hash`) menjadikan
+   * carian ini O(log n), bukan imbasan penuh ke atas semua pesanan.
+   * Perbandingan hash dibuat dengan masa tetap (`timingSafeEqual`) supaya
+   * tiada penanda masa bocor.
+   */
+  findOrderByTrackingTokenHash<T>(trackingTokenHash: string): T | null {
+    const row = this.db.query<RecordRow, [string]>('SELECT data FROM records WHERE kind="orders" AND json_extract(data,"$.trackingTokenHash")=? LIMIT 1').get(trackingTokenHash);
+    if (!row) return null;
+    const record = JSON.parse(row.data) as T & { trackingTokenHash?: string };
+    const stored = record.trackingTokenHash ?? '';
+    const left = Buffer.from(stored, 'utf8');
+    const right = Buffer.from(trackingTokenHash, 'utf8');
+    if (left.length !== right.length || left.length === 0 || !timingSafeEqual(left, right)) return null;
+    return record as T;
   }
   close() { this.db.close(); }
 }

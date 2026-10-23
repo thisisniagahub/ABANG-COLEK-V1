@@ -7,6 +7,8 @@ import { fields, fail, id, integer, list, now, object, oneOf, PlatformStore, str
 import { Loyalty } from './loyalty';
 import { resolvePublicTrackingProjection } from './publicOrderProjection';
 
+export const TRACKING_TOKEN_TTL_MS = 14 * 24 * 3600_000;
+
 export function extractCity(contactRef: string, outletId?: string): string {
   if (!contactRef || typeof contactRef !== 'string') return outletId && outletId !== 'hq' ? outletId : 'Kuala Lumpur';
   
@@ -105,11 +107,13 @@ export class Commerce {
       .reduce((total, reservation) => total + reservation.quantity, 0);
   }
   expireReservations() {
-    for (const reservation of this.store.all<InventoryReservation>('reservations')) if (reservation.status==='active'&&reservation.expiresAt<=now()) {
-      this.store.save('reservations',{...reservation,status:'expired' as const,revision:reservation.revision+1});
-      const order=this.store.get<OrderRecord>('orders',reservation.orderId);
-      if (order&&['requested','review'].includes(order.fulfilmentStatus)) this.store.save('orders',{...order,fulfilmentStatus:'cancelled' as const,revision:order.revision+1,updatedAt:now()});
-    }
+    return this.store.atomic(()=>{
+      for (const reservation of this.store.all<InventoryReservation>('reservations')) if (reservation.status==='active'&&reservation.expiresAt<=now()) {
+        this.store.save('reservations',{...reservation,status:'expired' as const,revision:reservation.revision+1});
+        const order=this.store.get<OrderRecord>('orders',reservation.orderId);
+        if (order&&['requested','review'].includes(order.fulfilmentStatus)) this.store.save('orders',{...order,fulfilmentStatus:'cancelled' as const,revision:order.revision+1,updatedAt:now()});
+      }
+    });
   }
   available(productId:string,ownerId='business',locationId='hq') {
     const availableLots=this.store.all<StockLot>('lots').filter(l=>l.productId===productId&&l.ownerId===ownerId&&l.locationId===locationId&&l.status==='available'&&(!l.expiryAt||l.expiryAt>now()));
@@ -193,7 +197,7 @@ export class Commerce {
       }
       const trackingToken = randomBytes(32).toString('base64url');
       const trackingTokenHash = hash(trackingToken);
-      const trackingTokenExpiresAt = new Date(Date.now() + 14 * 24 * 3600_000).toISOString();
+      const trackingTokenExpiresAt = new Date(Date.now() + TRACKING_TOKEN_TTL_MS).toISOString();
       const order:OrderRecord={
         id:id(),
         customerId:actor.user.id,
@@ -332,8 +336,8 @@ export class Commerce {
       fulfilmentStatus:next,
       revision:order.revision+1,
       updatedAt:now(),
-      ...(handedOver&&order.trackingTokenHash
-        ?{trackingTokenExpiresAt:new Date(Date.now()+14*24*3600_000).toISOString()}
+      ...(handedOver&&order.trackingTokenHash&&!order.trackingTokenRevokedAt
+        ?{trackingTokenExpiresAt:new Date(Date.now()+TRACKING_TOKEN_TTL_MS).toISOString()}
         :{}),
     };
     this.store.save('orders',updated);this.store.audit(actor.user.id,`order.${next}`,order.id,updated.revision);return updated;

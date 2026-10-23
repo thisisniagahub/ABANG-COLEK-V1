@@ -21,13 +21,13 @@ Diselaraskan berdasarkan receipt bertarikh **21 Oktober 2026**. Dokumen ini iala
 
 **Pekerjaan sedang berjalan (21 Okt):** closure item wajib — 3 lane delegasi (frontend AG-UI/state `CPK-08/09, GUI-03..07`; backend Commerce & Growth P0 `CG-01..04`; browser/release `REL-01, DR-01, CG-12`) + 1 auditor bebas. Bukti ditulis ke `reports/implementation/evidence/<ID>.json` **sebelum** ledger disentuh, kemudian `verify-acceptance` → `render-acceptance-register` → checklist.
 
-Nota: seksyen di bawah disegarkan ke HEAD `1fc218e` bagi ledger, gate dan bukti provider. Working tree masih mempunyai kerja dalamVy (lihat `git status`) yang **belum** commit.
+Nota: seksyen di bawah disegarkan ke HEAD `0945e6d` bagi ledger, gate dan bukti provider. Working tree masih mempunyai kerja dalamVy (lihat `git status`) yang **belum** commit.
 
 ## Authority dan lokasi kerja
 
 | Lane | Identiti | Makna |
 |---|---|---|
-| Projek asal | `D:/ABANGCOLEK-PLATFORM`; `integrate/blueprint-v23` pada `1fc218e` | Source integrasi asal dipelihara; tidak sama dengan main |
+| Projek asal | `D:/ABANGCOLEK-PLATFORM`; `integrate/blueprint-v23` pada `0945e6d` | Source integrasi asal dipelihara; tidak sama dengan main |
 | Route integrasi | `main` / `origin/main`: `be45a84` (wave 1+2 sudah push 21 Okt) | `integrate/blueprint-v23` berada **2 commit** di hadapan `origin/main`; kerja selepas itu (wave 2/KILO) belum commit |
 | Candidate lane | `D:/ABANGCOLEK-WORKTREES/codex-completion-20261020`, branch `work/codex-completion-20261020` | **290 fail berubah belum commit** pada 21 Okt 12:31 — jangan `git add -A` di situ; worktree itu dirty dan bercampur |
 
@@ -59,7 +59,7 @@ Gate luar yang masih terbuka: `OPENCODE_ZEN_API_KEY` yang telah tamat tempoh (40
 
 ## Ledger 85 requirement: rekod tempatan, bukan certification baharu
 
-Ledger [acceptance-status.json](../reports/implementation/acceptance-status.json) disunting pada `2026-10-21T05:30:00Z` (source commit `1fc218e`). Renderer acceptance mesti terus menolak publish jika verification stale/gagal; jangan melangkau gate untuk menghasilkan tick.
+Ledger [acceptance-status.json](../reports/implementation/acceptance-status.json) disunting pada `2026-10-21T05:30:00Z` (source commit `0945e6d`). Renderer acceptance mesti terus menolak publish jika verification stale/gagal; jangan melangkau gate untuk menghasilkan tick.
 
 | Status semasa | Bilangan | Tafsiran |
 |---|---:|---|

@@ -17,5 +17,5 @@
   ],
   "actualProviderModel": "deterministic_local",
   "reviewer": "integrator-2026-10-21",
-  "limitations": "Bukti ini meliputi gate aset dan gate opt-out pada laluan dispatch. Ia TIDAK meliputi barisan antrean dispatch (queued dispatch) yang belum diuji, mahupun penolakan oleh中层 role di luar founder/staff."
+  "limitations": "Bukti ini meliputi gate aset dan gate opt-out pada laluan dispatch. Ia TIDAK meliputi barisan antrean dispatch (queued dispatch) yang belum diuji, mahupun penolakan oleh lapisan tengah role di luar founder/staff."
 }

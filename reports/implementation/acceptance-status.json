@@ -869,7 +869,7 @@
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "audit_loyalty kini BOLEH remediasi: `remediate: true` merekodkan rekod luput yang tertinggal (LOYALTY_EXPIRY_RECORDED), mutasi ditandakan, dan selepas remediasi lejar mengandungi satu rekod `expired` yang sah. Audit tanpa remediasi TIDAK menulis apa-apa. Bukti: tests/platform/adv-row-contracts-3.test.ts (1 ujian). Skop TERHAD: bukti ini meliputi rekod luput CHF kungtif. Pelarasan baki oleh founder (LOYALTY_BALANCE_ADJUSTED) dan penolakan pelarasan tanpa kebenaran (LOYALTY_ADJUSTMENT_REJECTED) belum mempunyai ujian berasingan.",
+      "evidenceProves": "test proves 1 pass / 0 fail / 6 expect() calls",
       "supersedes": {
         "date": "2026-10-20",
         "previousStatus": "verified_local",
@@ -1426,7 +1426,7 @@
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "Token penjejakan kini mempunyai ketiga-tiga sifat yang baris ini minta: (1) hashed at rest — hanya hash yang disimpan, token mentah tiada dalam store; (2) tempoh hidup mengikut HANDOVER — setiap serahhandover (accepted/packing/packed/dispatched/received) memperbaharui tetingkap penjejakan 14 hari, bukanpenciptaan sahaja; (3) laluan revocation — `Commerce.revokeTrackingToken` (pemilik/operasi) menanda token dicabut, revocation kedua ⇒ TRACKING_TOKEN_ALREADY_REVOKED, dan token yang dicabut tidak lagi membina unjuran awam (TRACKING_TOKEN_REVOKED). Bukti: tests/platform/sec-01-tracking-token.test.ts (5 ujian, incl. negatif) + tests/platform/order-tracking-token.test.ts (8 ujian yang证明 pesanan yang dibatalkan masih boleh dijejak - token tidak dicabut secara automatik). Skop TERHAD: bukti ini meliputi token penjejakan awam; tiada API awam untuk menerbitkan token baharu (token hanya issue semasa createOrder) — itu baki operasi, bukan jurang baris ini.",
+      "evidenceProves": "Token penjejakan kini mempunyai ketiga-tiga sifat yang baris ini minta: (1) hashed at rest — hanya hash yang disimpan, token mentah tiada dalam store; (2) tempoh hidup mengikut HANDOVER — setiap serahhandover (accepted/packing/packed/dispatched/received) memperbaharui tetingkap penjejakan 14 hari, bukanpenciptaan sahaja; (3) laluan revocation — `Commerce.revokeTrackingToken` (pemilik/operasi) menanda token dicabut, revocation kedua ⇒ TRACKING_TOKEN_ALREADY_REVOKED, dan token yang dicabut tidak lagi membina unjuran awam (TRACKING_TOKEN_REVOKED). Bukti: tests/platform/sec-01-tracking-token.test.ts (5 ujian, incl. negatif) + tests/platform/order-tracking-token.test.ts (8 ujian yang membuktikan pesanan yang dibatalkan masih boleh dijadikan - token tidak dicabut secara automatik). Skop TERHAD: bukti ini meliputi token penjejakan awam; tiada API awam untuk menerbitkan token baharu (token hanya issue semasa createOrder) — itu baki operasi, bukan jurang baris ini.",
       "remainingRequirement": "",
       "testNameKind": "prose"
     },
@@ -1459,7 +1459,7 @@
       "source": "server/platform/backup.ts:20; server/platform/backupScheduler.ts:281",
       "testFile": "tests/platform/backup-restore-rto.test.ts",
       "testName": "RTO: sasaran tidak dipenuhi => not_met + RTO_TARGET_NOT_MET; anti-fake: masa sebenar, marker disahkan terhadap fail dipulihkan, integrity_check ok, hash bukan-null (tests/platform/backup-restore-rto.test.ts, 3 ujian)",
-      "gap": "Tiada jurang tempatan:|latihan pemulihan mengukur masa sebenar daripada lima fasa sebenar (capture_source_state, backup, restore, verify, cutover_ready), обще目標 dilintas dan tidak di-forge, dan harness MELEGAH apabila sasaran tidak dipenuhi (RTO_TARGET_NOT_MET). Bukti: tests/platform/backup-restore-rto.test.ts (3 ujian, 61 assertion) hijau.",
+      "gap": "Tiada jurang tempatan:|latihan pemulihan mengukur masa sebenar daripada lima fasa sebenar (capture_source_state, backup, restore, verify, cutover_ready),обще sasaran dilintas dan tidak di-forge, dan harness MELEGAH apabila sasara tidak dipenuhi (RTO_TARGET_NOT_MET). Bukti: tests/platform/backup-restore-rto.test.ts (3 ujian, 61 assertion) hijau.",
       "externalGate": null,
       "evidenceRefs": [
         "reports/audits/2026-10-20-acceptance-source-audit.md"
@@ -1554,7 +1554,7 @@
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "Gate penghantaran kini mempunyai dua halangan berurutan yang keduanya terbukti: (1) kebenaran aset berstruktur — tiada rekod granted ⇒ ASSET_CONSENT_NOT_GRANTED (unknown bukan kebenaran; teks bebas asset.consent yang lama TIDAK dikira); (2) opt-out penerima — penerima dengan inAppEnabled=false ⇒ DISPATCH_OPTED_OUT dan fungsi penghantaran TIDAK dijalankan (dispatched === false). Dengan konsen granted + keutamaan dibenarkan, penghantaran dibenarkan. Bukti: tests/platform/ext-pd-contracts.test.ts (3 ujian). Skop TERHAD: Bukti ini meliputi gate aset dan gate opt-out pada laluan dispatch. Ia TIDAK meliputi barisan antrean dispatch (queued dispatch) yang belum diuji, mahupun penolakan oleh中层 role di luar founder/staff.",
+      "evidenceProves": "Gate penghantaran kini mempunyai dua halangan berurutan yang keduanya terbukti: (1) kebenaran aset berstruktur — tiada rekod granted ⇒ ASSET_CONSENT_NOT_GRANTED (unknown bukan kebenaran; teks bebas asset.consent yang lama TIDAK dikira); (2) opt-out penerima — penerima dengan inAppEnabled=false ⇒ DISPATCH_OPTED_OUT dan fungsi penghantaran TIDAK dijalankan (dispatched === false). Dengan konsen granted + keutamaan dibenarkan, penghantaran dibenarkan. Bukti: tests/platform/ext-pd-contracts.test.ts (3 ujian). Skop TERHAD: Bukti ini meliputi gate aset dan gate opt-out pada laluan dispatch. Ia TIDAK meliputi barisan antrean dispatch (queued dispatch) yang belum diuji, mahupen penolakan oleh lapisan tengah role di luar founder/staff.",
       "remainingRequirement": "",
       "testNameKind": "prose"
     },

@@ -4,7 +4,7 @@
   "environment": "local_test",
   "timestamp": "2026-10-20T21:00:00Z",
   "sourceCommit": "1fc218e5784efb890641bba1e46ac97f617639a3",
-  "worktree": "D:\\ABANGCOLEK-PLATFORM",
+  "worktree": "D:/\ABANGCOLEK-PLATFORM",
   "testName": "BL-15: X-Thread-Id pada respons chat, replay SSE dengan X-Last-Event-Id + X-Receipt-Count, ?after= hanya event selepas kursor, thread tenant lain => 403, hitl_prompt tanpa resit bukan state-changing",
   "testPath": "tests/platform/intelligence-agui-threads-mount.test.ts",
   "command": "bun test ./tests/platform/intelligence-agui-threads-mount.test.ts",

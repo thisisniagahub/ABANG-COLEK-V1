@@ -228,48 +228,48 @@ function CampaignEditor({
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '10px', marginBottom: '14px' }}>
               <div>
-                <label style={{ fontSize: '11px', display: 'block', marginBottom: '2px' }}>Jualan Bersih (RM)</label>
-                <input type="number" step="0.01" min="0" value={netSales} onChange={e => setNetSales(e.target.value)} style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--ui-border)' }} />
+                <label htmlFor="net-sales" style={{ fontSize: '11px', display: 'block', marginBottom: '2px' }}>Jualan Bersih (RM)</label>
+                <input id="net-sales" type="number" step="0.01" min="0" value={netSales} onChange={e => setNetSales(e.target.value)} style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--ui-border)' }} />
               </div>
               <div>
-                <label style={{ fontSize: '11px', display: 'block', marginBottom: '2px' }}>Sasaran Min RM</label>
-                <input type="number" step="0.01" min="0" value={minContribution} onChange={e => setMinContribution(e.target.value)} style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--ui-border)' }} />
+                <label htmlFor="min-contribution" style={{ fontSize: '11px', display: 'block', marginBottom: '2px' }}>Sasaran Min RM</label>
+                <input id="min-contribution" type="number" step="0.01" min="0" value={minContribution} onChange={e => setMinContribution(e.target.value)} style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--ui-border)' }} />
               </div>
               <div>
-                <label style={{ fontSize: '11px', display: 'block', marginBottom: '2px' }}>Sasaran Min %</label>
-                <input type="number" step="0.1" min="0" max="100" value={minMarginPct} onChange={e => setMinMarginPct(e.target.value)} style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--ui-border)' }} />
+                <label htmlFor="min-margin-pct" style={{ fontSize: '11px', display: 'block', marginBottom: '2px' }}>Sasaran Min %</label>
+                <input id="min-margin-pct" type="number" step="0.1" min="0" max="100" value={minMarginPct} onChange={e => setMinMarginPct(e.target.value)} style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--ui-border)' }} />
               </div>
               <div>
-                <label style={{ fontSize: '11px', display: 'block', marginBottom: '2px' }}>COGS (RM)</label>
-                <input type="number" step="0.01" min="0" value={cogs} onChange={e => setCogs(e.target.value)} style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--ui-border)' }} />
+                <label htmlFor="cogs" style={{ fontSize: '11px', display: 'block', marginBottom: '2px' }}>COGS (RM)</label>
+                <input id="cogs" type="number" step="0.01" min="0" value={cogs} onChange={e => setCogs(e.target.value)} style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--ui-border)' }} />
               </div>
               <div>
-                <label style={{ fontSize: '11px', display: 'block', marginBottom: '2px' }}>Pembungkusan (RM)</label>
-                <input type="number" step="0.01" min="0" value={packaging} onChange={e => setPackaging(e.target.value)} style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--ui-border)' }} />
+                <label htmlFor="packaging" style={{ fontSize: '11px', display: 'block', marginBottom: '2px' }}>Pembungkusan (RM)</label>
+                <input id="packaging" type="number" step="0.01" min="0" value={packaging} onChange={e => setPackaging(e.target.value)} style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--ui-border)' }} />
               </div>
               <div>
-                <label style={{ fontSize: '11px', display: 'block', marginBottom: '2px' }}>Fi Bayaran (RM)</label>
-                <input type="number" step="0.01" min="0" value={paymentFees} onChange={e => setPaymentFees(e.target.value)} style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--ui-border)' }} />
+                <label htmlFor="payment-fees" style={{ fontSize: '11px', display: 'block', marginBottom: '2px' }}>Fi Bayaran (RM)</label>
+                <input id="payment-fees" type="number" step="0.01" min="0" value={paymentFees} onChange={e => setPaymentFees(e.target.value)} style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--ui-border)' }} />
               </div>
               <div>
-                <label style={{ fontSize: '11px', display: 'block', marginBottom: '2px' }}>Operasi/Fulfil (RM)</label>
-                <input type="number" step="0.01" min="0" value={fulfilment} onChange={e => setFulfilment(e.target.value)} style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--ui-border)' }} />
+                <label htmlFor="fulfilment" style={{ fontSize: '11px', display: 'block', marginBottom: '2px' }}>Operasi/Fulfil (RM)</label>
+                <input id="fulfilment" type="number" step="0.01" min="0" value={fulfilment} onChange={e => setFulfilment(e.target.value)} style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--ui-border)' }} />
               </div>
               <div>
-                <label style={{ fontSize: '11px', display: 'block', marginBottom: '2px' }}>Subsidi Pos (RM)</label>
-                <input type="number" step="0.01" min="0" value={deliverySubsidy} onChange={e => setDeliverySubsidy(e.target.value)} style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--ui-border)' }} />
+                <label htmlFor="delivery-subsidy" style={{ fontSize: '11px', display: 'block', marginBottom: '2px' }}>Subsidi Pos (RM)</label>
+                <input id="delivery-subsidy" type="number" step="0.01" min="0" value={deliverySubsidy} onChange={e => setDeliverySubsidy(e.target.value)} style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--ui-border)' }} />
               </div>
               <div>
-                <label style={{ fontSize: '11px', display: 'block', marginBottom: '2px' }}>Komisen Ejen (RM)</label>
-                <input type="number" step="0.01" min="0" value={agentCommission} onChange={e => setAgentCommission(e.target.value)} style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--ui-border)' }} />
+                <label htmlFor="agent-commission" style={{ fontSize: '11px', display: 'block', marginBottom: '2px' }}>Komisen Ejen (RM)</label>
+                <input id="agent-commission" type="number" step="0.01" min="0" value={agentCommission} onChange={e => setAgentCommission(e.target.value)} style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--ui-border)' }} />
               </div>
               <div>
-                <label style={{ fontSize: '11px', display: 'block', marginBottom: '2px' }}>Kos Diskaun (RM)</label>
-                <input type="number" step="0.01" min="0" value={rewardCost} onChange={e => setRewardCost(e.target.value)} style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--ui-border)' }} />
+                <label htmlFor="reward-cost" style={{ fontSize: '11px', display: 'block', marginBottom: '2px' }}>Kos Diskaun (RM)</label>
+                <input id="reward-cost" type="number" step="0.01" min="0" value={rewardCost} onChange={e => setRewardCost(e.target.value)} style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--ui-border)' }} />
               </div>
               <div>
-                <label style={{ fontSize: '11px', display: 'block', marginBottom: '2px' }}>Kerugian Return (RM)</label>
-                <input type="number" step="0.01" min="0" value={expectedReturnLoss} onChange={e => setExpectedReturnLoss(e.target.value)} style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--ui-border)' }} />
+                <label htmlFor="expected-return-loss" style={{ fontSize: '11px', display: 'block', marginBottom: '2px' }}>Kerugian Return (RM)</label>
+                <input id="expected-return-loss" type="number" step="0.01" min="0" value={expectedReturnLoss} onChange={e => setExpectedReturnLoss(e.target.value)} style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--ui-border)' }} />
               </div>
             </div>
 

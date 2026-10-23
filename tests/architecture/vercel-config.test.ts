@@ -26,7 +26,6 @@ const ALLOWED_TOP_LEVEL = new Set([
   'buildCommand',
   'installCommand',
   'outputDirectory',
-  'outputFileTracingIncludes',
   'framework',
   'cleanUrls',
   'trailingSlash',
@@ -39,17 +38,7 @@ const ALLOWED_TOP_LEVEL = new Set([
   'regions',
   'build',
   'git',
-  'ignore',
-  'public',
-  'images',
-  'frameworkPreferences',
   'bunVersion',
-  'nodeVersion',
-  'install',
-  'cache',
-  'container',
-  'sourcemaps',
-  'archive',
 ]);
 
 /**

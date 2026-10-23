@@ -163,11 +163,28 @@ export function createMcpHttpHandler(
   return async (request: Request): Promise<Response> => {
     prune();
 
-    if (request.method === 'DELETE') {
+    if (request.method === "DELETE") {
       const id = request.headers.get(MCP_SESSION_HEADER);
-      if (!id) return jsonRpcError(null, -32000, 'Header mcp-session-id diperlukan.');
+      if (!id) return jsonRpcError(null, -32000, "Header mcp-session-id diperlukan.");
       const session = sessions.get(id);
-      if (!session) return jsonRpcError(null, -32001, 'Sesi MCP tidak dijumpai atau telah tamat.');
+      if (!session) return jsonRpcError(null, -32001, "Sesi MCP tidak dijumpai atau telah tamat.");
+      let actor: McpActor;
+      try {
+        actor = await dependencies.resolveActor(request);
+      } catch (error) {
+        if (error instanceof McpAccessError) {
+          return new Response(
+            JSON.stringify({
+              jsonrpc: "2.0", id: null, error: { code: -32001, message: error.message, data: { code: error.code } }
+            }),
+            { status: error.status, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" } }
+          );
+        }
+        throw error;
+      }
+      if (session.actor.userId !== actor.userId) {
+        return jsonRpcError(null, -32001, "Sesi MCP ini milik actor lain.");
+      }
       sessions.delete(id);
       await session.server.close();
       return new Response(null, { status: 204 });

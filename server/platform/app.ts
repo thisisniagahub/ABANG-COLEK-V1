@@ -80,6 +80,28 @@ export function hasActiveDealerMembership(actor: Principal): boolean {
     (membership) => Boolean(membership.dealerOrgId) && membership.status === 'active'
   );
 }
+
+/**
+ * Adakah actor boleh membaca terma dealer — membutuhkan keanggotaan AKTIF
+ * dengan dealerOrgId SEKALI ada dealer_application berstatus 'approved' bagi
+ * organisasi yang sama.
+ *
+ * Keanggotaan sahaja tidak mencukupi: organisasi hanya boleh membaca terma
+ * apabila ada dealer_application yang diluluskan untuk organisasi tersebut.
+ * Pemohon yang masih 'pending' (atau telah ditolak) tidak boleh membaca terma.
+ */
+export function hasApprovedDealerAccess(
+  actor: Principal,
+  applications: readonly { dealerOrgId?: string; status: string }[]
+): boolean {
+  const activeOrgs = (actor.memberships ?? []).filter(
+    (m) => Boolean(m.dealerOrgId) && m.status === 'active'
+  ).map((m) => m.dealerOrgId!);
+  if (!activeOrgs.length) return false;
+  return applications.some(
+    (a) => a.status === 'approved' && a.dealerOrgId && activeOrgs.includes(a.dealerOrgId)
+  );
+}
 /**
  * Hasil sebenar satu run copilot.
  *
@@ -333,7 +355,7 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
       if(path==='/founder-intelligence/analytics')return founderIntelligence.analytics(actor);
       if(path==='/dealer/applications')return dealers.applications(actor);
       if(path==='/dealer/restocks')return dealers.restocks(actor);
-      if(path==='/dealer/terms'){if(!hasActiveDealerMembership(actor)&&!auth.has(actor,'founder'))fail('FORBIDDEN',403);return operations.settings().approvedPolicies.dealer??null;}
+      if(path==='/dealer/terms'){const apps=store.all<{dealerOrgId?:string;status:string}>('dealer_applications');if(!hasApprovedDealerAccess(actor,apps)&&!auth.has(actor,'founder'))fail('FORBIDDEN',403);return operations.settings().approvedPolicies.dealer??null;}
       if(path==='/dealer/benefits')return dealers.benefits(actor);
       if(path==='/dealer/ledger')return dealers.ledger(actor);
       if(path==='/dealer/commission-policies'){auth.founder(actor);return store.all('commission_policies');}
@@ -645,13 +667,15 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
           return new Response(verified, { status: 200, headers: { 'Content-Type': 'text/plain' } });
         }
         if(request.method==='POST'&&path==='/auth/google'){
-          store.rate('identity-global',options.rateLimits?.identityGlobal??30);
-          const body=object(input);fields(body,['accessToken']);
-          if(!options.googleIdentityVerifier)fail('GOOGLE_IDENTITY_UNAVAILABLE',503,'Google login belum tersedia. Gunakan email dan password.');
-          let authenticated=false;
-          try{auth.resolve(request);authenticated=true;}catch(error){if(!(error instanceof DomainError&&error.status===401))throw error;}
-          if(authenticated)fail('AUTHENTICATED_LOGIN_REQUIRES_LOGOUT',409,'Log keluar dahulu sebelum menukar akaun.');
+                  if(auth.optionalSession(request))fail('AUTHENTICATED_LOGIN_REQUIRES_LOGOUT',409,'Log keluar dahulu sebelum menukar akaun.');
+                  store.rate('identity-global',options.rateLimits?.identityGlobal??30);
+                  const body=object(input);fields(body,['accessToken']);
+                  if(!options.googleIdentityVerifier)fail('GOOGLE_IDENTITY_UNAVAILABLE',503,'Google login belum tersedia. Gunakan email dan password.');
+                  let authenticated=false;
+                  try{auth.resolve(request);authenticated=true;}catch(error){if(!(error instanceof DomainError&&error.status===401))throw error;}
+                  if(authenticated)fail('AUTHENTICATED_LOGIN_REQUIRES_LOGOUT',409,'Log keluar dahulu sebelum menukar akaun.');
           const identity=await options.googleIdentityVerifier(text(body.accessToken,'Token identiti',16000));
+          store.rate(`identity:${identity.email.toLowerCase()}`, options.rateLimits?.identityAccount ?? 6);
           const result=await auth.authenticateGoogle(identity);
           // Putaran sesi: mana-mana sesi LAIN yang dikemukakan oleh pelayar
           // yang sama dicabut, supaya cookie legacy yang tertinggal tidak
@@ -660,6 +684,7 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
           return json({ok:true,data:result.data},200,{'Set-Cookie':result.cookies.map(header=>secureCookie(header,url.protocol==='https:'))});
         }
         if(request.method==='POST'&&['/auth/signup','/auth/login','/auth/bootstrap'].includes(path)) {
+                  if(auth.optionalSession(request))fail('AUTHENTICATED_LOGIN_REQUIRES_LOGOUT',409,'Log keluar dahulu sebelum menukar akaun.');
           store.rate('identity-global',options.rateLimits?.identityGlobal??30);const authInput=object(input);if(typeof authInput.email==='string')store.rate(`identity:${authInput.email.toLowerCase()}`,options.rateLimits?.identityAccount??6);
           const result=await auth.authenticate(path.slice(6) as 'signup'|'login'|'bootstrap',input);
           // Putaran sesi (lihat handler Google di atas): sesi lain yang
