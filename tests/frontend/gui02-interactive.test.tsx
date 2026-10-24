@@ -1,6 +1,8 @@
 import { expect, test } from 'bun:test';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
+import { CopilotWorkspaceView } from '../../src/features/workspaces/CopilotWorkspace';
+import { initialAguiRunState } from '../../src/features/copilot/agui/aguiRunState';
 
 const interactiveUi = await import(
   '../../src/features/copilot/interactive/MarginSimulatorForm'
@@ -179,4 +181,82 @@ test('a succeeded approval requires a non-empty canonical receipt', () => {
     ok: true,
     value: { status: 'succeeded', receipt: { receiptId: 'receipt-10' } },
   });
+});
+
+test('GUI-02: mounts MarginSimulatorForm in CopilotWorkspaceView and exercises decision -> server revalidation -> canonical receipt flow', async () => {
+  expect(typeof interactiveUi?.executeDecisionRevalidationLoop).toBe('function');
+  if (!interactiveUi) return;
+
+  const loopResult = await interactiveUi.executeDecisionRevalidationLoop({
+    draft: { inputSen: '10000', discountPct: '10' },
+    revalidateMargin: async (draft) => ({
+      receiptId: 'rcpt-margin-77',
+      status: 'PASSED',
+      contributionSen: draft.inputSen - Math.round((draft.inputSen * draft.discountPct) / 100) - 6000,
+      contributionMarginPct: 30,
+      requiredContributionSen: 2000,
+      requiredMarginPct: 20,
+      evaluatedAt: '2026-10-24T12:00:00.000Z',
+      revision: 14,
+    }),
+    submitApprovalDecision: async (receipt) => ({
+      proposalId: 'prop-margin-77',
+      entity: { type: 'order', id: 'ORD-77' },
+      amountSen: receipt.contributionSen,
+      revision: String(receipt.revision),
+      reason: 'Simulasi margin disahkan pelayan',
+      expiresAt: '2026-10-25T12:00:00.000Z',
+      status: 'succeeded',
+      payload: { receiptId: receipt.receiptId },
+      receipt: {
+        receiptId: receipt.receiptId,
+        status: 'succeeded',
+        executedAt: receipt.evaluatedAt,
+      },
+    }),
+  });
+
+  expect(loopResult.ok).toBe(true);
+  if (!loopResult.ok) return;
+
+  const workspaceHtml = renderToStaticMarkup(
+    <CopilotWorkspaceView
+      runtime={{
+        kind: 'descriptor',
+        value: {
+          version: '2.0.0',
+          runtime: 'copilotkit-v2-agui',
+          schema: 'a2ui.v1',
+          activeProvider: 'gemini_free',
+          candidateModels: [],
+          allowlistedComponents: ['MarginSimulator'],
+          paidFallbackAllowed: false,
+          aguiProtocolImplemented: true,
+          copilotkitRuntimeImplemented: true,
+          copilotkitRuntimeVersion: '1.79.1',
+          aguiRunRoute: '/api/copilotkit',
+          platformRunRoute: '/api/platform/copilot/chat',
+          providerReachability: 'verified_on_run',
+        },
+      }}
+      session={null}
+      threadId="thr_gui02"
+      messages={[]}
+      inputMessage=""
+      isSending={false}
+      chatError={null}
+      run={{ ...initialAguiRunState, hitl: loopResult.approvalProposal }}
+      activeIdentity={null}
+      onInputChange={() => {}}
+      onSubmit={() => {}}
+      onRetryRuntime={() => {}}
+      showMarginSimulator={true}
+      marginReceipt={loopResult.simulationReceipt}
+    />,
+  );
+
+  expect(workspaceHtml).toContain('Draf simulasi margin');
+  expect(workspaceHtml).toContain('rcpt-margin-77');
+  expect(workspaceHtml).toContain('prop-margin-77');
+  expect(workspaceHtml).toContain('PELAKSANAAN DISAHKAN — resit kanonikal diterima');
 });

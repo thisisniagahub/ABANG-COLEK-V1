@@ -1,8 +1,16 @@
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, test } from 'bun:test';
-import { ToolStatusView } from '../../src/features/copilot/tool-rendering/ToolStatusView';
+import {
+  ToolStatusView,
+  streamToolLifecycleToStatus,
+} from '../../src/features/copilot/tool-rendering/ToolStatusView';
 import { ScopedStateView } from '../../src/features/copilot/state-rendering/ScopedStateView';
+import {
+  buildScopedStateProjection,
+  createLiveScopedStateStore,
+  validateScopedStateRevisionFreshness,
+} from '../../src/features/copilot/state-rendering/scopedStateProjection';
 
 const render = (element: React.ReactElement) => renderToStaticMarkup(element);
 
@@ -80,9 +88,37 @@ describe('GUI-03 tool status projection', () => {
     expect(html).not.toContain('<button');
     expect(html).not.toContain('<form');
   });
+
+  test('GUI-03: binds ToolStatusView to a live AG-UI tool execution lifecycle event stream', async () => {
+    async function* liveAguiStream(): AsyncGenerator<Record<string, unknown>> {
+      yield { type: 'RUN_STARTED', runId: 'run-live-99' };
+      yield { type: 'TOOL_CALL_START', toolCallId: 'call-99', toolCallName: 'preview_refund' };
+      yield { type: 'TOOL_CALL_RESULT', toolCallId: 'call-99', toolCallName: 'preview_refund', result: { ok: true, status: 'succeeded' } };
+    }
+
+    const renderedFrames: string[] = [];
+    const transitions = await streamToolLifecycleToStatus(liveAguiStream(), (snapshot) => {
+      renderedFrames.push(
+        render(
+          <ToolStatusView
+            executionId={snapshot.executionId}
+            toolName={snapshot.toolName}
+            state={snapshot.state}
+          />,
+        ),
+      );
+    });
+
+    expect(transitions.map((t) => t.state)).toEqual(['queued', 'running', 'succeeded']);
+    expect(renderedFrames[0]).toContain('Waiting to start');
+    expect(renderedFrames[1]).toContain('In progress');
+    expect(renderedFrames[1]).toContain('preview_refund');
+    expect(renderedFrames[2]).toContain('Completed');
+    expect(renderedFrames[2]).toContain('call-99');
+  });
 });
 
-describe('GUI-04 scoped client-state projection', () => {
+describe('GUI-04 / CPK-08 scoped client-state projection', () => {
   const activeScope = {
     workspaceId: 'workspace-a',
     userId: 'user-a',
@@ -222,5 +258,83 @@ describe('GUI-04 scoped client-state projection', () => {
     expect(
       render(<ScopedStateView scope={activeScope} snapshot={{ scope: activeScope }} />),
     ).toContain('No client state to display');
+  });
+
+  test('CPK-08: tracks entityRevision and policyRevision separately and rejects stale or conflated revisions', () => {
+    const projection = buildScopedStateProjection(activeScope, {
+      selectedOrderId: 'ORD-55',
+      entityRevision: 12,
+      policyRevision: 'pol-v4',
+    });
+
+    expect(projection.entityRevision).toBe(12);
+    expect(projection.policyRevision).toBe('pol-v4');
+
+    expect(
+      validateScopedStateRevisionFreshness(projection, {
+        entityRevision: 12,
+        policyRevision: 'pol-v4',
+      }),
+    ).toEqual({ ok: true });
+
+    expect(
+      validateScopedStateRevisionFreshness(projection, {
+        entityRevision: 13,
+        policyRevision: 'pol-v4',
+      }),
+    ).toEqual({ ok: false, code: 'STALE_ENTITY_REVISION', field: 'entityRevision' });
+
+    expect(
+      validateScopedStateRevisionFreshness(projection, {
+        entityRevision: 12,
+        policyRevision: 'pol-v5',
+      }),
+    ).toEqual({ ok: false, code: 'STALE_POLICY_REVISION', field: 'policyRevision' });
+
+    const conflated = buildScopedStateProjection(activeScope, {
+      selectedOrderId: 'ORD-55',
+      entityRevision: 12,
+    });
+    expect(
+      validateScopedStateRevisionFreshness(conflated, {
+        entityRevision: 12,
+        policyRevision: 'pol-v4',
+      }),
+    ).toEqual({ ok: false, code: 'REVISION_CONFLATED', field: 'policyRevision' });
+
+    const html = render(<ScopedStateView scope={activeScope} snapshot={projection} />);
+    expect(html).toContain('Entity revision');
+    expect(html).toContain('12');
+    expect(html).toContain('Policy revision');
+    expect(html).toContain('pol-v4');
+  });
+
+  test('GUI-04: feeds ScopedStateView from a live server-issued state store and enforces cross-scope isolation', async () => {
+    const store = createLiveScopedStateStore(activeScope, async (scope) => ({
+      selectedOrderId: `srv-order-${scope.threadId}`,
+      entityRevision: 7,
+      policyRevision: 'policy-2026-10',
+      filters: { outlet: 'hq', role: 'founder' },
+    }));
+
+    const refreshed = await store.refreshFromServer();
+    expect(refreshed).not.toBeNull();
+
+    const htmlActive = render(
+      <ScopedStateView scope={store.getScope()} snapshot={store.getSnapshot()} />,
+    );
+    expect(htmlActive).toContain('srv-order-thread-a');
+    expect(htmlActive).toContain('Entity revision');
+    expect(htmlActive).toContain('policy-2026-10');
+    expect(htmlActive).not.toContain('founder');
+
+    // Switch scope to another thread — previous snapshot is isolated and not returned
+    store.switchScope({ ...activeScope, threadId: 'thread-b' });
+    expect(store.getSnapshot()).toBeNull();
+    const htmlSwitched = render(
+      <ScopedStateView scope={store.getScope()} snapshot={refreshed} />,
+    );
+    expect(htmlSwitched).toContain('State is unavailable for this scope');
+    expect(htmlSwitched).not.toContain('srv-order-thread-a');
   });
 });

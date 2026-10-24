@@ -147,6 +147,23 @@ export class AdkBridgeError extends Error {
   }
 }
 
+export interface AdkDelegationTrace {
+  traceId: string;
+  parentRunId: string;
+  childRunId: string;
+  parentAgent: 'abangcolek_ops';
+  delegatedBy: 'abangcolek_ops';
+  delegatedAgent: string | null;
+  specialistTool?: string;
+  inheritedBudget: {
+    parentMaxCalls: number;
+    remainingModelCalls: number;
+    remainingDeadlineMs: number;
+    remainingInputTokens: number;
+    remainingOutputTokens: number;
+  };
+}
+
 export type AdkBridgeOutcome =
   | {
       ok: true;
@@ -169,5 +186,9 @@ export type AdkBridgeOutcome =
       /** runId / threadId: id yang dijana perkhidmatan. */
       runId?: string;
       threadId?: string;
+      /** Sub-agent specialist yang didelegasikan oleh abangcolek_ops (CPK-10). */
+      delegatedAgent?: string | null;
+      /** Jejak delegasi parent -> child termasuk warisan bajet (CPK-10). */
+      delegation?: AdkDelegationTrace;
     }
   | { ok: false; error: AdkBridgeError; health?: AdkHealthPayload };

@@ -22,18 +22,39 @@ export class Dealers {
   private readonly stores: DealerStores;
   constructor(readonly store:PlatformStore,readonly auth:Auth,readonly commerce:Commerce){this.stores=new DealerStores(this.store);}
   saveCommissionPolicy(actor:Principal,raw:unknown){this.auth.founder(actor);const input=object(raw);fields(input,['expectedVersion','eligibleProductIds','rateBasisPoints']);const policies=this.store.all<CommissionPolicy>('commission_policies'),version=Math.max(0,...policies.map(p=>p.version));this.store.revision(version,input.expectedVersion);const eligibleProductIds=strings(input.eligibleProductIds);if(!eligibleProductIds.length)fail('ELIGIBLE_PRODUCTS_REQUIRED');for(const productId of eligibleProductIds)if(!this.commerce.catalogue().some(p=>p.id===productId))fail('PRODUCT_UNAVAILABLE',409);const policy:CommissionPolicy={id:id(),version:version+1,eligibleProductIds,rateBasisPoints:integer(input.rateBasisPoints,'Commission basis points',0,10000),approvedAt:now()};this.store.save('commission_policies',policy);this.store.audit(actor.user.id,'commission.policy_approve',policy.id,policy.version);return policy;}
+  private resolveOrderDealerOrgId(order: OrderRecord): string | undefined {
+    if (order.dealerOrgId) {
+      const byStore = this.stores.bySlugOrOrg(order.dealerOrgId);
+      return byStore ? byStore.dealerOrgId : order.dealerOrgId;
+    }
+    if (order.referralCode) {
+      const byStore = this.stores.bySlugOrOrg(order.referralCode);
+      return byStore ? byStore.dealerOrgId : order.referralCode;
+    }
+    return undefined;
+  }
   private organizations(actor: Principal): Set<string> {
-    return new Set(actor.memberships.filter(member => member.status === 'active' && member.role === 'customer' && member.dealerOrgId).map(member => member.dealerOrgId!));
+    const orgs = new Set(
+      actor.memberships
+        .filter(member => member.status === 'active' && (member.role === 'customer' || (member.role as string) === 'agent') && member.dealerOrgId)
+        .map(member => member.dealerOrgId!)
+    );
+    for (const store of this.stores.all()) {
+      if (store.status === 'active' && (store.ownerUserId === actor.user.id || orgs.has(store.dealerOrgId))) {
+        orgs.add(store.dealerOrgId);
+      }
+    }
+    return orgs;
   }
   benefits(actor: Principal): DealerBenefit[] {
     const organizations = this.organizations(actor), founder = this.auth.has(actor, 'founder');
     if (!founder && !organizations.size) fail('DEALER_SCOPE', 403);
     const payments = this.store.all<PaymentRecord>('payments'), policies = this.store.all<CommissionPolicy>('commission_policies');
     return this.store.all<OrderRecord>('orders').filter(order => {
-      const orgId = order.dealerOrgId ?? order.referralCode;
+      const orgId = this.resolveOrderDealerOrgId(order);
       return orgId && (founder || organizations.has(orgId));
     }).map(order => {
-      const orgId = (order.dealerOrgId ?? order.referralCode)!;
+      const orgId = this.resolveOrderDealerOrgId(order)!;
       const payment = payments.find(candidate => candidate.orderId === order.id && candidate.state === 'confirmed' && candidate.amountSen === order.paidAmountSen);
       const policy = policies.filter(candidate => payment && candidate.approvedAt <= payment.createdAt).sort((a, b) => b.version - a.version)[0];
       const benefit: EarnedBenefit = policy && order.fulfilmentStatus === 'received'
@@ -43,11 +64,14 @@ export class Dealers {
       return { id: `${order.id}:${order.revision}:${benefit.policyVersion}`, dealerOrgId: orgId, orderRevision: order.revision, paymentId: payment?.id ?? null, policyId: policy?.id ?? null, ...benefit, generatedAt: now(), status: 'derived_not_paid' };
     });
   }
-  dealer(actor:Principal,organizationId:string){if(this.auth.has(actor,'founder'))return;if(!this.organizations(actor).has(organizationId))fail('DEALER_SCOPE',403);}
+  dealer(actor:Principal,organizationId:string){if(this.auth.has(actor,'founder'))return;const resolved=this.stores.bySlugOrOrg(organizationId)?.dealerOrgId??organizationId;if(!this.organizations(actor).has(resolved))fail('DEALER_SCOPE',403);}
   ledger(actor: Principal): DealerLedger {
     const organizations = this.organizations(actor), founder = this.auth.has(actor, 'founder');
     if (!founder && !organizations.size) fail('DEALER_SCOPE', 403);
-    const allowed = (record: { dealerOrgId: string }) => founder || organizations.has(record.dealerOrgId);
+    const allowed = (record: { dealerOrgId: string }) => {
+      const resolved = this.stores.bySlugOrOrg(record.dealerOrgId)?.dealerOrgId ?? record.dealerOrgId;
+      return founder || organizations.has(resolved);
+    };
     const restockIds = new Set(this.store.all<RestockRecord>('restocks').filter(allowed).map(record => record.id));
     const lots = this.store.all<DealerStockLot>('lots').filter(lot => restockIds.has(lot.sourceRestockId));
     const movementSources = new Set([...restockIds, ...lots.map(lot => lot.id)]);
@@ -67,29 +91,41 @@ export class Dealers {
     const orgs = this.organizations(actor);
     if (!founder && !orgs.size) fail('DEALER_SCOPE', 403);
     if (dealerOrgId) {
-      if (!founder && !orgs.has(dealerOrgId)) fail('DEALER_SCOPE', 403);
-      return this.store.all<CommissionTransaction>('commission_ledger').filter(c => c.dealerOrgId === dealerOrgId);
+      const resolvedOrgId = this.stores.bySlugOrOrg(dealerOrgId)?.dealerOrgId ?? dealerOrgId;
+      if (!founder && !orgs.has(resolvedOrgId)) fail('DEALER_SCOPE', 403);
+      return this.store.all<CommissionTransaction>('commission_ledger').filter(c => {
+        const cOrg = this.stores.bySlugOrOrg(c.dealerOrgId)?.dealerOrgId ?? c.dealerOrgId;
+        return cOrg === resolvedOrgId;
+      });
     }
-    return this.store.all<CommissionTransaction>('commission_ledger').filter(c => founder || orgs.has(c.dealerOrgId));
+    return this.store.all<CommissionTransaction>('commission_ledger').filter(c => {
+      const cOrg = this.stores.bySlugOrOrg(c.dealerOrgId)?.dealerOrgId ?? c.dealerOrgId;
+      return founder || orgs.has(cOrg);
+    });
   }
   commission(actor: Principal, commissionId: string): CommissionTransaction {
     const record = this.store.require<CommissionTransaction>('commission_ledger', commissionId);
     const founder = this.auth.has(actor, 'founder');
     const orgs = this.organizations(actor);
-    if (!founder && !orgs.has(record.dealerOrgId)) fail('DEALER_SCOPE', 403);
+    const cOrg = this.stores.bySlugOrOrg(record.dealerOrgId)?.dealerOrgId ?? record.dealerOrgId;
+    if (!founder && !orgs.has(cOrg)) fail('DEALER_SCOPE', 403);
     return record;
   }
   commissionSummary(actor: Principal, dealerOrgId?: string): DealerCommissionSummary {
     const founder = this.auth.has(actor, 'founder');
     const orgs = this.organizations(actor);
-    const targetOrgId = dealerOrgId ?? (orgs.size === 1 ? Array.from(orgs)[0] : undefined);
+    const rawTarget = dealerOrgId ?? (orgs.size >= 1 ? Array.from(orgs)[0] : undefined);
+    const targetOrgId = rawTarget ? (this.stores.bySlugOrOrg(rawTarget)?.dealerOrgId ?? rawTarget) : undefined;
     if (!targetOrgId) {
       if (!founder) fail('DEALER_SCOPE', 403);
       fail('ORGANIZATION_REQUIRED', 400);
     }
     if (!founder && !orgs.has(targetOrgId)) fail('DEALER_SCOPE', 403);
 
-    const comms = this.store.all<CommissionTransaction>('commission_ledger').filter(c => c.dealerOrgId === targetOrgId);
+    const comms = this.store.all<CommissionTransaction>('commission_ledger').filter(c => {
+      const cOrg = this.stores.bySlugOrOrg(c.dealerOrgId)?.dealerOrgId ?? c.dealerOrgId;
+      return cOrg === targetOrgId;
+    });
     const pendingSen = comms.filter(c => c.status === 'pending').reduce((sum, c) => sum + c.amountSen, 0);
     const eligibleSen = comms.filter(c => c.status === 'eligible').reduce((sum, c) => sum + c.amountSen, 0);
     const approvedSen = comms.filter(c => c.status === 'approved').reduce((sum, c) => sum + c.amountSen, 0);
@@ -120,12 +156,13 @@ export class Dealers {
   recordCommission(actor: Principal, raw: unknown): CommissionTransaction {
     const input = object(raw);
     fields(input, ['orderId', 'dealerOrgId', 'agentUserId', 'amountSen', 'policyVersion', 'status', 'eligibleAt']);
-    const dealerOrgId = text(input.dealerOrgId, 'Dealer Org ID', 120);
+    const rawDealerOrgId = text(input.dealerOrgId, 'Dealer Org ID', 120);
+    const dealerOrgId = this.stores.bySlugOrOrg(rawDealerOrgId)?.dealerOrgId ?? rawDealerOrgId;
     this.dealer(actor, dealerOrgId);
 
     const orderId = text(input.orderId, 'Order ID', 120);
     const order = this.store.require<OrderRecord>('orders', orderId);
-    const attributedOrgId = order.dealerOrgId ?? order.referralCode;
+    const attributedOrgId = this.resolveOrderDealerOrgId(order);
     if (attributedOrgId && attributedOrgId !== dealerOrgId) fail('DEALER_ORG_MISMATCH', 400);
 
     const amountSen = integer(input.amountSen, 'Amaun komisen', 0, 1_000_000_000);
@@ -162,7 +199,8 @@ export class Dealers {
 
     const founder = this.auth.has(actor, 'founder');
     const orgs = this.organizations(actor);
-    if (!founder && !orgs.has(current.dealerOrgId)) fail('DEALER_SCOPE', 403);
+    const currentOrg = this.stores.bySlugOrOrg(current.dealerOrgId)?.dealerOrgId ?? current.dealerOrgId;
+    if (!founder && !orgs.has(currentOrg)) fail('DEALER_SCOPE', 403);
 
     // Dealer can only dispute. Other transitions require founder.
     if (!founder && next !== 'disputed') fail('FORBIDDEN', 403, 'Hanya founder boleh mengubah status komisen.');
@@ -263,12 +301,20 @@ export class Dealers {
   }
   createCommissionFromOrder(actor: Principal, orderId: string): CommissionTransaction {
     const order = this.store.require<OrderRecord>('orders', orderId);
-    const dealerOrgId = order.dealerOrgId ?? order.referralCode;
+    const dealerOrgId = this.resolveOrderDealerOrgId(order);
     if (!dealerOrgId) fail('NO_DEALER_ATTRIBUTION', 400, 'Pesanan tidak mempunyai dealer/agent attribution.');
     this.dealer(actor, dealerOrgId);
 
     const existing = this.store.all<CommissionTransaction>('commission_ledger').find(c => c.orderId === order.id && c.amountSen > 0 && c.status !== 'reversed');
-    if (existing) return existing;
+    if (existing) {
+      const isEligibleNow = order.fulfilmentStatus === 'received' && order.paymentState === 'verified';
+      if (existing.status === 'pending' && isEligibleNow) {
+        const updated: CommissionTransaction = { ...existing, dealerOrgId, status: 'eligible', eligibleAt: now() };
+        this.store.save('commission_ledger', updated);
+        return updated;
+      }
+      return existing;
+    }
 
     const payments = this.store.all<PaymentRecord>('payments');
     const policies = this.store.all<CommissionPolicy>('commission_policies');
@@ -284,10 +330,13 @@ export class Dealers {
     const amountSen = benefit ? benefit.amountSen : Number(BigInt(order.amountSen) * BigInt(policy.rateBasisPoints) / 10000n);
     const status: CommissionLedgerStatus = isEligible ? 'eligible' : 'pending';
 
+    const storeRecord = this.stores.byOrg(dealerOrgId) ?? this.stores.bySlugOrOrg(dealerOrgId);
     const members = this.store.all<{ userId: string; dealerOrgId?: string; role?: string; status?: string }>('memberships');
     const agentMember = members.find(m => m.dealerOrgId === dealerOrgId && (m.role === 'customer' || m.role === 'staff' || m.role === 'agent') && m.status === 'active')
       ?? members.find(m => m.dealerOrgId === dealerOrgId);
-    const agentUserId = agentMember?.userId ?? order.customerId;
+    const dbMemberUserId = this.store.db.query<{ user_id: string }, [string]>("SELECT user_id FROM memberships WHERE dealer_org_id=? AND status='active' LIMIT 1").get(dealerOrgId)?.user_id;
+    const approvedAppUserId = this.store.all<DealerApplication>('dealer_applications').find(a => a.dealerOrgId === dealerOrgId && a.status === 'approved')?.customerId;
+    const agentUserId = storeRecord?.ownerUserId ?? agentMember?.userId ?? dbMemberUserId ?? approvedAppUserId ?? order.customerId;
 
     const record: CommissionTransaction = {
       id: id(),

@@ -18,10 +18,16 @@
 import { describe, expect, test } from 'bun:test';
 import { AdkBridgeClient } from '../../server/agents/adk-bridge/client';
 import { parseSseFrames, summariseAguiEvents } from '../../server/agents/adk-bridge/agui';
-import { CopilotV2Runtime } from '../../server/agents/copilot/runtime';
+import {
+  CopilotV2Runtime,
+  createChildBudget,
+  resolveSpecialistDelegation,
+  syncChildBudgetToParent,
+} from '../../server/agents/copilot/runtime';
 import {
   FreeModelRouter,
   assertFreeModelOnly,
+  createBudget,
   STRICT_FREE_CANDIDATE_SEQUENCE,
 } from '../../server/agents/providers/model-router';
 import {
@@ -675,5 +681,135 @@ describe('Candidate percuma — pengendalian kegagalan', () => {
     expect(paidAdapter.calls).toHaveLength(0);
     expect(json.status).not.toBe('completed');
     expect(json.reason).toBe('POLICY_VIOLATION_REJECTED');
+  });
+});
+
+describe('CPK-10 — Sub-agents parent-to-child delegation, trace propagation & budget inheritance', () => {
+  test('resolveSpecialistDelegation memetakan intent kepada sub-ejen specialist yang betul', () => {
+    expect(
+      resolveSpecialistDelegation([{ role: 'user', content: 'Semak katalog dan stok lot semasa' }])
+    ).toEqual({
+      delegatedAgent: 'commerce_reader',
+      specialistTool: 'read_published_catalogue',
+    });
+    expect(
+      resolveSpecialistDelegation([{ role: 'user', content: 'Semak aduan QC dan status JEV refund' }])
+    ).toEqual({
+      delegatedAgent: 'qc_jev_reviewer',
+      specialistTool: 'review_qc_and_jev_cases',
+    });
+    expect(
+      resolveSpecialistDelegation([{ role: 'user', content: 'Bina kempen promosi dan semak margin' }])
+    ).toEqual({
+      delegatedAgent: 'marketing_drafter',
+      specialistTool: 'evaluate_campaign_margin',
+    });
+    expect(
+      resolveSpecialistDelegation([{ role: 'user', content: 'Helo selamat pagi' }])
+    ).toEqual({
+      delegatedAgent: null,
+    });
+  });
+
+  test('createChildBudget mewarisi baki panggilan, deadline dan token daripada parent budget dan syncChildBudgetToParent menyelaraskan penggunaan', () => {
+    const parent = createBudget(3, 30000);
+    parent.callsMade = 1;
+    parent.inputTokensUsed = 4000;
+    parent.outputTokensUsed = 500;
+
+    const child = createChildBudget(parent);
+    expect(child.maxCalls).toBe(2);
+    expect(child.deadlineMs).toBeLessThanOrEqual(30000);
+    expect(child.maxCumulativeInputTokens).toBe(parent.maxCumulativeInputTokens - 4000);
+    expect(child.maxCumulativeOutputTokens).toBe(parent.maxCumulativeOutputTokens - 500);
+
+    child.callsMade = 1;
+    child.inputTokensUsed = 300;
+    child.outputTokensUsed = 120;
+    syncChildBudgetToParent(parent, child);
+
+    expect(parent.callsMade).toBe(2);
+    expect(parent.inputTokensUsed).toBe(4300);
+    expect(parent.outputTokensUsed).toBe(620);
+  });
+
+  test('Runtime menyebarkan traceId, parentRunId, childRunId dan inheritedBudget ke Python ADK bridge serta memulangkan jejak delegasi', async () => {
+    const { fetchFn, calls } = recordingFetch(call => {
+      if (call.url.endsWith('/health')) return jsonResponse(REAL_HEALTH);
+      return sseResponse(REAL_AGUI_TRANSCRIPT);
+    });
+    const runtime = new CopilotV2Runtime({
+      bridge: new AdkBridgeClient({ baseUrl: 'http://127.0.0.1:8030', fetchFn }),
+      adapters: mockRegistry(adaptersFor()),
+    });
+
+    const response = await runtime.handleRequest(
+      chatRequest({
+        messages: [{ role: 'user', content: 'Semak katalogAlignment dan status stok' }],
+        traceId: 'trace-cpk10-test-01',
+      }),
+      VERIFIED_ACTOR
+    );
+    const json = await response.json();
+
+    expect(json.status).toBe('completed');
+    expect(json.servedBy).toBe('python_adk_bridge');
+    expect(json.adk?.delegatedBy).toBe('abangcolek_ops');
+    expect(json.adk?.delegatedAgent).toBe('commerce_reader');
+    expect(json.adk?.traceId).toBe('trace-cpk10-test-01');
+    expect(json.adk?.parentRunId).toBe(json.runId);
+    expect(json.adk?.childRunId).toBe(`${json.runId}:sub:commerce_reader`);
+
+    expect(json.delegation).toBeDefined();
+    expect(json.delegation.traceId).toBe('trace-cpk10-test-01');
+    expect(json.delegation.parentRunId).toBe(json.runId);
+    expect(json.delegation.childRunId).toBe(`${json.runId}:sub:commerce_reader`);
+    expect(json.delegation.parentAgent).toBe('abangcolek_ops');
+    expect(json.delegation.delegatedBy).toBe('abangcolek_ops');
+    expect(json.delegation.delegatedAgent).toBe('commerce_reader');
+    expect(json.delegation.specialistTool).toBe('read_published_catalogue');
+    expect(json.delegation.inheritedBudget.parentMaxCalls).toBe(3);
+    expect(json.delegation.inheritedBudget.remainingModelCalls).toBe(3);
+
+    const streamCall = calls.find(c => c.url.includes('/stream'));
+    expect(streamCall).toBeDefined();
+    const sentPayload = (streamCall?.body as { payload?: Record<string, any> })?.payload;
+    expect(sentPayload?.trace?.traceId).toBe('trace-cpk10-test-01');
+    expect(sentPayload?.trace?.parentAgent).toBe('abangcolek_ops');
+    expect(sentPayload?.trace?.delegatedAgent).toBe('commerce_reader');
+    expect(sentPayload?.budget?.remainingModelCalls).toBe(3);
+  });
+
+  test('Laluan direct_model turut mengekalkan jejak delegasi parent->child dan warisan bajet selepas jambatan gagal', async () => {
+    const { fetchFn } = recordingFetch(() => {
+      throw new Error('connect ECONNREFUSED 127.0.0.1:8030');
+    });
+    const adapters = adaptersFor({
+      'gemini-3.6-flash': { content: 'Laporan QC dan JEV telah disemak.' },
+    });
+    const runtime = new CopilotV2Runtime({
+      bridge: new AdkBridgeClient({ baseUrl: 'http://127.0.0.1:8030', fetchFn }),
+      adapters: mockRegistry(adapters),
+    });
+
+    const response = await runtime.handleRequest(
+      chatRequest({
+        messages: [{ role: 'user', content: 'Semak aduan QC dan kes refund ORD-001' }],
+        traceId: 'trace-cpk10-direct-02',
+      }),
+      VERIFIED_ACTOR
+    );
+    const json = await response.json();
+
+    expect(json.status).toBe('completed');
+    expect(json.servedBy).toBe('direct_model');
+    expect(json.delegation).toBeDefined();
+    expect(json.delegation.traceId).toBe('trace-cpk10-direct-02');
+    expect(json.delegation.parentAgent).toBe('abangcolek_ops');
+    expect(json.delegation.delegatedAgent).toBe('qc_jev_reviewer');
+    expect(json.delegation.specialistTool).toBe('review_qc_and_jev_cases');
+    // Jambatan menggunakan 1 panggilan, jadi baki panggilan yang diwarisi ke laluan direct ialah 2.
+    expect(json.delegation.inheritedBudget.parentMaxCalls).toBe(3);
+    expect(json.delegation.inheritedBudget.remainingModelCalls).toBe(2);
   });
 });

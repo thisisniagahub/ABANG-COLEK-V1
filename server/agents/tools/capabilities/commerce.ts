@@ -7,6 +7,7 @@
  * allocation, cumulative commission reversal).
  */
 
+import { createHash } from 'node:crypto';
 import { defineTool, fail, resolveContext } from './common';
 import { provenance } from '../runtime';
 import type { ToolDefinition } from '../types';
@@ -486,6 +487,22 @@ export const commerceTools: ToolDefinition[] = [
           };
         });
 
+      const at = ctx.runtime.clock();
+      const expiresAt = new Date(Date.parse(at) + 5 * 60 * 1000).toISOString();
+      const latestPolicyVersion = policies.length > 0 ? policies[policies.length - 1].version : null;
+      const previewRefHash = createHash('sha256')
+        .update(
+          JSON.stringify({
+            orderId: order.id,
+            orderRevision: order.revision,
+            policyRevision: latestPolicyVersion,
+            requestedRefundSen: amountSen,
+            refundableBalanceSen: refundableSen,
+            allocatedTotalSen,
+          }),
+        )
+        .digest('hex');
+
       return {
         ok: true,
         orderId: order.id,
@@ -493,6 +510,12 @@ export const commerceTools: ToolDefinition[] = [
         refundableBalanceSen: refundableSen,
         status: 'preview_ready',
         mutated: false,
+        previewRefHash,
+        revisions: {
+          orderRevision: order.revision,
+          policyRevision: latestPolicyVersion,
+        },
+        expiresAt,
         lineAllocations: allocations,
         allocatedTotalSen,
         // Computed difference between the request and the allocated total.

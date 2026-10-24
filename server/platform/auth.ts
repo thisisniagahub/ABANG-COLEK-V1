@@ -128,6 +128,41 @@ export class Auth {
   logout(actor: Principal) { this.store.db.query('UPDATE sessions SET revoked=1 WHERE token_hash=?').run(actor.sessionHash); }
 
   /**
+   * Memvalidasi kata laluan baharu dan mengubahnya dengan hash scrypt baharu.
+   *
+   * Kaedah ini hanya dipanggil dari dalam server (tidak pernah dari input pelayar).
+   * Ia tidak menerima actor/role dari permintaan pelayar. Hanya boleh dipanggil
+   * setelah pemulihan kata laluan berjaya melalui kod pemulihan yang sah.
+   *
+   * - Menggantikan `users.password_hash` dengan hash scrypt baharu dan salt baharu
+   * - Merekabalkan SEMUA sesi untuk pengguna ini (sekalipun sesi yang memicu perubahan)
+   * - Menulis audit event `password.reset`
+   * - Tidak boleh diterima apa-apa dari body permintaan pelayar mengenai role/actor
+   */
+  async resetPassword(newPassword: string, userId: string): Promise<{ success: true }> {
+    // Validasi panjang kata laluan (12-128 aksara)
+    if (newPassword.length < 12 || newPassword.length > 128) {
+      throw new DomainError('PASSWORD_LENGTH', 400, 'Kata laluan mesti antara 12 hingga 128 aksara.');
+    }
+
+    const scrypt = await import('node:util').then(mod => mod.promisify(require('node:crypto').scrypt));
+    const salt = randomBytes(16).toString('hex');
+    const digest = await scrypt(newPassword, salt, 64) as Buffer;
+    const passwordHash = `scrypt:${salt}:${digest.toString('hex')}`;
+
+    // Tulis hash baru ke pangkalan data
+    this.store.db.query('UPDATE users SET password_hash=? WHERE id=?').run(passwordHash, userId);
+
+    // Merkkan SEMUA sesi untuk pengguna ini — termasuk sesi yang memicu perubahan
+    this.store.db.query('UPDATE sessions SET revoked=1 WHERE user_id=?').run(userId);
+
+    // Tulis audit event
+    this.store.audit(userId, 'password.reset', userId, 1);
+
+    return { success: true };
+  }
+
+  /**
    * Cuba mejapekan sesi yang dibawa oleh permintaan.
    *
    * Mengembalikan `Principal` jika terdapat sesi yang valid, atau `null` jika

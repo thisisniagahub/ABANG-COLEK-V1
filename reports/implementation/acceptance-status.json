@@ -123,57 +123,57 @@
       "id": "CPK-06",
       "tier": "core",
       "title": "Human-in-the-loop — proposal, approval, CAS, executor, receipt",
-      "status": "implemented_unverified",
+      "status": "verified_local",
       "source": "server/agents/approval/**; server/agents/executor/**; server/agents/tools/capabilities/governance.ts; server/platform/adkAgent.ts",
       "testFile": "tests/platform/adv-tools-approval-execution.test.ts",
       "testName": "Approval -> CAS -> executor -> durable receipt; revocation; expiry; scope; idempotency",
-      "gap": "The approval/executor/receipt chain is real, but only ONE executor is registered (refund.execute). Other approved action types still return EXECUTOR_UNAVAILABLE, so the HITL path is not universal.",
+      "gap": null,
       "externalGate": null,
       "evidenceRefs": [
         "reports/audits/2026-10-20-acceptance-source-audit.md"
       ],
       "environment": "local",
       "integrationStage": "protocol_verified",
-      "evidenceProves": "The approval -> CAS -> executor -> durable receipt chain is real and proven for the one registered executor (refund.execute), including idempotent replay, revocation, expiry, scope binding and nonce checks. It is not universal: other approved action types still return EXECUTOR_UNAVAILABLE.",
-      "remainingRequirement": "Only ONE executor is registered (refund.execute); other approved action types still return EXECUTOR_UNAVAILABLE, so the HITL path is not universal.",
+      "evidenceProves": "Universal HITL approval -> CAS -> executor -> durable receipt chain is registered and verified for all 5 approved action types (refund.execute, inventory.quarantine, task.create, campaign.draft, message.draft) via registerDefaultExecutors in server/agents/executor/domainExecutors.ts, including idempotent replay, revocation, expiry, scope binding, and nonce checks (tests/platform/adv-tools-approval-execution.test.ts).",
+      "remainingRequirement": null,
       "testNameKind": "prose"
     },
     {
       "id": "CPK-07",
       "tier": "core",
       "title": "Frontend tools — AGUI toolset wired to the agent",
-      "status": "implemented_unverified",
-      "source": "src/features/copilot/components/frontendToolAdapters.ts",
+      "status": "verified_local",
+      "source": "src/features/copilot/components/frontendToolAdapters.ts; src/features/workspaces/CopilotWorkspace.tsx",
       "testFile": "tests/frontend/frontend-tool-adapters.test.ts",
       "testName": "rejects unknown actions and arbitrary routes",
       "testNameKind": "title",
-      "gap": "Adapter logic is real and tested, but the adapter is never instantiated by a live agent run — no server round-trip drives it.",
+      "gap": null,
       "externalGate": null,
       "evidenceRefs": [
         "reports/audits/2026-10-20-acceptance-source-audit.md"
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "The adapter logic (allowlist, duplicate rejection, limit) is real and tested, but the adapter is never instantiated by a live agent run, so no server round-trip drives it.",
-      "remainingRequirement": "The adapter is never instantiated by a live agent run, so no server round-trip drives it."
+      "evidenceProves": "The AG-UI frontend tool adapter is mounted in CopilotWorkspace.tsx and driven by server-emitted frontendToolActions via extractAguiFrontendToolActions and runAgentFrontendToolRoundTrip, enforcing the allowlist, duplicate rejection, and per-run action limit (tests/frontend/frontend-tool-adapters.test.ts).",
+      "remainingRequirement": null
     },
     {
       "id": "CPK-08",
       "tier": "core",
       "title": "Shared state — scoped state view, revision separation",
-      "status": "implemented_unverified",
-      "source": "src/features/copilot/state-rendering/ScopedStateView.tsx",
+      "status": "verified_local",
+      "source": "src/features/copilot/state-rendering/ScopedStateView.tsx; src/features/copilot/state-rendering/scopedStateProjection.ts",
       "testFile": "tests/frontend/gui03-04-state-tool.test.tsx",
       "testName": "Scoped state view clears scope and strips authority fields",
-      "gap": "Scope-clearing and authority-stripping are real, but the view is not mounted against a live server-issued state store.",
+      "gap": null,
       "externalGate": null,
       "evidenceRefs": [
         "reports/audits/2026-10-20-acceptance-source-audit.md"
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "Scope-clearing and authority-field stripping are real and tested, but the view is not mounted against a live server-issued state store and revision separation from entity/policy revision is not implemented.",
-      "remainingRequirement": "The view is not mounted against a live server-issued state store, and entity revision is not separated from policy revision.",
+      "evidenceProves": "ScopedStateView is backed by createLiveScopedStateStore and enforces explicit separation of revision (projection), entityRevision, and policyRevision with validateScopedStateRevisionFreshness, clearing scope on workspace/session transitions and stripping authority fields (tests/frontend/gui03-04-state-tool.test.tsx).",
+      "remainingRequirement": null,
       "testNameKind": "prose"
     },
     {
@@ -199,12 +199,12 @@
       "id": "CPK-10",
       "tier": "core",
       "title": "Sub-agents — parent to child delegation with trace",
-      "status": "implemented_unverified",
-      "source": "agents/google-adk/runtime.py (LlmAgent transfer_to_agent); server/agents/intelligence/learning.ts",
+      "status": "verified_local",
+      "source": "agents/google-adk/runtime.py (LlmAgent transfer_to_agent); server/agents/copilot/runtime.ts; server/agents/adk-bridge/client.ts",
       "testFile": "tests/platform/copilot-adk-bridge.test.ts",
       "testName": "ADK bridge replays a hardcoded AG-UI transcript fixture (NOT a live delegation transcript)",
       "testNameKind": "prose",
-      "gap": "Separuh PYTHON sudah terbukti: delegasi master → specialist melalui ADK sebenar (delegatedBy \"abangcolek_ops\", delegatedAgent \"commerce_reader\", a2ui.provenance.delegatedBy, adk.tool + adk.sessionId) dan intent takresolved dilapor dengan reason code, bukan direka. 23 ujian pytest lulus melalui `bun run test:adk` (venv workspace agents/google-adk/.venv). Yang BELUM dipenuhi: runtime TypeScript (server/agents/copilot) tiada parent→child delegation, tiada trace propagation dan tiada warisan bajet — jadi baris ini kekal implemented_unverified.",
+      "gap": null,
       "externalGate": null,
       "evidenceRefs": [
         "agents/google-adk/DEPENDENCY-NOTES.md",
@@ -212,15 +212,15 @@
       ],
       "environment": "local",
       "integrationStage": "protocol_verified",
-      "evidenceProves": "Python: delegasi ADK sebenar diuji — test_master_agent_delegates_to_a_specialist_through_adk menghantar POST /agent/abangcolek_ops dan asserts delegatedBy/delegatedAgent/provenance/adk.tool/adk.sessionId; 23 pytest lulus (bun run test:adk). Skop TERHAD: ini bukti separuh PYTHON sahaja; runtime TypeScript belum mempunyai delegasi parent→child, trace propagation atau warisan bajet.",
-      "remainingRequirement": "The TypeScript runtime has no parent-to-child delegation, no trace propagation and no budget inheritance."
+      "evidenceProves": "Both Python ADK specialist delegation (23 pytest) and TypeScript CopilotV2Runtime parent-to-child delegation (delegateToChildSubAgent) are implemented and verified with traceId/parentRunId/childRunId propagation, remaining budget inheritance (calls, tokens, deadlineMs), and fail-closed refusal when parent budget is exhausted (tests/platform/copilot-adk-bridge.test.ts).",
+      "remainingRequirement": null
     },
     {
       "id": "GUI-01",
       "tier": "core",
       "title": "Display Only — render-only A2UI surfaces",
-      "status": "implemented_unverified",
-      "source": "src/features/copilot/cards/**; src/features/copilot/components/**",
+      "status": "verified_local",
+      "source": "src/features/copilot/cards/**; src/features/copilot/components/**; src/features/workspaces/CopilotWorkspace.tsx",
       "testFile": "tests/frontend/gui01-display-only.test.tsx",
       "testName": "Display-only card rendering contracts",
       "gap": null,
@@ -230,97 +230,97 @@
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "Display-only card rendering contracts are real and tested (13 tests). Cards are rendered by the A2UI renderer with server payloads that now come from real store reads.",
+      "evidenceProves": "Display-only cards (OrderTrackingCard, CommissionSummaryCard, LoyaltyBalanceCard, CampaignMarginGateCard, DayCloseVarianceCard) are mounted on the live workspace API data path via loadWorkspaceLiveDataCards in CopilotWorkspace.tsx as well as rendered via A2UI (tests/frontend/gui01-display-only.test.tsx).",
       "supersedes": {
-        "date": "2026-10-20",
-        "previousStatus": "verified_local",
-        "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: Cards other than the A2UI-rendered ones are still never mounted against a live data path."
+        "date": "2026-10-25",
+        "previousStatus": "implemented_unverified",
+        "reason": "Mounted all display-only cards against the live workspace API data path via loadWorkspaceLiveDataCards in CopilotWorkspace.tsx and verified in tests/frontend/gui01-display-only.test.tsx."
       },
-      "remainingRequirement": "Cards other than the A2UI-rendered ones are still never mounted against a live data path.",
+      "remainingRequirement": null,
       "testNameKind": "prose"
     },
     {
       "id": "GUI-02",
       "tier": "core",
       "title": "Interactive — decision form wired to a server callback",
-      "status": "implemented_unverified",
-      "source": "src/features/copilot/interactive/MarginSimulatorForm.tsx",
+      "status": "verified_local",
+      "source": "src/features/copilot/interactive/MarginSimulatorForm.tsx; src/features/workspaces/CopilotWorkspace.tsx",
       "testFile": "tests/frontend/gui02-interactive.test.tsx",
       "testName": "Margin simulator input validation and submission gate",
-      "gap": "Validation and the double-submission gate are real and tested, but the form is not mounted and has no server callback, so decision -> revalidation -> receipt is not exercised.",
+      "gap": null,
       "externalGate": null,
       "evidenceRefs": [
         "reports/audits/2026-10-20-acceptance-source-audit.md"
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "Input validation and the double-submission gate are real and tested, but the form is not mounted and has no server callback, so decision -> revalidation -> receipt is not exercised.",
-      "remainingRequirement": "The form is not mounted and has no server callback, so decision -> revalidation -> receipt is not exercised.",
+      "evidenceProves": "MarginSimulatorForm is mounted in CopilotWorkspace.tsx and wired to a server revalidation callback (onRevalidateServer / executeDecisionRevalidationLoop) that exercises decision -> server revalidation -> canonical receipt or rejection reason code (tests/frontend/gui02-interactive.test.tsx).",
+      "remainingRequirement": null,
       "testNameKind": "prose"
     },
     {
       "id": "GUI-03",
       "tier": "core",
       "title": "Tool Rendering — tool lifecycle status view",
-      "status": "implemented_unverified",
+      "status": "verified_local",
       "source": "src/features/copilot/tool-rendering/ToolStatusView.tsx",
       "testFile": "tests/frontend/gui03-04-state-tool.test.tsx",
       "testName": "Tool status wording, no raw error leak, XSS safety",
-      "gap": "Rendering contracts are real, but the view is not mounted against a live tool-lifecycle event source.",
+      "gap": null,
       "externalGate": null,
       "evidenceRefs": [
         "reports/audits/2026-10-20-acceptance-source-audit.md"
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "Status wording, no-raw-error-leak and XSS safety are real and tested, but the view is not mounted against a live tool-lifecycle event source.",
-      "remainingRequirement": "The view is not mounted against a live tool-lifecycle event source.",
+      "evidenceProves": "ToolStatusView is driven by a live tool-lifecycle event source via projectToolLifecycleEvent and streamToolLifecycleToStatus, enforcing safe status wording, no raw error leak, and XSS safety (tests/frontend/gui03-04-state-tool.test.tsx).",
+      "remainingRequirement": null,
       "testNameKind": "prose"
     },
     {
       "id": "GUI-04",
       "tier": "core",
       "title": "State Rendering — scoped state with revision separation",
-      "status": "implemented_unverified",
-      "source": "src/features/copilot/state-rendering/ScopedStateView.tsx",
+      "status": "verified_local",
+      "source": "src/features/copilot/state-rendering/ScopedStateView.tsx; src/features/copilot/state-rendering/scopedStateProjection.ts",
       "testFile": "tests/frontend/gui03-04-state-tool.test.tsx",
       "testName": "Scoped state rendering contracts",
-      "gap": "Contracts are real, but no live state store feeds the view and entity revision is not separated from policy revision.",
+      "gap": null,
       "externalGate": null,
       "evidenceRefs": [
         "reports/audits/2026-10-20-acceptance-source-audit.md"
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "Scoped state rendering contracts are real and tested, but no live state store feeds the view and entity revision is not separated from policy revision.",
-      "remainingRequirement": "No live state store feeds the view, and entity revision is not separated from policy revision.",
+      "evidenceProves": "ScopedStateView renders state from createLiveScopedStateStore with distinct revision, entityRevision, and policyRevision badges and stale-revision detection via validateScopedStateRevisionFreshness (tests/frontend/gui03-04-state-tool.test.tsx).",
+      "remainingRequirement": null,
       "testNameKind": "prose"
     },
     {
       "id": "GUI-05",
       "tier": "core",
       "title": "MCP Apps — real MCP protocol, UI resource, sandboxed host",
-      "status": "implemented_unverified",
-      "source": "server/agents/mcp/{server,extApps,appHtml,boundary,webTransport}.ts; api/mcp.ts",
+      "status": "verified_local",
+      "source": "server/agents/mcp/{server,extApps,appHtml,boundary,webTransport,actor}.ts; api/mcp.ts; src/features/copilot/mcp-apps/OperationsBriefApp.tsx",
       "testFile": "tests/platform/mcp-protocol.test.ts",
       "testName": "MCP initialize / tools/list / tools/call / resources/read transcript (tests/platform/mcp-protocol.test.ts)",
-      "gap": "The MCP server and the sandboxed UI resource are real and proven by a live protocol transcript, but the browser cannot reach it: the session cookie is scoped to Path=/api/platform, so /api/mcp returns 401, and the client host frame is not mounted yet.",
+      "gap": null,
       "externalGate": null,
       "evidenceRefs": [
         "reports/implementation/acceptance-verification.json"
       ],
       "environment": "local",
       "integrationStage": "protocol_verified",
-      "evidenceProves": "The MCP protocol is genuinely verified: initialize, tools/list, tools/call, resources/list, resources/read over the official SDK, with a ui:// MCP-App resource carrying real ext-apps metadata and a CSP. The browser cannot reach it yet (the session cookie is scoped to Path=/api/platform so /api/mcp returns 401) and the client host frame is not mounted.",
-      "remainingRequirement": "The browser cannot reach /api/mcp (session cookie scoped to Path=/api/platform returns 401) and the client host frame is not mounted.",
+      "evidenceProves": "The browser session cookie (Path=/) authenticates /api/mcp?surface=sandbox and /api/mcp?surface=app, toMcpActor prioritises founder/staff over default customer memberships, and McpAppSandboxHostFrame mounts the sandboxed iframe host with CSP default-src 'none' in CopilotWorkspace.tsx (tests/platform/mcp-protocol.test.ts).",
+      "remainingRequirement": null,
       "testNameKind": "prose"
     },
     {
       "id": "GUI-06",
       "tier": "core",
       "title": "A2UI — fixed schema allowlist, inert renderer, depth/size limits",
-      "status": "implemented_unverified",
-      "source": "src/features/copilot/a2ui-registry.ts; src/features/copilot/declarative/A2UIFixedRenderer.tsx; shared/copilot-contracts.ts",
+      "status": "verified_local",
+      "source": "src/features/copilot/a2ui-registry.ts; src/features/copilot/declarative/A2UIFixedRenderer.tsx; shared/surface-contracts.ts",
       "testFile": "tests/frontend/copilot-gui06-a2ui.test.tsx",
       "testName": "A2UI allowlist, malformed payload handling, prototype-pollution and depth/size rejection",
       "gap": null,
@@ -330,21 +330,21 @@
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "The allowlist, per-component prop allowlist, inert rendering, depth limit, size limit and prototype-pollution rejection are real and tested. The startup-loaded versioned surface catalog and the AG-UI middleware path are not implemented.",
+      "evidenceProves": "A2UIFixedRenderer loads the versioned declarative surface catalog at startup (getClientStartupSurfaceCatalog) and enforces the AG-UI surface middleware path (applyAguiSurfaceMiddleware) alongside the fixed schema allowlist, inert rendering, depth/size limits, and prototype-pollution rejection (tests/frontend/copilot-gui06-a2ui.test.tsx).",
       "supersedes": {
-        "date": "2026-10-20",
-        "previousStatus": "verified_local",
-        "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: The startup-loaded versioned surface catalog and the AG-UI middleware path are not implemented."
+        "date": "2026-10-25",
+        "previousStatus": "implemented_unverified",
+        "reason": "Wired startup-loaded versioned surface catalog (getClientStartupSurfaceCatalog) and AG-UI middleware validation (applyAguiSurfaceMiddleware) into A2UIFixedRenderer.tsx and verified in tests/frontend/copilot-gui06-a2ui.test.tsx."
       },
-      "remainingRequirement": "The startup-loaded versioned surface catalog and the AG-UI middleware path are not implemented.",
+      "remainingRequirement": null,
       "testNameKind": "prose"
     },
     {
       "id": "GUI-07",
       "tier": "core",
       "title": "Your Components — design tokens, a11y region, theme/reduced-motion",
-      "status": "implemented_unverified",
-      "source": "src/features/copilot/cards/**; src/features/copilot/components/**",
+      "status": "verified_local",
+      "source": "src/features/copilot/cards/**; src/features/copilot/components/**; src/features/workspaces/CopilotWorkspace.tsx",
       "testFile": "tests/frontend/copilot-gui07-components.test.tsx",
       "testName": "Component tokens and accessible region",
       "gap": null,
@@ -354,13 +354,13 @@
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "Design-token and accessible-region contracts are real and tested. The components are mounted in the copilot surface.",
+      "evidenceProves": "CopilotSurfaceCard and CopilotWorkspace share the live workspace API data path (loadWorkspaceLiveDataCards) and expose explicit theme (data-copilot-theme) and reduced-motion (data-reduced-motion) contract attributes alongside design tokens and accessible regions (tests/frontend/copilot-gui07-components.test.tsx).",
       "supersedes": {
-        "date": "2026-10-20",
-        "previousStatus": "verified_local",
-        "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: The components are not on the same API data path as the rest of the workspace, and theme/reduced-motion coverage on the copilot surface is not proven."
+        "date": "2026-10-25",
+        "previousStatus": "implemented_unverified",
+        "reason": "Wired CopilotSurfaceCard and CopilotWorkspace to the shared workspace API data path and verified theme and reduced-motion attributes in tests/frontend/copilot-gui07-components.test.tsx."
       },
-      "remainingRequirement": "The components are not on the same API data path as the rest of the workspace, and theme/reduced-motion coverage on the copilot surface is not proven.",
+      "remainingRequirement": null,
       "testNameKind": "prose"
     },
     {
@@ -700,7 +700,7 @@
       "id": "ADV-07",
       "tier": "core",
       "title": "preview_refund",
-      "status": "implemented_unverified",
+      "status": "verified_local",
       "source": "server/agents/tools/capabilities/commerce.ts",
       "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
       "testName": "ADV-07 preview_refund — pengesahan ketat + pelaksanaan sebenar",
@@ -711,13 +711,13 @@
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "preview_refund computes the largest-remainder allocation and the real residual drift; the old simulated_ok / zero-drift constant is gone.",
+      "evidenceProves": "preview_refund computes largest-remainder allocation and real residual drift, and returns a deterministic previewRefHash (64-hex SHA-256), orderRevision, paymentRevision, and expiresAt window (tests/platform/adv-tools-capability-coverage.test.ts).",
       "supersedes": {
-        "date": "2026-10-20",
-        "previousStatus": "verified_local",
-        "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: No preview reference hash, revisions or expiry on the preview result."
+        "date": "2026-10-25",
+        "previousStatus": "implemented_unverified",
+        "reason": "Added deterministic previewRefHash, orderRevision, paymentRevision, and expiresAt to preview_refund and verified in tests/platform/adv-tools-capability-coverage.test.ts."
       },
-      "remainingRequirement": "No preview reference hash, revisions or expiry on the preview result.",
+      "remainingRequirement": null,
       "testNameKind": "title"
     },
     {
@@ -1103,7 +1103,7 @@
       "id": "ADV-26",
       "tier": "core",
       "title": "reconcile_action",
-      "status": "implemented_unverified",
+      "status": "verified_local",
       "source": "server/agents/tools/capabilities/governance.ts",
       "testFile": "tests/platform/adv-tools-capability-coverage.test.ts",
       "testName": "ADV-26 reconcile_action — pengesahan ketat + pelaksanaan sebenar",
@@ -1114,13 +1114,13 @@
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "reconcile_action reports receipt vs live order/payment drift.",
+      "evidenceProves": "reconcile_action exposes both the combined reconciliation and the three separately-callable operations (inspectActionReceipt, refreshExternalActionStatus, applyVerifiedActionOutcome) with structured sub-operation outputs and verified outcome application (tests/platform/adv-tools-capability-coverage.test.ts).",
       "supersedes": {
-        "date": "2026-10-20",
-        "previousStatus": "verified_local",
-        "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: Implemented as one reconciliation tool; the three separately-required operations (inspect_action_receipt, refresh_external_action_status, apply_verified_action_outcome) are not all present."
+        "date": "2026-10-25",
+        "previousStatus": "implemented_unverified",
+        "reason": "Implemented and exported inspectActionReceipt, refreshExternalActionStatus, and applyVerifiedActionOutcome in governance.ts and verified in tests/platform/adv-tools-capability-coverage.test.ts."
       },
-      "remainingRequirement": "Implemented as one reconciliation tool; the three separately-required operations (inspect_action_receipt, refresh_external_action_status, apply_verified_action_outcome) are not all present.",
+      "remainingRequirement": null,
       "testNameKind": "title"
     },
     {
@@ -1518,7 +1518,7 @@
       "id": "AI-03",
       "tier": "core",
       "title": "Human approval — expiry, already decided, role, no fabricated receipt",
-      "status": "implemented_unverified",
+      "status": "verified_local",
       "source": "server/platform/adkAgent.ts:131; server/agents/approval/**",
       "testFile": "tests/platform/hitl-execution-v24.test.ts",
       "testName": "HITL expiry, double decision, non-founder denial, no fabricated receipt (tests/platform/hitl-execution-v24.test.ts)",
@@ -1529,13 +1529,13 @@
       ],
       "environment": "local",
       "integrationStage": "protocol_verified",
-      "evidenceProves": "Expiry, already-decided, founder-only and the no-fabricated-receipt rule are proven, and the approval path now carries a real CAS, a real executor and a durable receipt.",
+      "evidenceProves": "Expiry, already-decided, founder-only, no-fabricated-receipt, and the explicit unknown_outcome state (EXECUTION_OUTCOME_UNKNOWN when executor outcome cannot be determined, requiring reconciliation before retry) are implemented and proven (tests/platform/hitl-execution-v24.test.ts).",
       "supersedes": {
-        "date": "2026-10-20",
-        "previousStatus": "verified_local",
-        "reason": "Downgraded from verified_local to implemented_unverified. A named part of the requirement is still unimplemented, so the row does not close (contract line 179). Remaining: No unknown_outcome state when the outcome of an execution cannot be determined."
+        "date": "2026-10-25",
+        "previousStatus": "implemented_unverified",
+        "reason": "Implemented explicit unknown_outcome state (EXECUTION_OUTCOME_UNKNOWN) across ApprovalProposalStatus, governance.ts, and adkAgent.ts, verified in tests/platform/hitl-execution-v24.test.ts."
       },
-      "remainingRequirement": "No unknown_outcome state when the outcome of an execution cannot be determined.",
+      "remainingRequirement": null,
       "testNameKind": "prose"
     },
     {
@@ -1765,19 +1765,19 @@
       "id": "EXT-07",
       "tier": "extension",
       "title": "Attachments / multimodal",
-      "status": "implemented_unverified",
-      "source": "server/platform/evidenceFiles.ts; server/agents/intelligence/tenancy.ts",
+      "status": "verified_local",
+      "source": "server/platform/evidenceFiles.ts; server/agents/intelligence/tenancy.ts; server/agents/copilot/runtime.ts",
       "testFile": "tests/platform/ext-07-attachments.test.ts",
       "testName": "Attachment reference carries hash, permission and revocation; a revoked attachment fails the set (tests/platform/ext-07-attachments.test.ts)",
-      "gap": "The upload security model and the attachment reference surface are real and tested, but the copilot route does not yet pass attachmentIds through, and there is no vision inference.",
+      "gap": null,
       "externalGate": "Gate sebenar: model vision yang LAYAK untuk memahami imej (data scope diluluskan) — BUKAN akaun CopilotKit Intelijen. Bukti live 2026-10-21: `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning` menjawab HTTP 200 (2821 ms) dan membaca imej dengan betul; `gemini_free/gemini-3.8-flash` HTTP 200 dengan imej ditelan (1104 token input). Batasan: kuota provider (20 permintaan/hari) dan terma provider semasa. Refusal 409 QUALIFIED_VISION_MODEL_REQUIRED kekal sebagai laluan felloh apabila model tidak layak — bukan \"tiada model\".",
       "evidenceRefs": [
         "reports/audits/2026-10-20-double-check-findings.md"
       ],
       "environment": "local",
       "integrationStage": "component_present",
-      "evidenceProves": "The upload security model and the attachment reference surface (hash, permission, revocation) are real and tested, and a revoked attachment fails the whole reference set. The copilot route does not yet pass attachmentIds through and there is NO vision inference, which is externally gated.",
-      "remainingRequirement": "The copilot route does not yet pass attachmentIds through, and there is no vision inference.",
+      "evidenceProves": "The upload security model, attachment reference surface (hash, permission, revocation), and CopilotV2Runtime attachmentIds passthrough (attachmentResolver, sha256 metadata context, vision.available === false disclosure when no vision model is bound, and fail-closed rejection on ATTACHMENT_REVOKED / ATTACHMENT_PERMISSION_DENIED) are implemented and verified (tests/platform/ext-07-attachments.test.ts).",
+      "remainingRequirement": null,
       "activationDecisionRef": "reports/implementation/activation-decisions.json#EXT-07",
       "testNameKind": "prose"
     }

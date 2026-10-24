@@ -573,4 +573,194 @@ describe('Agent Storefront & Referral System', () => {
       expect(urlSpecial).toBe('https://wa.me/60123456789?text=Pesanan%20%231%20%26%20RM%2020.00');
     });
   });
+
+  describe('7. Kedai Ejen (/kedai/:slug) End-to-End Storefront & Automatic Commission', () => {
+    test('provisions /kedai/:slug on dealer approval, serves public storefront, attributes storefront order to dealerOrgId, and auto-records commission on payment & receipt', async () => {
+      const { app } = createHarness();
+      const founderSession = await createUser(app, 'founder-e2e', true);
+      const agentSession = await createUser(app, 'agent-bangi');
+      const buyerSession = await createUser(app, 'buyer-bangi');
+
+      const founderPrincipal = await app.auth.resolve(
+        new Request('http://localhost', { headers: { Cookie: founderSession.cookie } })
+      );
+
+      // 1. Founder approves dealer commercial policy & commission policy (12%)
+      await apiCall(app, '/settings', {
+        expectedVersion: 1,
+        dealerTerms: {
+          minimumQuantity: 10,
+          packMultiple: 5,
+          priceBasisPoints: 8000,
+          ownership: 'owned',
+          returnRules: '7 hari'
+        }
+      }, founderSession);
+
+      const product = app.commerce.saveProduct(founderPrincipal, {
+        name: 'Kuah Colek Edisi Ejen',
+        description: 'Stok kedai ejen rasmi',
+        priceSen: 2500,
+        packSize: 1,
+        publish: true
+      });
+
+      app.commerce.receive(founderPrincipal, {
+        productId: product.id,
+        ownerId: 'business',
+        locationId: 'hq',
+        status: 'available',
+        reason: 'Stok awal HQ',
+        quantity: 50
+      }, 'stock-e2e-01');
+
+      const policyRes = await apiCall(app, '/dealer/commission-policies', {
+        expectedVersion: 0,
+        eligibleProductIds: [product.id],
+        rateBasisPoints: 1200 // 12%
+      }, founderSession);
+      expect(policyRes.response.status).toBe(200);
+
+      // 2. Agent applies with custom slug 'kedai-bangi' and founder approves
+      const applyRes = await apiCall(app, '/dealer/applications', {
+        organization: 'Stokis Bangi Perdana',
+        slug: 'kedai-bangi',
+        description: 'Edaran Lembah Klang Selatan'
+      }, agentSession);
+      expect(applyRes.response.status).toBe(200);
+      const applicationId = applyRes.json.data.id;
+
+      const approveRes = await apiCall(
+        app,
+        `/dealer/applications/${applicationId}/approve`,
+        { expectedRevision: 1 },
+        founderSession
+      );
+      expect(approveRes.response.status).toBe(200);
+      const dealerOrgId = approveRes.json.data.dealerOrgId as string;
+      expect(dealerOrgId).toBeTruthy();
+
+      // 3. Agent can fetch their own store via GET /dealer/stores
+      const agentStoresRes = await apiCall(app, '/dealer/stores', undefined, agentSession);
+      expect(agentStoresRes.response.status).toBe(200);
+      expect(agentStoresRes.json.data).toHaveLength(1);
+      expect(agentStoresRes.json.data[0].slug).toBe('kedai-bangi');
+      expect(agentStoresRes.json.data[0].displayName).toBe('Stokis Bangi Perdana');
+
+      // 4. Public visitor fetches GET /kedai/kedai-bangi without auth
+      const publicKedaiRes = await apiCall(app, '/kedai/kedai-bangi');
+      expect(publicKedaiRes.response.status).toBe(200);
+      expect(publicKedaiRes.json.data.store).toMatchObject({
+        slug: 'kedai-bangi',
+        displayName: 'Stokis Bangi Perdana',
+        status: 'active'
+      });
+      expect(publicKedaiRes.json.data.catalogue).toHaveLength(1);
+      expect(publicKedaiRes.json.data.catalogue[0].id).toBe(product.id);
+
+      // Unknown slug returns 404 STORE_NOT_FOUND without requiring login
+      const missingKedaiRes = await apiCall(app, '/kedai/kedai-tiada');
+      expect(missingKedaiRes.response.status).toBe(404);
+      expect(missingKedaiRes.json.code).toBe('STORE_NOT_FOUND');
+
+      // 5. Self-referral via storefront slug is blocked for the store owner
+      const selfOrderRes = await apiCall(app, '/orders', {
+        lines: [{ productId: product.id, quantity: 1 }],
+        catalogueVersion: 1,
+        fulfilment: 'pickup',
+        contactRef: '012-0000000',
+        outletId: 'hq',
+        referralCode: 'kedai-bangi'
+      }, agentSession);
+      expect(selfOrderRes.response.status).toBe(400);
+      expect(selfOrderRes.json.code).toBe('SELF_REFERRAL_DISALLOWED');
+
+      // 6. Retail customer places order attributed to storefront slug 'kedai-bangi'
+      const orderRes = await apiCall(app, '/orders', {
+        lines: [{ productId: product.id, quantity: 2 }],
+        catalogueVersion: 1,
+        fulfilment: 'pickup',
+        contactRef: 'Ahmad · 013-8889999',
+        outletId: 'hq',
+        referralCode: 'kedai-bangi'
+      }, buyerSession);
+      expect(orderRes.response.status).toBe(200);
+      const order = orderRes.json.data as OrderRecord;
+      expect(order.referralCode).toBe('kedai-bangi');
+      expect(order.dealerOrgId).toBe(dealerOrgId);
+      expect(order.amountSen).toBe(5000);
+
+      // 7. Founder verifies payment -> automatic commission created in 'pending' state (12% of 5000 = 600 sen)
+      const evPay = app.store.save('evidence', {
+        id: 'ev-pay-e2e-1',
+        entityId: order.id,
+        kind: 'payment',
+        note: 'Resit FPX disahkan',
+        actorId: founderPrincipal.user.id,
+        createdAt: new Date().toISOString()
+      });
+
+      const verifyRes = await apiCall(app, `/orders/${order.id}/payment`, {
+        expectedRevision: order.revision,
+        action: 'verify',
+        amountSen: 5000,
+        reference: 'FPX-E2E-KEDAI-01',
+        method: 'bank',
+        evidenceIds: [evPay.id]
+      }, founderSession);
+      expect(verifyRes.response.status).toBe(200);
+
+      const pendingSummaryRes = await apiCall(app, '/dealer/commissions/summary', undefined, agentSession);
+      expect(pendingSummaryRes.response.status).toBe(200);
+      expect(pendingSummaryRes.json.data.pendingSen).toBe(600);
+      expect(pendingSummaryRes.json.data.eligibleSen).toBe(0);
+
+      // 8. Progress fulfilment to 'received' -> commission automatically upgrades to 'eligible'
+      let rev = verifyRes.json.data.revision as number;
+      for (const next of ['review', 'accepted', 'packing', 'packed', 'dispatched', 'received'] as const) {
+        const evStep = app.store.save('evidence', {
+          id: `ev-${next}-${order.id}`,
+          entityId: order.id,
+          kind: 'fulfilment',
+          note: `Bukti ${next}`,
+          actorId: founderPrincipal.user.id,
+          createdAt: new Date().toISOString()
+        });
+        const stepRes = await apiCall(app, `/orders/${order.id}/transition`, {
+          expectedRevision: rev,
+          next,
+          evidenceIds: [evStep.id]
+        }, founderSession);
+        expect(stepRes.response.status).toBe(200);
+        rev = stepRes.json.data.revision;
+      }
+
+      // 9. Agent queries commissions, summary, and benefits
+      const eligibleSummaryRes = await apiCall(app, '/dealer/commissions/summary', undefined, agentSession);
+      expect(eligibleSummaryRes.response.status).toBe(200);
+      expect(eligibleSummaryRes.json.data.pendingSen).toBe(0);
+      expect(eligibleSummaryRes.json.data.eligibleSen).toBe(600);
+      expect(eligibleSummaryRes.json.data.totalEarnedSen).toBe(600);
+
+      const commsRes = await apiCall(app, '/dealer/commissions', undefined, agentSession);
+      expect(commsRes.response.status).toBe(200);
+      expect(commsRes.json.data).toHaveLength(1);
+      expect(commsRes.json.data[0]).toMatchObject({
+        orderId: order.id,
+        dealerOrgId,
+        amountSen: 600,
+        status: 'eligible'
+      });
+
+      const benefitsRes = await apiCall(app, '/dealer/benefits', undefined, agentSession);
+      expect(benefitsRes.response.status).toBe(200);
+      expect(benefitsRes.json.data).toHaveLength(1);
+      expect(benefitsRes.json.data[0]).toMatchObject({
+        orderId: order.id,
+        dealerOrgId,
+        amountSen: 600,
+        reasonCode: 'CONFIRMED_ELIGIBLE_NET_PAYMENT'
+      });
+    });
+  });
 });

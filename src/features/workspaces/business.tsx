@@ -1,8 +1,10 @@
-import { useState } from 'react';
-import { Download,Plus,Shield,Wallet } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { Copy,Download,ExternalLink,Plus,Shield,Store,Wallet } from 'lucide-react';
 import type { BusinessSettings,CatalogueProduct,ExpenseRecord,ExportArtifact,Membership,OrderRecord,ReconciliationRecord,SessionData,WorkspaceRole } from '../../../shared/platform-contracts';
+import type { DealerBenefit,DealerCommissionSummary } from '../../../shared/dealer-contracts';
+import type { DealerStoreRecord,PublicDealerStore } from '../../../shared/dealer-store-contracts';
 import type { FinanceSummary } from '../../../shared/report-contracts';
-import { api,useResource } from '../platform/client';
+import { api,apiPage,useResource } from '../platform/client';
 import { amountToSen,dateLabel,downloadText,escapeCsvCell,money,positiveQuantity } from './experience-model';
 import { Empty,field,FormPanel,MutationButton,Panel,RecordMeta,Refresh,ResourceState,splitRefs,Status } from './ui';
 
@@ -70,9 +72,38 @@ export function Finance({ onChanged }: { onChanged?: () => void; }) {
 interface PersonRecord { id: string; email: string; name: string; memberships: Membership[]; }
 export function People({ onChanged }: { onChanged?: () => void; }) {
   const resource=useResource<PersonRecord[]>('/people');
-  const session=useResource<SessionData>('/session');
+  const sessionResource=useResource<SessionData>('/session');
   const [grant,setGrant]=useState<PersonRecord|null>(null);
+  const [recovery,setRecovery]=useState<{ requests: any[]; loading: boolean; error: string }>({ requests: [], loading: false, error: '' });
   const refresh=() => { resource.reload(); onChanged?.(); };
+
+  // Semak sama ada pengguna adalah founder
+  const isFounder = sessionResource.data?.memberships.some((m: any) => m.role === 'founder' && m.status === 'active') ?? false;
+
+  // Memuat permintaan pemulihan kata laluan (hanya founder)
+  useEffect(() => {
+    if (!isFounder) return;
+    apiPage<any[]>('/auth/password-recovery/requests')
+      .then(page => {
+        if (sessionResource.data) {
+          setRecovery({ requests: page.data || [], loading: false, error: '' });
+        }
+      })
+      .catch(() => setRecovery({ requests: [], loading: false, error: 'Rekod pemulihan tidak tersedia.' }));
+  }, [isFounder, sessionResource.data]);
+
+  function handleRefresh() {
+    if (isFounder) {
+      apiPage<any[]>('/auth/password-recovery/requests')
+        .then(page => setRecovery({ requests: page.data || [], loading: false, error: '' }))
+        .catch(() => setRecovery({ requests: [], loading: false, error: 'Rekod pemulihan tidak tersedia.' }));
+    }
+  }
+
+  const refreshRecovery = useCallback(() => {
+    handleRefresh();
+  }, [isFounder]);
+
   return <>
     <Panel title="People & access" eyebrow="Membership · role · outlet scope" action={<Refresh onClick={refresh} />}>
       <ResourceState {...resource} />
@@ -86,14 +117,63 @@ export function People({ onChanged }: { onChanged?: () => void; }) {
               <Status value={member.role} />
               <Status value={member.status} />
               <span>v{member.version} · {member.outletIds.join(', ')||'Business scope'}</span>{member.status==='active'&&<MutationButton path="/people/revoke" input={{ membershipId: member.id,expectedVersion: member.version }} onChanged={refresh} confirmLabel="Sahkan revoke access">Revoke</MutationButton>}</div>)}</div>
-          <button className="xp-button xp-secondary" onClick={() => setGrant(person)}>Assign role</button>
-        </article>)}{!resource.loading&&!resource.error&&!resource.data?.length&&<Empty description="Pengguna berdaftar muncul daripada authoritative identity store." />}</Panel>{grant&&<FormPanel key={grant.id} title={`Access: ${grant.name}`} description="Semak scope sebelum grant. Last founder dan self-escalation dilindungi server." fields={[field('role','Role',{ options: (['customer','staff','founder','developer'] as WorkspaceRole[]).map(value => ({ value,label: value })) }),field('outletIds','Assigned outlet IDs',{ required: false,help: 'Staff mesti assigned kepada outlet. Pisahkan dengan koma.' })]} onCancel={() => setGrant(null)} submitLabel="Preview & confirm role grant" onSubmit={async values => {
-          const current=grant.memberships.find(member => member.role===values.role);
-          const result=await api('/people/grants',{ method: 'POST',body: JSON.stringify({ userId: grant.id,role: values.role,outletIds: splitRefs(values.outletIds),expectedVersion: current?.version??0 }) }); refresh(); return result;
-        }} />}<Panel title="Tambah ahli pasukan" eyebrow="Identity onboarding">
-      <p>Ahli pasukan mendaftar menggunakan akaun mereka, kemudian founder menetapkan role dan outlet di atas.</p>
-      <p className="xp-muted">Logged in as {session.data?.user.email??'…'}. Jangan kongsi password pasukan.</p>
-    </Panel>
+            <button className="xp-button xp-secondary" onClick={() => setGrant(person)}>Assign role</button>
+          </article>)}{!resource.loading&&!resource.error&&!resource.data?.length&&<Empty description="Pengguna berdaftar muncul daripada authoritative identity store." />}
+
+          {/* Panel pemulihan kata laluan founder — dipapar mengikut founder saja */}
+          {isFounder && recovery.requests.length > 0 && (
+            <Panel title="Pemulihan kata laluan" eyebrow="Permintaan berdaftar · kod sukar">
+              <ul>
+                {recovery.requests.map((req: any, idx: number) => (
+                  <li key={req.requestId ?? req.id ?? idx} className="xp-person">
+                    <div className="xp-avatar">{req.maskedEmail?.slice(0,2).toUpperCase() || '?'}</div>
+                    <div className="xp-person-main">
+                      <h3>{req.userDisplayName || 'Pengguna tidak diketahui'}</h3>
+                      <p>{req.maskedEmail || '—'}</p>
+                      <RecordMeta id={req.requestId ?? req.id} revision={req.revision} />
+                      <p className="xp-muted">
+                        Status: {req.status}
+                        {req.emailDeliveryStatus && <span> • Hantar emel: {req.emailDeliveryStatus}</span>}
+                        {req.expiresAt && <span> • Kadaluarsa: {new Date(req.expiresAt).toLocaleDateString('ms-MY')}</span>}
+                      </p>
+                      {req.status === 'pending' && (
+                        <MutationButton
+                          path={`/auth/password-recovery/requests/${req.requestId ?? req.id}/issue-code`}
+                          input={{ expectedRevision: req.revision }}
+                          onChanged={refreshRecovery}
+                          confirmLabel="Hasilkan kod sukar"
+                        >
+                          {req.issuedCode ? (
+                            <span>Kod sudah dikeluarkan</span>
+                          ) : (
+                            'Hasilkan kod'
+                          )}
+                        </MutationButton>
+                      )}
+                      {req.issuedCode && (
+                        <p className="xp-notice">
+                          <strong>Kod sukar:</strong> {req.issuedCode}
+                          <button className="xp-button xp-small" onClick={() => navigator.clipboard.writeText(req.issuedCode)}>
+                            Copy
+                          </button>
+                        </p>
+                      )}
+                      {req.status !== 'pending' && <p className="xp-muted">Permintaan ini tidak lagi boleh diterbitkan kod.</p>}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </Panel>
+          )}
+
+          {grant&&<FormPanel key={grant.id} title={`Access: ${grant.name}`} description="Semak scope sebelum grant. Last founder dan self-escalation dilindungi server." fields={[field('role','Role',{ options: (['customer','staff','founder','developer'] as WorkspaceRole[]).map(value => ({ value,label: value })) }),field('outletIds','Assigned outlet IDs',{ required: false,help: 'Staff mesti assigned kepada outlet. Pisahkan dengan koma.' })]} onCancel={() => setGrant(null)} submitLabel="Preview & confirm role grant" onSubmit={async values => {
+            const current=grant.memberships.find(member => member.role===values.role);
+            const result=await api('/people/grants',{ method: 'POST',body: JSON.stringify({ userId: grant.id,role: values.role,outletIds: splitRefs(values.outletIds),expectedVersion: current?.version??0 }) }); refresh(); return result;
+          }} />}<Panel title="Tambah ahli pasukan" eyebrow="Identity onboarding">
+          <p>Ahli pasukan mendaftar menggunakan akaun mereka, kemudian founder menetapkan role dan outlet di atas.</p>
+          <p className="xp-muted">Logged in as {sessionResource.data?.user.email??'…'}. Jangan kongsi password pasukan.</p>
+        </Panel>
+      </Panel>
   </>;
 }
 export function Settings({ onChanged }: { onChanged?: () => void; }) {
@@ -191,4 +271,191 @@ export function Reports() {
       <p className="xp-notice">Profit memerlukan COGS dan kos lain yang verified. Angka profit tidak dikira daripada incomplete inputs.</p>
     </Panel>
   </>;
+}
+
+export function DealerStoreOverview({
+  role,
+  onNavigate,
+  onChanged,
+}: {
+  role: WorkspaceRole;
+  onNavigate?: (path: string) => void;
+  onChanged?: () => void;
+}) {
+  type WorkspaceDealerStore = Partial<DealerStoreRecord> & PublicDealerStore;
+  const stores = useResource<WorkspaceDealerStore[]>('/dealer/stores');
+  const [copiedSlug, setCopiedSlug] = useState('');
+  const [applyOpen, setApplyOpen] = useState(false);
+  const [commSummary, setCommSummary] = useState<DealerCommissionSummary | null>(null);
+  const [benefits, setBenefits] = useState<DealerBenefit[]>([]);
+
+  const primaryStore = stores.data?.find(s => s.status === 'active') ?? stores.data?.[0];
+
+  const loadCommissionData = useCallback(() => {
+    if (!primaryStore) {
+      setCommSummary(null);
+      setBenefits([]);
+      return;
+    }
+    const lookupCode = primaryStore.dealerOrgId ?? primaryStore.slug;
+    api<DealerCommissionSummary>(`/dealer/commissions/summary?dealerOrgId=${encodeURIComponent(lookupCode)}`)
+      .then(data => setCommSummary(data))
+      .catch(() => setCommSummary(null));
+    api<DealerBenefit[]>('/dealer/benefits')
+      .then(rows =>
+        setBenefits(
+          rows.filter(
+            b =>
+              b.dealerOrgId === primaryStore.dealerOrgId ||
+              b.dealerOrgId === primaryStore.slug ||
+              b.dealerOrgId === primaryStore.displayName
+          )
+        )
+      )
+      .catch(() => setBenefits([]));
+  }, [primaryStore]);
+
+  useEffect(() => {
+    loadCommissionData();
+  }, [loadCommissionData]);
+
+  const refreshAll = () => {
+    stores.reload();
+    loadCommissionData();
+    onChanged?.();
+  };
+
+  function copyStoreLink(slug: string) {
+    const path = `/kedai/${slug}`;
+    const fullUrl = typeof window !== 'undefined' ? `${window.location.origin}${path}` : path;
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(fullUrl).catch(() => {});
+    }
+    setCopiedSlug(slug);
+  }
+
+  return (
+    <Panel
+      title="Kedai Ejen & Komisen Rujukan"
+      eyebrow="Pautan kedai awam (/kedai/:slug) · komisen automatik"
+      action={
+        <div className="xp-actions">
+          <Refresh onClick={refreshAll} />
+          {role === 'customer' && (
+            <button className="xp-button xp-secondary" onClick={() => setApplyOpen(!applyOpen)}>
+              <Plus size={16} /> Daftar kedai ejen
+            </button>
+          )}
+        </div>
+      }
+    >
+      <ResourceState {...stores} />
+      {stores.data && stores.data.length > 0 ? (
+        <div className="xp-stack">
+          {stores.data.map(store => {
+            const storePath = `/kedai/${store.slug}`;
+            const recordId = store.id ?? store.storeId;
+            return (
+              <article className="xp-dealer-card" key={recordId} data-testid={`dealer-store-card-${store.slug}`}>
+                <div>
+                  <h3>
+                    <Store size={16} /> {store.displayName}
+                  </h3>
+                  <p>
+                    Pautan Kedai Awam: <code data-testid="dealer-public-store-link">{storePath}</code> · Kod Rujukan:{' '}
+                    <strong>{store.slug}</strong>
+                  </p>
+                  <RecordMeta id={recordId} revision={store.revision} />
+                  <small className="xp-muted">
+                    Organisasi: {store.dealerOrgId ?? store.displayName}
+                    {store.createdAt ? ` · Disediakan ${dateLabel(store.createdAt)}` : ''}
+                  </small>
+                </div>
+                <div className="xp-actions">
+                  <Status value={store.status} />
+                  <button
+                    type="button"
+                    className="xp-button xp-secondary"
+                    onClick={() => copyStoreLink(store.slug)}
+                  >
+                    <Copy size={15} /> {copiedSlug === store.slug ? 'Pautan disalin' : 'Salin pautan'}
+                  </button>
+                  {onNavigate && (
+                    <button
+                      type="button"
+                      className="xp-button"
+                      onClick={() => onNavigate(storePath)}
+                    >
+                      Buka kedai <ExternalLink size={15} />
+                    </button>
+                  )}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      ) : (
+        !stores.loading &&
+        !stores.error && (
+          <Empty
+            title="Kedai ejen belum aktif"
+            description="Kedai dalam talian (/kedai/:slug) akan diaktifkan secara automatik sebaik sahaja permohonan ejen/stokis anda diluluskan oleh pengasas."
+          />
+        )
+      )}
+
+      {commSummary && (
+        <div className="xp-metrics" data-testid="dealer-commission-overview">
+          <div className="xp-metric">
+            <span className="xp-eyebrow">Jumlah Komisen Diperoleh</span>
+            <strong>{money(commSummary.totalEarnedSen)}</strong>
+            <small>Pesanan kedai ejen yang disahkan & diterima</small>
+          </div>
+          <div className="xp-metric">
+            <span className="xp-eyebrow">Menunggu Penerimaan</span>
+            <strong>{money(commSummary.pendingSen)}</strong>
+            <small>Bayaran disahkan · menunggu serahan pelanggan</small>
+          </div>
+          <div className="xp-metric">
+            <span className="xp-eyebrow">Layak / Diluluskan</span>
+            <strong>{money(commSummary.eligibleSen + commSummary.approvedSen)}</strong>
+            <small>Baki bersih sedia dibayar: {money(commSummary.netPayableSen)}</small>
+          </div>
+          <div className="xp-metric">
+            <span className="xp-eyebrow">Telah Dibayar</span>
+            <strong>{money(commSummary.paidSen)}</strong>
+            <small>{benefits.length} pesanan dirujuk direkodkan</small>
+          </div>
+        </div>
+      )}
+
+      {applyOpen && (
+        <FormPanel
+          title="Permohonan Pendaftaran Ejen / Stokis & Kedai Awam"
+          description="Pilih nama organisasi dan slug pautan kedai (/kedai/slug-anda). Kedai akan dibuka secara automatik selepas kelulusan."
+          fields={[
+            field('organization', 'Nama Kedai / Organisasi Ejen'),
+            field('slug', 'Slug Kedai Pilihan (pilihan, cth: kedai-bangi)', { required: false }),
+            field('description', 'Kawasan liputan & pelan edaran', { type: 'textarea' }),
+          ]}
+          submitLabel="Hantar permohonan ejen"
+          onCancel={() => setApplyOpen(false)}
+          onSubmit={async values => {
+            const payload: Record<string, unknown> = {
+              organization: values.organization,
+              description: values.description,
+              ...(values.slug?.trim() ? { slug: values.slug.trim() } : {}),
+            };
+            const result = await api('/dealer/applications', {
+              method: 'POST',
+              body: JSON.stringify(payload),
+            });
+            setApplyOpen(false);
+            refreshAll();
+            return result;
+          }}
+        />
+      )}
+    </Panel>
+  );
 }

@@ -16,6 +16,7 @@ export type ProposalStatus =
   | 'expired'
   | 'executing'
   | 'executed'
+  | 'unknown_outcome'
   | 'cancelled';
 
 export type ApprovalStatus = 'pending' | 'approved' | 'revoked' | 'expired';

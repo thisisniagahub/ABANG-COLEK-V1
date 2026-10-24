@@ -13,6 +13,7 @@ import { describe, expect, test } from 'bun:test';
 import { createPlatformApp } from '../../server/platform/app';
 import { DealerStores } from '../../server/platform/dealerStores';
 import { PlatformStore } from '../../server/platform/store';
+import { resolveRoute } from '../../src/features/platform/routes';
 import type { DealerStoreRecord } from '../../shared/dealer-store-contracts';
 
 const RUN_ID = `${Date.now()}-${process.pid}`;
@@ -256,5 +257,17 @@ describe('CG-01 — provisioning store awam dealer', () => {
     } finally {
       ctx.app.close();
     }
+  });
+
+  test('resolveRoute memetakan /kedai/:slug kepada laluan public dengan entityId slug', () => {
+    expect(resolveRoute('/kedai/kedai-bangi')).toEqual({
+      kind: 'public',
+      path: '/kedai/kedai-bangi',
+      entityId: 'kedai-bangi',
+    });
+    expect(resolveRoute('/kedai/')).toEqual({
+      kind: 'not_found',
+      path: '/kedai',
+    });
   });
 });

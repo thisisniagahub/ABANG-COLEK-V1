@@ -17,7 +17,7 @@
                     "test:ext":  "bun test --isolate --timeout 15000 ./tests/ext",
                     "test:adk":  "agents/google-adk/.venv/Scripts/python.exe -m pytest agents/google-adk/tests -q",
                     "test":  "bun run test:jev && bun run test:platform-suite && bun run test:copilot && bun run test:frontend && bun run test:architecture && bun run test:ext && bun test --isolate --timeout 15000 ./tests/dashboard-model.test.ts ./tests/landing-brand-theme.test.ts",
-                    "test:e2e":  "playwright test -c tests/playwright.config.ts",
+                    "test:e2e":  "bun scripts/e2e/run-e2e.ts",
                     "qa:server":  "bun scripts/qa-platform.ts",
                     "preview":  "vite preview",
                     "clean":  "bun scripts/clean.ts",

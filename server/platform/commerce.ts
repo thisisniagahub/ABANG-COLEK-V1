@@ -190,11 +190,13 @@ export class Commerce {
       const fulfilment=oneOf(input.fulfilment,['pickup','delivery'] as const),contactRef=text(input.contactRef,'Maklumat penerimaan',2000);
       if (outletId!=='hq'&&!this.store.get<import('../../shared/platform-contracts').BusinessSettings>('settings','business')?.approvedPolicies.locations?.some(l=>l.id===outletId)) fail('LOCATION_UNAVAILABLE',409);
       for (const line of quote.lines) if (this.available(line.productId,'business',outletId)<line.quantity) fail('INSUFFICIENT_STOCK',409,'Stok tidak mencukupi.');
-      const dealerOrgId=actor.memberships.find(m=>m.role==='customer'&&m.dealerOrgId)?.dealerOrgId;
+      const buyerDealerOrgId=actor.memberships.find(m=>m.role==='customer'&&m.dealerOrgId)?.dealerOrgId;
       const referralCode=validateReferralCode(input.referralCode);
-      if (dealerOrgId && referralCode && dealerOrgId.toLowerCase() === referralCode.toLowerCase()) {
+      const matchedStore=referralCode?this.store.all<import('../../shared/dealer-store-contracts').DealerStoreRecord>('dealer_stores').find(s=>s.status==='active'&&(s.slug.toLowerCase()===referralCode.toLowerCase()||s.dealerOrgId.toLowerCase()===referralCode.toLowerCase())):undefined;
+      if (referralCode && ((buyerDealerOrgId && buyerDealerOrgId.toLowerCase() === referralCode.toLowerCase()) || (matchedStore && (matchedStore.ownerUserId === actor.user.id || (buyerDealerOrgId && matchedStore.dealerOrgId.toLowerCase() === buyerDealerOrgId.toLowerCase()))))) {
         fail('SELF_REFERRAL_DISALLOWED', 400, 'Rujukan sendiri tidak dibenarkan.');
       }
+      const dealerOrgId=buyerDealerOrgId??matchedStore?.dealerOrgId;
       const trackingToken = randomBytes(32).toString('base64url');
       const trackingTokenHash = hash(trackingToken);
       const trackingTokenExpiresAt = new Date(Date.now() + TRACKING_TOKEN_TTL_MS).toISOString();
@@ -340,8 +342,76 @@ export class Commerce {
         ?{trackingTokenExpiresAt:new Date(Date.now()+TRACKING_TOKEN_TTL_MS).toISOString()}
         :{}),
     };
-    this.store.save('orders',updated);this.store.audit(actor.user.id,`order.${next}`,order.id,updated.revision);return updated;
+    this.store.save('orders',updated);
+    if (next === 'received') {
+      for (const comm of this.store.all<import('../../shared/dealer-contracts').CommissionTransaction>('commission_ledger').filter(c => c.orderId === updated.id && c.status === 'pending')) {
+        this.store.save('commission_ledger', { ...comm, status: 'eligible' as const, eligibleAt: now() });
+      }
+      this.syncReferralCommission(updated);
+    }
+    this.store.audit(actor.user.id,`order.${next}`,order.id,updated.revision);return updated;
     });
+  }
+  private syncReferralCommission(order: OrderRecord) {
+    if (!order.referralCode || order.paymentState !== 'verified') return;
+    const matchedStore = this.store.all<import('../../shared/dealer-store-contracts').DealerStoreRecord>('dealer_stores').find(
+      s => s.status === 'active' && (
+        s.slug.toLowerCase() === order.referralCode!.toLowerCase() ||
+        s.dealerOrgId.toLowerCase() === order.referralCode!.toLowerCase()
+      )
+    );
+    const dealerOrgId = matchedStore?.dealerOrgId ?? order.dealerOrgId ?? order.referralCode;
+    if (!dealerOrgId) return;
+    const existing = this.store.all<import('../../shared/dealer-contracts').CommissionTransaction>('commission_ledger').find(
+      c => c.orderId === order.id && c.amountSen > 0 && c.status !== 'reversed'
+    );
+    if (existing) {
+      if (existing.status === 'pending' && order.fulfilmentStatus === 'received') {
+        this.store.save('commission_ledger', { ...existing, status: 'eligible' as const, eligibleAt: now() });
+      }
+      return;
+    }
+    const policy = this.store
+      .all<import('../../shared/platform-contracts').CommissionPolicy>('commission_policies')
+      .filter(candidate => Boolean(candidate.approvedAt))
+      .sort((a, b) => b.version - a.version)[0];
+    if (!policy) return;
+    if (policy.eligibleProductIds.length > 0 && !order.lines.every(line => policy.eligibleProductIds.includes(line.productId))) return;
+    const netAmountSen = Math.max(0, order.paidAmountSen - order.refundAmountSen);
+    const amountSen = Number(BigInt(netAmountSen) * BigInt(policy.rateBasisPoints) / 10000n);
+    if (amountSen <= 0) return;
+    const dbMemberUserId = (() => {
+      try {
+        const row = this.store.db.query<{ userId: string }, [string]>(
+          "SELECT user_id AS userId FROM memberships WHERE dealer_org_id = ? AND status = 'active' LIMIT 1"
+        ).get(dealerOrgId);
+        return row?.userId;
+      } catch {
+        return undefined;
+      }
+    })();
+    const agentUserId =
+      matchedStore?.ownerUserId ??
+      this.store.all<{ userId: string; dealerOrgId?: string; status?: string }>('memberships').find(m => m.dealerOrgId === dealerOrgId && (!m.status || m.status === 'active'))?.userId ??
+      dbMemberUserId ??
+      this.store.all<import('../../shared/platform-contracts').DealerApplication>('dealer_applications').find(
+        a => a.status === 'approved' && (a.dealerOrgId === dealerOrgId || a.organization === dealerOrgId || a.slug === dealerOrgId || a.slug === order.referralCode)
+      )?.customerId ??
+      order.customerId;
+    const isReceived = order.fulfilmentStatus === 'received';
+    const record: import('../../shared/dealer-contracts').CommissionTransaction = {
+      id: id(),
+      orderId: order.id,
+      dealerOrgId,
+      agentUserId,
+      amountSen,
+      status: isReceived ? 'eligible' : 'pending',
+      eligibleAt: isReceived ? now() : '',
+      policyVersion: policy.version,
+      createdAt: now(),
+    };
+    this.store.save('commission_ledger', record);
+    this.store.audit(agentUserId, 'commission.auto_recorded', record.id, 1);
   }
   payment(actor:Principal,orderId:string,raw:unknown,key:unknown) {
     const initial=this.order(actor,orderId),requestedAction=object(raw).action;
@@ -418,7 +488,7 @@ export class Commerce {
           }
         }
       }
-      const updated={...order,paymentState,paidAmountSen,refundAmountSen,revision:order.revision+1,updatedAt:now()};this.store.save('orders',updated);this.store.audit(actor.user.id,`payment.${action}`,orderId,updated.revision);return updated;
+      const updated={...order,paymentState,paidAmountSen,refundAmountSen,revision:order.revision+1,updatedAt:now()};this.store.save('orders',updated);if(action==='verify')this.syncReferralCommission(updated);this.store.audit(actor.user.id,`payment.${action}`,orderId,updated.revision);return updated;
     });
   }
   receive(actor:Principal,raw:unknown,key:unknown) {

@@ -281,4 +281,50 @@ export function OperationsBriefApp({ brief, state = 'ready' }: OperationsBriefAp
   );
 }
 
+export const MCP_SANDBOX_HOST_SRC = '/api/mcp?surface=sandbox' as const;
+export const MCP_APP_RESOURCE_SRC = '/api/mcp?surface=app' as const;
+
+export interface McpAppSandboxHostFrameProps {
+  title?: string;
+  sandboxSrc?: string;
+}
+
+/**
+ * GUI-05: Client host frame for the first-party read-only MCP App (`ui://abangcolek/operations-brief.html`).
+ * Renders a sandboxed iframe (`sandbox="allow-scripts"`) bound strictly to the local `/api/mcp?surface=sandbox`
+ * endpoint; arbitrary external origins are rejected.
+ */
+export function McpAppSandboxHostFrame({
+  title = 'Operations Brief MCP App Host',
+  sandboxSrc = MCP_SANDBOX_HOST_SRC,
+}: McpAppSandboxHostFrameProps) {
+  const safeSrc = sandboxSrc === MCP_SANDBOX_HOST_SRC || sandboxSrc === MCP_APP_RESOURCE_SRC
+    ? sandboxSrc
+    : MCP_SANDBOX_HOST_SRC;
+
+  return (
+    <section
+      aria-label="MCP App Sandbox Host"
+      className="w-full min-w-0 rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-surface)] p-4 text-[var(--ui-text)]"
+    >
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <span className="text-xs font-semibold text-[var(--ui-muted)]">
+          Sandboxed MCP App Host ({safeSrc})
+        </span>
+        <span className="rounded-full border border-[var(--ui-border)] bg-[var(--ui-soft)] px-2 py-0.5 font-mono text-[11px] text-[var(--ui-muted)]">
+          sandbox=&quot;allow-scripts&quot;
+        </span>
+      </div>
+      <iframe
+        title={title}
+        src={safeSrc}
+        sandbox="allow-scripts"
+        referrerPolicy="no-referrer"
+        loading="lazy"
+        className="h-56 w-full rounded-xl border border-[var(--ui-border)] bg-[var(--ui-soft)]"
+      />
+    </section>
+  );
+}
+
 export default OperationsBriefApp;

@@ -8,6 +8,7 @@ test('same workspace never retains previous account orders after a browser-sessi
   expect(response.ok()).toBe(true);const order=(await response.json()).data;
   await page.goto('/customer/orders');await expect(page.getByRole('button',{name:new RegExp(order.id)})).toBeVisible();
   const email=`privacy-${crypto.randomUUID()}@qa.invalid`;
+  await page.context().clearCookies();
   const switched=await page.request.post('/api/platform/auth/signup',{headers:{Origin:fixture().origin},data:{name:'Isolated second account',email,password:'random-qa-password-12345'}});expect(switched.ok()).toBe(true);
   await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
   await expect(page.getByText(email,{exact:true})).toBeVisible();

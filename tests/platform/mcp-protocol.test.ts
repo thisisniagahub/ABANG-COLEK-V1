@@ -463,4 +463,43 @@ describe('MCP HTTP entry', () => {
     expect(response.status).toBe(401);
     expect(await response.text()).toContain('UNAUTHENTICATED');
   });
+
+  test('GUI-05: browser session cookie (Path=/) authenticates /api/mcp?surface=sandbox and /api/mcp?surface=app and mounts McpAppSandboxHostFrame', async () => {
+    const store = seedStore();
+    const { Auth } = await import('../../server/platform/auth');
+    const { createSessionActorResolver } = await import('../../server/agents/mcp/session');
+    const { buildMcpAppSandboxDocument, MCP_APP_HOST_CONTENT_SECURITY_POLICY } = await import('../../server/agents/mcp/appHtml');
+    const { McpAppSandboxHostFrame } = await import('../../src/features/copilot/mcp-apps/OperationsBriefApp');
+
+    const auth = new Auth(store, 'boot-token-gui05');
+    const login = await auth.authenticate('bootstrap', {
+      email: 'founder-gui05@abangcolek.my',
+      password: 'ChangeMe_Founder#2026!',
+      name: 'Founder GUI-05',
+      token: 'boot-token-gui05',
+    });
+    expect(login.cookie).toContain('Path=/;');
+    expect(login.cookie).not.toContain('Path=/api/platform');
+
+    const cookiePair = login.cookie.split(';')[0] ?? '';
+    const resolveSessionActor = createSessionActorResolver({ store });
+    const sandboxReq = new Request('http://localhost/api/mcp?surface=sandbox', {
+      method: 'GET',
+      headers: { Cookie: cookiePair },
+    });
+    const resolvedActor = await resolveSessionActor(sandboxReq);
+    expect(resolvedActor.role).toBe('founder');
+    expect(resolvedActor.workspaceId).toBe('business');
+
+    const sandboxHtml = buildMcpAppSandboxDocument();
+    expect(sandboxHtml).toContain('ui/notifications/sandbox-proxy-ready');
+    expect(MCP_APP_HOST_CONTENT_SECURITY_POLICY).toContain("default-src 'none'");
+
+    const hostFrameElement = McpAppSandboxHostFrame({
+      title: 'Operations Brief Host',
+    });
+    const hostFrameJson = JSON.stringify(hostFrameElement);
+    expect(hostFrameJson).toContain('/api/mcp?surface=sandbox');
+    expect(hostFrameJson).toContain('allow-scripts');
+  });
 });

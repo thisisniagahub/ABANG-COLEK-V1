@@ -49,7 +49,14 @@ import {
   type CopilotV2RuntimeDescriptor,
 } from '../../../shared/copilot-contracts';
 import { AdkBridgeClient } from '../adk-bridge/client';
+import type { AdkDelegationTrace } from '../adk-bridge/types';
 import type { Actor } from '../../../shared/platform-contracts';
+import type { AttachmentReference } from '../../../shared/founder-intelligence-contracts';
+
+export type CopilotSpecialistAgent =
+  | 'commerce_reader'
+  | 'qc_jev_reviewer'
+  | 'marketing_drafter';
 
 export interface CopilotRuntimeConfig {
   router?: FreeModelRouter;
@@ -67,6 +74,15 @@ export interface CopilotRuntimeConfig {
   /** Prompt sistem milik server; mesej `system` daripada pelayar ditolak. */
   systemPrompt?: string;
   budgetCaps?: ModelCallBudgetCaps;
+  /**
+   * EXT-07 — Penyelesai rujukan lampiran yang disahkan server (contohnya
+   * `evidenceFiles.attachmentReferences`). Lampiran yang ditarik balik (revoked)
+   * ditolak 409 `ATTACHMENT_REVOKED`, dan lampiran di luar akses ditolak
+   * 403 `ATTACHMENT_PERMISSION_DENIED`.
+   */
+  attachmentResolver?: (actor: Actor, attachmentIds: string[]) => AttachmentReference[];
+  /** Sama ada model vision yang layak tersedia untuk run ini (lalai: false). */
+  visionAvailable?: boolean;
 }
 
 export interface CopilotChatPayload {
@@ -76,6 +92,12 @@ export interface CopilotChatPayload {
   }>;
   threadId?: string;
   runId?: string;
+  /** EXT-07 — senarai ID bukti/lampiran untuk dirujuk dalam run ini. */
+  attachmentIds?: string[];
+  /** EXT-07 — sama ada pemanggil mewajibkan inferensi vision atas lampiran. */
+  requireVision?: boolean;
+  /** CPK-10 — ID jejak (traceId) pilihan untuk korelasi delegasi sub-ejen. */
+  traceId?: string;
 }
 
 export type CopilotRunStatus = 'completed' | 'partial' | 'unavailable' | 'local_rules';
@@ -127,7 +149,69 @@ export interface CopilotChatResponse {
     modelLive: boolean;
     runId?: string;
     toolCalls: string[];
+    delegatedBy?: 'abangcolek_ops';
+    delegatedAgent?: string | null;
+    traceId?: string;
+    parentRunId?: string;
+    childRunId?: string;
   };
+  /** CPK-10 — Jejak delegasi parent -> child termasuk warisan bajet. */
+  delegation?: AdkDelegationTrace;
+  /** EXT-07 — Rujukan lampiran yang disahkan (hash, kebenaran, revocation, pendedahan vision). */
+  attachments?: AttachmentReference[];
+  /** EXT-07 — Pendedahan status vision eksplisit. */
+  vision?: {
+    available: boolean;
+    reasonCode: string;
+    reason: string;
+  };
+}
+
+/**
+ * CPK-10 — Pemetaan intent mesej kepada sub-ejen specialist (`commerce_reader`,
+ * `qc_jev_reviewer`, `marketing_drafter`) di bawah ejen induk `abangcolek_ops`.
+ */
+export function resolveSpecialistDelegation(
+  messages: CopilotChatPayload['messages']
+): { delegatedAgent: CopilotSpecialistAgent | null; specialistTool?: string } {
+  const lastUser = [...messages].reverse().find(m => m.role === 'user')?.content?.toLowerCase() ?? '';
+  if (!lastUser) return { delegatedAgent: null };
+  if (/(qc|jev|refund|pulangan|aduan|kes|case|kuarantin|quarantine|bukti)/.test(lastUser)) {
+    return { delegatedAgent: 'qc_jev_reviewer', specialistTool: 'review_qc_and_jev_cases' };
+  }
+  if (/(kempen|campaign|margin|promosi|diskaun|komisen|commission|loyal|mata)/.test(lastUser)) {
+    return { delegatedAgent: 'marketing_drafter', specialistTool: 'evaluate_campaign_margin' };
+  }
+  if (/(katalog|catalogue|stok|stock|pesanan|order|lot|harga|produk|product|inventori|inventory)/.test(lastUser)) {
+    return { delegatedAgent: 'commerce_reader', specialistTool: 'read_published_catalogue' };
+  }
+  return { delegatedAgent: null };
+}
+
+/**
+ * CPK-10 — Membina bajet sub-ejen anak (`child`) yang mewarisi baki panggilan,
+ * baki deadline, dan baki token daripada bajet ejen induk (`parent`).
+ */
+export function createChildBudget(parent: ModelCallBudget): ModelCallBudget {
+  const remCalls = Math.max(0, parent.maxCalls - parent.callsMade);
+  const remDeadline = Math.max(1, remainingDeadlineMs(parent));
+  const remIn = Math.max(0, parent.maxCumulativeInputTokens - parent.inputTokensUsed);
+  const remOut = Math.max(0, parent.maxCumulativeOutputTokens - parent.outputTokensUsed);
+  return createBudget(remCalls, remDeadline, {
+    maxInputTokensPerCall: Math.min(parent.maxInputTokensPerCall, remIn),
+    maxOutputTokensPerCall: Math.min(parent.maxOutputTokensPerCall, remOut),
+    maxCumulativeInputTokens: remIn,
+    maxCumulativeOutputTokens: remOut,
+  });
+}
+
+/**
+ * CPK-10 — Menyelaraskan penggunaan panggilan dan token daripada bajet anak
+ * kembali ke bajet induk supaya jumlah keseluruhan tidak pernah melampaui had run.
+ */
+export function syncChildBudgetToParent(parent: ModelCallBudget, child: ModelCallBudget): void {
+  parent.callsMade = Math.min(parent.maxCalls, parent.callsMade + child.callsMade);
+  recordTokenUsage(parent, child.inputTokensUsed, child.outputTokensUsed);
 }
 
 const DEFAULT_SYSTEM_PROMPT = [
@@ -197,6 +281,8 @@ export class CopilotV2Runtime {
   private bridgeEnabled: boolean;
   private systemPrompt: string;
   private budgetCaps?: ModelCallBudgetCaps;
+  private attachmentResolver?: (actor: Actor, attachmentIds: string[]) => AttachmentReference[];
+  private visionAvailable: boolean;
 
   constructor(config?: CopilotRuntimeConfig) {
     this.router = config?.router || new FreeModelRouter();
@@ -207,6 +293,8 @@ export class CopilotV2Runtime {
     this.bridgeEnabled = this.bridge.configuration().configured;
     this.systemPrompt = config?.systemPrompt || DEFAULT_SYSTEM_PROMPT;
     this.budgetCaps = config?.budgetCaps;
+    this.attachmentResolver = config?.attachmentResolver;
+    this.visionAvailable = config?.visionAvailable ?? false;
   }
 
   /**
@@ -280,6 +368,12 @@ export class CopilotV2Runtime {
     const threadId =
       sanitizeLabel(isRecord(payload) ? payload.threadId : undefined) ?? `thread-${runId}`;
     const clientRunId = sanitizeLabel(isRecord(payload) ? payload.runId : undefined);
+    const traceId =
+      sanitizeLabel(isRecord(payload) ? payload.traceId : undefined) ?? `trace-${runId}`;
+    const rawAttachmentIds = isRecord(payload) && Array.isArray(payload.attachmentIds)
+      ? payload.attachmentIds.filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
+      : [];
+    const requireVision = isRecord(payload) && payload.requireVision === true;
 
     const budget = createBudget(this.maxModelCalls, this.defaultDeadlineMs, this.budgetCaps);
     const attempts: CopilotRunAttempt[] = [];
@@ -334,15 +428,172 @@ export class CopilotV2Runtime {
       );
     }
 
+    // EXT-07 — Selesaikan rujukan lampiran sebelum sebarang inferensi bermula.
+    // Lampiran yang ditarik balik (revoked) gagal dengan 409 ATTACHMENT_REVOKED;
+    // lampiran di luar akses gagal dengan 403 ATTACHMENT_PERMISSION_DENIED.
+    let resolvedAttachments: AttachmentReference[] | undefined;
+    if (rawAttachmentIds.length > 0) {
+      if (!this.attachmentResolver) {
+        return new Response(
+          JSON.stringify({
+            ok: false,
+            error: 'ATTACHMENT_RESOLVER_NOT_CONFIGURED',
+            code: 'ATTACHMENT_RESOLVER_NOT_CONFIGURED',
+            runId,
+            threadId,
+            detail: 'Penyelesai rujukan lampiran belum dikonfigurasikan untuk runtime ini.',
+          }),
+          {
+            status: 409,
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Copilot-Run-Id': runId,
+            },
+          }
+        );
+      }
+      try {
+        resolvedAttachments = this.attachmentResolver(actor!, rawAttachmentIds);
+      } catch (error) {
+        const errObj = error as { code?: string; status?: number; message?: string };
+        const code = errObj?.code ?? 'ATTACHMENT_ERROR';
+        const status =
+          code === 'ATTACHMENT_PERMISSION_DENIED'
+            ? 403
+            : code === 'ATTACHMENT_REVOKED'
+              ? 409
+              : typeof errObj?.status === 'number'
+                ? errObj.status
+                : 400;
+        return new Response(
+          JSON.stringify({
+            ok: false,
+            error: code,
+            code,
+            runId,
+            threadId,
+            detail: errObj?.message ?? String(error),
+          }),
+          {
+            status,
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Copilot-Run-Id': runId,
+            },
+          }
+        );
+      }
+
+      const revokedRef = resolvedAttachments.find(ref => ref.revoked);
+      if (revokedRef) {
+        return new Response(
+          JSON.stringify({
+            ok: false,
+            error: 'ATTACHMENT_REVOKED',
+            code: 'ATTACHMENT_REVOKED',
+            runId,
+            threadId,
+            detail: `Lampiran '${revokedRef.evidenceId}' telah ditarik balik dan tidak boleh dirujuk.`,
+          }),
+          {
+            status: 409,
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Copilot-Run-Id': runId,
+            },
+          }
+        );
+      }
+
+      const deniedRef = resolvedAttachments.find(ref => !ref.permitted);
+      if (deniedRef) {
+        return new Response(
+          JSON.stringify({
+            ok: false,
+            error: 'ATTACHMENT_PERMISSION_DENIED',
+            code: 'ATTACHMENT_PERMISSION_DENIED',
+            runId,
+            threadId,
+            detail: `Lampiran '${deniedRef.evidenceId}' di luar akses anda.`,
+          }),
+          {
+            status: 403,
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Copilot-Run-Id': runId,
+            },
+          }
+        );
+      }
+
+      if (requireVision && !this.visionAvailable) {
+        const visionDisclosure = resolvedAttachments[0]?.vision ?? {
+          available: false,
+          reasonCode: 'QUALIFIED_VISION_MODEL_REQUIRED',
+          reason:
+            'Muat naik fail bukan bukti vision; inferensi memerlukan model layak dan skop data yang diluluskan.',
+        };
+        return new Response(
+          JSON.stringify({
+            ok: false,
+            error: 'VISION_INFERENCE_UNAVAILABLE',
+            code: 'VISION_INFERENCE_UNAVAILABLE',
+            reasonCode: visionDisclosure.reasonCode,
+            runId,
+            threadId,
+            detail: visionDisclosure.reason,
+            attachments: resolvedAttachments,
+            vision: visionDisclosure,
+          }),
+          {
+            status: 409,
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Copilot-Run-Id': runId,
+            },
+          }
+        );
+      }
+    }
+
+    // CPK-10 — Delegasi parent (abangcolek_ops) -> child specialist dengan
+    // propagasi jejak (traceId, parentRunId, childRunId) dan warisan bajet.
+    const specialistResolution = resolveSpecialistDelegation(messages);
+    const childBudget = createChildBudget(budget);
+    const childRunId = specialistResolution.delegatedAgent
+      ? `${runId}:sub:${specialistResolution.delegatedAgent}`
+      : `${runId}:sub:none`;
+    const delegationTrace: AdkDelegationTrace = {
+      traceId,
+      parentRunId: runId,
+      childRunId,
+      parentAgent: 'abangcolek_ops',
+      delegatedBy: 'abangcolek_ops',
+      delegatedAgent: specialistResolution.delegatedAgent,
+      ...(specialistResolution.specialistTool
+        ? { specialistTool: specialistResolution.specialistTool }
+        : {}),
+      inheritedBudget: {
+        parentMaxCalls: budget.maxCalls,
+        remainingModelCalls: childBudget.maxCalls,
+        remainingDeadlineMs: childBudget.deadlineMs,
+        remainingInputTokens: childBudget.maxCumulativeInputTokens,
+        remainingOutputTokens: childBudget.maxCumulativeOutputTokens,
+      },
+    };
+
     // Laluan 1: jambatan Python Google ADK (Native ADK). Ia hanya dicuba
     // apabila jambatan dikonfigurasikan; jika perkhidmatan tidak berjalan,
     // runtime menurun dengan jujur ke laluan model langsung.
     const bridgeOutcome = await this.tryBridge({
       runId,
+      traceId,
       messages,
       actor,
       threadId,
       budget,
+      delegation: delegationTrace,
+      attachments: resolvedAttachments,
     });
     if (bridgeOutcome?.served) {
       return this.jsonBodyResponse(bridgeOutcome.served);
@@ -386,6 +637,15 @@ export class CopilotV2Runtime {
           : adapter.credentialSource();
       }
     }
+
+    const activeDelegationBudget = createChildBudget(budget);
+    delegationTrace.inheritedBudget = {
+      parentMaxCalls: budget.maxCalls,
+      remainingModelCalls: activeDelegationBudget.maxCalls,
+      remainingDeadlineMs: activeDelegationBudget.deadlineMs,
+      remainingInputTokens: activeDelegationBudget.maxCumulativeInputTokens,
+      remainingOutputTokens: activeDelegationBudget.maxCumulativeOutputTokens,
+    };
 
     const providerMessages = this.buildProviderMessages(messages, budget);
 
@@ -504,7 +764,17 @@ export class CopilotV2Runtime {
           attempts,
           candidates: this.candidateReports(attempts),
           budget: this.budgetSummary(budget),
+          delegation: delegationTrace,
         };
+        if (resolvedAttachments && resolvedAttachments.length > 0) {
+          body.attachments = resolvedAttachments;
+          body.vision = resolvedAttachments[0]?.vision ?? {
+            available: false,
+            reasonCode: 'QUALIFIED_VISION_MODEL_REQUIRED',
+            reason:
+              'Muat naik fail bukan bukti vision; inferensi memerlukan model layak dan skop data yang diluluskan.',
+          };
+        }
         if (clientRunId) body.clientRunId = clientRunId;
         return this.jsonBodyResponse(body);
       } catch (error) {
@@ -601,10 +871,13 @@ export class CopilotV2Runtime {
    */
   private async tryBridge(input: {
     runId: string;
+    traceId?: string;
     messages: CopilotChatPayload['messages'];
     actor?: Actor;
     threadId: string;
     budget: ModelCallBudget;
+    delegation?: AdkDelegationTrace;
+    attachments?: AttachmentReference[];
   }): Promise<
     | { served?: CopilotChatResponse; failure?: undefined }
     | { served?: undefined; failure?: { reason: CopilotRunReasonCode; detail: string } }
@@ -625,6 +898,15 @@ export class CopilotV2Runtime {
     const message = [...input.messages].reverse().find(m => m.role === 'user')?.content?.trim();
     if (!message) return undefined;
 
+    const childBudget = createChildBudget(input.budget);
+    const inheritedBudget: AdkDelegationTrace['inheritedBudget'] = {
+      parentMaxCalls: input.budget.maxCalls,
+      remainingModelCalls: childBudget.maxCalls,
+      remainingDeadlineMs: childBudget.deadlineMs,
+      remainingInputTokens: childBudget.maxCumulativeInputTokens,
+      remainingOutputTokens: childBudget.maxCumulativeOutputTokens,
+    };
+
     input.budget.callsMade++;
     const outcome = await this.bridge.run({
       message,
@@ -632,6 +914,24 @@ export class CopilotV2Runtime {
         ? { userId: input.actor.userId, workspaceId: input.actor.workspaceId }
         : undefined,
       threadLabel: input.threadId,
+      trace: input.delegation
+        ? {
+            traceId: input.delegation.traceId,
+            parentRunId: input.delegation.parentRunId,
+            childRunId: input.delegation.childRunId,
+            parentAgent: input.delegation.parentAgent,
+            delegatedAgent: input.delegation.delegatedAgent,
+          }
+        : undefined,
+      inheritedBudget,
+      attachments: input.attachments?.map(att => ({
+        evidenceId: att.evidenceId,
+        sha256: att.sha256,
+        mimeType: att.mimeType,
+        name: att.name,
+        permitted: att.permitted,
+        revoked: att.revoked,
+      })),
     });
 
     if (!outcome.ok) {
@@ -654,6 +954,7 @@ export class CopilotV2Runtime {
     }
     recordTokenUsage(input.budget, inputTokens, outputTokens);
 
+    const finalDelegation = outcome.delegation ?? input.delegation;
     const body: CopilotChatResponse = {
       runId: input.runId,
       threadId: input.threadId,
@@ -676,8 +977,23 @@ export class CopilotV2Runtime {
         modelLive: outcome.modelLive,
         runId: outcome.runId,
         toolCalls: (outcome.toolCalls ?? []).map(call => call.name).filter((name): name is string => !!name),
+        delegatedBy: 'abangcolek_ops',
+        delegatedAgent: outcome.delegatedAgent ?? finalDelegation?.delegatedAgent ?? null,
+        traceId: finalDelegation?.traceId,
+        parentRunId: finalDelegation?.parentRunId,
+        childRunId: finalDelegation?.childRunId,
       },
+      ...(finalDelegation ? { delegation: finalDelegation } : {}),
     };
+    if (input.attachments && input.attachments.length > 0) {
+      body.attachments = input.attachments;
+      body.vision = input.attachments[0]?.vision ?? {
+        available: false,
+        reasonCode: 'QUALIFIED_VISION_MODEL_REQUIRED',
+        reason:
+          'Muat naik fail bukan bukti vision; inferensi memerlukan model layak dan skop data yang diluluskan.',
+      };
+    }
     return { served: body };
   }
 

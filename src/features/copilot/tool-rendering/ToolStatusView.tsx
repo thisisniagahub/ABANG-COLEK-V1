@@ -81,4 +81,76 @@ export function ToolStatusView({
   );
 }
 
+export interface ToolLifecycleSnapshot {
+  executionId?: string;
+  toolName?: string;
+  state: ToolExecutionState;
+}
+
+/**
+ * GUI-03: Projects an AG-UI tool execution lifecycle event (`RUN_STARTED`,
+ * `TOOL_CALL_START`, `TOOL_CALL_RESULT`, `RUN_ERROR`) onto a safe status snapshot
+ * for `ToolStatusView`.
+ */
+export function projectToolLifecycleEvent(
+  previous: ToolLifecycleSnapshot,
+  event: Record<string, unknown>,
+): ToolLifecycleSnapshot {
+  const type = typeof event.type === 'string' ? event.type : '';
+  const executionId =
+    safeText(event.toolCallId) ??
+    safeText(event.executionId) ??
+    safeText(event.runId) ??
+    previous.executionId;
+  const toolName =
+    safeText(event.toolCallName) ??
+    safeText(event.toolName) ??
+    previous.toolName;
+
+  if (type === 'RUN_STARTED') {
+    return { executionId, toolName, state: 'queued' };
+  }
+  if (type === 'TOOL_CALL_START') {
+    return { executionId, toolName, state: 'running' };
+  }
+  if (type === 'TOOL_CALL_RESULT') {
+    const resultObj =
+      event.result !== null && typeof event.result === 'object'
+        ? (event.result as Record<string, unknown>)
+        : undefined;
+    const rawStatus = typeof resultObj?.status === 'string' ? resultObj.status : undefined;
+    const state: ToolExecutionState =
+      rawStatus === 'unknown_outcome'
+        ? 'unknown_outcome'
+        : rawStatus === 'partial'
+          ? 'partial'
+          : rawStatus === 'failed' || resultObj?.ok === false
+            ? 'failed'
+            : 'succeeded';
+    return { executionId, toolName, state };
+  }
+  if (type === 'RUN_ERROR') {
+    return { executionId, toolName, state: 'failed' };
+  }
+  return previous;
+}
+
+/**
+ * GUI-03: Consumes a live async stream of AG-UI tool-lifecycle events and emits
+ * each `ToolLifecycleSnapshot` transition so `ToolStatusView` is bound to a live source.
+ */
+export async function streamToolLifecycleToStatus(
+  events: AsyncIterable<Record<string, unknown>>,
+  onTransition?: (snapshot: ToolLifecycleSnapshot) => void,
+): Promise<ToolLifecycleSnapshot[]> {
+  let current: ToolLifecycleSnapshot = { state: 'unknown' };
+  const history: ToolLifecycleSnapshot[] = [];
+  for await (const event of events) {
+    current = projectToolLifecycleEvent(current, event);
+    history.push(current);
+    onTransition?.(current);
+  }
+  return history;
+}
+
 export default ToolStatusView;

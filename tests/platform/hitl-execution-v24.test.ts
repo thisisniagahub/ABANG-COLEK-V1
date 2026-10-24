@@ -264,4 +264,35 @@ describe('03A-HITL / CPK-06 — Human-in-the-Loop Lifecycle & Execution Receipts
     expect(unauthorizedRes.response.status).toBe(403);
     expect(unauthorizedRes.json.code).toBe('FORBIDDEN');
   });
+
+  test('AI-03: unknown_outcome state records indeterminate execution without fabricating receipt', async () => {
+    const { app } = harness();
+    const founder = await user(app, 'founder', true);
+    const actor = app.auth.resolve(
+      new Request('http://localhost:3010/api/platform/session', {
+        headers: { Cookie: founder.cookie },
+      })
+    );
+
+    const action = app.adkAgent.createHitlAction(
+      actor,
+      'refund',
+      'Refund gangguan talian',
+      { orderId: 'ord-unk-01', amountSen: 1500 }
+    );
+    app.adkAgent.decideHitlAction(actor, action.id, true);
+
+    const unknown = app.adkAgent.recordHitlUnknownOutcome(
+      actor,
+      action.id,
+      'Pengangkutan gateway terputus sebelum pengesahan komit'
+    );
+    expect(unknown.status).toBe('unknown_outcome');
+    expect(unknown.executionReceipt).toBeUndefined();
+    expect(unknown.executionBlockedReason).toBe('EXECUTION_OUTCOME_UNKNOWN');
+
+    const persisted = app.store.require<HitlActionRequest>('hitl_actions', action.id);
+    expect(persisted.status).toBe('unknown_outcome');
+    expect(persisted.executionReceipt).toBeUndefined();
+  });
 });

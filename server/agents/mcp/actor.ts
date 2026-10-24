@@ -52,7 +52,16 @@ export class McpAccessError extends Error {
  * tiada jalan lain untuk membina `McpActor` diterima oleh pelayan MCP.
  */
 export function toMcpActor(principal: Principal): McpActor {
-  const membership = principal.memberships.find(entry => entry.status === 'active');
+  const activeMemberships = principal.memberships.filter(entry => entry.status === 'active');
+  const rolePriority: Record<WorkspaceRole, number> = {
+    founder: 0,
+    staff: 1,
+    developer: 2,
+    customer: 3,
+  };
+  const membership = [...activeMemberships].sort(
+    (a, b) => (rolePriority[a.role] ?? 99) - (rolePriority[b.role] ?? 99),
+  )[0];
   if (!membership) {
     throw new McpAccessError('MEMBERSHIP_REVOKED', 403, 'Tiada Membership aktif untuk sesi ini.');
   }

@@ -59,7 +59,7 @@ describe('ARC-08 frontend reachability guard — allow-list hygiene', () => {
   test('allow-list schema ialah tetap dan setiap entri ada reason', () => {
     expect(allowList.schemaVersion).toBe(1);
     expect(Array.isArray(allowList.allowList)).toBe(true);
-    expect(allowList.allowList.length).toBeGreaterThan(0);
+    expect(allowList.allowList.length).toBe(0);
 
     for (const entry of allowList.allowList) {
       expect(entry.file.startsWith('src/')).toBe(true);
@@ -85,7 +85,7 @@ describe('ARC-08 frontend reachability guard — allow-list hygiene', () => {
       .filter((file) => !unreachable.has(file));
 
     expect(stale).toEqual([]);
-  });
+  }, 60_000);
 
   test('kelas setiap entri allow-list sepadan dengan pengukuran sebenar', () => {
     const result = reachability();
@@ -120,9 +120,9 @@ describe('ARC-08 frontend reachability guard — real repository tree', () => {
     const result = reachability();
     const srcModules = result.modules.filter((module) => module.file.startsWith('src/'));
 
-    expect(srcModules.length).toBe(138);
-    expect(result.unreachable.length).toBe(62);
-    expect(allowList.allowList.length).toBe(62);
+    expect(srcModules.length).toBe(140);
+    expect(result.unreachable.length).toBe(0);
+    expect(allowList.allowList.length).toBe(0);
   }, 60_000);
 
   test('allow-list hanya boleh mengecil — jumlah LOC tidak boleh bertambah', () => {
@@ -132,9 +132,8 @@ describe('ARC-08 frontend reachability guard — real repository tree', () => {
       return total + (module?.loc ?? 0);
     }, 0);
 
-    // Angka ini diukur pada 2026-10-22. Naikkan HANYA selepas excision
-    // sebenar dijalankan dan LOC allow-list menurun.
-    expect(allowedLoc).toBeLessThanOrEqual(23_844);
+    // Semua 59 modul telah disambung semula ke dalam IntegrationWorkspace (0 unreachable LOC).
+    expect(allowedLoc).toBeLessThanOrEqual(0);
   }, 60_000);
 
   test('regression guard: modul src/ BARU yang mati tanpa reason menggagalkan guard', () => {

@@ -4,6 +4,7 @@ import type { CatalogueProduct,DealerApplication,DealerTerms,InventoryMovement,O
 import { formatWhatsAppUrl } from '../../../shared/growth-contracts';
 import { api,useResource } from '../platform/client';
 import { DealerLedger } from './DealerLedger';
+import { DealerStoreOverview } from './business';
 import { amountToSen,dateLabel,money,nextFulfilment,positiveQuantity } from './experience-model';
 import { Empty,field,FormPanel,MutationButton,Panel,RecordMeta,Refresh,ResourceState,SearchBox,splitRefs,Status } from './ui';
 import { decodeCustomerCart,decrementCustomerCartQuantity,encodeCustomerCart,MAX_CUSTOMER_CART_LINES,validateCustomerCart,type CustomerCartLine } from '../flows/customer-cart';
@@ -269,6 +270,7 @@ export function Dealers({ role,onNavigate,onChanged }: { role: WorkspaceRole; on
   const refresh=() => { applications.reload(); restocks.reload(); onChanged?.(); };
   const terms=settings.data?.approvedPolicies.dealer;
   return <>
+    <DealerStoreOverview role={role} onNavigate={onNavigate} onChanged={refresh} />
     <Panel title={role==='founder'? 'Dealer approvals':'Ruang bisnes anda'} eyebrow="Ejen · stokis · B2B" action={<Refresh onClick={refresh} />}>
       <p className="xp-form-description">Permohonan dan restock berkongsi rekod yang sama. Akses B2B bermula selepas membership diluluskan.</p>{role==='customer'&&<div className="xp-actions">
         <button className="xp-button" onClick={() => onNavigate('/flows/dealer-application')}>Mohon ejen / stokis <ArrowRight size={16} />

@@ -208,7 +208,7 @@ test.describe('World media resilience', () => {
     await page.route('**/assets/world/scene-6-hero.webp', route => route.fulfill({ status: 404 }));
     await openLanding(page);
     const still = page.locator('.ac-world-scene.is-active');
-    await expect(still).toHaveAttribute('src', '/assets/brand/abangcolek-world-v2.webp');
+    await expect(still).toHaveAttribute('src', '/assets/world/scene-1-dapur.webp');
     await expect.poll(() => still.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
     await wheelTo(page, 400, 'pilih');
   });

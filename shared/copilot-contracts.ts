@@ -174,7 +174,8 @@ export type HitlStatus =
   | 'expired'
   | 'stale'
   | 'failed'
-  | 'succeeded';
+  | 'succeeded'
+  | 'unknown_outcome';
 
 export interface HitlEntityRef {
   type: 'order' | 'inventory_lot' | 'dealer_commission' | 'expense' | 'user' | 'batch';
@@ -211,7 +212,7 @@ export interface HitlActionRequest {
   reviewedBy?: string;
   reviewedAt?: string;
   executionReceipt?: ExecutionReceipt;
-  executionBlockedReason?: 'EXECUTOR_UNAVAILABLE';
+  executionBlockedReason?: 'EXECUTOR_UNAVAILABLE' | 'EXECUTION_OUTCOME_UNKNOWN';
 }
 
 // ============================================================================
@@ -234,6 +235,8 @@ export interface WorkflowProgressState {
 export interface ScopedStateProjection {
   scope: StateScope;
   selectedOrderId?: string;
+  entityRevision?: string | number;
+  policyRevision?: string | number;
   filters: Record<string, SafeClientStateValue>;
   draft: Record<string, SafeClientStateValue>;
   workflowProgress?: WorkflowProgressState;

@@ -39,7 +39,7 @@ test('Finance cards use server totals, staff counts all assigned work, and publi
     const before = await get<AssignedTaskSummary>(staffPage.request, '/tasks/summary');
     for (let index = 0; index < 105; index++) await post(staffPage.request, '/tasks', staff.csrfToken, { entityId: 'business', title: `Isolated QA assigned task ${index}`, assigneeId: staff.user.id, documentIds: [], outletId: 'hq' });
     const paged = await get<{ id: string }[]>(staffPage.request, '/tasks');
-    expect(paged).toHaveLength(100);
+    expect(paged).toHaveLength(50);
     await staffPage.goto('/staff/overview');
     await expect(staffPage.locator('.xp-count-pair > div').filter({ hasText: 'Open assigned tasks' }).locator('strong')).toHaveText(String(before.openAssignedTasks + 105));
   } finally { await staffContext.close(); }
@@ -50,7 +50,7 @@ test('Finance cards use server totals, staff counts all assigned work, and publi
   try {
     for (let index = 0; index < 102; index++) products.push(await post<CatalogueProduct>(page.request, '/catalogue', founder.csrfToken, { name: `Isolated QA published ${crypto.randomUUID()}`, description: 'QA pagination detail fixture', priceSen: 1234, packSize: 1, publish: true }));
     const firstPage = await get<PublicProduct[]>(page.request, '/catalogue');
-    expect(firstPage).toHaveLength(100);
+    expect(firstPage).toHaveLength(50);
     expect(firstPage.some(product => product.id === fixture().productId)).toBe(false);
     const original = await get<PublicProduct>(page.request, `/catalogue/${fixture().productId}`);
     await page.goto(`/products/${original.id}`);

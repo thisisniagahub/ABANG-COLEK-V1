@@ -34,7 +34,9 @@ export class DealerStores {
 
   /** Store awam ikut slug — baca sahaja, tiada session diperlukan. */
   publicBySlug(slug: string): PublicDealerStore | null {
-    const record = this.store.all<DealerStoreRecord>('dealer_stores').find((candidate) => candidate.slug === slug);
+    const normalized = normaliseSlug(slug);
+    if (!normalized) return null;
+    const record = this.store.all<DealerStoreRecord>('dealer_stores').find((candidate) => candidate.slug === normalized);
     if (!record || record.status !== 'active') return null;
     return {
       storeId: record.id,
@@ -44,12 +46,27 @@ export class DealerStores {
     };
   }
 
+  /** Cari store aktif mengikut slug atau dealerOrgId (case-insensitive). */
+  bySlugOrOrg(code: string): DealerStoreRecord | null {
+    const trimmed = code.trim().toLowerCase();
+    if (!trimmed) return null;
+    return (
+      this.store
+        .all<DealerStoreRecord>('dealer_stores')
+        .find(
+          (candidate) =>
+            candidate.status === 'active' &&
+            (candidate.slug.toLowerCase() === trimmed || candidate.dealerOrgId.toLowerCase() === trimmed),
+        ) ?? null
+    );
+  }
+
   /**
    * Store milik actor (workspace private). Actor mesti pemilik store atau
    * memegang grant dealer; nama pengguna alone tidak cukup.
    */
   forActor(actor: Principal): PublicDealerStore[] {
-    const own = actor.memberships.filter((membership) => membership.dealerOrgId);
+    const own = actor.memberships.filter((membership) => membership.dealerOrgId && membership.status === 'active');
     const orgIds = new Set(own.map((membership) => membership.dealerOrgId as string));
     return this.all()
       .filter((store) => orgIds.has(store.dealerOrgId))

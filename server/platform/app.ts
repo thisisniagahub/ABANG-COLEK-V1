@@ -45,6 +45,7 @@ import { isLocalInspectorAllowed, LocalInspector, LocalRunRecorder } from './ins
 import { AguiThreadStore } from './aguiThreads';
 import { RiskService, createRiskRoutes } from './risk';
 import { RecoveryService, createRecoveryRoutes } from './recovery';
+import { PasswordRecoveryService } from './passwordRecovery';
 import { PaymentCallbackService } from './paymentCallbacks';
 import { recordAssetConsent } from './dispatchConsent';
 import { createPaymentCallbackRoute, createPaymentReturnRoute } from './paymentCallbackRoutes';
@@ -165,6 +166,7 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
     rpo:()=>{const r=backupScheduler.checkRpoStatus();return {compliant:r.compliant,elapsedSeconds:r.elapsedSeconds,lastBackupAt:r.lastBackupAt,reasonCode:r.reasonCode};},
   });
   const recoveryRoutes=createRecoveryRoutes({service:recovery});
+  const passwordRecoveryService=new PasswordRecoveryService(store);
   const operationsBrief=createOperationsBriefApp(store);
   // Transport Hermes tempatan hanya boleh mengklaim artifak jika ringkasan
   // benar-benar disimpan dalam store kanonikal platform.
@@ -406,6 +408,7 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
       if(path==='/inventory'){if(auth.has(actor,'developer')&&!auth.has(actor,'founder'))fail('FORBIDDEN',403);return commerce.inventory(actor);}
       if(path==='/overview')return overview(actor);
       if(path==='/people'){auth.founder(actor);return store.db.query<{id:string;email:string;name:string},[]>('SELECT id,email,name FROM users ORDER BY created_at').all().map(u=>({...u,memberships:auth.memberships(u.id)}));}
+      if(path==='/auth/password-recovery/requests'){auth.founder(actor);return passwordRecoveryService.listRequests(actor);}
       if(path==='/settings'){if(auth.has(actor,'founder'))return operations.settings();const s=operations.settings();return {...s,approvedPolicies:{paymentInstructions:s.approvedPolicies.paymentInstructions,contact:s.approvedPolicies.contact,locations:s.approvedPolicies.locations,...(actor.memberships.some(m=>m.dealerOrgId)?{dealer:s.approvedPolicies.dealer}:{})}};}
       if(path==='/health'){if(!auth.has(actor,'founder')&&!auth.has(actor,'developer'))fail('FORBIDDEN',403);const rpo=backupScheduler.checkRpoStatus();return [{component:'platform_database',status:'ready',observedAt:now(),reasonCode:options.persistenceMode==='supabase'?'SUPABASE_SNAPSHOT':'LOCAL_SQLITE'},{component:'disaster_recovery_rpo',status:rpo.compliant?'ready':(rpo.status==='no_snapshot'?'ready':'degraded'),observedAt:now(),reasonCode:rpo.reasonCode},{component:'hermes',status:options.automationOptions?.hermes?'ready':'unavailable',observedAt:now(),reasonCode:options.automationOptions?.hermes?'LOCAL_HERMES_TRANSPORT_ACTIVE':'ADAPTER_NOT_VERIFIED'},{component:'native_whatsapp',status:options.whatsappTransport?'ready':'unavailable',observedAt:now(),reasonCode:options.whatsappTransport?'WHATSAPP_TRANSPORT_ACTIVE':'FEATURE_DISABLED'},{component:'postiz',status:options.automationOptions?.postiz?'ready':'unavailable',observedAt:now(),reasonCode:options.automationOptions?.postiz?'LOCAL_POSTIZ_TRANSPORT_ACTIVE':'ADAPTER_NOT_VERIFIED'},{component:'agent_reach',status:options.automationOptions?.agentReach?'ready':'unavailable',observedAt:now(),reasonCode:options.automationOptions?.agentReach?'LOCAL_AGENT_REACH_TRANSPORT_ACTIVE':'ADAPTER_NOT_VERIFIED'}];}
       if(path==='/backup/status'){auth.founder(actor);return backupScheduler.status();}
@@ -450,6 +453,17 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
       if(path==='/copilot/mcp/brief/urgent'){auth.operational(actor);return operationsBrief.getUrgentBrief();}
     }
     if(method==='POST') {
+      if (path === '/auth/password-recovery/requests') {
+        auth.founder(actor);
+        return passwordRecoveryService.listRequests(actor);
+      }
+      if (path.startsWith('/auth/password-recovery/requests/') && path !== '/auth/password-recovery/requests') {
+        const suffix = path.slice('/auth/password-recovery/requests/'.length);
+        const targetRequestId = suffix.replace(/\/issue-code$/, '');
+        if (!targetRequestId || targetRequestId.includes('/')) fail('NOT_FOUND', 404);
+        const body = input !== undefined ? object(input) : {};
+        return passwordRecoveryService.issueCode(targetRequestId, actor, body.expectedRevision);
+      }
       if(path==='/auth/logout'){auth.logout(actor);return {loggedOut:true};}
       if(path==='/onboarding/validate'){auth.founder(actor);return onboarding.validate(object(input) as any);}
       if(path==='/onboarding/commit')return onboarding.commit(actor,object(input) as any);
@@ -628,7 +642,7 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
         // CG-02 — public Online Store per Agent/Stokis. Pelawat boleh browse
         // TANPA log masuk; projek yang dikembalikan tidak mengandungi data
         // peribadi owner (lihat DealerStores.publicBySlug).
-        const kedaiMatch=request.method==='GET'?/^\/kedai\/([a-z0-9-]+)$/.exec(path):null;
+        const kedaiMatch=request.method==='GET'?/^\/kedai\/([a-zA-Z0-9_-]+)$/.exec(path):null;
         if(kedaiMatch){
           const projection=dealerStores.publicBySlug(kedaiMatch[1]);
           if(!projection)fail('STORE_NOT_FOUND',404,'Kedai tidak dijumpai.');
@@ -691,6 +705,23 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
           // dikemukakan oleh pelayar yang sama dicabut selepas log masuk.
           auth.revokePresentedSessions(result.actor,request);
           return json({ok:true,data:result.data},200,{'Set-Cookie':result.cookies.map(header=>secureCookie(header,url.protocol==='https:'))});
+        }
+        if(request.method==='POST'&&path==='/auth/password-recovery/request'){
+          store.rate('identity-global',options.rateLimits?.identityGlobal??30);
+          const body=object(input);fields(body,['email']);
+          const email=text(body.email,'Email',254).toLowerCase();
+          if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))fail('INVALID_EMAIL',400,'Format emel tidak sah.');
+          store.rate(`identity:${email}`,options.rateLimits?.identityAccount??6);
+          const result=passwordRecoveryService.requestRecovery(email);
+          return json({ok:true,data:result},202);
+        }
+        if(request.method==='POST'&&path==='/auth/password-recovery/reset'){
+          store.rate('identity-global',options.rateLimits?.identityGlobal??30);
+          const body=object(input);fields(body,['credential','newPassword']);
+          const credential=text(body.credential,'Kod pemulihan',256);
+          if(typeof body.newPassword!=='string')fail('INVALID_INPUT');
+          const result=await passwordRecoveryService.resetPassword(credential,body.newPassword);
+          return json({ok:true,data:result},200);
         }
         const actor=auth.resolve(request);store.rate(`actor:${actor.user.id}`,options.rateLimits?.actor??180);
         // §4:91 — "120 control requests/min/principal" (descriptor, state,

@@ -1,6 +1,6 @@
 import type { NavigationItem, RouteMatch, WorkspaceRole } from '../../../shared/platform-contracts';
 
-const publicPaths = new Set(['/', '/products', '/locations', '/become-dealer', '/help', '/login', '/setup']);
+const publicPaths = new Set(['/', '/products', '/locations', '/become-dealer', '/help', '/login', '/setup', '/reset-password']);
 const menus = {
   customer: [['overview', 'Ruang saya'], ['shop', 'Beli produk'], ['orders', 'Pesanan saya'], ['cases', 'Bantuan & aduan'], ['business', 'Ejen & stokis']],
   staff: [['overview', 'Hari ini'], ['tasks', 'Tugasan saya'], ['orders', 'Pesanan assigned'], ['cases', 'Khidmat pelanggan'], ['qc', 'Kawalan kualiti'], ['shifts', 'Shift & handoff'], ['documents', 'Dokumen'], ['knowledge', 'Panduan kerja']],
@@ -60,6 +60,7 @@ export function resolveRoute(pathname: string): RouteMatch {
   const parts = path.slice(1).split('/');
   if (parts.some(part => !/^[a-zA-Z0-9_-]+$/.test(part))) return { kind: 'not_found', path };
   if (parts[0] === 'products' && parts.length === 2) return { kind: 'public', path, entityId: parts[1] };
+  if (parts[0] === 'kedai' && parts.length === 2 && parts[1]) return { kind: 'public', path, entityId: parts[1] };
   if (parts[0] === 'flows' && parts.length === 2) return { kind: 'flow', path, entityId: parts[1] };
   const role = parts[0] as WorkspaceRole;
   if (!Object.hasOwn(menus, role) || parts.length > 3) return { kind: 'not_found', path };

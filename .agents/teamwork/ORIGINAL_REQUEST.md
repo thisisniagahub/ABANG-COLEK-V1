@@ -81,3 +81,28 @@ Integrity mode: development
 - [ ] Keseluruhan kod melepasi linting: bun run lint (tsc exit code 0).
 - [ ] bun run build melepasi kompilasi pengeluaran tanpa ralat bundle.
 - [ ] PROJECT-CHECKLIST.md dan ACCEPTANCE-REGISTER.md dikemas kini secara atomik dengan pautan resit bukti ujian yang sahih.
+
+## 2026-10-24T17:11:52Z
+
+Complete and verify the full platform remediation and acceptance ledger closure for ABANGCOLEK-PLATFORM (`D:\ABANGCOLEK-PLATFORM`), covering the Phase 00 baseline, Login System v2 password recovery flow, intentional 13-brand-asset deletion alignment, and all 15 local acceptance items (`CPK-06`, `CPK-07`, `CPK-08`, `CPK-10`, `GUI-01`, `GUI-02`, `GUI-03`, `GUI-04`, `GUI-05`, `GUI-06`, `GUI-07`, `ADV-07`, `ADV-26`, `AI-03`, `EXT-07`).
+
+Working directory: D:\ABANGCOLEK-PLATFORM
+Integrity mode: development
+
+## Requirements
+
+### R1. Brand Asset Deletion Alignment & Phase 00 + Login System v2
+Do NOT restore the 13 intentionally deleted files in `public/assets/brand/`. Keep `public/manifest.webmanifest`, `src/features/brand/brand-assets.ts`, and `tests/e2e/landing-emons.spec.ts` pointed at existing assets (`logo-horizontal-512.png`, `colek-buah.png`), and ensure the end-to-end password recovery flow (`shared/password-recovery-contracts.ts`, `server/platform/passwordRecovery.ts`, `server/platform/app.ts`, `src/features/platform/LoginForm.tsx`, `src/features/platform/AppRouter.tsx`, `src/features/workspaces/business.tsx`, `tests/platform/password-recovery.test.ts`) compiles and passes all tests.
+
+### R2. Universal HITL Executors, Sub-Agent Delegation, Attachments & Copilot GUI Surfaces
+Ensure all 15 local acceptance items (`CPK-06..08`, `CPK-10`, `GUI-01..07`, `ADV-07`, `ADV-26`, `AI-03`, `EXT-07`) are wired, free of module cycles (`scripts/maintenance/check-boundaries.ts`), and marked `verified_local` with `remainingRequirement: null` in `reports/implementation/acceptance-status.json` and `scripts/maintenance/audit-ledger-closure.ts`.
+
+### R3. Architecture & Reachability Guard Hygiene
+Keep the total runtime module count under `src/` at `139` and ensure `tests/architecture/fixtures/frontend-reachability-allowlist.json` and `tests/architecture/frontend-reachability.test.ts` match the exact reachable/unreachable module count (`59` unreachable modules after mounting `OrderTrackingCard.tsx`, `frontendToolAdapters.ts`, and `MarginSimulatorForm.tsx`). Preserve all existing worktree changes (`git reset`, `git clean`, `git checkout`, and `git stash` are forbidden).
+
+## Acceptance Criteria
+
+### Programmatic Verification Gate
+- [ ] `bun run lint` (`tsc --noEmit && tsc --noEmit -p tsconfig.platform.json`) exits `0`.
+- [ ] `bun scripts/maintenance/check-boundaries.ts` exits `0` with `0` forbidden module cycles and `0` unauthorized boundary violations.
+- [ ] All 14 targeted test suites pass with `0` failures via `C:/Users/megat/Scripts/agy-verify.cmd --cwd "D:\ABANGCOLEK-PLATFORM" -- pwsh -NoProfile -Command "bun run lint; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; bun scripts/maintenance/check-boundaries.ts; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; bun test --isolate ./tests/platform/password-recovery.test.ts ./tests/platform/adv-tools-approval-execution.test.ts ./tests/platform/hitl-execution-v24.test.ts ./tests/platform/adv-tools-capability-coverage.test.ts ./tests/platform/copilot-adk-bridge.test.ts ./tests/platform/ext-07-attachments.test.ts ./tests/platform/mcp-protocol.test.ts ./tests/frontend/frontend-tool-adapters.test.ts ./tests/frontend/gui03-04-state-tool.test.tsx ./tests/frontend/gui02-interactive.test.tsx ./tests/frontend/copilot-gui06-a2ui.test.tsx ./tests/frontend/copilot-gui07-components.test.tsx ./tests/frontend/gui01-display-only.test.tsx ./tests/architecture/frontend-reachability.test.ts"`.

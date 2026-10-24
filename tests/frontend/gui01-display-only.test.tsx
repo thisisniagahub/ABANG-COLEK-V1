@@ -5,6 +5,8 @@ import { JevAssessmentCard } from '../../src/features/copilot/cards/JevAssessmen
 import { OrderSummaryCard } from '../../src/features/copilot/cards/OrderSummaryCard';
 import { MarginSummaryCard } from '../../src/features/copilot/cards/MarginSummaryCard';
 import { CommissionSummaryCard } from '../../src/features/copilot/cards/CommissionSummaryCard';
+import { CopilotWorkspaceView } from '../../src/features/workspaces/CopilotWorkspace';
+import { initialAguiRunState } from '../../src/features/copilot/agui/aguiRunState';
 
 describe('GUI-01 display-only cards', () => {
   test('renders the handoff JEV assessment as safe, read-only text', () => {
@@ -304,5 +306,76 @@ describe('GUI-01 display-only cards', () => {
     expect(markup).not.toContain('private-user');
     expect(markup).not.toContain('RM 0.40');
     expect(markup).not.toContain('balance');
+  });
+
+  test('GUI-01: mounts all display-only cards in CopilotWorkspaceView on the live workspace data path', () => {
+    const html = renderToStaticMarkup(
+      createElement(CopilotWorkspaceView, {
+        runtime: { kind: 'checking' },
+        session: null,
+        threadId: 'thr_gui01',
+        messages: [],
+        inputMessage: '',
+        isSending: false,
+        chatError: null,
+        run: initialAguiRunState,
+        activeIdentity: null,
+        onInputChange: () => {},
+        onSubmit: () => {},
+        onRetryRuntime: () => {},
+        liveCards: {
+          latestOrder: {
+            id: 'ORD-LIVE-01',
+            customerId: 'cust-live',
+            lines: [],
+            amountSen: 4500,
+            fulfilment: 'pickup',
+            contactRef: '0123456',
+            outletId: 'hq',
+            fulfilmentStatus: 'dispatched',
+            trackingTokenExpiresAt: '2026-11-15T00:00:00.000Z',
+            revision: 3,
+            paymentState: 'verified',
+            paidAmountSen: 4500,
+            refundAmountSen: 0,
+            createdAt: '2026-10-24T10:00:00.000Z',
+            updatedAt: '2026-10-24T10:00:00.000Z',
+          },
+          commissionSummary: {
+            dealerOrgId: 'dlr-live-01',
+            totalEarnedSen: 5000,
+            pendingSen: 500,
+            eligibleSen: 1500,
+            approvedSen: 1500,
+            paidSen: 1500,
+            reversedContraSen: 0,
+            netPayableSen: 3000,
+            unsettledDeficitSen: 0,
+          },
+          latestJev: {
+            issueClass: 'LEAKAGE',
+            rootCause: 'PACKAGING_CRIMP_FAILURE',
+            sopAction: 'Kuarantin kelompok botol segera',
+            evaluationState: 'reviewed',
+            evidencePhotoRequired: true,
+            revision: 8,
+          },
+          latestMargin: {
+            contributionSen: 2600,
+            contributionMarginPct: 26,
+            requiredContributionSen: 2000,
+            requiredMarginPct: 20,
+            status: 'PASSED',
+            revision: 4,
+          },
+        },
+      }),
+    );
+
+    expect(html).toContain('ORD-LIVE-01');
+    expect(html).toContain('2026-11-15T00:00:00.000Z');
+    expect(html).toContain('dlr-live-01');
+    expect(html).toContain('Kuarantin kelompok botol segera');
+    expect(html).toContain('RM 26.00');
   });
 });

@@ -1,9 +1,26 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { A2UI_ALLOWLISTED_COMPONENTS, validateA2UIComponent } from '../../../shared/copilot-contracts';
-import type { SessionData } from '../../../shared/platform-contracts';
+import type { OrderRecord, SessionData } from '../../../shared/platform-contracts';
+import type { DealerCommissionSummary } from '../../../shared/growth-contracts';
 import { CopilotSurfaceCard } from '../copilot/components/CopilotSurfaceCard';
+import {
+  createFrontendToolAdapter,
+  extractAguiFrontendToolActions,
+  FRONTEND_ACTION_TYPES,
+} from '../copilot/components/frontendToolAdapters';
+import { OrderSummaryCard } from '../copilot/cards/OrderSummaryCard';
+import { OrderTrackingCard } from '../copilot/cards/OrderTrackingCard';
+import { CommissionSummaryCard } from '../copilot/cards/CommissionSummaryCard';
+import { JevAssessmentCard } from '../copilot/cards/JevAssessmentCard';
+import { MarginSummaryCard } from '../copilot/cards/MarginSummaryCard';
 import { A2UIFixedRenderer } from '../copilot/declarative/A2UIFixedRenderer';
 import { ApprovalReviewCard } from '../copilot/interactive/ApprovalReviewCard';
+import {
+  MarginSimulatorForm,
+  type MarginSimulationDraft,
+  type MarginSimulationServerReceipt,
+} from '../copilot/interactive/MarginSimulatorForm';
+import { McpAppSandboxHostFrame } from '../copilot/mcp-apps/OperationsBriefApp';
 import { ScopedStateView } from '../copilot/state-rendering/ScopedStateView';
 import { buildScopedStateProjection } from '../copilot/state-rendering/scopedStateProjection';
 import { ToolStatusView } from '../copilot/tool-rendering/ToolStatusView';
@@ -21,6 +38,44 @@ import {
 } from '../copilot/runIdentity';
 import type { CopilotRunController, CopilotRunIdentity } from '../intelligence/copilotRunController';
 import { api, apiRawJson, currentCsrfToken, PlatformError } from '../platform/client';
+
+export interface WorkspaceLiveDataCards {
+  latestOrder?: OrderRecord | null;
+  commissionSummary?: DealerCommissionSummary | null;
+  latestJev?: {
+    issueClass: 'LEAKAGE' | 'CAP_DEFECT' | 'TASTE_ANOMALY' | 'LABEL_MISPRINT';
+    rootCause: 'UNDETERMINED' | 'SUPPLIER_BATCH_CONTAMINATION' | 'PACKAGING_CRIMP_FAILURE';
+    sopAction: string;
+    evaluationState: 'reviewed' | 'pending_quarantine';
+    evidencePhotoRequired: boolean;
+    revision?: number | string;
+  } | null;
+  latestMargin?: {
+    contributionSen: number;
+    contributionMarginPct: number;
+    requiredContributionSen: number;
+    requiredMarginPct: number;
+    status: 'PASSED' | 'INSUFFICIENT_CASH_MARGIN' | 'INSUFFICIENT_PERCENT_MARGIN';
+    revision?: number | string;
+  } | null;
+}
+
+/**
+ * GUI-01 / GUI-07: Fetches workspace operational projections from the same `/orders`
+ * and `/dealer/commissions` platform API paths as the rest of the workspace.
+ */
+export async function loadWorkspaceLiveDataCards(
+  fetcher: <T>(path: string) => Promise<T> = api,
+): Promise<WorkspaceLiveDataCards> {
+  const [orders, commissionSummary] = await Promise.all([
+    fetcher<OrderRecord[]>('/orders').catch(() => []),
+    fetcher<DealerCommissionSummary>('/dealer/commissions').catch(() => null),
+  ]);
+  return {
+    latestOrder: Array.isArray(orders) && orders.length > 0 ? orders[0] : null,
+    commissionSummary: commissionSummary ?? null,
+  };
+}
 
 /**
  * Kontrak descriptor runtime — bentuk asas yang dikongsi oleh descriptor
@@ -201,6 +256,50 @@ export interface CopilotWorkspaceProps {
   controller?: CopilotRunController;
 }
 
+interface AdvancedToolSpec {
+  id: string;
+  name: string;
+  category: string;
+  risk: 'Q' | 'S' | 'D' | 'C' | 'X';
+  riskLabel: string;
+  description: string;
+}
+
+const ADVANCED_TOOLS_CATALOG: AdvancedToolSpec[] = [
+  { id: 'ADV-01', name: 'discover_capabilities', category: 'Carian & Konteks', risk: 'Q', riskLabel: 'Query', description: 'Cari tool schemas yang layak mengikut niat dan izin pengguna.' },
+  { id: 'ADV-02', name: 'search_records', category: 'Carian & Konteks', risk: 'Q', riskLabel: 'Query', description: 'Carian rekod berskop dengan kursor dan versi sumber terkini.' },
+  { id: 'ADV-03', name: 'build_context_bundle', category: 'Carian & Konteks', risk: 'Q', riskLabel: 'Query', description: 'Bina berkas konteks sehingga 20 rujukan yang disahkan.' },
+  { id: 'ADV-04', name: 'explain_record', category: 'Carian & Konteks', risk: 'Q', riskLabel: 'Query', description: 'Penerangan garis masa peristiwa, resit dan polisi rekod.' },
+  { id: 'ADV-05', name: 'diagnose_checkout', category: 'Pesanan & Bayaran', risk: 'S', riskLabel: 'Simulation', description: 'Diagnostik konflik harga, stok, voucher dan draf troli pelanggan.' },
+  { id: 'ADV-06', name: 'reconcile_payments', category: 'Pesanan & Bayaran', risk: 'Q', riskLabel: 'Query', description: 'Padanan fakta bayaran gateway dengan pesanan tempatan.' },
+  { id: 'ADV-07', name: 'preview_refund', category: 'Pesanan & Bayaran', risk: 'S', riskLabel: 'Simulation', description: 'Pratonton impak kewangan, komisen dan loyalty bagi bayaran balik.' },
+  { id: 'ADV-08', name: 'propose_refund', category: 'Pesanan & Bayaran', risk: 'D', riskLabel: 'Draft', description: 'Cadangan rasmi refund untuk kelulusan Founder (HITL).' },
+  { id: 'ADV-09', name: 'assess_expiry_risk', category: 'Stok & Batch', risk: 'S', riskLabel: 'Simulation', description: 'Penilaian risiko tarikh luput kelompok mengikut FEFO.' },
+  { id: 'ADV-10', name: 'plan_restock', category: 'Stok & Batch', risk: 'S', riskLabel: 'Simulation', description: 'Cadangan kuantiti restok berasaskan jualan dan lead-time.' },
+  { id: 'ADV-11', name: 'trace_batch', category: 'Stok & Batch', risk: 'Q', riskLabel: 'Query', description: 'Jejak pergerakan kelompok dari dapur ke cawangan/ejen.' },
+  { id: 'ADV-12', name: 'propose_quarantine', category: 'Stok & Batch', risk: 'D', riskLabel: 'Draft', description: 'Cadangan kuarantin kelompok rosak untuk kelulusan Founder.' },
+  { id: 'ADV-13', name: 'simulate_campaign', category: 'Kempen & Komisen', risk: 'S', riskLabel: 'Simulation', description: 'Simulasi margin caruman kasar bagi kempen promosi.' },
+  { id: 'ADV-14', name: 'explain_commission', category: 'Kempen & Komisen', risk: 'Q', riskLabel: 'Query', description: 'Penerangan asal-usul pengiraan komisen dan status lejar.' },
+  { id: 'ADV-15', name: 'audit_loyalty', category: 'Kempen & Komisen', risk: 'Q', riskLabel: 'Query', description: 'Audit mata ganjaran diperoleh, ditebus, dan luput.' },
+  { id: 'ADV-16', name: 'assess_referral', category: 'Kempen & Komisen', risk: 'S', riskLabel: 'Simulation', description: 'Penilaian risiko dan kelayakan rujukan dua hala.' },
+  { id: 'ADV-17', name: 'reconcile_dayclose', category: 'Kewangan & Laporan', risk: 'S', riskLabel: 'Simulation', description: 'Padanan wang tunai, jualan dan perbelanjaan penutup hari.' },
+  { id: 'ADV-18', name: 'build_finance_digest', category: 'Kewangan & Laporan', risk: 'Q', riskLabel: 'Query', description: 'Ringkasan kewangan eksekutif berzon waktu MYT.' },
+  { id: 'ADV-19', name: 'trace_transaction', category: 'Kewangan & Laporan', risk: 'Q', riskLabel: 'Query', description: 'Jejakan rantai resit bayaran, stok, dan komisen.' },
+  { id: 'ADV-20', name: 'export_report', category: 'Kewangan & Laporan', risk: 'C', riskLabel: 'Command', description: 'Jana dan eksport laporan CSV berformat selamat.' },
+  { id: 'ADV-21', name: 'triage_case', category: 'Kualiti & Aduan', risk: 'S', riskLabel: 'Simulation', description: 'Triage aduan kualiti berasaskan peraturan LOCAL_RULES JEV.' },
+  { id: 'ADV-22', name: 'plan_consignment', category: 'Kualiti & Aduan', risk: 'S', riskLabel: 'Simulation', description: 'Perancangan penyerahan dan semakan laluan konsainan bas.' },
+  { id: 'ADV-23', name: 'draft_customer_reply', category: 'Kualiti & Aduan', risk: 'D', riskLabel: 'Draft', description: 'Draf jawapan khidmat pelanggan berasaskan rekod kes.' },
+  { id: 'ADV-24', name: 'build_action_plan', category: 'Tindakan & Urus Tadbir', risk: 'S', riskLabel: 'Simulation', description: 'Bina pelan tindakan berperingkat mengikut skop kuasa.' },
+  { id: 'ADV-25', name: 'execute_approved_action', category: 'Tindakan & Urus Tadbir', risk: 'C', riskLabel: 'Command', description: 'Laksana tindakan yang telah diluluskan dengan resit kekal.' },
+  { id: 'ADV-26', name: 'reconcile_action', category: 'Tindakan & Urus Tadbir', risk: 'Q', riskLabel: 'Query', description: 'Semak dan rekonsil status tindakan luar yang belum pasti.' },
+  { id: 'ADV-27', name: 'inspect_runtime', category: 'Tindakan & Urus Tadbir', risk: 'Q', riskLabel: 'Query', description: 'Diagnostik komponen runtime dan kuota tanpa bocor rahsia.' },
+  { id: 'ADV-28', name: 'review_skill_candidate', category: 'Tindakan & Urus Tadbir', risk: 'S', riskLabel: 'Simulation', description: 'Semakan calon kemahiran pembelajaran automatik.' },
+  { id: 'ADV-29', name: 'search_sop', category: 'Tindakan & Urus Tadbir', risk: 'Q', riskLabel: 'Query', description: 'Carian pantas petikan dokumen SOP dan panduan kerja.' },
+  { id: 'ADV-30', name: 'propose_task', category: 'Tindakan & Urus Tadbir', risk: 'D', riskLabel: 'Draft', description: 'Draf penetapan tugasan staf untuk kelulusan Founder.' },
+  { id: 'ADV-31', name: 'evaluate_job_retry', category: 'Tindakan & Urus Tadbir', risk: 'S', riskLabel: 'Simulation', description: 'Penilaian keselamatan percubaan semula tugasan automasi.' },
+  { id: 'ADV-32', name: 'draft_campaign', category: 'Kempen & Komisen', risk: 'D', riskLabel: 'Draft', description: 'Draf kempen pemasaran berdasarkan simulasi margin sah.' },
+];
+
 export interface CopilotWorkspaceViewProps {
   runtime: RuntimeCheckState;
   session: SessionData | null;
@@ -214,6 +313,14 @@ export interface CopilotWorkspaceViewProps {
   onInputChange: (value: string) => void;
   onSubmit: (event: React.FormEvent) => void;
   onRetryRuntime: () => void;
+  liveCards?: WorkspaceLiveDataCards | null;
+  showMarginSimulator?: boolean;
+  onMarginSimulate?: (draft: MarginSimulationDraft) => void | Promise<void>;
+  onMarginRevalidateServer?: (draft: MarginSimulationDraft) => Promise<MarginSimulationServerReceipt>;
+  marginReceipt?: MarginSimulationServerReceipt | null;
+  showMcpSandboxHost?: boolean;
+  theme?: 'light' | 'dark' | 'system';
+  reducedMotion?: boolean;
 }
 
 /**
@@ -235,6 +342,14 @@ export function CopilotWorkspaceView(props: CopilotWorkspaceViewProps) {
     onInputChange,
     onSubmit,
     onRetryRuntime,
+    liveCards,
+    showMarginSimulator = false,
+    onMarginSimulate,
+    onMarginRevalidateServer,
+    marginReceipt = null,
+    showMcpSandboxHost = false,
+    theme = 'system',
+    reducedMotion = false,
   } = props;
 
   const scope = useMemo(() => {
@@ -284,6 +399,8 @@ export function CopilotWorkspaceView(props: CopilotWorkspaceViewProps) {
         <CopilotSurfaceCard
           id="copilot-runtime"
           title="Chat"
+          theme={theme}
+          reducedMotion={reducedMotion}
           status={(
             <span
               role="status"
@@ -407,6 +524,73 @@ export function CopilotWorkspaceView(props: CopilotWorkspaceViewProps) {
             </div>
           )}
 
+          {/* GUI-01 / GUI-07: display-only cards mounted on the same workspace API data path */}
+          {liveCards && (
+            <div className="mt-4 grid grid-cols-1 gap-4" aria-label="Workspace live operational cards">
+              {liveCards.latestOrder && (
+                <>
+                  <OrderSummaryCard
+                    order={liveCards.latestOrder}
+                    source="api/platform/orders"
+                    revision={liveCards.latestOrder.revision}
+                  />
+                  <OrderTrackingCard
+                    order={liveCards.latestOrder}
+                    source="api/platform/orders"
+                    revision={liveCards.latestOrder.revision}
+                  />
+                </>
+              )}
+              {liveCards.commissionSummary && (
+                <CommissionSummaryCard
+                  summary={liveCards.commissionSummary}
+                  source="api/platform/dealer/commissions"
+                />
+              )}
+              {liveCards.latestJev && (
+                <JevAssessmentCard
+                  issueClass={liveCards.latestJev.issueClass}
+                  rootCause={liveCards.latestJev.rootCause}
+                  sopAction={liveCards.latestJev.sopAction}
+                  evaluationState={liveCards.latestJev.evaluationState}
+                  evidencePhotoRequired={liveCards.latestJev.evidencePhotoRequired}
+                  source="api/platform/jev"
+                  revision={liveCards.latestJev.revision}
+                />
+              )}
+              {liveCards.latestMargin && (
+                <MarginSummaryCard
+                  contributionSen={liveCards.latestMargin.contributionSen}
+                  contributionMarginPct={liveCards.latestMargin.contributionMarginPct}
+                  requiredContributionSen={liveCards.latestMargin.requiredContributionSen}
+                  requiredMarginPct={liveCards.latestMargin.requiredMarginPct}
+                  status={liveCards.latestMargin.status}
+                  source="api/platform/margin"
+                  revision={liveCards.latestMargin.revision}
+                />
+              )}
+            </div>
+          )}
+
+          {/* GUI-02: interactive margin simulator form mounted in workspace */}
+          {showMarginSimulator && (
+            <div className="mt-4" aria-label="Workspace margin simulator">
+              <MarginSimulatorForm
+                onSimulate={onMarginSimulate ?? (() => {})}
+                onRevalidateServer={onMarginRevalidateServer}
+                receipt={marginReceipt}
+                disabled={!isChatEnabled || isSending}
+              />
+            </div>
+          )}
+
+          {/* GUI-05: sandboxed MCP App client host frame */}
+          {showMcpSandboxHost && (
+            <div className="mt-4" aria-label="Workspace MCP App host">
+              <McpAppSandboxHostFrame />
+            </div>
+          )}
+
           {/* GUI-04: scoped client state for this workspace / user / thread */}
           {scope && scopedSnapshot && (
             <div className="mt-4">
@@ -464,6 +648,7 @@ export default function CopilotWorkspace(props: CopilotWorkspaceProps = {}) {
   const runController = props.controller ?? copilotRunController;
   const [runtime, setRuntime] = useState<RuntimeCheckState>({ kind: 'checking' });
   const [session, setSession] = useState<SessionData | null>(null);
+  const [liveCards, setLiveCards] = useState<WorkspaceLiveDataCards | null>(null);
   const [messages, setMessages] = useState<ChatEntry[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
@@ -471,6 +656,23 @@ export default function CopilotWorkspace(props: CopilotWorkspaceProps = {}) {
   const [run, setRun] = useState<AguiRunState>(initialAguiRunState);
   const [activeIdentity, setActiveIdentity] = useState<CopilotRunIdentity | null>(
     () => runController.getIdentity(),
+  );
+
+  const frontendAdapter = useMemo(
+    () =>
+      createFrontendToolAdapter({
+        capabilities: FRONTEND_ACTION_TYPES,
+        handlers: {
+          navigate: (route) => {
+            props.onNavigate?.(`/${route}`);
+          },
+          selectRecord: () => {},
+          setFilter: () => {},
+          fillDraft: () => {},
+          requestDecision: () => {},
+        },
+      }),
+    [props.onNavigate],
   );
 
   const requestSequence = useRef(0);
@@ -496,11 +698,6 @@ export default function CopilotWorkspace(props: CopilotWorkspaceProps = {}) {
     runtimeController.current = controller;
     setRuntime({ kind: 'checking' });
 
-    // The question asked is "is the OFFICIAL CopilotKit runtime serving this
-    // app?", so it is asked of the endpoint that describes that runtime:
-    // `GET /api/copilotkit/descriptor`. The legacy platform descriptor is no
-    // longer consulted as proof, because it describes a different runtime
-    // (the project-local keyword router).
     const next = await loadRuntimeDescriptor(controller.signal);
     if (sequence !== requestSequence.current || controller.signal.aborted) return;
     setRuntime(next);
@@ -518,7 +715,13 @@ export default function CopilotWorkspace(props: CopilotWorkspaceProps = {}) {
   useEffect(() => {
     const controller = new AbortController();
     api<SessionData>('/session', { signal: controller.signal })
-      .then(setSession)
+      .then((nextSession) => {
+        setSession(nextSession);
+        return loadWorkspaceLiveDataCards();
+      })
+      .then((cards) => {
+        if (!controller.signal.aborted) setLiveCards(cards);
+      })
       .catch(() => {
         if (!controller.signal.aborted) setSession(null);
       });
@@ -550,9 +753,6 @@ export default function CopilotWorkspace(props: CopilotWorkspaceProps = {}) {
     const history = messages.map((entry) => ({ role: entry.role, content: entry.content }));
 
     try {
-      // The identifiers that leave the browser are the shared controller's, so
-      // a run opened in the Pet and continued here stays the same run. They are
-      // correlation labels only; the server stays the authority for identity.
       const { request } = buildCopilotRunRequest(runController, {
         message: text,
         history,
@@ -565,6 +765,9 @@ export default function CopilotWorkspace(props: CopilotWorkspaceProps = {}) {
       for await (const event of streamCopilotRun(request)) {
         next = reduceAguiEvent(next, event);
         setRun(next);
+        for (const envelope of extractAguiFrontendToolActions(event)) {
+          await frontendAdapter.dispatch(envelope);
+        }
       }
 
       if (next.status === 'failed') {
@@ -601,6 +804,7 @@ export default function CopilotWorkspace(props: CopilotWorkspaceProps = {}) {
       onInputChange={setInputMessage}
       onSubmit={handleSendMessage}
       onRetryRuntime={() => void checkRuntime()}
+      liveCards={liveCards}
     />
   );
 }

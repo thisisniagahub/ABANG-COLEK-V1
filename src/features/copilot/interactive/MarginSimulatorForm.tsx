@@ -131,14 +131,71 @@ export class SubmissionGate {
   }
 }
 
+export interface MarginSimulationServerReceipt {
+  receiptId: string;
+  status: 'PASSED' | 'INSUFFICIENT_CASH_MARGIN' | 'INSUFFICIENT_PERCENT_MARGIN';
+  contributionSen: number;
+  contributionMarginPct: number;
+  requiredContributionSen: number;
+  requiredMarginPct: number;
+  evaluatedAt: string;
+  revision: string | number;
+}
+
 export interface MarginSimulatorFormProps {
   onSimulate: (input: MarginSimulationDraft) => void | Promise<void>;
+  onRevalidateServer?: (input: MarginSimulationDraft) => Promise<MarginSimulationServerReceipt>;
+  receipt?: MarginSimulationServerReceipt | null;
   onCancel?: () => void;
   disabled?: boolean;
 }
 
+/**
+ * GUI-02: Exercises the full decision -> canonical server revalidation -> canonical receipt loop.
+ */
+export async function executeDecisionRevalidationLoop(options: {
+  draft: SimulationInputFields;
+  revalidateMargin: (draft: MarginSimulationDraft) => Promise<MarginSimulationServerReceipt>;
+  submitApprovalDecision?: (
+    receipt: MarginSimulationServerReceipt,
+  ) => Promise<unknown>;
+}): Promise<
+  | {
+      ok: true;
+      draft: MarginSimulationDraft;
+      simulationReceipt: MarginSimulationServerReceipt;
+      approvalProposal?: unknown;
+    }
+  | { ok: false; field: keyof MarginSimulationDraft; message: string }
+> {
+  const parsed = validateSimulationInput(options.draft);
+  if (isRejectedSimulationInput(parsed)) {
+    return {
+      ok: false,
+      field: parsed.field,
+      message: SIMULATION_INPUT_MESSAGES[parsed.field],
+    };
+  }
+  const validatedDraft: MarginSimulationDraft = {
+    inputSen: parsed.inputSen,
+    discountPct: parsed.discountPct,
+  };
+  const simulationReceipt = await options.revalidateMargin(validatedDraft);
+  const approvalProposal = options.submitApprovalDecision
+    ? await options.submitApprovalDecision(simulationReceipt)
+    : undefined;
+  return {
+    ok: true,
+    draft: validatedDraft,
+    simulationReceipt,
+    ...(approvalProposal !== undefined ? { approvalProposal } : {}),
+  };
+}
+
 export function MarginSimulatorForm({
   onSimulate,
+  onRevalidateServer,
+  receipt: externalReceipt = null,
   onCancel,
   disabled = false,
 }: MarginSimulatorFormProps) {
@@ -148,14 +205,27 @@ export function MarginSimulatorForm({
   const [error, setError] = useState('');
   const [errorField, setErrorField] = useState<keyof MarginSimulationDraft | null>(null);
   const [notice, setNotice] = useState('');
+  const [serverReceipt, setServerReceipt] = useState<MarginSimulationServerReceipt | null>(externalReceipt);
 
   const latestCallback = useRef(onSimulate);
+  const latestRevalidate = useRef(onRevalidateServer);
   useEffect(() => {
     latestCallback.current = onSimulate;
-  }, [onSimulate]);
+    latestRevalidate.current = onRevalidateServer;
+  }, [onSimulate, onRevalidateServer]);
+
+  useEffect(() => {
+    if (externalReceipt !== undefined) {
+      setServerReceipt(externalReceipt);
+    }
+  }, [externalReceipt]);
 
   const guard = useRef(createDuplicateClickGuard(async (draft: MarginSimulationDraft) => {
     await latestCallback.current(draft);
+    if (latestRevalidate.current) {
+      const verifiedReceipt = await latestRevalidate.current(draft);
+      setServerReceipt(verifiedReceipt);
+    }
   }));
 
   const cancel = () => {
@@ -165,6 +235,7 @@ export function MarginSimulatorForm({
     setError('');
     setErrorField(null);
     setNotice('');
+    setServerReceipt(null);
     onCancel?.();
   };
 
@@ -186,7 +257,11 @@ export function MarginSimulatorForm({
     setNotice('');
     try {
       await guard.current({ inputSen: parsed.inputSen, discountPct: parsed.discountPct });
-      setNotice('Input dihantar kepada callback. Keputusan simulasi kanonik belum diterima.');
+      setNotice(
+        latestRevalidate.current
+          ? 'Keputusan simulasi telah disahkan semula oleh pelayan kanonik.'
+          : 'Input dihantar kepada callback. Keputusan simulasi kanonik belum diterima.',
+      );
     } catch {
       setError('Callback simulasi gagal. Keputusan tidak dapat disahkan.');
     } finally {
@@ -254,6 +329,19 @@ export function MarginSimulatorForm({
       </div>
       {error && <p role="alert" className="text-sm text-[var(--ui-danger-text)]">{error}</p>}
       {notice && <p role="status" className="text-sm text-[var(--ui-muted)]">{notice}</p>}
+      {serverReceipt && (
+        <section
+          aria-label="Canonical margin receipt"
+          className="rounded-xl border border-[var(--ui-border)] bg-[var(--ui-soft)] p-3 text-xs text-[var(--ui-text)]"
+        >
+          <p className="font-semibold">
+            Resit pelayan kanonik: <span className="font-mono">{serverReceipt.receiptId}</span>
+          </p>
+          <p className="mt-1 text-[var(--ui-muted)]">
+            Status: {serverReceipt.status} · Margin: RM {(serverReceipt.contributionSen / 100).toFixed(2)} ({serverReceipt.contributionMarginPct}%) · Revisi: {String(serverReceipt.revision)}
+          </p>
+        </section>
+      )}
       <div className="flex flex-wrap gap-2">
         <button
           type="submit"

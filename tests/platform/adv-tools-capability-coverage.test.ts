@@ -442,6 +442,12 @@ describe('Liputan Keupayaan Logikal (ADV-01..ADV-32)', () => {
         expect(Array.isArray(provenance.sources)).toBe(true);
         expect(provenance.evaluator.length).toBeGreaterThan(0);
         expect(provenance.at.length).toBeGreaterThan(0);
+        if (tool.registrationName === 'preview_refund') {
+          expect(typeof executed.result.previewRefHash).toBe('string');
+          expect((executed.result.previewRefHash as string).length).toBe(64);
+          expect(executed.result.revisions).toEqual({ orderRevision: 1, policyRevision: 1 });
+          expect(typeof executed.result.expiresAt).toBe('string');
+        }
       } else {
         expect(executed.code).not.toBe('TOOL_EXECUTION_ERROR');
         expect(ALLOWED_FAILURE_CODES.has(executed.code)).toBe(true);

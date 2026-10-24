@@ -14,7 +14,7 @@ test('Founder navigation groups twenty destinations and marks the current parent
   await login(page, 'founder');
   const navigation = page.getByRole('navigation', { name: 'Menu Founder workspace', exact: true });
   for (const name of founderGroups) await expect(navigation.getByRole('heading', { name, exact: true })).toBeVisible();
-  await expect(navigation.getByRole('link')).toHaveCount(20);
+  await expect(navigation.getByRole('link')).toHaveCount(21);
   await expect(navigation.getByRole('link', { name: 'Tetapan', exact: true })).toBeVisible();
   await expect(navigation.getByRole('link', { name: 'Workspace integrasi', exact: true })).toBeVisible();
   await expect(navigation.locator('[aria-current="page"]')).toHaveAttribute('href', '/founder/overview');

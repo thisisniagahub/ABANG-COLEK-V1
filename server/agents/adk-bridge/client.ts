@@ -27,7 +27,9 @@ import {
   type AdkAgentResponse,
   type AdkBridgeOutcome,
   type AdkBridgeReason,
+  type AdkDelegationTrace,
   type AdkHealthPayload,
+  type AguiToolCall,
 } from './types';
 
 export const DEFAULT_ADK_BRIDGE_URL = 'http://127.0.0.1:8030';
@@ -57,6 +59,25 @@ export interface AdkBridgeRunRequest {
   actor?: { userId?: string; workspaceId?: string };
   /** Label thread pelayar — label sahaja, bukan tuntutan keutamaan. */
   threadLabel?: string;
+  /** Jejak delegasi parent -> child (CPK-10). */
+  trace?: {
+    traceId: string;
+    parentRunId: string;
+    childRunId?: string;
+    parentAgent?: 'abangcolek_ops';
+    delegatedAgent?: string | null;
+  };
+  /** Bajet yang diwarisi daripada run induk (CPK-10). */
+  inheritedBudget?: AdkDelegationTrace['inheritedBudget'];
+  /** Rujukan lampiran yang disahkan server (EXT-07). */
+  attachments?: Array<{
+    evidenceId: string;
+    sha256: string;
+    mimeType: string;
+    name: string;
+    permitted: boolean;
+    revoked: boolean;
+  }>;
 }
 
 function readConfig(options?: AdkBridgeOptions): { baseUrl?: string; reason?: AdkBridgeReason } {
@@ -172,7 +193,10 @@ export class AdkBridgeClient {
 
     const body = this.buildRequestBody(request);
     const fetchFn = this.options.fetchFn ?? fetch;
-    const timeoutMs = this.options.runTimeoutMs ?? 25000;
+    const baseTimeoutMs = this.options.runTimeoutMs ?? 25000;
+    const timeoutMs = request.inheritedBudget?.remainingDeadlineMs
+      ? Math.max(1, Math.min(baseTimeoutMs, request.inheritedBudget.remainingDeadlineMs))
+      : baseTimeoutMs;
 
     try {
       const response = await fetchFn(`${baseUrl}${ADK_BRIDGE_STREAM_PATH}`, {
@@ -218,6 +242,32 @@ export class AdkBridgeClient {
         };
       }
 
+      const delegatedAgent = this.extractDelegatedAgent(summary.stateSnapshot, summary.toolCalls, request);
+      const specialistTool = summary.toolCalls.find(
+        tc => tc.name && tc.name !== 'transfer_to_agent'
+      )?.name;
+      const parentRunId = request.trace?.parentRunId ?? summary.runId ?? 'run-adk-parent';
+      const childRunId =
+        request.trace?.childRunId ??
+        (delegatedAgent ? `${parentRunId}:sub:${delegatedAgent}` : `${parentRunId}:sub:none`);
+      const traceId = request.trace?.traceId ?? `trace-${parentRunId}`;
+      const delegation: AdkDelegationTrace = {
+        traceId,
+        parentRunId,
+        childRunId,
+        parentAgent: 'abangcolek_ops',
+        delegatedBy: 'abangcolek_ops',
+        delegatedAgent,
+        ...(specialistTool ? { specialistTool } : {}),
+        inheritedBudget: request.inheritedBudget ?? {
+          parentMaxCalls: 3,
+          remainingModelCalls: 2,
+          remainingDeadlineMs: timeoutMs,
+          remainingInputTokens: 24576,
+          remainingOutputTokens: 3072,
+        },
+      };
+
       return {
         ok: true,
         health,
@@ -230,6 +280,8 @@ export class AdkBridgeClient {
         events,
         runId: summary.runId,
         threadId: summary.threadId,
+        delegatedAgent,
+        delegation,
       };
     } catch (error) {
       return {
@@ -347,7 +399,50 @@ export class AdkBridgeClient {
     if (request.threadLabel) {
       payload.threadId = request.threadLabel;
     }
+    if (request.trace) {
+      payload.trace = {
+        traceId: request.trace.traceId,
+        parentRunId: request.trace.parentRunId,
+        ...(request.trace.childRunId ? { childRunId: request.trace.childRunId } : {}),
+        parentAgent: request.trace.parentAgent ?? 'abangcolek_ops',
+        ...(request.trace.delegatedAgent !== undefined ? { delegatedAgent: request.trace.delegatedAgent } : {}),
+      };
+    }
+    if (request.inheritedBudget) {
+      payload.budget = { ...request.inheritedBudget };
+    }
+    if (request.attachments && request.attachments.length > 0) {
+      payload.attachments = request.attachments.map(att => ({
+        evidenceId: att.evidenceId,
+        sha256: att.sha256,
+        mimeType: att.mimeType,
+        name: att.name,
+        permitted: att.permitted,
+        revoked: att.revoked,
+      }));
+    }
     return { message: request.message, payload };
+  }
+
+  private extractDelegatedAgent(
+    stateSnapshot: Record<string, unknown> | undefined,
+    toolCalls: AguiToolCall[],
+    request: AdkBridgeRunRequest
+  ): string | null {
+    if (typeof stateSnapshot?.delegatedAgent === 'string' && stateSnapshot.delegatedAgent.trim().length > 0) {
+      return stateSnapshot.delegatedAgent.trim();
+    }
+    const transferCall = toolCalls.find(tc => tc.name === 'transfer_to_agent');
+    if (transferCall && typeof transferCall.args === 'object' && transferCall.args !== null) {
+      const agentName = (transferCall.args as { agent_name?: unknown }).agent_name;
+      if (typeof agentName === 'string' && agentName.trim().length > 0) {
+        return agentName.trim();
+      }
+    }
+    if (typeof request.trace?.delegatedAgent === 'string' && request.trace.delegatedAgent.trim().length > 0) {
+      return request.trace.delegatedAgent.trim();
+    }
+    return null;
   }
 
   /** Label model yang jujur:ikut apa yang perkhidmatan 자체 laporkan. */

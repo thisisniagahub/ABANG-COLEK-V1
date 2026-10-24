@@ -870,4 +870,123 @@ describe('ADV-26 reconcile_action — resit terhadap keadaan platform', () => { 
     expect(reconciliation.result.status).toBe('consistent');
     expect(reconciliation.result.drifts).toEqual([]);
   });
+
+  test('CPK-06 & AI-03: Eksekutor universal untuk inventory.quarantine, task.create, campaign.draft + unknown_outcome', async () => {
+    const { registry, approvalStore, store, order } = buildHarness();
+    const approvalService = new ApprovalService(approvalStore);
+
+    // 1. inventory.quarantine (ADV-12 -> approve -> execute)
+    const quarantineProp = await registry.dispatchTool(
+      'propose_quarantine',
+      { lotId: 'lot-adv-001', reason: 'Kuarantin ujian CPK-06' },
+      ctxFor(STAFF_ID, 'staff'),
+    );
+    expect(quarantineProp.ok).toBe(true);
+    if (!quarantineProp.ok) return;
+    const qApproval = approvalService.approve({
+      proposalId: quarantineProp.result.proposalId as string,
+      approverId: FOUNDER_ID,
+      approverRole: 'founder',
+    });
+    const qExec = await registry.dispatchTool(
+      'execute_approved_action',
+      { proposalId: quarantineProp.result.proposalId, approvalId: qApproval.id },
+      ctxFor(FOUNDER_ID, 'founder'),
+    );
+    expect(qExec.ok).toBe(true);
+    if (qExec.ok) {
+      expect(qExec.result.status).toBe('confirmed');
+      expect(store.require<StockLot>('lots', 'lot-adv-001').status).toBe('quarantine');
+    }
+
+    // 2. task.create (ADV-30 -> approve -> execute)
+    const taskProp = await registry.dispatchTool(
+      'propose_task',
+      { entityId: order.id, title: 'Semak pesanan CPK-06', assigneeId: STAFF_ID },
+      ctxFor(STAFF_ID, 'staff'),
+    );
+    expect(taskProp.ok).toBe(true);
+    if (!taskProp.ok) return;
+    const tApproval = approvalService.approve({
+      proposalId: taskProp.result.proposalId as string,
+      approverId: FOUNDER_ID,
+      approverRole: 'founder',
+    });
+    const tExec = await registry.dispatchTool(
+      'execute_approved_action',
+      { proposalId: taskProp.result.proposalId, approvalId: tApproval.id },
+      ctxFor(FOUNDER_ID, 'founder'),
+    );
+    expect(tExec.ok).toBe(true);
+    if (tExec.ok) {
+      expect(tExec.result.status).toBe('confirmed');
+      expect(store.get('tasks', `task-${taskProp.result.proposalId}`)).not.toBeNull();
+    }
+
+    // 3. campaign.draft (ADV-32 -> approve -> execute)
+    const campProp = await registry.dispatchTool(
+      'draft_campaign',
+      {
+        title: 'Kempen CPK-06',
+        objective: 'Jualan Merdeka',
+        productIds: ['prod-adv-colek'],
+        marginSimulation: { netSalesExTaxSen: 10000, cogsSen: 4000 },
+      },
+      ctxFor(FOUNDER_ID, 'founder'),
+    );
+    expect(campProp.ok).toBe(true);
+    if (!campProp.ok) return;
+    const cApproval = approvalService.approve({
+      proposalId: campProp.result.draftId as string,
+      approverId: FOUNDER_ID,
+      approverRole: 'founder',
+    });
+    const cExec = await registry.dispatchTool(
+      'execute_approved_action',
+      { proposalId: campProp.result.draftId, approvalId: cApproval.id },
+      ctxFor(FOUNDER_ID, 'founder'),
+    );
+    expect(cExec.ok).toBe(true);
+    if (cExec.ok) {
+      expect(cExec.result.status).toBe('confirmed');
+      expect(store.get('campaigns', `cmp-${campProp.result.draftId}`)).not.toBeNull();
+    }
+
+    // 4. AI-03: unknown_outcome when execution outcome cannot be determined
+    const unknownProp = approvalService.createProposal({
+      kind: 'inventory.quarantine',
+      scope: 'lot:lot-adv-001#quarantine-unknown',
+      payload: { lotId: 'lot-adv-001', simulateIndeterminateOutcome: true },
+      amountSen: 0,
+      proposedBy: STAFF_ID,
+      proposerRole: 'staff',
+    });
+    const uApproval = approvalService.approve({
+      proposalId: unknownProp.id,
+      approverId: FOUNDER_ID,
+      approverRole: 'founder',
+    });
+    const uExec = await registry.dispatchTool(
+      'execute_approved_action',
+      { proposalId: unknownProp.id, approvalId: uApproval.id },
+      ctxFor(FOUNDER_ID, 'founder'),
+    );
+    expect(uExec.ok).toBe(false);
+    if (!uExec.ok) {
+      expect(uExec.code).toBe('EXECUTION_OUTCOME_UNKNOWN');
+    }
+    expect(approvalService.getProposal(unknownProp.id)!.status).toBe('unknown_outcome');
+    expect(approvalStore.findReceiptByProposal(unknownProp.id)).toBeNull();
+
+    // Blind retry on unknown_outcome is blocked until reconciled
+    const retryExec = await registry.dispatchTool(
+      'execute_approved_action',
+      { proposalId: unknownProp.id, approvalId: uApproval.id },
+      ctxFor(FOUNDER_ID, 'founder'),
+    );
+    expect(retryExec.ok).toBe(false);
+    if (!retryExec.ok) {
+      expect(retryExec.code).toBe('PROPOSAL_OUTCOME_UNKNOWN');
+    }
+  });
 });

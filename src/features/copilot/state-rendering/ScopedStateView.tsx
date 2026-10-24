@@ -119,6 +119,8 @@ export function ScopedStateView({ scope, snapshot }: ScopedStateViewProps) {
   }
 
   const selectedOrderId = safeText(data.selectedOrderId);
+  const entityRevision = safeValue(data.entityRevision);
+  const policyRevision = safeValue(data.policyRevision);
   const filters = projectFields(data.filters);
   const draft = projectFields(data.draft);
   const progress = asRecord(data.workflowProgress);
@@ -136,6 +138,8 @@ export function ScopedStateView({ scope, snapshot }: ScopedStateViewProps) {
 
   const hasState =
     Boolean(selectedOrderId) ||
+    entityRevision !== undefined ||
+    policyRevision !== undefined ||
     filters.length > 0 ||
     draft.length > 0 ||
     Boolean(workflowLabel && validProgress);
@@ -158,6 +162,26 @@ export function ScopedStateView({ scope, snapshot }: ScopedStateViewProps) {
           <h3 className="text-xs font-semibold text-[var(--ui-muted)]">Selected order</h3>
           <p className="break-all text-sm font-medium">{selectedOrderId}</p>
         </div>
+      )}
+      {(entityRevision !== undefined || policyRevision !== undefined) && (
+        <dl className="grid min-w-0 grid-cols-1 gap-2 rounded-lg border border-[var(--ui-border)] bg-[var(--ui-soft)] p-3 sm:grid-cols-2">
+          {entityRevision !== undefined && (
+            <div className="min-w-0">
+              <dt className="text-xs text-[var(--ui-muted)]">Entity revision</dt>
+              <dd className="break-words font-mono text-sm text-[var(--ui-text)]">
+                {displayValue(entityRevision)}
+              </dd>
+            </div>
+          )}
+          {policyRevision !== undefined && (
+            <div className="min-w-0">
+              <dt className="text-xs text-[var(--ui-muted)]">Policy revision</dt>
+              <dd className="break-words font-mono text-sm text-[var(--ui-text)]">
+                {displayValue(policyRevision)}
+              </dd>
+            </div>
+          )}
+        </dl>
       )}
       <FieldList title="Filters" fields={filters} />
       <FieldList title="Draft" fields={draft} />

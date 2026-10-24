@@ -230,6 +230,29 @@ Prinsip Operasi:
     return updated;
   }
 
+  /**
+   * Rekodkan keadaan `unknown_outcome` apabila pelaksanaan tindakan HITL yang
+   * diluluskan tidak dapat ditentukan keputusannya (AI-03). Tiada resit rekaan
+   * dikeluarkan dan percubaan semula buta disekat sehingga diselaraskan.
+   */
+  recordHitlUnknownOutcome(actor: Principal, actionId: string, reason?: string): HitlActionRequest {
+    this.auth.founder(actor);
+    const action = this.store.require<HitlActionRequest>('hitl_actions', actionId);
+    if (action.status !== 'approved') {
+      fail('HITL_NOT_APPROVED', 409, 'Hanya tindakan HITL berstatus approved boleh memasuki pelaksanaan.');
+    }
+    const updated: HitlActionRequest = {
+      ...action,
+      status: 'unknown_outcome',
+      reason: reason ?? action.reason,
+      executionReceipt: undefined,
+      executionBlockedReason: 'EXECUTION_OUTCOME_UNKNOWN',
+    };
+    this.store.save('hitl_actions', updated);
+    this.store.audit(actor.user.id, 'hitl.unknown_outcome', updated.id);
+    return updated;
+  }
+
   // -------------------------------------------------------------------------
   // Pembacaan sumber sebenar
   // -------------------------------------------------------------------------

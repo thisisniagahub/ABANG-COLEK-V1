@@ -17,6 +17,9 @@ import { Commerce } from '../../server/platform/commerce';
 import { Work } from '../../server/platform/work';
 import { EvidenceFiles } from '../../server/platform/evidenceFiles';
 import type { EvidenceRecord } from '../../shared/platform-contracts';
+import { CopilotV2Runtime } from '../../server/agents/copilot/runtime';
+import { STRICT_FREE_CANDIDATE_SEQUENCE } from '../../shared/copilot-contracts';
+import type { ModelAdapter, ModelAdapterRegistry } from '../../server/agents/providers/model-adapters';
 
 function buildHarness() {
   const directory = mkdtempSync(join(tmpdir(), 'abangcolek-attach-'));
@@ -200,6 +203,112 @@ describe('EXT-07 — attachment references', () => {
         code = (error as { code?: string }).code ?? '';
       }
       expect(code).toBe('FORBIDDEN');
+    } finally {
+      harness.store.close(); rmSync(harness.directory, { recursive: true, force: true });
+    }
+  });
+
+  test('CopilotV2Runtime passes permitted attachmentIds through and rejects revoked or unauthorized attachments', async () => {
+    const harness = buildHarness();
+    try {
+      const candidate = STRICT_FREE_CANDIDATE_SEQUENCE[0];
+      const mockAdapter: ModelAdapter = {
+        candidate,
+        transport: 'mock',
+        isConfigured: () => true,
+        credentialSource: () => 'MOCK_KEY',
+        call: async () => ({
+          content: 'Lampiran diterima sebagai rujukan metadata.',
+          model: candidate.model,
+          inputTokens: 32,
+          outputTokens: 12,
+        }),
+      };
+      const adapters: ModelAdapterRegistry = {
+        get: c => (c.model === candidate.model ? mockAdapter : undefined),
+        list: () => [mockAdapter],
+      };
+
+      const principalByUser = new Map<string, Principal>([
+        [harness.customer.user.id, harness.customer],
+        [harness.founder.user.id, harness.founder],
+      ]);
+
+      const runtime = new CopilotV2Runtime({
+        adapters,
+        attachmentResolver: (actor, ids) => {
+          const p = principalByUser.get(actor.userId);
+          if (!p) {
+            const err = new Error('Akses lampiran ditolak.') as Error & { code: string; status: number };
+            err.code = 'ATTACHMENT_PERMISSION_DENIED';
+            err.status = 403;
+            throw err;
+          }
+          return harness.evidenceFiles.attachmentReferences(p, ids);
+        },
+      });
+
+      // 1. Permitted attachment passes through with sha256 and explicit vision.available === false
+      const okReq = new Request('http://127.0.0.1:3000/api/platform/copilot/v2', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: 'Semak bukti pesanan' }],
+          attachmentIds: [harness.evidenceId],
+        }),
+      });
+      const okRes = await runtime.handleRequest(okReq, {
+        userId: harness.customer.user.id,
+        workspaceId: 'hq',
+        membershipVersion: 1,
+      });
+      expect(okRes.status).toBe(200);
+      const okJson = await okRes.json();
+      expect(okJson.status).toBe('completed');
+      expect(okJson.attachments).toHaveLength(1);
+      expect(okJson.attachments[0].evidenceId).toBe(harness.evidenceId);
+      expect(okJson.attachments[0].sha256).toBe('a'.repeat(64));
+      expect(okJson.attachments[0].permitted).toBe(true);
+      expect(okJson.attachments[0].revoked).toBe(false);
+      expect(okJson.vision?.available).toBe(false);
+      expect(okJson.vision?.reasonCode).toBe('QUALIFIED_VISION_MODEL_REQUIRED');
+
+      // 2. Stranger actor is rejected with 403 ATTACHMENT_PERMISSION_DENIED
+      const deniedReq = new Request('http://127.0.0.1:3000/api/platform/copilot/v2', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: 'Cuba baca lampiran orang lain' }],
+          attachmentIds: [harness.evidenceId],
+        }),
+      });
+      const deniedRes = await runtime.handleRequest(deniedReq, {
+        userId: 'usr-stranger-999',
+        workspaceId: 'hq',
+        membershipVersion: 1,
+      });
+      expect(deniedRes.status).toBe(403);
+      const deniedJson = await deniedRes.json();
+      expect(deniedJson.code).toBe('ATTACHMENT_PERMISSION_DENIED');
+
+      // 3. Revoked attachment is rejected with 409 ATTACHMENT_REVOKED
+      harness.evidenceFiles.revokeAttachment(harness.customer, harness.evidenceId, 'Ditarik balik');
+      const revokedReq = new Request('http://127.0.0.1:3000/api/platform/copilot/v2', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: 'Semak bukti yang telah ditarik balik' }],
+          attachmentIds: [harness.evidenceId],
+        }),
+      });
+      const revokedRes = await runtime.handleRequest(revokedReq, {
+        userId: harness.customer.user.id,
+        workspaceId: 'hq',
+        membershipVersion: 1,
+      });
+      expect(revokedRes.status).toBe(409);
+      const revokedJson = await revokedRes.json();
+      expect(revokedJson.code).toBe('ATTACHMENT_REVOKED');
     } finally {
       harness.store.close(); rmSync(harness.directory, { recursive: true, force: true });
     }

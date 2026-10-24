@@ -152,6 +152,12 @@ export const governanceTools: ToolDefinition[] = [
       if (proposal.status === 'cancelled') {
         return fail('PROPOSAL_CANCELLED', 'Cadangan telah dibatalkan.');
       }
+      if (proposal.status === 'unknown_outcome') {
+        return fail(
+          'PROPOSAL_OUTCOME_UNKNOWN',
+          'Keputusan pelaksanaan terdahulu tidak dapat ditentukan; jalankan penyelarasan (reconcile_action) sebelum mencuba semula.',
+        );
+      }
 
       // 7. Compare-and-swap: the approval must still match the current proposal version.
       if (approval.proposalVersion !== proposal.version) {
@@ -196,6 +202,18 @@ export const governanceTools: ToolDefinition[] = [
       );
       if (!outcome.ok) {
         // Roll the claim back so the action can be retried once the blocker is fixed.
+        if (outcome.code === 'EXECUTION_OUTCOME_UNKNOWN') {
+          ctx.runtime.approvalStore.saveProposal({
+            ...claimed,
+            status: 'unknown_outcome',
+            executedBy: ctx.actorId,
+            executedAt: now,
+          });
+          return fail(
+            'EXECUTION_OUTCOME_UNKNOWN',
+            outcome.message ?? 'Keputusan pelaksanaan tidak dapat ditentukan; rekod ditanda unknown_outcome tanpa resit.',
+          );
+        }
         ctx.runtime.approvalStore.saveProposal({ ...proposal, status: 'approved' });
         return fail(outcome.code ?? 'EXECUTION_FAILED', outcome.message ?? 'Pelaksanaan gagal.');
       }

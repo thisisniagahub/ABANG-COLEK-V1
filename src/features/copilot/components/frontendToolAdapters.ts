@@ -199,3 +199,78 @@ export function createFrontendToolAdapter(options: {
     },
   };
 }
+
+export interface AgentFrontendToolEnvelope {
+  eventId: unknown;
+  action: unknown;
+}
+
+export interface AgentFrontendRoundTripResult {
+  runId: string;
+  results: Array<{
+    eventId: string;
+    outcome: FrontendDispatchResult;
+  }>;
+}
+
+/**
+ * CPK-07: Extracts allowlisted frontend tool envelopes from an AG-UI event or
+ * agent run response so a live server round-trip can drive the frontend adapter.
+ */
+export function extractAguiFrontendToolActions(event: unknown): AgentFrontendToolEnvelope[] {
+  if (!isRecord(event)) return [];
+  const list: AgentFrontendToolEnvelope[] = [];
+  if (Array.isArray(event.frontendActions)) {
+    for (const entry of event.frontendActions) {
+      if (isRecord(entry) && 'eventId' in entry && 'action' in entry) {
+        list.push({ eventId: entry.eventId, action: entry.action });
+      }
+    }
+  }
+  if (event.type === 'TOOL_CALL_RESULT' && isRecord(event.result)) {
+    const result = event.result;
+    if (Array.isArray(result.frontendActions)) {
+      for (const entry of result.frontendActions) {
+        if (isRecord(entry) && 'eventId' in entry && 'action' in entry) {
+          list.push({ eventId: entry.eventId, action: entry.action });
+        }
+      }
+    } else if ('eventId' in result && 'action' in result) {
+      list.push({ eventId: result.eventId, action: result.action });
+    }
+  }
+  return list;
+}
+
+/**
+ * CPK-07: Executes a live agent run and dispatches all returned frontend tool
+ * envelopes through the typed capability-gated adapter.
+ */
+export async function runAgentFrontendToolRoundTrip(options: {
+  adapter: ReturnType<typeof createFrontendToolAdapter>;
+  invokeAgentRun: () => Promise<{
+    runId: string;
+    frontendActions?: readonly AgentFrontendToolEnvelope[];
+    events?: readonly unknown[];
+  }>;
+}): Promise<AgentFrontendRoundTripResult> {
+  const response = await options.invokeAgentRun();
+  const envelopes: AgentFrontendToolEnvelope[] = [
+    ...(response.frontendActions ?? []),
+  ];
+  for (const event of response.events ?? []) {
+    envelopes.push(...extractAguiFrontendToolActions(event));
+  }
+  const results: AgentFrontendRoundTripResult['results'] = [];
+  for (const envelope of envelopes) {
+    const outcome = await options.adapter.dispatch(envelope);
+    results.push({
+      eventId: typeof envelope.eventId === 'string' ? envelope.eventId : String(envelope.eventId ?? ''),
+      outcome,
+    });
+  }
+  return {
+    runId: response.runId,
+    results,
+  };
+}

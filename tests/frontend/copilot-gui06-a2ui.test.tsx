@@ -94,4 +94,32 @@ describe('GUI-06 fixed-schema A2UI', () => {
     expect(refund).not.toContain('2500');
     expect(refund).not.toContain('<button');
   });
+
+  test('GUI-06: validates AG-UI events through the startup-loaded versioned surface catalog middleware before rendering', async () => {
+    const implementation = await import(modulePath).catch(() => null);
+    expect(implementation).not.toBeNull();
+    if (!implementation) return;
+
+    const catalog = implementation.getClientStartupSurfaceCatalog();
+    expect(catalog).not.toBeNull();
+    expect(catalog?.catalogVersion).toBe('surface.catalog.2026-10-21.1');
+
+    const aguiEventOutcome = implementation.applyAguiSurfaceMiddleware({
+      type: 'STATE_SNAPSHOT',
+      snapshot: {
+        a2ui: envelope,
+      },
+    });
+    expect(aguiEventOutcome.ok).toBe(true);
+    if (aguiEventOutcome.ok) {
+      expect(aguiEventOutcome.surfaceId).toBe('operations.brief');
+      expect(aguiEventOutcome.catalogVersion).toBe('surface.catalog.2026-10-21.1');
+    }
+
+    const unavailableOutcome = implementation.applyAguiSurfaceMiddleware(envelope, null);
+    expect(unavailableOutcome).toEqual({
+      ok: false,
+      reason: 'SURFACE_CATALOG_UNAVAILABLE',
+    });
+  });
 });

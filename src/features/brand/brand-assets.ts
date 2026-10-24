@@ -7,9 +7,9 @@ export const BRAND_ASSETS = {
     height: 880,
   },
   world: {
-    src: '/assets/brand/abangcolek-world-v2.webp',
-    width: 1774,
-    height: 887,
+    src: '/assets/world/scene-1-dapur.webp',
+    width: 1536,
+    height: 1024,
   },
   worldScenes: [
     { id: 'dapur', src: '/assets/world/scene-1-dapur.webp', width: 1536, height: 1024 },
@@ -21,14 +21,14 @@ export const BRAND_ASSETS = {
   ],
   founder: {
     primary: {
-      src: '/assets/brand/FOUNDER.png',
-      alt: 'Foto pengasas ABANG COLEK (utama)',
+      src: '/assets/brand/ABANG-COLEX-LOGO-2.png',
+      alt: 'Logo identiti pengasas ABANG COLEK (utama)',
       width: 1024,
       height: 1024,
     },
     secondary: {
-      src: '/assets/brand/FOUNDER2.png',
-      alt: 'Foto pengasas ABANG COLEK (kedua)',
+      src: '/assets/brand/ABANG-COLEX-LOGO-3.png',
+      alt: 'Logo identiti pengasas ABANG COLEK (kedua)',
       width: 1024,
       height: 1024,
     },

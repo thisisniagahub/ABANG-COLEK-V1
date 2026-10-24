@@ -3,6 +3,13 @@ import {
   validateA2UIComponent,
   type A2UIComponentName,
 } from '../../../../shared/copilot-contracts';
+import {
+  SURFACE_CATALOG_SCHEMA_VERSION,
+  SURFACE_PAYLOAD_SCHEMA_VERSION,
+  validateSurfaceCatalog,
+  type SurfaceCatalog,
+  type SurfaceRefusalReason,
+} from '../../../../shared/surface-contracts';
 import type { DealerCommissionSummary } from '../../../../shared/growth-contracts';
 import { CommissionSummaryCard } from '../cards/CommissionSummaryCard';
 import { JevAssessmentCard } from '../cards/JevAssessmentCard';
@@ -12,6 +19,78 @@ import {
 } from '../cards/MarginSummaryCard';
 import { OrderSummaryCard } from '../cards/OrderSummaryCard';
 import { OperationsBriefApp, OPERATIONS_BRIEF_READ_ONLY_NOTICE, parseOperationsBrief } from '../mcp-apps/OperationsBriefApp';
+
+/**
+ * GUI-06: Startup-loaded versioned declarative surface catalog on the client renderer path.
+ */
+export const CLIENT_SURFACE_CATALOG_DOCUMENT = {
+  catalogVersion: 'surface.catalog.2026-10-21.1',
+  schemaVersion: SURFACE_CATALOG_SCHEMA_VERSION,
+  limits: { maxDepth: 8, maxNodes: 256 },
+  surfaces: [
+    { surfaceId: 'operations.brief', component: 'OperationsBriefCard', schemaVersion: SURFACE_PAYLOAD_SCHEMA_VERSION, maxDepth: 1, maxNodes: 1, description: 'Taklimat operasi baca sahaja.' },
+    { surfaceId: 'refund.impact', component: 'RefundImpactPanel', schemaVersion: SURFACE_PAYLOAD_SCHEMA_VERSION, maxDepth: 1, maxNodes: 1, description: 'Impak refund pada pesanan.' },
+    { surfaceId: 'jev.assessment', component: 'JevAssessmentCard', schemaVersion: SURFACE_PAYLOAD_SCHEMA_VERSION, maxDepth: 1, maxNodes: 1, description: 'Penilaian JEV untuk isu kualiti.' },
+    { surfaceId: 'margin.simulator', component: 'MarginSimulator', schemaVersion: SURFACE_PAYLOAD_SCHEMA_VERSION, maxDepth: 1, maxNodes: 1, description: 'Simulasi margin kanonik.' },
+    { surfaceId: 'margin.summary', component: 'MarginSummaryCard', schemaVersion: SURFACE_PAYLOAD_SCHEMA_VERSION, maxDepth: 1, maxNodes: 1, description: 'Ringkasan margin.' },
+    { surfaceId: 'order.tracking.badge', component: 'OrderTrackingBadge', schemaVersion: SURFACE_PAYLOAD_SCHEMA_VERSION, maxDepth: 1, maxNodes: 1, description: 'Lencana status penjejakan pesanan.' },
+    { surfaceId: 'order.tracking.card', component: 'OrderTrackingCard', schemaVersion: SURFACE_PAYLOAD_SCHEMA_VERSION, maxDepth: 1, maxNodes: 1, description: 'Kad status penjejakan pesanan.' },
+    { surfaceId: 'commission.summary', component: 'CommissionCard', schemaVersion: SURFACE_PAYLOAD_SCHEMA_VERSION, maxDepth: 1, maxNodes: 1, description: 'Ringkasan komisen ejen.' },
+  ],
+} as const;
+
+const STARTUP_SURFACE_CATALOG_OUTCOME = validateSurfaceCatalog(CLIENT_SURFACE_CATALOG_DOCUMENT);
+
+export function getClientStartupSurfaceCatalog(): SurfaceCatalog | null {
+  return STARTUP_SURFACE_CATALOG_OUTCOME.ok ? STARTUP_SURFACE_CATALOG_OUTCOME.catalog : null;
+}
+
+export type AguiSurfaceMiddlewareResult =
+  | { ok: true; catalogVersion: string; surfaceId: string; envelope: FixedA2UIEnvelope }
+  | { ok: false; reason: SurfaceRefusalReason | 'oversized' | 'malformed' | 'unknown-component' };
+
+/**
+ * GUI-06: AG-UI -> renderer middleware path. Validates the incoming AG-UI surface event or
+ * A2UI envelope against the startup-loaded versioned surface catalog before rendering.
+ */
+export function applyAguiSurfaceMiddleware(
+  eventOrPayload: unknown,
+  catalog: SurfaceCatalog | null = getClientStartupSurfaceCatalog(),
+): AguiSurfaceMiddlewareResult {
+  if (!catalog) {
+    return { ok: false, reason: 'SURFACE_CATALOG_UNAVAILABLE' };
+  }
+  const candidate =
+    eventOrPayload !== null &&
+    typeof eventOrPayload === 'object' &&
+    !Array.isArray(eventOrPayload) &&
+    'type' in eventOrPayload &&
+    ((eventOrPayload as Record<string, unknown>).type === 'STATE_SNAPSHOT' ||
+      (eventOrPayload as Record<string, unknown>).type === 'TOOL_CALL_RESULT')
+      ? ((eventOrPayload as Record<string, any>).snapshot?.a2ui ??
+          (eventOrPayload as Record<string, any>).snapshot?.surface ??
+          (eventOrPayload as Record<string, any>).result?.a2ui ??
+          (eventOrPayload as Record<string, any>).result?.surface ??
+          eventOrPayload)
+      : eventOrPayload;
+
+  const parsed = parseA2UIFixedSchema(candidate);
+  if (parsed.ok === false) {
+    return { ok: false, reason: parsed.reason };
+  }
+  const surface = catalog.surfaces.find(
+    (entry) => entry.component === parsed.value.component && entry.schemaVersion === parsed.value.schemaVersion,
+  );
+  if (!surface) {
+    return { ok: false, reason: 'SURFACE_UNKNOWN_SURFACE_ID' };
+  }
+  return {
+    ok: true,
+    catalogVersion: catalog.catalogVersion,
+    surfaceId: surface.surfaceId,
+    envelope: parsed.value,
+  };
+}
 
 type ProvenanceSource = 'local_authoritative' | 'canonical_evaluator' | 'jev_local_rules' | 'database';
 type A2UIActionType = 'approve' | 'reject' | 'navigate' | 'recheck';
@@ -66,13 +145,6 @@ const marginStatuses = [
 const trackingStages = ['draft', 'accepted', 'packing', 'dispatched', 'received'] as const;
 const jevEvaluationStates = ['reviewed', 'pending_quarantine'] as const;
 
-/**
- * Senarai prop yang boleh dipaparkan bagi setiap komponen.
- *
- * Medan yang TIDAK berada dalam senarai ini diabaikan sepenuhnya dan tidak
- * pernah dipaparkan. Senarai ini ialah satu-satunya gate: renderer hanya
- * mem projecting medan yang dibenarkan.
- */
 const JEV_ASSESSMENT_PROPS = [
   'issueClass',
   'rootCause',
@@ -112,15 +184,6 @@ const MARGIN_SUMMARY_PROPS = [
 
 const OPERATIONS_BRIEF_PROPS = ['title', 'briefDate', 'metrics', 'readOnlyNotice'] as const;
 
-/**
- * Prop RefundImpactPanel yang dipaparkan.
- *
- * `orderId`, `orderResolutionReason`, `refundIntentReason` dan
- * `provenanceDetail` dihantar oleh pelayan sebagai konteks kanonik. Ia
- * TIDAK pernah menjadikan kad lebih berkuasa — amaun kewangan tetap
- * withholding sehingga ada resit kanonik — tetapi ia mesti tidak menjatuhkan
- * kad kepada "malformed".
- */
 const REFUND_IMPACT_PROPS = [
   'issueClass',
   'rootCause',
@@ -299,15 +362,6 @@ function isAllowedProps(props: Record<string, unknown>, allowed: readonly string
   return Object.keys(props).every((key) => allowed.includes(key));
 }
 
-/**
- * Memilih HANYA prop yang berada dalam senarai allowlist.
- *
- * Medan yang tidak disokong oleh kontrak (contoh `evaluator`,
- * `incidentType` atau `provenanceDetail` yang dihantar oleh versi pelayan
- * yang lebih lama) DIABAIKAN — ia tidak pernah dipaparkan, tetapi ia juga
- * tidak lagi menjatuhkan keseluruhan kad. "Insufficient data" muncul hanya
- * apabila medan yang benar-benar diperlukan tiada.
- */
 function pickAllowedProps(
   props: Record<string, unknown>,
   allowed: readonly string[],
@@ -334,7 +388,6 @@ function safeInteger(value: unknown): value is number {
   return typeof value === 'number' && Number.isSafeInteger(value);
 }
 
-/** A null confidence is an explicit "no calibrated model" state; a number is only kept inside 0..1. */
 function safeConfidence(value: unknown): number | null | undefined {
   if (value === null) return null;
   if (typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 1) return value;
@@ -370,6 +423,7 @@ function isTrackingProps(props: Record<string, unknown>): props is Record<string
     && safeInteger(props.expiryDaysRemaining)
     && props.expiryDaysRemaining >= 0;
 }
+
 function sourceProps(envelope: FixedA2UIEnvelope) {
   return {
     source: envelope.provenance.source,
@@ -400,9 +454,6 @@ function TrackingProjection({ envelope }: { envelope: FixedA2UIEnvelope }) {
 }
 
 function RefundImpactPanel({ envelope }: { envelope: FixedA2UIEnvelope }) {
-  // Allowlist "pilih sahaja": prop yang tidak disokong (contoh `evaluator`
-  // atau `provenanceDetail` versi lama) diabaikan — ia tidak lagi menjatuhkan
-  // kad kepada "malformed" apabila data yang diperlukan memang ada.
   const props = pickAllowedProps(envelope.props, REFUND_IMPACT_PROPS);
   const valid = safeLabel(props.issueClass, jevIssueClasses)
     && safeLabel(props.rootCause, jevRootCauses)
@@ -412,9 +463,6 @@ function RefundImpactPanel({ envelope }: { envelope: FixedA2UIEnvelope }) {
     && (props.sopAction === undefined
       || (typeof props.sopAction === 'string' && props.sopAction.length <= 500));
 
-  // Konteks pesanan hanya dipaparkan apabila pelayan benar-benar resolved
-  // satu pesanan. `UNRESOLVED` ialah sentinel pelayan — ia TIDAK dipaparkan
-  // sebagai ID pesanan.
   const orderId = typeof props.orderId === 'string' && props.orderId.trim().length > 0
     && props.orderId !== 'UNRESOLVED'
     ? props.orderId
@@ -481,17 +529,19 @@ export interface A2UIFixedRendererProps {
 }
 
 export function A2UIFixedRenderer({ payload }: A2UIFixedRendererProps) {
-  const parsed = parseA2UIFixedSchema(payload);
-  if (parsed.ok === false) {
-    const message = parsed.reason === 'unknown-component'
+  const middlewareOutcome = applyAguiSurfaceMiddleware(payload);
+  if (middlewareOutcome.ok === false) {
+    const message = middlewareOutcome.reason === 'unknown-component'
+      || middlewareOutcome.reason === 'SURFACE_UNKNOWN_SURFACE_ID'
+      || middlewareOutcome.reason === 'SURFACE_COMPONENT_NOT_ALLOWLISTED'
       ? 'This A2UI component is not allowlisted.'
-      : parsed.reason === 'oversized'
+      : middlewareOutcome.reason === 'oversized'
         ? 'This A2UI payload exceeds the display limit.'
         : 'This A2UI payload is malformed and was not rendered.';
     return <RendererFallback reason={message} />;
   }
 
-  const { value: envelope } = parsed;
+  const { envelope } = middlewareOutcome;
   const props = envelope.props;
   const provenance = sourceProps(envelope);
 
@@ -514,10 +564,6 @@ export function A2UIFixedRenderer({ payload }: A2UIFixedRendererProps) {
     case 'RefundImpactPanel':
       return <RefundImpactPanel envelope={envelope} />;
     case 'JevAssessmentCard': {
-      // BL-26: `issueClass` mesti dipaparkan apabila dihantar, dan medan
-      // yang tidak disokong (contoh `incidentType` versi lama) hanya
-      // diabaikan — ia tidak lagi menjatuhkan kad kepada "insufficient data"
-      // apabila data yang diperlukan memang ada.
       const selected = pickAllowedProps(props, JEV_ASSESSMENT_PROPS);
       return (
         <JevAssessmentCard
@@ -537,9 +583,6 @@ export function A2UIFixedRenderer({ payload }: A2UIFixedRendererProps) {
     }
     case 'MarginSimulator': {
       const selected = pickAllowedProps(props, MARGIN_SIMULATOR_PROPS);
-      // Alias kanonikal daripada kontrak shared: `minMarginSen` /
-      // `minMarginPercent` ialah nama yang sama seperti ambang tunai dan
-      // ambang peratusan.
       const requiredContributionSen = safeInteger(selected.requiredContributionSen)
         ? selected.requiredContributionSen
         : (safeInteger(selected.minMarginSen) ? selected.minMarginSen : undefined);
@@ -561,9 +604,6 @@ export function A2UIFixedRenderer({ payload }: A2UIFixedRendererProps) {
       );
     }
     case 'MarginSummaryCard': {
-      // BL-24b: komponen ini membawa kegagalan input yang berjenis. Ia mesti
-      // dipaparkan sebagai "input tidak disediakan" / "input tidak sah"
-      // together with the invalid keys — never a 0% margin.
       const selected = pickAllowedProps(props, MARGIN_SUMMARY_PROPS);
       const failure = parseMarginInputFailure(selected);
       const simulationPerformed = selected.simulationPerformed === true
@@ -591,8 +631,6 @@ export function A2UIFixedRenderer({ payload }: A2UIFixedRendererProps) {
     case 'OrderTrackingBadge':
       return <TrackingProjection envelope={envelope} />;
     case 'OrderTrackingCard': {
-      // Kad ini hanya membawa "tidak dijumpai" — pelayan tidak menghantar
-      // unjuran pesanan, jadi kad tidak boleh menunjukkan pesanan rekaan.
       const selected = pickAllowedProps(props, ORDER_TRACKING_CARD_PROPS);
       const reasonCode = typeof selected.reasonCode === 'string' && selected.reasonCode.length > 0
         ? selected.reasonCode.slice(0, 64)

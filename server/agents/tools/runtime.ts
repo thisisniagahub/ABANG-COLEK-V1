@@ -12,7 +12,7 @@ import type { ApprovalStore } from '../approval/store';
 import { ApprovalService } from '../approval/service';
 import { getDefaultApprovalStore } from '../approval/singleton';
 import { ExecutorRegistry } from '../executor/registry';
-import { RefundExecutor } from '../executor/refund';
+import { registerDefaultExecutors } from '../executor/domainExecutors';
 
 export type ToolRole = 'customer' | 'staff' | 'founder' | 'developer';
 
@@ -48,7 +48,7 @@ export interface CreateRuntimeOptions {
 export function createToolRuntime(options: CreateRuntimeOptions = {}): ToolRuntime {
   const approvalStore = options.approvalStore ?? getDefaultApprovalStore();
   const executors = options.executors ?? new ExecutorRegistry();
-  if (!executors.has('refund.execute')) executors.register(new RefundExecutor());
+  registerDefaultExecutors(executors);
   return {
     store: options.store,
     approvalStore,
