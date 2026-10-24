@@ -26,7 +26,7 @@ for (const role of ['founder', 'customer', 'staff', 'developer'] as const) {
   if (role === 'staff' || role === 'developer') await command('/people/grants', { userId: accounts[role].userId, role, outletIds: role === 'staff' ? ['hq'] : [], expectedVersion: 0 });
 }
 const product = (await command('/catalogue', { name: 'QA Colek', description: 'Browser acceptance fixture — isolated test database.', priceSen: 2800, packSize: 1, publish: true })).data;
-await command('/inventory/receive', { productId: product.id, ownerId: 'business', locationId: 'hq', quantity: 20, reason: 'QA opening stock', status: 'available' });
+await command('/inventory/receive', { productId: product.id, ownerId: 'business', locationId: 'hq', quantity: 500, reason: 'QA opening stock', status: 'available' });
 writeFileSync('var/run/e2e-fixture.json', JSON.stringify({ ...accounts, productId: product.id, runtime, origin }), { mode: 0o600 });
 const server = Bun.serve({ hostname: '127.0.0.1', port: 3011, fetch: app.fetch, maxRequestBodySize: 11 * 1024 * 1024 });
 const timer = setInterval(() => { const job = app.jobs.claimJob('qa-worker'); if (job) app.jobs.executeLocal(job.id, 'qa-worker'); }, 1000);

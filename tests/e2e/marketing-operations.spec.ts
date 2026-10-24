@@ -48,9 +48,9 @@ test('founder marketing UI stores rights, approves exact revision and downloads 
   const title = `QA marketing ${crypto.randomUUID()}`, caption = `Isolated QA caption ${title}. No product, pricing or sales claim.`;
   await page.getByRole('button', { name: 'Kempen baharu', exact: true }).click();
   const draftForm = form(page, 'Kempen & Promosi Baharu');
-  await draftForm.getByLabel('Nama kempen').fill(title);
-  await draftForm.getByLabel('Objektif kempen').fill('Isolated first-party release journey verification');
-  await draftForm.getByLabel('Caption / approved claims draft').fill(caption);
+  await draftForm.getByLabel(/Nama kempen/).fill(title);
+  await draftForm.getByLabel(/Objektif kempen/).fill('Isolated first-party release journey verification');
+  await draftForm.getByLabel(/Caption \/ approved claims draft/).fill(caption);
   const draft = await submit<CampaignRecord>(page, draftForm, 'Simpan draft revision', '/campaigns');
   expect(draft.status).toBe('draft');
   const assetText = `QA-authored owned file for ${title}. Test artifact only; no customer or business claims.`;

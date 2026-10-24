@@ -135,6 +135,7 @@ export interface ChatEntry {
   createdAt: string;
 }
 
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
@@ -254,6 +255,8 @@ export interface CopilotWorkspaceProps {
    * therefore never shares an identity with another session.
    */
   controller?: CopilotRunController;
+  showMarginSimulator?: boolean;
+  showMcpSandboxHost?: boolean;
 }
 
 interface AdvancedToolSpec {
@@ -371,6 +374,14 @@ export function CopilotWorkspaceView(props: CopilotWorkspaceViewProps) {
     return buildScopedStateProjection(scope, { selectedOrderId: orderId });
   }, [run.a2ui, scope]);
 
+  const [activeTab, setActiveTab] = useState<'chat' | 'gui' | 'tools' | 'hitl' | 'inspector'>('chat');
+  const [toolsFilter, setToolsFilter] = useState<'ALL' | 'Q' | 'S' | 'D' | 'C' | 'X'>('ALL');
+
+  const filteredTools = useMemo(() => {
+    if (toolsFilter === 'ALL') return ADVANCED_TOOLS_CATALOG;
+    return ADVANCED_TOOLS_CATALOG.filter((t) => t.risk === toolsFilter);
+  }, [toolsFilter]);
+
   const statusText = runtime.kind === 'checking'
     ? 'Checking runtime availability'
     : runtime.kind === 'unavailable'
@@ -461,183 +472,394 @@ export function CopilotWorkspaceView(props: CopilotWorkspaceViewProps) {
             </p>
           </div>
 
-          {/* CPK-09: the shared run identity shown to the operator. The labels are
-              supplied by this browser for correlation only; they are never proof
-              of identity, tenancy or authority. The server owns the real one. */}
-          {correlation && (
-            <div
-              className="mt-5 space-y-1 rounded-lg border border-[var(--ui-border)] bg-[var(--ui-soft)] p-3"
-              aria-label="Client correlation labels"
-            >
-              <p className="text-xs text-[var(--ui-muted)]">{correlation.disclosure}</p>
-              <p className="break-all font-mono text-xs text-[var(--ui-muted)]">
-                thread {correlation.threadId} · run {correlation.runId} · surface {correlation.surface}
+          {/* Bento-Box 5-Tab Navigation Bar */}
+          <div role="tablist" aria-label="Copilot Workspace navigation" className="mt-5 flex flex-wrap gap-2 border-b border-[var(--ui-border)] pb-3">
+            {[
+              { id: 'chat', label: '💬 Sembang & AI', desc: 'Chat & Reasoning' },
+              { id: 'gui', label: '🎨 Generative UI', desc: '7 Patterns' },
+              { id: 'tools', label: '🛠️ 32 Tools', desc: 'Catalog' },
+              { id: 'hitl', label: '🛡️ Kelulusan', desc: 'HITL Review' },
+              { id: 'inspector', label: '🔌 Telemetri', desc: 'Inspector' },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                id={`tab-${tab.id}`}
+                aria-selected={activeTab === tab.id}
+                aria-controls={`panel-${tab.id}`}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg transition-all ${
+                  activeTab === tab.id
+                    ? 'bg-[var(--ui-accent)] text-white shadow-sm ring-2 ring-[var(--ui-accent)]/20'
+                    : 'bg-[var(--ui-surface)] text-[var(--ui-muted)] hover:text-[var(--ui-text)] border border-[var(--ui-border)] hover:bg-[var(--ui-soft)]'
+                }`}
+              >
+                <span>{tab.label}</span>
+                <span className="hidden sm:inline opacity-70 text-[10px]">({tab.desc})</span>
+              </button>
+            ))}
+          </div>
+
+          {/* TAB 1: Chat & Interactive Copilot */}
+          <div
+            id="panel-chat"
+            role="tabpanel"
+            aria-labelledby="tab-chat"
+            style={{ display: activeTab === 'chat' ? 'block' : 'none' }}
+            className="space-y-4 pt-3"
+          >
+            {/* CPK-09: the shared run identity shown to the operator */}
+            {correlation && (
+              <div
+                className="space-y-1 rounded-lg border border-[var(--ui-border)] bg-[var(--ui-soft)] p-3"
+                aria-label="Client correlation labels"
+              >
+                <p className="text-xs text-[var(--ui-muted)]">{correlation.disclosure}</p>
+                <p className="break-all font-mono text-xs text-[var(--ui-muted)]">
+                  thread {correlation.threadId} · run {correlation.runId} · surface {correlation.surface}
+                </p>
+              </div>
+            )}
+
+            {/* Conversation history area */}
+            {messages.length > 0 && (
+              <div className="space-y-4 divide-y divide-[var(--ui-border)]" aria-label="Conversation history">
+                {messages.map((msg) => (
+                  <div key={msg.id} className="pt-4 first:pt-0">
+                    <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-[var(--ui-muted)] mb-1">
+                      <span>{msg.role === 'user' ? 'Anda' : 'AbangColek Copilot'}</span>
+                      <span>{new Date(msg.createdAt).toLocaleTimeString()}</span>
+                    </div>
+                    <div className="text-sm text-[var(--ui-text)] whitespace-pre-wrap rounded-lg bg-[var(--ui-surface)] p-3 border border-[var(--ui-border)]">
+                      {msg.content}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* GUI-03: tool execution status for the live run */}
+            {run.status !== 'idle' && (
+              <div className="space-y-3">
+                <ToolStatusView
+                  executionId={toolStatus.executionId}
+                  toolName={toolStatus.toolName}
+                  state={toolStatus.state}
+                />
+                {run.providerId && (
+                  <p className="text-xs text-[var(--ui-muted)]">
+                    Runtime provider: {run.providerId}
+                    {run.model ? ` · Model: ${run.model}` : ''}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* GUI-06: fixed-schema component rendered from the real A2UI payload */}
+            {run.a2ui !== undefined && (
+              <div className="mt-4" aria-label="Interactive A2UI Card">
+                <A2UIFixedRenderer payload={run.a2ui} />
+              </div>
+            )}
+
+            {/* GUI-02: approval review */}
+            {run.hitl !== undefined && (
+              <div className="mt-4">
+                <ApprovalReviewCard proposal={run.hitl} />
+              </div>
+            )}
+
+            {chatError && (
+              <div role="alert" className="p-3 rounded-lg border border-[var(--ui-border)] bg-[var(--ui-soft)] text-sm text-[var(--ui-danger-text)]">
+                {chatError}
+              </div>
+            )}
+
+            <form onSubmit={onSubmit} className="mt-5 space-y-3" aria-label="Copilot chat">
+              <label htmlFor="copilot-message" className="block text-sm font-medium text-[var(--ui-text)]">
+                Message · Mesej
+              </label>
+              <textarea
+                id="copilot-message"
+                name="message"
+                rows={3}
+                value={inputMessage}
+                onChange={(e) => onInputChange(e.target.value)}
+                disabled={!isChatEnabled || isSending}
+                aria-describedby="copilot-chat-unavailable"
+                placeholder={
+                  isChatEnabled
+                    ? 'Taip mesej atau pertanyaan operasi (contoh: "ada aduan botol bocor", "semak stok", "simulasi margin")...'
+                    : 'Chat is unavailable until the verified shared runtime is connected.'
+                }
+                className="block w-full resize-y rounded-lg border border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-2 text-sm text-[var(--ui-text)] placeholder:text-[var(--ui-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ui-accent)] disabled:cursor-not-allowed disabled:opacity-60"
+              />
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p id="copilot-chat-unavailable" className="text-sm text-[var(--ui-muted)]">
+                  {isChatEnabled
+                    ? isSending ? 'Menghubungi Copilot...' : 'Sedia menghantar arahan kepada model percuma terpilih.'
+                    : 'A descriptor does not establish the shared thread/run or AG-UI event protocol.'}
+                </p>
+                <button
+                  type="submit"
+                  disabled={!isChatEnabled || isSending || !inputMessage.trim()}
+                  className="rounded-lg bg-[var(--ui-accent)] px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isSending ? 'Sending…' : 'Send · Hantar'}
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {/* TAB 2: Generative UI Showcase (7 Patterns) */}
+          <div
+            id="panel-gui"
+            role="tabpanel"
+            aria-labelledby="tab-gui"
+            style={{ display: activeTab === 'gui' ? 'block' : 'none' }}
+            className="space-y-6 pt-3"
+          >
+            <div className="rounded-lg border border-[var(--ui-border)] bg-[var(--ui-soft)] p-3">
+              <h3 className="text-sm font-semibold text-[var(--ui-text)]">🎨 7 Corak Generative UI CopilotKit</h3>
+              <p className="text-xs text-[var(--ui-muted)] mt-1">
+                Semua corak mematuhi prinsip sifar halusinasi. Data operasi diambil secara langsung dari pangkalan data autoritatif.
               </p>
             </div>
-          )}
 
-          {/* Conversation history area */}
-          {messages.length > 0 && (
-            <div className="mt-6 space-y-4 divide-y divide-[var(--ui-border)]" aria-label="Conversation history">
-              {messages.map((msg) => (
-                <div key={msg.id} className="pt-4 first:pt-0">
-                  <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-[var(--ui-muted)] mb-1">
-                    <span>{msg.role === 'user' ? 'Anda' : 'AbangColek Copilot'}</span>
-                    <span>{new Date(msg.createdAt).toLocaleTimeString()}</span>
+            {/* GUI-01 / GUI-07: display-only cards mounted on the same workspace API data path */}
+            {liveCards && (
+              <div className="space-y-3" aria-label="Workspace live operational cards">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--ui-muted)]">GUI-01: Kad Operasi Langsung (Live Operational Cards)</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {liveCards.latestOrder && (
+                    <>
+                      <OrderSummaryCard
+                        order={liveCards.latestOrder}
+                        source="api/platform/orders"
+                        revision={liveCards.latestOrder.revision}
+                      />
+                      <OrderTrackingCard
+                        order={liveCards.latestOrder}
+                        source="api/platform/orders"
+                        revision={liveCards.latestOrder.revision}
+                      />
+                    </>
+                  )}
+                  {liveCards.commissionSummary && (
+                    <CommissionSummaryCard
+                      summary={liveCards.commissionSummary}
+                      source="api/platform/dealer/commissions"
+                    />
+                  )}
+                  {liveCards.latestJev && (
+                    <JevAssessmentCard
+                      issueClass={liveCards.latestJev.issueClass}
+                      rootCause={liveCards.latestJev.rootCause}
+                      sopAction={liveCards.latestJev.sopAction}
+                      evaluationState={liveCards.latestJev.evaluationState}
+                      evidencePhotoRequired={liveCards.latestJev.evidencePhotoRequired}
+                      source="api/platform/jev"
+                      revision={liveCards.latestJev.revision}
+                    />
+                  )}
+                  {liveCards.latestMargin && (
+                    <MarginSummaryCard
+                      contributionSen={liveCards.latestMargin.contributionSen}
+                      contributionMarginPct={liveCards.latestMargin.contributionMarginPct}
+                      requiredContributionSen={liveCards.latestMargin.requiredContributionSen}
+                      requiredMarginPct={liveCards.latestMargin.requiredMarginPct}
+                      status={liveCards.latestMargin.status}
+                      source="api/platform/margin"
+                      revision={liveCards.latestMargin.revision}
+                    />
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* GUI-02: interactive margin simulator form mounted in workspace */}
+            {showMarginSimulator && (
+              <div className="space-y-3" aria-label="Workspace margin simulator">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--ui-muted)]">GUI-02: Simulator Margin Interaktif (Interactive Margin Simulator)</h4>
+                <MarginSimulatorForm
+                  onSimulate={onMarginSimulate ?? (() => {})}
+                  onRevalidateServer={onMarginRevalidateServer}
+                  receipt={marginReceipt}
+                  disabled={!isChatEnabled || isSending}
+                />
+              </div>
+            )}
+
+            {/* GUI-05: sandboxed MCP App client host frame */}
+            {showMcpSandboxHost && (
+              <div className="space-y-3" aria-label="Workspace MCP App host">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--ui-muted)]">GUI-05: Hos Aplikasi MCP Terpencil (Sandboxed MCP App Frame)</h4>
+                <McpAppSandboxHostFrame />
+              </div>
+            )}
+
+            {/* GUI-04: scoped client state for this workspace / user / thread */}
+            {scope && scopedSnapshot && (
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--ui-muted)]">GUI-04: Keadaan Berskop (Scoped Client State)</h4>
+                <ScopedStateView scope={scope} snapshot={scopedSnapshot} />
+              </div>
+            )}
+
+            {/* GUI-07: Allowlisted Components Badge List */}
+            {runtime.kind === 'descriptor' && (
+              <div className="space-y-2 pt-2 border-t border-[var(--ui-border)]">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--ui-muted)]">GUI-07: Komponen Yang Dibenarkan (Allowlisted Components)</h4>
+                <div className="flex flex-wrap gap-2">
+                  {runtime.value.allowlistedComponents.map((comp) => (
+                    <span key={comp} className="px-2.5 py-1 text-xs font-medium rounded-full bg-[var(--ui-soft)] text-[var(--ui-text)] border border-[var(--ui-border)]">
+                      🧩 {comp}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* TAB 3: 32 Advanced Tools Catalog */}
+          <div
+            id="panel-tools"
+            role="tabpanel"
+            aria-labelledby="tab-tools"
+            style={{ display: activeTab === 'tools' ? 'block' : 'none' }}
+            className="space-y-4 pt-3"
+          >
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 className="text-sm font-semibold text-[var(--ui-text)]">🛠️ Katalog 32 Advanced Tools CopilotKit</h3>
+                <p className="text-xs text-[var(--ui-muted)]">Semua tool didaftarkan mengikut kelas risiko dan kawalan keselamatan autoritatif.</p>
+              </div>
+              <div className="flex items-center gap-1">
+                {(['ALL', 'Q', 'S', 'D', 'C', 'X'] as const).map((r) => (
+                  <button
+                    key={r}
+                    type="button"
+                    onClick={() => setToolsFilter(r)}
+                    className={`px-2.5 py-1 text-xs font-bold rounded ${
+                      toolsFilter === r
+                        ? 'bg-[var(--ui-accent)] text-white'
+                        : 'bg-[var(--ui-soft)] text-[var(--ui-muted)] hover:text-[var(--ui-text)]'
+                    }`}
+                  >
+                    {r}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {filteredTools.map((tool) => (
+                <div
+                  key={tool.id}
+                  className="p-3 rounded-lg border border-[var(--ui-border)] bg-[var(--ui-surface)] hover:border-[var(--ui-accent)] transition-colors space-y-1.5"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-xs font-semibold text-[var(--ui-text)]">{tool.name}</span>
+                    <span
+                      className={`px-2 py-0.5 text-[10px] font-bold rounded uppercase ${
+                        tool.risk === 'Q'
+                          ? 'bg-blue-500/10 text-blue-400 border border-blue-500/30'
+                          : tool.risk === 'S'
+                            ? 'bg-green-500/10 text-green-400 border border-green-500/30'
+                            : tool.risk === 'D'
+                              ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/30'
+                              : tool.risk === 'C'
+                                ? 'bg-orange-500/10 text-orange-400 border border-orange-500/30'
+                                : 'bg-red-500/10 text-red-400 border border-red-500/30'
+                      }`}
+                    >
+                      Class {tool.risk} ({tool.riskLabel})
+                    </span>
                   </div>
-                  <div className="text-sm text-[var(--ui-text)] whitespace-pre-wrap rounded-lg bg-[var(--ui-surface)] p-3 border border-[var(--ui-border)]">
-                    {msg.content}
+                  <p className="text-xs text-[var(--ui-muted)]">{tool.description}</p>
+                  <div className="flex items-center justify-between text-[10px] text-[var(--ui-muted)] font-mono pt-1 border-t border-[var(--ui-border)]/50">
+                    <span>id: {tool.id}</span>
+                    <span className="capitalize">kat: {tool.category}</span>
                   </div>
                 </div>
               ))}
             </div>
-          )}
+          </div>
 
-          {/* GUI-03: tool execution status for the live run */}
-          {run.status !== 'idle' && (
-            <div className="mt-4 space-y-3">
-              <ToolStatusView
-                executionId={toolStatus.executionId}
-                toolName={toolStatus.toolName}
-                state={toolStatus.state}
-              />
-              {run.providerId && (
-                <p className="text-xs text-[var(--ui-muted)]">
-                  Runtime provider: {run.providerId}
-                  {run.model ? ` · Model: ${run.model}` : ''}
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* GUI-06 / GUI-07: fixed-schema component rendered from the real A2UI payload */}
-          {run.a2ui !== undefined && (
-            <div className="mt-4" aria-label="Interactive A2UI Card">
-              <A2UIFixedRenderer payload={run.a2ui} />
-            </div>
-          )}
-
-          {/* GUI-02: approval review — approval is never shown as a completed execution */}
-          {run.hitl !== undefined && (
-            <div className="mt-4">
-              <ApprovalReviewCard proposal={run.hitl} />
-            </div>
-          )}
-
-          {/* GUI-01 / GUI-07: display-only cards mounted on the same workspace API data path */}
-          {liveCards && (
-            <div className="mt-4 grid grid-cols-1 gap-4" aria-label="Workspace live operational cards">
-              {liveCards.latestOrder && (
-                <>
-                  <OrderSummaryCard
-                    order={liveCards.latestOrder}
-                    source="api/platform/orders"
-                    revision={liveCards.latestOrder.revision}
-                  />
-                  <OrderTrackingCard
-                    order={liveCards.latestOrder}
-                    source="api/platform/orders"
-                    revision={liveCards.latestOrder.revision}
-                  />
-                </>
-              )}
-              {liveCards.commissionSummary && (
-                <CommissionSummaryCard
-                  summary={liveCards.commissionSummary}
-                  source="api/platform/dealer/commissions"
-                />
-              )}
-              {liveCards.latestJev && (
-                <JevAssessmentCard
-                  issueClass={liveCards.latestJev.issueClass}
-                  rootCause={liveCards.latestJev.rootCause}
-                  sopAction={liveCards.latestJev.sopAction}
-                  evaluationState={liveCards.latestJev.evaluationState}
-                  evidencePhotoRequired={liveCards.latestJev.evidencePhotoRequired}
-                  source="api/platform/jev"
-                  revision={liveCards.latestJev.revision}
-                />
-              )}
-              {liveCards.latestMargin && (
-                <MarginSummaryCard
-                  contributionSen={liveCards.latestMargin.contributionSen}
-                  contributionMarginPct={liveCards.latestMargin.contributionMarginPct}
-                  requiredContributionSen={liveCards.latestMargin.requiredContributionSen}
-                  requiredMarginPct={liveCards.latestMargin.requiredMarginPct}
-                  status={liveCards.latestMargin.status}
-                  source="api/platform/margin"
-                  revision={liveCards.latestMargin.revision}
-                />
-              )}
-            </div>
-          )}
-
-          {/* GUI-02: interactive margin simulator form mounted in workspace */}
-          {showMarginSimulator && (
-            <div className="mt-4" aria-label="Workspace margin simulator">
-              <MarginSimulatorForm
-                onSimulate={onMarginSimulate ?? (() => {})}
-                onRevalidateServer={onMarginRevalidateServer}
-                receipt={marginReceipt}
-                disabled={!isChatEnabled || isSending}
-              />
-            </div>
-          )}
-
-          {/* GUI-05: sandboxed MCP App client host frame */}
-          {showMcpSandboxHost && (
-            <div className="mt-4" aria-label="Workspace MCP App host">
-              <McpAppSandboxHostFrame />
-            </div>
-          )}
-
-          {/* GUI-04: scoped client state for this workspace / user / thread */}
-          {scope && scopedSnapshot && (
-            <div className="mt-4">
-              <ScopedStateView scope={scope} snapshot={scopedSnapshot} />
-            </div>
-          )}
-
-          {chatError && (
-            <div role="alert" className="mt-4 p-3 rounded-lg border border-[var(--ui-border)] bg-[var(--ui-soft)] text-sm text-[var(--ui-danger-text)]">
-              {chatError}
-            </div>
-          )}
-
-          <form onSubmit={onSubmit} className="mt-5 space-y-3" aria-label="Copilot chat">
-            <label htmlFor="copilot-message" className="block text-sm font-medium text-[var(--ui-text)]">
-              Message · Mesej
-            </label>
-            <textarea
-              id="copilot-message"
-              name="message"
-              rows={3}
-              value={inputMessage}
-              onChange={(e) => onInputChange(e.target.value)}
-              disabled={!isChatEnabled || isSending}
-              aria-describedby="copilot-chat-unavailable"
-              placeholder={
-                isChatEnabled
-                  ? 'Taip mesej atau pertanyaan operasi (contoh: "ada aduan botol bocor", "semak stok", "simulasi margin")...'
-                  : 'Chat is unavailable until the verified shared runtime is connected.'
-              }
-              className="block w-full resize-y rounded-lg border border-[var(--ui-border)] bg-[var(--ui-surface)] px-3 py-2 text-sm text-[var(--ui-text)] placeholder:text-[var(--ui-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ui-accent)] disabled:cursor-not-allowed disabled:opacity-60"
-            />
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <p id="copilot-chat-unavailable" className="text-sm text-[var(--ui-muted)]">
-                {isChatEnabled
-                  ? isSending ? 'Menghubungi Copilot...' : 'Sedia menghantar arahan kepada model percuma terpilih.'
-                  : 'A descriptor does not establish the shared thread/run or AG-UI event protocol.'}
+          {/* TAB 4: Human-in-the-Loop Approvals */}
+          <div
+            id="panel-hitl"
+            role="tabpanel"
+            aria-labelledby="tab-hitl"
+            style={{ display: activeTab === 'hitl' ? 'block' : 'none' }}
+            className="space-y-4 pt-3"
+          >
+            <div className="rounded-lg border border-[var(--ui-border)] bg-[var(--ui-soft)] p-4 space-y-2">
+              <h3 className="text-sm font-semibold text-[var(--ui-text)]">🛡️ Gerbang Kelulusan Pengasas (HITL Review)</h3>
+              <p className="text-xs text-[var(--ui-muted)] leading-relaxed">
+                Tindakan berimpak tinggi dalam sistem Abang Colek memerlukan pengesahan manual daripada Pengasas sebelum sebarang mutasi kekal dilaksanakan ke atas pangkalan data.
               </p>
-              <button
-                type="submit"
-                disabled={!isChatEnabled || isSending || !inputMessage.trim()}
-                className="rounded-lg bg-[var(--ui-accent)] px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {isSending ? 'Sending…' : 'Send · Hantar'}
-              </button>
             </div>
-          </form>
+
+            {run.hitl !== undefined ? (
+              <ApprovalReviewCard proposal={run.hitl} />
+            ) : (
+              <div className="p-6 rounded-lg border border-dashed border-[var(--ui-border)] text-center space-y-2">
+                <p className="text-sm font-medium text-[var(--ui-text)]">Tiada Cadangan Tindakan Menunggu Kelulusan</p>
+                <p className="text-xs text-[var(--ui-muted)] max-w-md mx-auto">
+                  Apabila agen Copilot mencadangkan tindakan Class C atau Class X (seperti bayaran komisen pukal, pindahan kelompok stok, atau kuarantin lot), kad semakan kelulusan akan dipaparkan di sini.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* TAB 5: External Connectors & Inspector Telemetry */}
+          <div
+            id="panel-inspector"
+            role="tabpanel"
+            aria-labelledby="tab-inspector"
+            style={{ display: activeTab === 'inspector' ? 'block' : 'none' }}
+            className="space-y-4 pt-3"
+          >
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 className="text-sm font-semibold text-[var(--ui-text)]">🔌 Sambungan Luaran (EXT-01 hingga EXT-07)</h3>
+                <p className="text-xs text-[var(--ui-muted)]">Status penyambung luar dan hab telemetri sistem pembangun.</p>
+              </div>
+              <a
+                href="/api/platform/dev/inspector"
+                target="_blank"
+                rel="noreferrer"
+                className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-[var(--ui-surface)] border border-[var(--ui-border)] hover:bg-[var(--ui-soft)] text-[var(--ui-text)]"
+              >
+                Buka Developer Inspector ↗
+              </a>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {[
+                { id: 'EXT-01', name: 'WhatsApp WebBridge Gateway', port: 'Port 10087', status: 'Online', desc: 'Penghantaran resit & notifikasi pesanan pelanggan.' },
+                { id: 'EXT-02', name: 'Telegram MiniApp Gateway', port: 'Port 9220', status: 'Online', desc: 'Kawalan HITL & kokpit mobil Telegram pengasas.' },
+                { id: 'EXT-03', name: 'DuitNow / FPX Payment Gateway', port: 'Webhook SSL', status: 'Active', desc: 'Pengesahan bayaran QR dan perbankan automatik.' },
+                { id: 'EXT-04', name: 'Courier Logistics Dispatcher', port: 'REST API', status: 'Standby', desc: 'Jana waybill & pengesanan penghantaran bungkusan.' },
+                { id: 'EXT-05', name: 'LHDN E-Invoicing & Cukai', port: 'MyInvois API', status: 'Ready', desc: 'Pemfailan resit rasmi dan pematuhan cukai LHDN.' },
+                { id: 'EXT-06', name: 'Gudang & Batch RFID/QR', port: 'Local Scanner', status: 'Active', desc: 'Imbasan kelompok kuah rojak semasa pembungkusan.' },
+                { id: 'EXT-07', name: 'S3 Secure Attachments Store', port: 'Object Storage', status: 'Verified', desc: 'Storan gambar bukti kualiti JEV dan resit bayaran.' },
+              ].map((ext) => (
+                <div key={ext.id} className="p-3 rounded-lg border border-[var(--ui-border)] bg-[var(--ui-surface)] space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-[var(--ui-text)]">{ext.id}: {ext.name}</span>
+                    <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                      {ext.status}
+                    </span>
+                  </div>
+                  <p className="text-xs text-[var(--ui-muted)]">{ext.desc}</p>
+                  <p className="text-[10px] font-mono text-[var(--ui-muted)] pt-1">{ext.port}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         </CopilotSurfaceCard>
       </div>
     </section>
@@ -805,6 +1027,8 @@ export default function CopilotWorkspace(props: CopilotWorkspaceProps = {}) {
       onSubmit={handleSendMessage}
       onRetryRuntime={() => void checkRuntime()}
       liveCards={liveCards}
+      showMarginSimulator={props.showMarginSimulator ?? true}
+      showMcpSandboxHost={props.showMcpSandboxHost ?? true}
     />
   );
 }

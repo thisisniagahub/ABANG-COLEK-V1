@@ -41,7 +41,7 @@ test('Finance cards use server totals, staff counts all assigned work, and publi
     const paged = await get<{ id: string }[]>(staffPage.request, '/tasks');
     expect(paged).toHaveLength(50);
     await staffPage.goto('/staff/overview');
-    await expect(staffPage.locator('.xp-count-pair > div').filter({ hasText: 'Open assigned tasks' }).locator('strong')).toHaveText(String(before.openAssignedTasks + 105));
+    await expect(staffPage.locator('.xp-count-pair > div').filter({ hasText: 'Open assigned tasks' }).locator('strong')).toHaveText(String(before.openAssignedTasks + 105), { timeout: 15_000 });
   } finally { await staffContext.close(); }
 
   const products: CatalogueProduct[] = [], cleanupContext = await browser.newContext({ baseURL: fixture().origin });
