@@ -190,6 +190,8 @@ function buildMeasurement(args: {
     reason = `larian keluar dengan kod ${args.exitCode}`;
   } else if (missingSummary) {
     reason = 'output larian tiada ringkasan pass/fail';
+  } else if (args.pass === 0) {
+    reason = 'tiada ujian lulus';
   } else if ((args.fail ?? 0) > 0) {
     reason = `${args.fail} ujian gagal`;
   } else if (skip > 0) {
@@ -225,6 +227,7 @@ function runProcess(cmd: string, args: string[], cwd: string): { exitCode: numbe
     cwd,
     encoding: 'utf-8',
     maxBuffer: 128 * 1024 * 1024,
+    timeout: 10 * 60_000,
     env: { ...process.env, NO_COLOR: '1', FORCE_COLOR: '0' },
   });
   if (res.error) {
@@ -303,20 +306,25 @@ function prefixCandidates(testCase: TestCaseRecord): string[] {
 /** Mengukur larian pytest (`bun run test:adk`). */
 export function measurePytest(scriptName: string, cwd: string): Measurement {
   const { exitCode, stdout } = runProcess('bun', ['run', scriptName], cwd);
-  const passed = /(\d+)\s+passed/.exec(stdout);
-  const failed = /(\d+)\s+failed/.exec(stdout);
-  const warnings = /(\d+)\s+warnings?/.exec(stdout);
-  const duration = /in\s+([\d.]+)s/.exec(stdout);
+  // Hanya ringkasan akhir pytest diterima; teks log biasa bukan bukti lulus.
+  const summary = stdout.split(/\r?\n/).map(line => line.trim()).filter(line =>
+    /^(?:=+\s*)?\d+ (?:passed|failed|skipped|xfailed|xpassed|errors?)(?:, \d+ (?:passed|failed|skipped|xfailed|xpassed|errors?|warnings?|deselected))* in [\d.]+s(?: \(.*\))?(?:\s*=+)?$/.test(line),
+  ).at(-1);
+  const count = (label: string): number => {
+    const match = new RegExp(`(?:^|[ ,=])(\\d+)\\s+${label}\\b`).exec(summary ?? '');
+    return match ? Number(match[1]) : 0;
+  };
+  const warnings = summary ? /(\d+)\s+warnings?/.exec(summary) : null;
+  const duration = summary ? /in\s+([\d.]+)s/.exec(summary) : null;
   const passByFile = new Map<string, number>();
   const passByPrefix = new Map<string, number>();
   return buildMeasurement({
     exitCode,
-    pass: passed ? Number(passed[1]) : null,
-    // pytest only prints a "failed" count when there IS a failure; "23 passed"
-    // alone means zero failures, not "unknown".
-    fail: failed ? Number(failed[1]) : passed ? 0 : null,
+    pass: summary ? count('passed') : null,
+    fail: summary ? count('failed') + count('errors?') : null,
     expectCalls: null,
-    skip: null,
+    // Xfail/xpass dan deselection juga tidak membuktikan semua kontrak lulus.
+    skip: summary ? count('skipped') + count('xfailed') + count('xpassed') + count('deselected') : null,
     todo: null,
     files: null,
     passByFile,
@@ -1095,11 +1103,11 @@ export function writeReceipt(
 ): void {
   let existing: Record<string, unknown> = {};
   if (existsSync(target)) {
-    try {
-      existing = JSON.parse(readFileSync(target, 'utf-8')) as Record<string, unknown>;
-    } catch {
-      existing = {};
+    const parsed: unknown = JSON.parse(readFileSync(target, 'utf-8'));
+    if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      throw new Error(`resit sedia ada bukan objek JSON: ${target}`);
     }
+    existing = parsed as Record<string, unknown>;
   }
   const managed = new Set(Object.keys(receipt));
   const preserved: Record<string, unknown> = {};
@@ -1183,6 +1191,10 @@ function parseArgs(argv: string[]): Options {
   return options;
 }
 
+function hasExternalGate(row: LedgerRow): boolean {
+  return row.status === 'blocked_external' || row.externalGate != null;
+}
+
 function applyLedgerPatch(
   ledger: Ledger,
   patch: LedgerPatch,
@@ -1192,7 +1204,10 @@ function applyLedgerPatch(
   const row = ledger.rows.find((candidate) => candidate.id === patch.rowId);
   if (!row) throw new Error(`baris ledger tidak dijumpai: ${patch.rowId}`);
 
+  const external = hasExternalGate(row);
   if (!measurement.green) {
+    // Bukti tempatan tidak boleh memadam blocker luaran.
+    if (external) return;
     // Larian merah: baris TIDAK boleh kekal "hijau". Turun taraf dan tulis
     // punca sebenar, bukan naratif yang menjanjikan kejayaan.
     row.status = 'implemented_unverified';
@@ -1201,9 +1216,9 @@ function applyLedgerPatch(
   }
 
   const ctx: TemplateContext = { count: scopedCount(receipt, measurement), measurement, receipt };
-  if (patch.status !== undefined) row.status = patch.status;
-  if (patch.gap !== undefined) row.gap = resolveTemplate(patch.gap, ctx);
-  if (patch.remainingRequirement !== undefined) {
+  if (!external && patch.status !== undefined) row.status = patch.status;
+  if (!external && patch.gap !== undefined) row.gap = resolveTemplate(patch.gap, ctx);
+  if (!external && patch.remainingRequirement !== undefined) {
     row.remainingRequirement = resolveTemplate(patch.remainingRequirement, ctx);
   }
   if (patch.evidenceProves !== undefined) {
@@ -1260,7 +1275,7 @@ export function runLanes(options: Options): { results: LaneResult[]; green: bool
     for (const entry of receipts) {
       if (entry.measurement.green) continue;
       const row = ledger.rows.find((candidate) => candidate.id === entry.receipt.requirementId);
-      if (!row) continue;
+      if (!row || hasExternalGate(row)) continue;
       if (row.status !== 'implemented_unverified') {
         row.status = 'implemented_unverified';
         row.gap = `Larian uji yang dipetik TIDAK hijau: ${entry.receipt.command.join(' ')} — ${entry.measurement.reason}.`;
@@ -1364,10 +1379,10 @@ export function runSelfTest(repoRoot: string): boolean {
 
 /* -------------------------------------------------------------------------- */
 
-if (import.meta.main) {
+export function runEvidenceCli(argv: string[]): void {
   let options: Options;
   try {
-    options = parseArgs(process.argv.slice(2));
+    options = parseArgs(argv);
   } catch (error) {
     console.error(`argumen tidak sah: ${(error as Error).message}`);
     process.exit(2);
@@ -1395,3 +1410,5 @@ if (import.meta.main) {
     process.exit(1);
   }
 }
+
+if (import.meta.main) runEvidenceCli(process.argv.slice(2));

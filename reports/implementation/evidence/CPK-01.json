@@ -4,7 +4,7 @@
   "environment": "local_test",
   "timestamp": "2026-10-20T05:25:00Z",
   "sourceCommit": "HEAD",
-  "worktree": "D:/\ABANGCOLEK-PLATFORM",
+  "worktree": "D:/ABANGCOLEK-PLATFORM",
   "testName": "CopilotKit Fetch v2 Runtime Verification",
   "testPath": "tests/platform/copilot-v2-runtime.test.ts",
   "command": "bun test ./tests/platform/copilot-v2-runtime.test.ts",

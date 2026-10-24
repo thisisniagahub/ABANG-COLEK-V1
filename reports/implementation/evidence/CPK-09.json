@@ -4,7 +4,7 @@
   "environment": "local_test",
   "timestamp": "2026-10-21T08:14:59.182Z",
   "sourceCommit": "1fc218e5784efb890641bba1e46ac97f617639a3",
-  "worktree": "D:/\ABANGCOLEK-PLATFORM",
+  "worktree": "D:/ABANGCOLEK-PLATFORM",
   "testName": "a run started in the Pet and continued in the workspace resolves to the same run id and thread id",
   "testPath": "tests/frontend/copilot-run-identity-shared.test.tsx",
   "command": "bun test ./tests/frontend/copilot-run-identity-shared.test.tsx",

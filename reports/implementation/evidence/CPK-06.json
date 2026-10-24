@@ -4,7 +4,7 @@
   "environment": "local_test",
   "timestamp": "2026-10-20T05:25:00Z",
   "sourceCommit": "HEAD",
-  "worktree": "D:/\ABANGCOLEK-PLATFORM",
+  "worktree": "D:/ABANGCOLEK-PLATFORM",
   "testName": "HITL proposal and execution lifecycle",
   "testPath": "tests/platform/hitl-execution-v24.test.ts",
   "command": "bun test ./tests/platform/hitl-execution-v24.test.ts",
