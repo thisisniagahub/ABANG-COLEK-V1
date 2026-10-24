@@ -64,7 +64,7 @@ flowchart TD
     D --> K[Hosted Supabase snapshot CAS + private evidence]
     D --> F[Evidence + JEV review]
     D --> G[Local job worker + automation]
-    H[GitHub Actions] --> I[lint + platform tests + build]
+    H[Vercel Git integration] --> I[lint + platform tests + build]
     L[Main Git integration] --> J[Vercel: abang-colek-v1]
 ```
 
@@ -118,6 +118,13 @@ bun run lint
 bun run test:platform
 bun run build
 ```
+
+`test:platform` menjalankan setiap fail dalam proses Bun berasingan, secara
+berurutan, dengan `--isolate` dan timeout proses 180 saat. Ini mengelakkan
+module cache atau mock satu fail mengganggu fail lain. Sebarang kegagalan,
+timeout atau ringkasan tidak lengkap menggagalkan gate. Jumlah akhir ialah
+pelaksanaan ujian; suite yang diimport oleh fail lain boleh dikira semula.
+Skip dan todo kekal dipaparkan dan bukan bukti acceptance selesai.
 
 Untuk browser journeys dan QA server:
 
