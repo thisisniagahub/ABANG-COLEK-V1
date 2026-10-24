@@ -20,7 +20,7 @@ afterEach(() => {
  * Shared async call function for platform API tests.
  * Makes a request to the platform API and returns { response, json }.
  */
-async function call(app: any, path: string, body?: unknown, session?: { cookie: string; csrf: string }, extra: Record<string, string> = {}) {
+async function call(app: ReturnType<typeof createPlatformApp>, path: string, body?: unknown, session?: { cookie: string; csrf: string }, extra: Record<string, string> = {}) {
   const response = await app.fetch(new Request(`http://localhost:3010/api/platform${path}`, {
     method: body === undefined ? 'GET' : 'POST',
     headers: {
@@ -37,12 +37,12 @@ async function call(app: any, path: string, body?: unknown, session?: { cookie: 
  * Shared async user function for platform API tests.
  * Signs up / boots a user and returns { cookie, csrf, userId }.
  */
-async function user(app: any, name: string, founder = false) {
+async function user(app: ReturnType<typeof createPlatformApp>, name: string, founder = false, bootstrapToken = 'test-bootstrap-token-long-enough') {
   const result = await call(app, founder ? '/auth/bootstrap' : '/auth/signup', {
     email: `${name}@example.test`,
     name,
     password: 'a strong local password 123',
-    ...(founder ? { token: 'test-bootstrap-token-long-enough' } : {}),
+    ...(founder ? { token: bootstrapToken } : {}),
   });
   expect(result.response.status).toBe(200);
   return {
@@ -69,7 +69,14 @@ function harness(bootstrapToken = 'test-bootstrap-token-long-enough') {
     try { app.close(); } catch { /* already closed */ }
     rmSync(directory, { recursive: true, force: true });
   });
-  return { app, call, user, directory };
+  return {
+    app, directory,
+    call: async (path: string, body?: unknown, session?: {cookie: string; csrf: string}, extra: Record<string, string> = {}) => {
+      const result = await call(app, path, body, session, extra);
+      return { status: result.response.status, body: result.json, cookie: result.response.headers.get('set-cookie') };
+    },
+    user: (name: string, founder = false) => user(app, name, founder, bootstrapToken),
+  };
 }
 
 /** Re-export the shared call and user for direct import */

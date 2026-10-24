@@ -338,24 +338,20 @@ describe('MOD-06: Loyalty & Referral Copilot Integration Suite', () => {
   // Dimension 5: Malformed Input Rejection & Float Rounding
   // --------------------------------------------------------------------------
   describe('Dimension 5: Penolakan Input Pincang & Pembundaran Float ke Integer Sen', () => {
-    test('Input mata titik perpuluhan (float) dibundarkan ke bawah (Math.floor) ke integer', async () => {
-      // WHY CHANGED: the old expectation hardcoded "10.75 mata -> 50 sen"
-      // under the stale "1 mata = 5 sen" constant. The intent — floor to an
-      // integer, then an exact integer-sen value, never float arithmetic — is
-      // preserved and now proved against the CANONICAL conversion and a REAL
-      // seeded ledger.
+    test('Input mata pecahan ditolak tanpa pembundaran senyap', async () => {
+      // Kontrak integer ketat: pecahan ditolak, bukan dibundarkan kepada nilai wang lain.
       const { domainRegistry, loyalty, store, customer } = setupLoyalty();
       const ctx: ToolContext = { actor: customer };
+      for (const points of [10.75, Infinity, Number.MAX_SAFE_INTEGER + 1]) {
+        const res = await domainRegistry.executeTool('calculate_points_balance', ctx, { points });
+        expect(res.ok).toBe(false);
+        expect(res.data).toEqual({observation:'unavailable',reasonCode:'INVALID_POINTS'});
+        expect(res.data).not.toHaveProperty('valueSen');
+      }
 
-      const res = await domainRegistry.executeTool('calculate_points_balance', ctx, { points: 10.75 });
-      expect(res.ok).toBe(true);
-      expect(res.data.points).toBe(10);
-      expect(res.data.valueSen).toBe(10 * LOYALTY_POINT_VALUE_SEN);
-      expect(res.data.valueSen).toBe(loyaltyPointsToDiscountSen(10));
-      // Tiada aritmetik float: 10.75 * 1 = 10.75 (bukan integer)
-      expect(res.data.valueSen).not.toBe(10.75);
-      expect(Number.isInteger(res.data.valueSen)).toBe(true);
-      expect(res.data.isSenInteger).toBe(true);
+      for (const points of [-1, Number.NaN]) {
+        await expect(domainRegistry.executeTool('calculate_points_balance', ctx, { points })).rejects.toThrow('Input tidak sah');
+      }
 
       // Baki lejar sebenar (integer) -> taraf + nilai penebusan integer
       loyalty.awardPoints(customer.user.id, 10, undefined, 'Ganjaran pecahan');

@@ -9,6 +9,7 @@ import {
 import { existsSync, unlinkSync } from 'node:fs';
 import { Database } from 'bun:sqlite';
 import type { Principal } from '../../server/platform/auth';
+import type { DealerApplication } from '../../shared/platform-contracts';
 
 /**
  * Fixture lifecycle guard.
@@ -426,12 +427,25 @@ describe('E02c: dealer terms read gate requires an ACTIVE dealer membership', ()
       .query<{ id: string }, [string]>('SELECT id FROM users WHERE email=?')
       .get('dealer-gate@test.local')!.id;
 
-    // Ahli dealer AKTIF: baca terma mesti succeeds.
+    // Kontrak akses memerlukan keahlian aktif DAN permohonan organisasi yang diluluskan.
     // `signup` sudah mencipta keanggotaan 'customer' dan memberships UNIQUE(user_id, role),
     // jadi keanggotaan dealer diwujudkan dengan mengemas kini baris tersebut.
     app.store.db
       .query('UPDATE memberships SET outlets=?, dealer_org_id=?, status=?, version=? WHERE user_id=? AND role=?')
       .run('["hq"]', 'org-gate', 'active', 1, userId, 'customer');
+
+    const pendingApplication: DealerApplication = {
+      id: 'application-gate', customerId: userId, organization: 'Dealer Gate',
+      description: 'Fixture kawalan akses terma dealer', dealerOrgId: 'org-gate',
+      status: 'pending', revision: 1, createdAt: new Date().toISOString(),
+    };
+    app.store.save('dealer_applications', pendingApplication);
+    const pendingRes = await app.fetch(new Request(`${base}/dealer/terms`, { headers: { Cookie: cookie } }));
+    expect(pendingRes.status).toBe(403);
+
+    app.store.save('dealer_applications', {
+      ...pendingApplication, status: 'approved', revision: 2,
+    } satisfies DealerApplication);
 
     const activeRes = await app.fetch(new Request(`${base}/dealer/terms`, { headers: { Cookie: cookie } }));
     expect(activeRes.status).toBe(200);

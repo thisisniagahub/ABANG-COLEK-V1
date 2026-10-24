@@ -211,6 +211,22 @@ describe('Domain Tools Registry v1.1 — 10 Platform Modules Conformance (real c
     expect(res.data.isValid).toBe(true);
   });
 
+  test('jumlah sen tidak sah tidak menghasilkan baki sifar rekaan', async () => {
+    const { registry, ctx, store } = setup();
+    try {
+      for (const amountSen of [1.5, -1, Infinity, Number.MAX_SAFE_INTEGER + 1]) {
+        const result = await registry.executeTool('verify_sen_balance', ctx, { amountSen });
+        expect(result.ok).toBe(false);
+        expect(result.data).toEqual({ observation: 'unavailable', reasonCode: 'INVALID_AMOUNT_SEN' });
+      }
+      const zero = await registry.executeTool('verify_sen_balance', ctx, { amountSen: 0 });
+      expect(zero.ok).toBe(true);
+      expect(zero.data.amountSen).toBe(0);
+    } finally {
+      store.close();
+    }
+  });
+
   test('Module 6 (Commission): get_agent_commission_summary reads the real commission ledger', async () => {
     const { registry, ctx, dealer } = setup();
     const dealerCtx: ToolContext = { ...ctx, actor: dealer };

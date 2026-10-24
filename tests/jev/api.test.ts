@@ -1,10 +1,7 @@
-import { afterEach, expect, test } from 'bun:test';
+import { expect, test } from 'bun:test';
 import { HELD_OUT_CASES } from './fixtures/held-out';
-import { harness, call, user } from '../platform/test-harness-helper';
+import { harness } from '../platform/test-harness-helper';
 
-const cleanup: (() => void)[] = [];
-afterEach(() => cleanup.splice(0).forEach(close => close()));
-type Session = { cookie: string; csrf: string; userId: string };
 test('JEV API keeps zero-spend typed packs, evaluation history and developer scope behind session/CSRF', async () => {
   const { call, user } = harness('jev-test-bootstrap');
   expect((await call('/jev/packs')).status).toBe(401);

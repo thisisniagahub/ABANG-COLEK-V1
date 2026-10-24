@@ -25,7 +25,7 @@
 
 import type { Principal } from './auth';
 import type { Auth } from './auth';
-import type { PlatformStore } from './store';
+import { DomainError, integer, type PlatformStore } from './store';
 import type { Commerce } from './commerce';
 import type { Dealers } from './dealers';
 import type { Loyalty } from './loyalty';
@@ -1242,22 +1242,24 @@ export class DomainToolRegistry {
         required: ['amountSen'],
       },
       async execute(ctx, input: any) {
-        const amountSen = input.amountSen;
-        let isStrictInteger = true;
         let integerAmount: number;
         try {
           integerAmount = integer(input.amountSen, 'amountSen');
-        } catch {
-          isStrictInteger = false;
-          integerAmount = 0;
+        } catch (error) {
+          if (!(error instanceof DomainError)) throw error;
+          return {
+            ok: false,
+            toolName: 'verify_sen_balance',
+            data: { observation: 'unavailable', reasonCode: 'INVALID_AMOUNT_SEN' },
+          };
         }
         return {
           ok: true,
           toolName: 'verify_sen_balance',
           data: {
             amountSen: integerAmount,
-            isInteger: isStrictInteger,
-            isValid: isStrictInteger && integerAmount >= 0,
+            isInteger: true,
+            isValid: true,
             observation: 'observed',
           },
         };
@@ -1498,7 +1500,8 @@ export class DomainToolRegistry {
         let points: number;
         try {
           points = integer(input.points, 'points');
-        } catch {
+        } catch (error) {
+          if (!(error instanceof DomainError)) throw error;
           return {
             ok: false,
             toolName: 'calculate_points_balance',
