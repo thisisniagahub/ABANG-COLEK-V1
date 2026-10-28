@@ -34,9 +34,11 @@ export class Dealers {
     return undefined;
   }
   private organizations(actor: Principal): Set<string> {
+    const activeMembers = actor.memberships.filter(member => member.status === 'active');
+    if (!activeMembers.length) return new Set();
     const orgs = new Set(
-      actor.memberships
-        .filter(member => member.status === 'active' && (member.role === 'customer' || (member.role as string) === 'agent') && member.dealerOrgId)
+      activeMembers
+        .filter(member => (member.role === 'customer' || (member.role as string) === 'agent') && member.dealerOrgId)
         .map(member => member.dealerOrgId!)
     );
     for (const store of this.stores.all()) {

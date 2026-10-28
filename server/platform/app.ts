@@ -521,6 +521,7 @@ export function createPlatformApp(options:PlatformAppOptions={}) {
       if(segments[0]==='dealer'&&segments[1]==='restocks'&&segments[2]){if(segments[3]==='transition')return dealers.transition(actor,segments[2],input);if(segments[3]==='receive')return dealers.receive(actor,segments[2],input,key);}
       if(segments[0]==='dealer'&&segments[1]==='restocks'&&segments[2]){if(segments[3]==='sell-through')return dealers.sellThrough(actor,segments[2],input,key);if(segments[3]==='returns')return dealers.requestReturn(actor,segments[2],input,key);if(segments[3]==='settlements')return dealers.createSettlement(actor,segments[2],input,key);}
       if(segments[0]==='dealer'&&segments[1]==='returns'&&segments[2]&&['receive','reject'].includes(segments[3]))return dealers.decideReturn(actor,segments[2],input,key,segments[3]==='receive');
+      if(segments[0]==='dealer'&&segments[1]==='settlements'&&segments[2]&&segments[3]==='payments')return dealers.recordSettlementPayment(actor,segments[2],input,key);
       if(path==='/loyalty/adjust'){
         const body=object(input);
         fields(body,['userId','pointsDelta','reason']);

@@ -76,7 +76,7 @@ test('founder marketing UI stores rights, approves exact revision and downloads 
   const approved = await submit<CampaignRecord>(page, approvalForm, 'Sahkan copy, assets & revision', `/campaigns/${draft.id}/approve`);
   expect(approved.copy).toBe(caption);
   expect(approved.revision).toBe(edited.revision + 1);
-  await expect(card.locator('.xp-status')).toHaveText('approved');
+  await expect(card.locator('.xp-status').first()).toHaveText('approved');
   const captionDownload = page.waitForEvent('download');
   const captionReceipt = page.waitForResponse(response => new URL(response.url()).pathname === `/api/platform/campaigns/${draft.id}/export` && response.request().method() === 'POST');
   await card.getByRole('button', { name: 'Export caption', exact: true }).click();
@@ -102,7 +102,7 @@ test('founder marketing UI stores rights, approves exact revision and downloads 
   expect(bundleArtifact.campaignRevision).toBe(approved.revision);
   await page.reload();
   await expect(card).toContainText(caption);
-  await expect(card.locator('.xp-status')).toHaveText('approved');
+  await expect(card.locator('.xp-status').first()).toHaveText('approved');
   await expect(page.getByText('Tiada akaun social connected yang disahkan', { exact: false }).first()).toBeVisible();
 });
 

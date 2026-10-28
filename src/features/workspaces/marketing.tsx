@@ -152,7 +152,7 @@ function CampaignEditor({
       <div className="xp-panel-head">
         <div>
           <p className="xp-eyebrow">Marketing Studio &amp; Margin Guardian</p>
-          <h2>{isNew ? 'Kempen &amp; Promosi Baharu' : `Edit ${editing.title}`}</h2>
+          <h2>{isNew ? 'Kempen & Promosi Baharu' : `Edit ${editing.title}`}</h2>
         </div>
         <button type="button" className="xp-icon-button" aria-label="Tutup borang" onClick={onCancel}>
           <X size={18} />

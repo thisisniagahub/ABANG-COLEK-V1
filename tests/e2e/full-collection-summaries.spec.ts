@@ -54,7 +54,7 @@ test('Finance cards use server totals, staff counts all assigned work, and publi
     expect(firstPage.some(product => product.id === fixture().productId)).toBe(false);
     const original = await get<PublicProduct>(page.request, `/catalogue/${fixture().productId}`);
     await page.goto(`/products/${original.id}`);
-    await expect(page.getByRole('heading', { name: original.name, exact: true })).toBeVisible();
+    await expect(page.getByRole('article').getByRole('heading', { name: original.name, exact: true })).toBeVisible();
     await expect(page).toHaveTitle(`${original.name} | ABANGCOLEK`);
     await expect(page.getByText('Produk tidak ditemui', { exact: true })).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Muat lagi produk' })).toHaveCount(0);
